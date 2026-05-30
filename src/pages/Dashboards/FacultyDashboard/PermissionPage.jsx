@@ -45,10 +45,10 @@ const PermissionStatCard = ({ icon: Icon, title, code, used, total, color }) => 
       </h3>
 
       <p className="mt-1 text-[12px] font-semibold text-white">
-        {used} / {total} Hours
+        {total} Hours
       </p>
 
-      <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-[#1c2d45]">
+      {/* <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-[#1c2d45]">
         <div
           className="h-full rounded-full"
           style={{
@@ -56,7 +56,7 @@ const PermissionStatCard = ({ icon: Icon, title, code, used, total, color }) => 
             backgroundColor: color,
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
