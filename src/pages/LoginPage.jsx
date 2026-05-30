@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../assets/logo.svg'
 // import loginImage from '../assets/login-bg-2.svg'
-import loginImage from '../assets/bg.svg'
+// import loginImage from '../assets/bg.svg'
+import loginImage from '../assets/blur4.svg'
 import { Bolt } from "lucide-react";
 import thunderIcon from '../assets/thunderIcon.svg'
 
@@ -178,11 +179,11 @@ const LoginPage = () => {
                 </div>
                 {/* login bg  */}
                 <div className="container-2 w-[50%]  login-gradient ">
-                    <div className="img-container w-[100%] mb-3  ">
-                        <img src={loginImage} className="w-[90%] h-[390px] object-contain backdrop-blur-2xl m-auto " />
+                    <div className="img-container  w-[100%] ">
+                        <img src={loginImage} className="w-[55%] m-auto  object-cover " />
                     </div>
 
-                    <div className="flex items-center justify-center px-4">
+                    <div className="flex items-center justify-center px-4 absolute bottom-4">
                         <div className="flex flex-col items-center justify-center text-center px-8 relative overflow-hidden">
 
                             {/* Top Icon */}
@@ -190,7 +191,7 @@ const LoginPage = () => {
 
                             {/* Heading */}
                             <h1 className="text-white text-[24px] leading-[42px] w-[80%] font-semibold tracking-[-1px]">
-                                A Unified Hub for Smarter Financial Decision-Making
+                                A Unified Hub for Smarter Financial.
                             </h1>
 
                             {/* Description */}
