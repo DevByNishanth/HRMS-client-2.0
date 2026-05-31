@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Eye, RotateCcw } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Check, ChevronDown, Eye, X } from "lucide-react";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
-import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
-import HodPermissionRequestTable from "./HodPermissionRequestTable";
+import userImg from "../../../assets/userImg.svg";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -12,8 +10,10 @@ const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
 
-const permissions = [
+const permissionRequests = [
   {
+    name: "Surya Chandran",
+    designation: "Assistant Professor",
     date: "May 30, 2026",
     session: "Forenoon",
     duration: "1 Hour",
@@ -21,6 +21,8 @@ const permissions = [
     status: "Pending",
   },
   {
+    name: "Nivetha Kumar",
+    designation: "Associate Professor",
     date: "May 24, 2026",
     session: "Afternoon",
     duration: "2 Hours",
@@ -28,6 +30,8 @@ const permissions = [
     status: "Approved",
   },
   {
+    name: "Arjun Prakash",
+    designation: "Lab Instructor",
     date: "May 16, 2026",
     session: "Forenoon",
     duration: "1 Hour",
@@ -35,69 +39,17 @@ const permissions = [
     status: "Rejected",
   },
   {
+    name: "Maya Srinivasan",
+    designation: "Assistant Professor",
     date: "May 09, 2026",
     session: "Afternoon",
     duration: "1 Hour",
     reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
     status: "Pending",
   },
   {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
+    name: "Karthik Raman",
+    designation: "Associate Professor",
     date: "May 03, 2026",
     session: "Forenoon",
     duration: "2 Hours",
@@ -150,39 +102,29 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   );
 };
 
-const PermissionTable = () => {
-  const location = useLocation();
-  // Auth: replace this hardcoded role with the decoded localStorage token role later.
-  const role = "hod";
+const HodPermissionRequestTable = () => {
+  const [requests, setRequests] = useState(permissionRequests);
   const [selectedPermission, setSelectedPermission] = useState(null);
-  const [withdrawPermission, setWithdrawPermission] = useState(null);
   const [status, setStatus] = useState("All");
   const [session, setSession] = useState("All");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const hodTabs = ["My Permissions", "Team Permissions"];
-  const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
-    ? location.state.hodSelectedTab
-    : "My Permissions";
-  const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
 
-  const filteredPermissions = useMemo(
+  const filteredRequests = useMemo(
     () =>
-      permissions.filter((permission) => {
+      requests.filter((permission) => {
         const permissionDate = new Date(permission.date);
         const statusMatch = status === "All" || permission.status === status;
-        const sessionMatch =
-          session === "All" || permission.session === session;
+        const sessionMatch = session === "All" || permission.session === session;
         const fromMatch = !fromDate || permissionDate >= fromDate;
         const toMatch = !toDate || permissionDate <= toDate;
 
         return statusMatch && sessionMatch && fromMatch && toMatch;
       }),
-    [fromDate, session, status, toDate],
+    [fromDate, requests, session, status, toDate],
   );
 
-  const hasFilters =
-    status !== "All" || session !== "All" || fromDate || toDate;
+  const hasFilters = status !== "All" || session !== "All" || fromDate || toDate;
 
   const resetFilters = () => {
     setStatus("All");
@@ -191,11 +133,19 @@ const PermissionTable = () => {
     setToDate(null);
   };
 
-  const myPermissionsTable = (
+  const updateStatus = (request, nextStatus) => {
+    setRequests((currentRequests) =>
+      currentRequests.map((item) =>
+        item === request ? { ...item, status: nextStatus } : item,
+      ),
+    );
+  };
+
+  return (
     <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
-      <div className="relative z-20 flex flex-col gap-3 px-4 py-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="relative z-20 flex flex-col gap-3 px-4 py-3 xl:flex-row xl:items-start xl:justify-between">
         <h2 className="text-[18px] font-semibold text-white">
-          Permission requests <span>({filteredPermissions.length})</span>
+          Permission Requests <span>({filteredRequests.length})</span>
         </h2>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -213,7 +163,7 @@ const PermissionTable = () => {
           />
           <div className="min-w-[160px]">
             <CustomDatePicker
-              id="permission-filter-from"
+              id="hod-permission-filter-from"
               value={fromDate}
               onChange={setFromDate}
               placeholder="From Date"
@@ -221,7 +171,7 @@ const PermissionTable = () => {
           </div>
           <div className="min-w-[160px]">
             <CustomDatePicker
-              id="permission-filter-to"
+              id="hod-permission-filter-to"
               value={toDate}
               onChange={setToDate}
               placeholder="To Date"
@@ -240,10 +190,11 @@ const PermissionTable = () => {
         </div>
       </div>
 
-      <div className="relative z-0 h-[calc(100vh-380px)]  overflow-auto table-custom-scrollbar">
-        <table className="w-full min-w-[820px] border-collapse text-left">
+      <div className="relative z-0 h-[calc(100vh-380px)] overflow-auto table-custom-scrollbar">
+        <table className="w-full min-w-[980px] border-collapse text-left">
           <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
             <tr>
+              <th className="px-4 py-3 font-semibold">Name</th>
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Session</th>
               <th className="px-4 py-3 font-semibold">Duration</th>
@@ -252,9 +203,9 @@ const PermissionTable = () => {
               <th className="px-4 py-3 text-right font-semibold">Action</th>
             </tr>
           </thead>
-          <tbody className="text-[16px] text-[#cad7eb]">
-            {filteredPermissions.length > 0 ? (
-              filteredPermissions.map((permission) => {
+          <tbody className="text-[13px] text-[#cad7eb]">
+            {filteredRequests.length > 0 ? (
+              filteredRequests.map((permission, index) => {
                 const permissionWithColor = {
                   ...permission,
                   statusColor: statusStyles[permission.status],
@@ -262,17 +213,26 @@ const PermissionTable = () => {
 
                 return (
                   <tr
-                    key={`${permission.date}-${permission.session}`}
+                    key={`${permission.name}-${permission.date}-${permission.session}-${index}`}
                     className="border-b border-[#132944] last:border-0"
                   >
                     <td className="px-4 py-3 font-semibold text-white">
-                      {permission.date}
+                      <div className="flex items-center gap-2">
+                        <img src={userImg} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        <div className="min-w-0">
+                          <p className="truncate">{permission.name}</p>
+                          <p className="truncate text-[12px] font-normal text-[#8ca1bd]">
+                            {permission.designation}
+                          </p>
+                        </div>
+                      </div>
                     </td>
+                    <td className="px-4 py-3 font-semibold text-white">{permission.date}</td>
                     <td className="px-4 py-3">{permission.session}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration}
                     </td>
-                    <td className="max-w-[260px] truncate px-4 py-3">
+                    <td className="max-w-[260px] truncate px-4 py-3" title={permission.reason}>
                       {permission.reason}
                     </td>
                     <td className="px-4 py-3">
@@ -285,28 +245,37 @@ const PermissionTable = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
+                        {permission.status === "Pending" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => updateStatus(permission, "Approved")}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                              aria-label="Approve permission request"
+                              title="Approve"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => updateStatus(permission, "Rejected")}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
+                              aria-label="Reject permission request"
+                              title="Reject"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </>
+                        )}
                         <button
                           type="button"
-                          onClick={() =>
-                            setSelectedPermission(permissionWithColor)
-                          }
+                          onClick={() => setSelectedPermission(permissionWithColor)}
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
-                          aria-label={`View permission for ${permission.date}`}
+                          aria-label="View permission request details"
+                          title="View"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        {permission.status === "Pending" && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setWithdrawPermission(permissionWithColor)
-                            }
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                            aria-label={`Withdraw permission for ${permission.date}`}
-                          >
-                            <RotateCcw className="h-4 w-4" />
-                          </button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -314,10 +283,7 @@ const PermissionTable = () => {
               })
             ) : (
               <tr>
-                <td
-                  colSpan="6"
-                  className="px-4 py-8 text-center text-[#8ca1bd]"
-                >
+                <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
                   No permission requests found matching your filters.
                 </td>
               </tr>
@@ -330,50 +296,8 @@ const PermissionTable = () => {
         permission={selectedPermission}
         onClose={() => setSelectedPermission(null)}
       />
-      <WithdrawPermissionPopup
-        permission={withdrawPermission}
-        onClose={() => setWithdrawPermission(null)}
-      />
     </section>
-  );
-
-  if (role !== "hod") return myPermissionsTable;
-
-  return (
-    <>
-      <div className="tab-container mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138] px-4 py-2">
-        <div className="flex items-center gap-2">
-          {hodTabs.map((tab) => (
-            <button
-              type="button"
-              onClick={() => setHodSelectedTab(tab)}
-              key={tab}
-              className={`px-6 py-2 text-sm font-medium transition ${
-                tab === hodSelectedTab
-                  ? "rounded-md bg-[#2563EB] text-white"
-                  : "rounded-md hover:bg-slate-600/20"
-              }`}
-            >
-              {tab}
-              {tab === "Team Permissions" && (
-                <span
-                  className={`ml-1 rounded px-2 py-[2px] text-xs ${
-                    tab === hodSelectedTab
-                      ? "bg-white font-semibold text-blue-700"
-                      : "bg-slate-700 text-white"
-                  }`}
-                >
-                  5
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {hodSelectedTab === "My Permissions" ? myPermissionsTable : <HodPermissionRequestTable />}
-    </>
   );
 };
 
-export default PermissionTable;
+export default HodPermissionRequestTable;

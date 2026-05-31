@@ -1,8 +1,10 @@
 import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
+import HodLeaveRequestTable from "./HodLeaveRequestTable";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -26,6 +28,38 @@ const leaves = [
     duration: "2 Days",
     status: "Pending",
     notes: "Health consultation and recovery time.",
+  },
+  {
+    type: "Vacation Leave",
+    from: "Sep 28, 2023",
+    to: "Oct 02, 2023",
+    duration: "5 Days",
+    status: "Rejected",
+    notes: "Family trip request.",
+  },
+  {
+    type: "On-Duty",
+    from: "Sep 12, 2023",
+    to: "Sep 12, 2023",
+    duration: "1 Day",
+    status: "Approved",
+    notes: "External academic review meeting.",
+  },
+  {
+    type: "Vacation Leave",
+    from: "Sep 28, 2023",
+    to: "Oct 02, 2023",
+    duration: "5 Days",
+    status: "Rejected",
+    notes: "Family trip request.",
+  },
+  {
+    type: "On-Duty",
+    from: "Sep 12, 2023",
+    to: "Sep 12, 2023",
+    duration: "1 Day",
+    status: "Approved",
+    notes: "External academic review meeting.",
   },
   {
     type: "Vacation Leave",
@@ -69,7 +103,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[12px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-8 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value ? "text-white" : "text-[#6f839f]"}>
           {value || placeholder}
@@ -191,7 +225,7 @@ const FilterDatePicker = ({
         id={id}
         type="button"
         onClick={handleToggle}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-8 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value ? "text-white" : "text-[#6f839f]"}>
           {value ? formatDate(value) : placeholder}
@@ -255,6 +289,14 @@ const FilterDatePicker = ({
 };
 
 const LeaveTable = () => {
+  const location = useLocation();
+
+  // Auth 
+  // roles hardcoded for temporary
+
+  const role = "hod"
+
+  // states 
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [withdrawLeave, setWithdrawLeave] = useState(null);
   const [filterLeaveType, setFilterLeaveType] = useState("All");
@@ -263,6 +305,14 @@ const LeaveTable = () => {
   const [filterToDate, setFilterToDate] = useState(null);
   const [openDateFilter, setOpenDateFilter] = useState(null);
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
+
+  // tab data's
+  const hodTabs = ["My Leaves", "Team Leaves"];
+  const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
+    ? location.state.hodSelectedTab
+    : "My Leaves";
+
+  const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
 
   // Get unique leave types
   const leaveTypes = ["All", ...new Set(leaves.map((leave) => leave.type))];
@@ -296,153 +346,192 @@ const LeaveTable = () => {
     (filterLeaveType !== "All") || (filterStatus !== "All") || filterFromDate || filterToDate;
 
   return (
-    <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
-      <div className="relative z-20 space-y-3 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[18px] font-semibold text-white">
-            Total leave requests <span>({filteredLeaves.length})</span>
-          </h2>
+    <>
+
+      {/* tab section for hod  */}
+      {role == "hod" && <div className="tab-container bg-[#0d2138] w-full py-2 mt-4 px-4 rounded-lg border border-[#213857] ">
+        <div className="flex items-center gap-2 ">
+          {hodTabs.map((tab) => (
+            <button
+              onClick={() => setHodSelectedTab(tab)}
+              key={tab}
+              className={`px-6 py-2 text-sm font-medium transition ${tab === hodSelectedTab
+                ? "bg-[#2563EB] text-white rounded-md"
+                : "hover:bg-slate-600/20 rounded-md"
+                }`}
+            >
+              {tab}
+
+              {tab === "Team Leaves" && (
+                <span
+                  className={`${tab === hodSelectedTab
+                    ? "bg-white text-blue-700 font-semibold"
+                    : "bg-slate-700 text-white"
+                    } rounded ml-1 px-2 py-[2px] text-xs`}
+                >
+                  5
+                </span>
+              )}
+            </button>
+          ))}
         </div>
+      </div>
+      }
 
-        <div className="filter-container">
-          <div className="flex flex-wrap items-end gap-3">
-            {/* Leave Type Filter */}
-            <div className="flex-shrink-0">
-              <CustomDropdown
-                placeholder="Leave Type"
-                value={filterLeaveType}
-                onChange={setFilterLeaveType}
-                options={leaveTypes}
-              />
+      {/* my leave list table */}
+      {hodSelectedTab === "My Leaves" ? <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
+        <div className="relative z-20 space-y-3 px-4 py-3 flex items-start justify-between">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[18px] font-semibold text-white">
+              My leave list <span>({filteredLeaves.length})</span>
+            </h2>
+          </div>
+
+          <div className="filter-container ">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Leave Type Filter */}
+              <div className="flex-shrink-0">
+                <CustomDropdown
+                  placeholder="Leave Type"
+                  value={filterLeaveType}
+                  onChange={setFilterLeaveType}
+                  options={leaveTypes}
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex-shrink-0">
+                <CustomDropdown
+                  placeholder="Status"
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                  options={statuses}
+                />
+              </div>
+
+              {/* From Date Filter */}
+              <div className="flex-shrink-0 min-w-[160px]">
+                <FilterDatePicker
+                  id="filter-from-date"
+                  value={filterFromDate}
+                  onChange={setFilterFromDate}
+                  placeholder="From Date"
+                  isOpen={openDateFilter === "from"}
+                  onOpen={() => setOpenDateFilter("from")}
+                  onClose={() => setOpenDateFilter(null)}
+                />
+              </div>
+
+              {/* To Date Filter */}
+              <div className="flex-shrink-0 min-w-[160px]">
+                <FilterDatePicker
+                  id="filter-to-date"
+                  value={filterToDate}
+                  onChange={setFilterToDate}
+                  placeholder="To Date"
+                  popupAlign="right"
+                  isOpen={openDateFilter === "to"}
+                  onOpen={() => setOpenDateFilter("to")}
+                  onClose={() => setOpenDateFilter(null)}
+                />
+              </div>
+
+              {/* Reset Button */}
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilters}
+                  className="flex-shrink-0 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[12px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                >
+                  Reset Filters
+                </button>
+              )}
             </div>
-
-            {/* Status Filter */}
-            <div className="flex-shrink-0">
-              <CustomDropdown
-                placeholder="Status"
-                value={filterStatus}
-                onChange={setFilterStatus}
-                options={statuses}
-              />
-            </div>
-
-            {/* From Date Filter */}
-            <div className="flex-shrink-0 min-w-[160px]">
-              <FilterDatePicker
-                id="filter-from-date"
-                value={filterFromDate}
-                onChange={setFilterFromDate}
-                placeholder="From Date"
-                isOpen={openDateFilter === "from"}
-                onOpen={() => setOpenDateFilter("from")}
-                onClose={() => setOpenDateFilter(null)}
-              />
-            </div>
-
-            {/* To Date Filter */}
-            <div className="flex-shrink-0 min-w-[160px]">
-              <FilterDatePicker
-                id="filter-to-date"
-                value={filterToDate}
-                onChange={setFilterToDate}
-                placeholder="To Date"
-                popupAlign="right"
-                isOpen={openDateFilter === "to"}
-                onOpen={() => setOpenDateFilter("to")}
-                onClose={() => setOpenDateFilter(null)}
-              />
-            </div>
-
-            {/* Reset Button */}
-            {hasActiveFilters && (
-              <button
-                onClick={resetFilters}
-                className="flex-shrink-0 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[12px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
-              >
-                Reset Filters
-              </button>
-            )}
           </div>
         </div>
-      </div>
 
-      <div className="relative z-0 max-h-[32vh] min-h-[210px] overflow-auto table-custom-scrollbar">
-        <table className="w-full min-w-[760px] border-collapse text-left">
-          <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
-            <tr>
-              <th className="px-4 py-3 font-semibold">Leave Type</th>
-              <th className="px-4 py-3 font-semibold">From</th>
-              <th className="px-4 py-3 font-semibold">To</th>
-              <th className="px-4 py-3 font-semibold">Duration</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 text-right font-semibold">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-[12px] text-[#cad7eb]">
-            {filteredLeaves.length > 0 ? (
-              filteredLeaves.map((leave, index) => {
-                const leaveWithColor = {
-                  ...leave,
-                  statusColor: statusStyles[leave.status],
-                };
+        <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
+          <table className="w-full min-w-[760px] border-collapse text-left">
+            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+              <tr>
+                <th className="px-4 py-3 font-semibold">Leave Type</th>
+                <th className="px-4 py-3 font-semibold">From</th>
+                <th className="px-4 py-3 font-semibold">To</th>
+                <th className="px-4 py-3 font-semibold">Duration</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 text-right font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody className="text-[12px] text-[#cad7eb]">
+              {filteredLeaves.length > 0 ? (
+                filteredLeaves.map((leave, index) => {
+                  const leaveWithColor = {
+                    ...leave,
+                    statusColor: statusStyles[leave.status],
+                  };
 
-                return (
-                  <tr
-                    key={`${leave.type}-${leave.from}-${index}`}
-                    className="border-b border-[#132944] last:border-0"
-                  >
-                    <td className="px-4 py-2 font-semibold text-white">{leave.type}</td>
-                    <td className="px-4 py-2">{leave.from}</td>
-                    <td className="px-4 py-2">{leave.to}</td>
-                    <td className="px-4 py-2 font-semibold text-[#18d3bf]">{leave.duration}</td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[leave.status]}`}
-                      >
-                        <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                        {leave.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedLeave(leaveWithColor)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
-                          aria-label={`View details for ${leave.type}`}
+                  return (
+                    <tr
+                      key={`${leave.type}-${leave.from}-${index}`}
+                      className="border-b border-[#132944] last:border-0"
+                    >
+                      <td className="px-4 py-2 font-semibold text-white">{leave.type}</td>
+                      <td className="px-4 py-2">{leave.from}</td>
+                      <td className="px-4 py-2">{leave.to}</td>
+                      <td className="px-4 py-2 font-semibold text-[#18d3bf]">{leave.duration}</td>
+                      <td className="px-4 py-2">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[leave.status]}`}
                         >
-                          <Eye className="h-4 w-4" />
-                        </button>
-
-                        {leave.status === "Pending" && (
+                          <span className="h-[4px] w-[4px] rounded-full bg-current" />
+                          {leave.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
                           <button
                             type="button"
-                            onClick={() => setWithdrawLeave(leaveWithColor)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                            aria-label={`Withdraw ${leave.type}`}
+                            onClick={() => setSelectedLeave(leaveWithColor)}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                            aria-label={`View details for ${leave.type}`}
                           >
-                            <RotateCcw className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                           </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="6" className="px-4 py-8 text-center text-[#8ca1bd]">
-                  No leave requests found matching your filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
 
-      <LeaveDetailsPopup leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
-      <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} />
-    </section>
+                          {leave.status === "Pending" && (
+                            <button
+                              type="button"
+                              onClick={() => setWithdrawLeave(leaveWithColor)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                              aria-label={`Withdraw ${leave.type}`}
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="6" className="px-4 py-8 text-center text-[#8ca1bd]">
+                    No leave requests found matching your filters.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <LeaveDetailsPopup leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
+        <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} />
+      </section> : <HodLeaveRequestTable />
+      }
+      {/* Hod requests table */}
+
+
+    </>
+
   );
 };
 

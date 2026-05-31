@@ -17,7 +17,7 @@ const WithdrawLeavePopup = ({ leave, onClose }) => {
         onClick={(event) => event.stopPropagation()}
         onSubmit={handleSubmit}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b rounded-t-xl border-[#173150] bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Withdraw Leave
@@ -46,7 +46,8 @@ const WithdrawLeavePopup = ({ leave, onClose }) => {
                 Withdraw {leave.type}?
               </p>
               <p className="mt-1 text-[12px] leading-5 text-[#b8c7dd]">
-                This will cancel the pending leave request from {leave.from} to {leave.to}.
+                This will cancel the pending leave request from {leave.from} to{" "}
+                {leave.to}.
               </p>
             </div>
           </div>
@@ -65,7 +66,7 @@ const WithdrawLeavePopup = ({ leave, onClose }) => {
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        <div className="flex items-center justify-end gap-3 border-t rounded-b-xl border-[#173150] bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={onClose}

@@ -78,7 +78,7 @@ const CustomDatePicker = ({
     return (
         <div className="relative">
             {label && (
-                <label htmlFor={id} className="mb-2 block text-[13px] font-semibold text-white">
+                <label htmlFor={id} className="mb-2 block text-[16px] font-semibold text-white">
                     {label}
                 </label>
             )}
@@ -86,7 +86,7 @@ const CustomDatePicker = ({
                 id={id}
                 type="button"
                 onClick={() => setIsOpen((currentState) => !currentState)}
-                className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
             >
                 <span className={value ? "text-white" : "text-[#6f839f]"}>
                     {value ? formatDate(value) : placeholder}

@@ -4,7 +4,7 @@ import userImg from '../../assets/userImg.svg';
 
 const ProfileHero = () => {
   return (
-    <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+    <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-[#071425] px-4 py-4 rounded-lg ">
       <div className="flex items-center gap-4">
         <div className="flex h-[120] w-[120] shrink-0 items-center justify-center overflow-hidden rounded-lg border-3 border-[#31415d] bg-[#18243a] shadow-[0_18px_35px_rgba(0,0,0,0.25)]">
           <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_25%,#52627f_0%,#1f2b3e_32%,#101827_72%)]">
@@ -28,7 +28,7 @@ const ProfileHero = () => {
         </div>
       </div>
 
-      <button className="inline-flex h-10 w-fit items-center gap-2 rounded-md bg-[#2563EB] px-5 text-[12px] font-bold text-white shadow-[0_5px_24px_rgba(45,120,255,0.32)] transition hover:bg-[#3a84ff]">
+      <button className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]">
         <Edit3 size={13} />
         Edit Profile
       </button>
