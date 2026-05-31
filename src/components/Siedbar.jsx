@@ -1,22 +1,33 @@
 // Sidebar.jsx
 import logo from '../assets/logo.svg'
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2 } from "lucide-react";
 
 const Sidebar = () => {
     const location = useLocation();
+
+    // Hardcoded for now. Later replace with role fetched from localStorage.
+    const role = 'hod';
 
     const navItems = [
         { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
         { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/regularization' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
     ];
+
+    const hodNavItem = {
+        label: 'My team',
+        icon: Users2,
+        path: '/dashboard-faculty/my-Team'
+    };
+
+    const finalNavItems = role === 'hod' ? [...navItems, hodNavItem] : navItems;
 
     const isActive = (path) => {
         if (path === '/profile') {
-            return location.pathname === '/profile';
+            return location.pathname.startsWith('/profile');
         }
         return location.pathname === path;
     };
@@ -37,14 +48,14 @@ const Sidebar = () => {
 
                 {/* Menu */}
                 <div className="mt-6 px-2 flex flex-col gap-2">
-                    {navItems.map((item) => {
+                    {finalNavItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.path);
                         return (
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`relative w-full flex items-center gap-2 text-white text-[16px] px-3 py-2 rounded-md transition font-semibold ${active
+                                className={`relative w-full flex items-center gap-2 text-white text-[18px] px-3 py-2 rounded-md transition font-semibold ${active
                                     ? 'bg-[#0b2a73]/40 hover:bg-[#0d3a8f]'
                                     : 'bg-transparent hover:bg-[#0b2a73]'
                                     }`}

@@ -175,7 +175,7 @@ const AttendanceTable = () => {
               <th className="px-4 py-3 font-semibold">Action</th>
             </tr>
           </thead>
-          <tbody className="text-[12px] text-[#cad7eb]">
+          <tbody className="text-[16px] text-[#cad7eb]">
             {filteredLogs.length > 0 ? (
               filteredLogs.map((log) => (
                 <tr key={`${log.date}-${log.status}`} className="border-b border-[#132944] last:border-0">
@@ -190,7 +190,7 @@ const AttendanceTable = () => {
                   </td>
                   <td className="px-4 py-4">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[log.status]}`}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[log.status]}`}
                     >
                       <span className="h-[4px] w-[4px] rounded-full bg-current" />
                       {log.status}
@@ -200,10 +200,10 @@ const AttendanceTable = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedLog({ ...log, statusColor: statusStyles[log.status] })}
-                      className="flex items-center gap-1 rounded-md bg-[#102640] px-3 py-1 text-[10px] text-[#a9bddb] transition hover:bg-[#183052] hover:text-white"
+                      className="flex items-center gap-1 rounded-md bg-[#102640] px-3 py-2 text-[10px] text-[#a9bddb] transition hover:bg-[#183052] hover:text-white"
                       aria-label={`Open regularization form for ${log.date}`}
                     >
-                      <ArrowUpRight size={14} />
+                      <ArrowUpRight size={16} />
                     </button>
                   </td>
                 </tr>

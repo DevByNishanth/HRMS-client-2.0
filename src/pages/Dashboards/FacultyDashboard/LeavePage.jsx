@@ -97,18 +97,18 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
+          <p className="truncate text-[12px] font- uppercase tracking-wide text-[#8ca1bd]">
             {title}
           </p>
-          <p className="mt-1 text-[13px] font-semibold text-white">
+          <p className="mt-1 text-[16px] font-semibold text-white">
             {used}
-            <span className="text-[11px] font-medium text-[#9eb0cc]"> / {total} Days</span>
+            <span className="text-[16px] font-medium text-[#9eb0cc]"> / {total} Days</span>
           </p>
         </div>
       </div>
 
       <div
-        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+        className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
         style={{
           background: `conic-gradient(${color} ${progressDegree}deg, #203755 ${progressDegree}deg 360deg)`,
         }}
@@ -117,7 +117,7 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
           className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#0d2138]"
           style={{ color }}
         >
-          <span className="text-[9px] font-bold leading-none">5%</span>
+          <span className="text-[14px] font-bold leading-none">5%</span>
         </div>
       </div>
     </div>
@@ -150,29 +150,27 @@ const LeavePage = () => {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
+        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#071425] pb-2 px-4 mt-2">
+          <div> <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
+            <p className="mt-1 text-[16px] text-[#9eb0cc]">
+              Review leave balances and track every leave request.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsLeaveApplyForm(true)}
+            type="submit"
+            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+          >
+            <Plus size={14} />
+            Apply for Leave
 
+          </button>
+        </div>
         <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
-          <div className="mx-auto space-y-5">
-            <div className="flex items-center justify-between gap-4">
-              <div> <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
-                  Review leave balances and track every leave request.
-                </p>
-              </div>
-              <button
-                onClick={() => setIsLeaveApplyForm(true)}
-                type="submit"
-                className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
-              >
-                <Plus size={14} />
-                Apply for Leave
-
-              </button>
-            </div>
-
+          <div className="mx-auto space-y-2 ">
             <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
               {leaveStatGroups.map((group) => (
-                <div key={group.title} className="rounded-lg border border-[#183052] bg-[#071a2d] p-3">
+                <div key={group.title} className="rounded-lg border border-[#213857] bg-[#071a2d] p-3">
                   <h3 className="mb-3 text-[14px] font-semibold text-[#ffffff]">{group.title}</h3>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {group.items.map((item) => (

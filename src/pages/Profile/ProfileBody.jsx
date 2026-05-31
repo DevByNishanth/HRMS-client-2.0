@@ -7,11 +7,11 @@ import ProfileHero from "./ProfileHero";
 
 const ProfileBody = () => {
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto bg-[#071425] px-6 py-6 text-white">
-      <div className="mx-auto max-w-[1160px]">
+    <main className="min-h-0 flex-1 overflow-y-auto table-custom-scrollbar bg-[#071425] text-white">
+      <div className="">
         <ProfileHero />
 
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 px-6">
           <PersonalDetails />
           <ProfessionalInfo />
           <DocumentsCard />
