@@ -53,7 +53,9 @@ const PermissionStatCard = ({
         {title} ({code})
       </h3>
 
-      <p className="mt-1 text-[16px] font-semibold text-white">{total} Hours</p>
+      <p className="mt-1 text-[12px] font-semibold text-white">
+        {total} Hours
+      </p>
 
       {/* <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-[#1c2d45]">
         <div

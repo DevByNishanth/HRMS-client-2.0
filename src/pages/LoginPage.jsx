@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.svg";
 // import loginImage from '../assets/login-bg-2.svg'
-import loginImage from "../assets/bg.svg";
+// import loginImage from '../assets/bg.svg'
+import loginImage from '../assets/blur4.svg'
 import { Bolt } from "lucide-react";
 import thunderIcon from "../assets/thunderIcon.svg";
 import GlassActiveDayCalendar from "../components/GlassActiveDayCalendar";
@@ -91,6 +92,39 @@ const LoginPage = () => {
                     />
                   </div>
                 </div>
+                {/* login bg  */}
+                <div className="container-2 w-[50%]  login-gradient ">
+                    <div className="img-container  w-[100%] ">
+                        <img src={loginImage} className="w-[55%] m-auto  object-cover " />
+                    </div>
+
+                    <div className="flex items-center justify-center px-4 absolute bottom-4">
+                        <div className="flex flex-col items-center justify-center text-center px-8 relative overflow-hidden">
+
+                            {/* Top Icon */}
+                            <img src={thunderIcon} alt="Thunder Icon" className="w-16 h-16 animate-pulse" />
+
+                            {/* Heading */}
+                            <h1 className="text-white text-[24px] leading-[42px] w-[80%] font-semibold tracking-[-1px]">
+                                A Unified Hub for Smarter Financial.
+                            </h1>
+
+                            {/* Description */}
+                            <p className="text-[#94a3b8] text-sm leading-6 mt-2 max-w-[90%]">
+                                Kezak empowers you with a unified financial command center—
+                                delivering deep insights and a 360° view of your entire economic
+                                world.
+                            </p>
+
+                            {/* Slider Indicators */}
+                            <div className="mt-4 flex items-center gap-2">
+                                <div className="w-10 h-[4px] rounded-full bg-white"></div>
+                                <div className="w-10 h-[4px] rounded-full bg-[#334155]"></div>
+                                <div className="w-10 h-[4px] rounded-full bg-[#334155]"></div>
+                                <div className="w-10 h-[4px] rounded-full bg-[#334155]"></div>
+                            </div>
+                        </div>
+                    </div>
 
                 {/* Password */}
                 <div className="mt-6">
