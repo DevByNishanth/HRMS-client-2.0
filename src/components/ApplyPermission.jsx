@@ -5,7 +5,7 @@ import CustomDatePicker from "./CustomDatePicker";
 const sessionOptions = ["Forenoon", "Afternoon"];
 const durationOptions = ["1 Hour", "2 Hours"];
 
-const ApplyPermission = ({ onClose }) => {
+const ApplyPermission = ({ onClose, employee }) => {
     const [date, setDate] = useState(null);
     const [session, setSession] = useState(sessionOptions[0]);
     const [duration, setDuration] = useState(durationOptions[0]);
@@ -30,7 +30,7 @@ const ApplyPermission = ({ onClose }) => {
                             Permission Request
                         </p>
                         <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
-                            Apply Permission
+                            {employee ? `Apply Permission for ${employee.name}` : 'Apply Permission'}
                         </h2>
                     </div>
 
@@ -45,8 +45,30 @@ const ApplyPermission = ({ onClose }) => {
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 table-custom-scrollbar">
+                    {/* Employee Details Banner */}
+                    {employee && (
+                        <div className="mb-4 rounded-lg border border-[#1e3a5f] bg-[#0d2138] p-3">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#3984ff]">
+                                Employee Details
+                            </p>
+                            <div className="mt-2 flex items-center gap-3">
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239eb0cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' className='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
+                                </span>
+                                <div>
+                                    <p className="text-[14px] font-semibold text-white">{employee.name}</p>
+                                    <p className="text-[12px] text-[#8ca1bd]">{employee.role}</p>
+                                    <p className="text-[11px] text-[#3984ff]">{employee.empid}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <p className="text-[13px] leading-5 text-[#b8c7dd]">
-                        Choose the permission date, session, duration, and provide the reason for approval.
+                        {employee
+                            ? `Choose the permission date, session, duration, and provide the reason for ${employee.name}'s approval.`
+                            : 'Choose the permission date, session, duration, and provide the reason for approval.'
+                        }
                     </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4">
