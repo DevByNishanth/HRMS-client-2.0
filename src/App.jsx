@@ -7,6 +7,7 @@ import AttendancePage from "./pages/Dashboards/FacultyDashboard/AttendancePage";
 import PermissionPage from "./pages/Dashboards/FacultyDashboard/PermissionPage";
 import RegularaizationListPage from "./pages/Common/RegularaizationListPage";
 import MyTeamPage from "./pages/Dashboards/HOD-Dashboard/myTeamPage";
+import ShiftManagement from "./pages/Dashboards/AdminDashboard/shift/ShiftManagement";
 import PrincipalDashboard from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalDashboard";
 import PrincipalLeavePage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalLeavePage";
 import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPermissionPage";
@@ -26,6 +27,7 @@ function App() {
       <Route path="/profile/:empid" element={<ProfilePage />} />
       <Route path="/dashboard/regularizationList" element={<RegularaizationListPage />} />
       <Route path="/dashboard-faculty/my-Team" element={<MyTeamPage />} />
+      <Route path="/dashboard-admin/shifts" element={<ShiftManagement />} />
     </Routes>
   </>
 }
