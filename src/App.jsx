@@ -7,6 +7,9 @@ import AttendancePage from "./pages/Dashboards/FacultyDashboard/AttendancePage";
 import PermissionPage from "./pages/Dashboards/FacultyDashboard/PermissionPage";
 import RegularaizationListPage from "./pages/Common/RegularaizationListPage";
 import MyTeamPage from "./pages/Dashboards/HOD-Dashboard/myTeamPage";
+import PrincipalDashboard from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalDashboard";
+import PrincipalLeavePage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalLeavePage";
+import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPermissionPage";
 
 function App() {
   return <>
@@ -16,6 +19,9 @@ function App() {
       <Route path="/dashboard-faculty/leaves" element={<LeavePage />} />
       <Route path="/dashboard-faculty/attendance" element={<AttendancePage />} />
       <Route path="/dashboard-faculty/permissions" element={<PermissionPage />} />
+      <Route path="/dashboard-principal" element={<PrincipalDashboard />} />
+      <Route path="/dashboard-principal/leaves" element={<PrincipalLeavePage />} />
+      <Route path="/dashboard-principal/permissions" element={<PrincipalPermissionPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/profile/:empid" element={<ProfilePage />} />
       <Route path="/dashboard/regularizationList" element={<RegularaizationListPage />} />
