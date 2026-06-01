@@ -11,6 +11,7 @@ import ShiftManagement from "./pages/Dashboards/AdminDashboard/shift/ShiftManage
 import PrincipalDashboard from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalDashboard";
 import PrincipalLeavePage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalLeavePage";
 import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPermissionPage";
+import FacultyManagementPage from "./pages/Dashboards/AdminDashboard/Faculty-Management/FacultyManagementPage";
 
 function App() {
   return <>
@@ -28,6 +29,7 @@ function App() {
       <Route path="/dashboard/regularizationList" element={<RegularaizationListPage />} />
       <Route path="/dashboard-faculty/my-Team" element={<MyTeamPage />} />
       <Route path="/dashboard-admin/shifts" element={<ShiftManagement />} />
+      <Route path="/dashboard-admin" element={<FacultyManagementPage />} />
     </Routes>
   </>
 }
