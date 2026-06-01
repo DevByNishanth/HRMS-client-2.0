@@ -42,3 +42,13 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #d8d2dab6 transparent;
 }
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}

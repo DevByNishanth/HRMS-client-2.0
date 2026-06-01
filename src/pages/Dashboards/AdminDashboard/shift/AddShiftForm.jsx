@@ -1,167 +1,257 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
+import {createShifts} from '../../../../services/shiftService';
+
+    const ErrorMsg = ({ msg }) =>
+    msg ? (
+        <p className="text-red-400 text-sm mt-1">
+        {msg}
+        </p>
+    ) : null;
 
 export default function AddShiftForm({ onClose }) {
-  const [formData, setFormData] = useState({
-    shiftName: "",
-    startTime: "",
-    endTime: "",
-    graceTime: "",
-    workingHours: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    const [formData, setFormData] = useState({
+        shiftName: "",
+        startTime: "",
+        endTime: "",
+        graceTime: "",
+        workingHours: "",
     });
-  };
 
-  const handleSubmit = () => {
-    console.log(formData);
+    const [errors, setErrors] = useState({});
 
-    // API Call Here
+    const validationRules = {
+        shiftName: "Shift Name",
+        startTime: "Start Time",
+        endTime: "End Time",
+        graceTime: "Grace Time",
+        workingHours: "Working Hours",
+    };
 
-    onClose();
-  };
+    const validate = () => {
+        const newErrors = {};
 
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        Object.entries(validationRules).forEach(
+            ([field, label]) => {
+            const value = formData[field];
 
-      <div className="bg-[#071a35] w-[500px] rounded-2xl overflow-hidden shadow-2xl">
+            if (!value?.toString().trim()) {
+                newErrors[field] = `${label} is required`;
+            }
+        }
+    );
 
-        {/* Header */}
+    setErrors(newErrors);
 
-        <div className="flex justify-between items-center border-b border-blue-900 px-6 py-5">
-          <div>
-            <p className="text-blue-400 text-xs uppercase tracking-widest">
-              Shift Management
-            </p>
+    return Object.keys(newErrors).length === 0;
+    };
 
-            <h2 className="text-white text-xl font-semibold">
-              Create Shift
-            </h2>
-          </div>
+    const handleChange = (e) => {
+        const { name, value } = e.target;
 
-          <button
-            onClick={onClose}
-            className="text-white"
-          >
-            <X size={22} />
-          </button>
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "",
+        }));
+    };
+
+    const handleSubmit = async () => {
+        if (!validate()) return;
+
+        try {
+            const payload = {
+                shiftName: formData.shiftName,
+                startTime: formData.startTime,
+                endTime: formData.endTime,
+                graceTime: Number(formData.graceTime),
+                workingHours: Number(formData.workingHours),
+                isActive: true,
+            };
+
+            const result = await createShifts(payload);
+
+            console.log("Shift created successfully:", result);
+
+            onClose();
+        } catch (error) {
+            console.error("Error creating shift:", error);
+
+            setErrors((prev) => ({
+                ...prev,
+                shiftName:
+                    error?.response?.data?.message ||
+                    "Failed to create shift",
+            }));
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 ">
+        {/* Backdrop */}
+            <div className="absolute inset-0 " onClick={onClose} />
+
+            {/* Offcanvas */}
+            <div
+                className="
+                absolute
+                right-0
+                top-0
+                h-full
+                w-[500px]
+                bg-[#020817]
+                backdrop-blur-[4px]
+                shadow-2xl
+                flex
+                flex-col
+                animate-[slideIn_.3s_ease-out]
+                "
+            >
+                {/* Header */}
+                <div className="flex justify-between items-center border-b border-blue-900 px-6 py-5">
+                    <div>
+                        <p className="text-blue-400 text-xs uppercase tracking-widest">
+                        Shift Management
+                        </p>
+
+                        <h2 className="text-white text-xl font-semibold">Create Shift</h2>
+                    </div>
+
+                    <button
+                        onClick={onClose}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white hover:bg-[#183a6b]"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-5 min-w-[380px]">
+                    {/* Shift Name */}
+                    <div>
+                        <label className="block text-white mb-2">
+                            Shift Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="shiftName"
+                            value={formData.shiftName}
+                            onChange={handleChange}
+                            placeholder="Enter Shift Name"
+                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0f2749]
+                            ${
+                                errors.shiftName
+                                ? "border-red-500"
+                                : "border-blue-900"
+                            }`}
+                        />
+
+                        <ErrorMsg msg={errors.shiftName} />
+                    </div>
+
+                    {/* Start Time & End Time */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-white mb-2">Start Time</label>
+
+                            <input
+                                type="time"
+                                name="startTime"
+                                value={formData.startTime}
+                                onChange={handleChange}
+                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none"
+                                ${
+                                    errors.startTime
+                                    ? "border-red-500"
+                                    : "border-blue-900"
+                                }`}
+                            />
+                            <ErrorMsg msg={errors.startTime} />
+                        </div>
+
+                        <div>
+                            <label className="block text-white mb-2">End Time</label>
+
+                            <input
+                                type="time"
+                                name="endTime"
+                                value={formData.endTime}
+                                onChange={handleChange}
+                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                ${
+                                    errors.endTime
+                                    ? "border-red-500"
+                                    : "border-blue-900"
+                                }`}
+                            />
+                            <ErrorMsg msg={errors.endTime} />
+                        </div>
+                    </div>
+
+                    {/* Grace Time & Working Hours */}
+                    <div className="grid grid-cols-2 gap-4 min-w-[380px]">
+                        <div>
+                            <label className="block text-white mb-2">Grace Time (Min)</label>
+
+                            <input
+                                type="number"
+                                name="graceTime"
+                                value={formData.graceTime}
+                                onChange={handleChange}
+                                placeholder="Enter Minutes"
+                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                ${
+                                    errors.graceTime
+                                    ? "border-red-500"
+                                    : "border-blue-900"
+                                }`}
+                            />
+                            <ErrorMsg msg={errors.graceTime} />
+                        </div>
+
+                        <div>
+                            <label className="block text-white mb-2">Working Hours</label>
+
+                            <input
+                                type="number"
+                                name="workingHours"
+                                value={formData.workingHours}
+                                onChange={handleChange}
+                                placeholder="Enter Hours"
+                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                ${
+                                    errors.workingHours
+                                    ? "border-red-500"
+                                    : "border-blue-900"
+                                }`}
+                            />
+                            <ErrorMsg msg={errors.workingHours} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between gap-3">
+                    <button
+                        onClick={onClose}
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        onClick={handleSubmit}
+                        className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                        Create Shift
+                    </button>
+                </div>
+            </div>
         </div>
-
-        {/* Body */}
-
-        <div className="p-6 space-y-5">
-
-          {/* Shift Name */}
-
-          <div>
-            <label className="text-white block mb-2">
-              Shift Name
-            </label>
-
-            <input
-              type="text"
-              name="shiftName"
-              value={formData.shiftName}
-              onChange={handleChange}
-              placeholder="Enter Shift Name"
-              className="w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white"
-            />
-          </div>
-
-          {/* Start End */}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-white block mb-2">
-                Start Time
-              </label>
-
-              <input
-                type="time"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                className="w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="text-white block mb-2">
-                End Time
-              </label>
-
-              <input
-                type="time"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                className="w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white"
-              />
-            </div>
-          </div>
-
-          {/* Grace Time & Working Hours */}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-white block mb-2">
-                Grace Time
-              </label>
-
-              <input
-                type="number"
-                name="graceTime"
-                value={formData.graceTime}
-                onChange={handleChange}
-                placeholder="Minutes"
-                className="w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white"
-              />
-            </div>
-
-            <div>
-              <label className="text-white block mb-2">
-                Working Hours
-              </label>
-
-              <input
-                type="number"
-                name="workingHours"
-                value={formData.workingHours}
-                onChange={handleChange}
-                placeholder="Hours"
-                className="w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white"
-              />
-            </div>
-          </div>
-
-        </div>
-
-        {/* Footer */}
-
-        <div className="border-t border-blue-900 p-5 flex justify-between  gap-3">
-
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-lg border border-gray-500 text-white"
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={handleSubmit}
-            className="px-5 py-2 rounded-lg bg-blue-600 text-white"
-          >
-            Create Shift
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-  );
+    );
 }

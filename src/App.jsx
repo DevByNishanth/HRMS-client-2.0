@@ -13,6 +13,9 @@ import PrincipalLeavePage from "./pages/Dashboards/PRINCIPAL-Dashboard/Principal
 import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPermissionPage";
 
 function App() {
+  const token = localStorage.getItem("token");
+    console.log("TOKEN:", token);
+
   return <>
     <Routes>
       <Route path="/" element={<LoginPage />} />
