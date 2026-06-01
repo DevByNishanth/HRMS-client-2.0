@@ -9,11 +9,18 @@ const Sidebar = () => {
     // Hardcoded for now. Later replace with role fetched from localStorage.
     const role = 'hod';
 
-    const navItems = [
+    const facultyNavItems = [
         { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
         { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+    ];
+
+    const principalNavItems = [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
+        { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
+        { label: 'Permissions', icon: FileText, path: '/dashboard-principal/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
     ];
 
@@ -23,7 +30,14 @@ const Sidebar = () => {
         path: '/dashboard-faculty/my-Team'
     };
 
-    const finalNavItems = role === 'hod' ? [...navItems, hodNavItem] : navItems;
+    let finalNavItems;
+    if (role === 'hod') {
+        finalNavItems = [...facultyNavItems, hodNavItem];
+    } else if (role === 'principal') {
+        finalNavItems = principalNavItems;
+    } else {
+        finalNavItems = facultyNavItems;
+    }
 
     const isActive = (path) => {
         if (path === '/profile') {

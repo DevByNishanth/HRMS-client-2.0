@@ -199,11 +199,10 @@ const LoginPage = () => {
                   type="button"
                   aria-label={`Show slide ${index + 1}`}
                   onClick={() => setActiveIndex(index)}
-                  className={`h-1 rounded-full transition-all ${
-                    activeIndex === index
+                  className={`h-1 rounded-full transition-all ${activeIndex === index
                       ? "w-10 bg-white"
                       : "w-9 bg-[#334155] hover:bg-[#64748B]"
-                  }`}
+                    }`}
                 />
               ))}
             </div>

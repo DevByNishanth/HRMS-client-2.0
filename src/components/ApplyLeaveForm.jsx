@@ -12,7 +12,7 @@ const leaveTypes = [
 
 const dayOptions = ["Full Day", "First Half", "Second Half"];
 
-const ApplyLeaveForm = ({ onClose }) => {
+const ApplyLeaveForm = ({ onClose, employee }) => {
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
     const [leaveType, setLeaveType] = useState("");
@@ -39,7 +39,7 @@ const ApplyLeaveForm = ({ onClose }) => {
                             Leave Request
                         </p>
                         <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
-                            Apply Leave
+                            {employee ? `Apply Leave for ${employee.name}` : 'Apply Leave'}
                         </h2>
                     </div>
 
@@ -54,8 +54,30 @@ const ApplyLeaveForm = ({ onClose }) => {
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 table-custom-scrollbar">
+                    {/* Employee Details Banner */}
+                    {employee && (
+                        <div className="mb-4 rounded-lg border border-[#1e3a5f] bg-[#0d2138] p-3">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#3984ff]">
+                                Employee Details
+                            </p>
+                            <div className="mt-2 flex items-center gap-3">
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239eb0cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
+                                </span>
+                                <div>
+                                    <p className="text-[14px] font-semibold text-white">{employee.name}</p>
+                                    <p className="text-[12px] text-[#8ca1bd]">{employee.role}</p>
+                                    <p className="text-[11px] text-[#3984ff]">{employee.empid}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <p className="text-[13px] leading-5 text-[#b8c7dd]">
-                        Select your leave period, choose the leave type, and add notes for approval.
+                        {employee
+                            ? `Select the leave period, choose the leave type, and add notes for ${employee.name}'s approval.`
+                            : 'Select your leave period, choose the leave type, and add notes for approval.'
+                        }
                     </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4">
