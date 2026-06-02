@@ -42,3 +42,7 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #d8d2dab6 transparent;
 }
+
+input::-webkit-inner-spin-button{
+  display: none;
+}
