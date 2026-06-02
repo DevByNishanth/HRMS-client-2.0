@@ -376,7 +376,7 @@ const FacultyManagementPage = () => {
                                                         <td
                                                             className={``}
                                                         >
-                                                            <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-3 pl-4">
                                                                 <img
                                                                     src={userImg}
                                                                     alt={name}
@@ -424,7 +424,7 @@ const FacultyManagementPage = () => {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setEditingFaculty(faculty)}
-                                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-[#78a7ff] transition hover:bg-[#3984ff24] hover:text-white"
+                                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/60 transition hover:bg-[#3984ff24] hover:text-white"
                                                                     aria-label={`Edit ${name}`}
                                                                     title="Edit"
                                                                 >
@@ -482,15 +482,20 @@ const FacultyManagementPage = () => {
 
             {deletingFaculty && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
-                    <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] p-5 shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
-                        <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f16868]">
+                    <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+
+                        <header className="border-b border-[#183052] py-3 px-4">
+                            <p className="text-[14px] font-semibold uppercase tracking-[0.22em] text-[#f16868]">
                                 Delete Faculty
                             </p>
-                            <h3 className="mt-2 text-[18px] font-semibold text-white">
+                        </header>
+
+                        <div classname="">
+
+                            <h3 className="mt-2 text-[18px] font-semibold text-white px-4">
                                 Remove {getFacultyName(deletingFaculty)}?
                             </h3>
-                            <p className="mt-2 text-[13px] leading-5 text-[#9eb0cc]">
+                            <p className="mt-2 text-[13px] leading-5 text-[#9eb0cc] px-4">
                                 This action will permanently delete the faculty record from the system.
                             </p>
                         </div>
@@ -501,12 +506,12 @@ const FacultyManagementPage = () => {
                             </p>
                         )}
 
-                        <div className="mt-5 flex items-center justify-end gap-3">
+                        <div className="mt-5 flex items-center justify-end gap-2 px-4 mb-2">
                             <button
                                 type="button"
                                 onClick={() => setDeletingFaculty(null)}
                                 disabled={isDeletingFaculty}
-                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-lg font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 Cancel
                             </button>
@@ -514,7 +519,7 @@ const FacultyManagementPage = () => {
                                 type="button"
                                 onClick={handleDeleteFaculty}
                                 disabled={isDeletingFaculty}
-                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#d94b4b] px-4 text-[13px] font-semibold text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-lg font-medium text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {isDeletingFaculty ? "Deleting..." : "Delete"}
                             </button>

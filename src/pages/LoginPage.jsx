@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import loginImage from "../assets/blur4.svg";
 import thunderIcon from "../assets/thunderIcon.svg";
+import { getRoleBasedRoute } from "../utils/tokenUtils";
 
 const slides = [
   {
@@ -109,9 +110,9 @@ const LoginPage = () => {
       // Show success message
       setSuccessMessage("Login successful! Redirecting...");
 
-      // Redirect to dashboard after a short delay
+      // Redirect to role-based dashboard after a short delay
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate(getRoleBasedRoute());
       }, 1500);
     } catch (error) {
       setApiError(error.message || "An error occurred during login. Please try again.");
@@ -166,6 +167,7 @@ const LoginPage = () => {
                     setEmail(e.target.value);
                     if (errors.email) setErrors({ ...errors, email: "" });
                   }}
+                  autoComplete="off"
                   className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
                 />
               </div>
@@ -201,6 +203,7 @@ const LoginPage = () => {
                     setPassword(e.target.value);
                     if (errors.password) setErrors({ ...errors, password: "" });
                   }}
+                  autoComplete="off"
                   className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
                 />
 

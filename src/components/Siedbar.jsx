@@ -1,15 +1,46 @@
 // Sidebar.jsx
 import logo from '../assets/logo.svg'
-import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2 } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut } from "lucide-react";
+import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const role = getRoleFromToken()?.toLowerCase();
 
-    // Hardcoded for now. Later replace with role fetched from localStorage.
-    const role = 'hod';
-
+    // Navigation items for Faculty
     const facultyNavItems = [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
+        { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
+        { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
+        { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+    ];
+
+    // Navigation items for HOD (same as Faculty + My Team)
+    const hodNavItems = [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
+        { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
+        { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
+        { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
+    ];
+
+    // Navigation items for Admin
+    const adminNavItems = [
+        { label: 'Faculty Management', icon: Users, path: '/dashboard-admin' },
+    ];
+
+    // Navigation items for Principal
+    const principalNavItems = [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
+    ];
+
+    // Navigation items for Non-Teaching (same as Faculty)
+    const nonTeachingNavItems = [
         { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
         { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
@@ -17,26 +48,23 @@ const Sidebar = () => {
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
     ];
 
-    const principalNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
-        { label: 'Permissions', icon: FileText, path: '/dashboard-principal/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
-    ];
-
-    const hodNavItem = {
-        label: 'My team',
-        icon: Users2,
-        path: '/dashboard-faculty/my-Team'
-    };
-
-    let finalNavItems;
-    if (role === 'hod') {
-        finalNavItems = [...facultyNavItems, hodNavItem];
-    } else if (role === 'principal') {
-        finalNavItems = principalNavItems;
-    } else {
-        finalNavItems = facultyNavItems;
+    // Determine navigation items based on role
+    let navItems = facultyNavItems;
+    switch (role) {
+        case 'hod':
+            navItems = hodNavItems;
+            break;
+        case 'admin':
+            navItems = adminNavItems;
+            break;
+        case 'principal':
+            navItems = principalNavItems;
+            break;
+        case 'non-teaching':
+            navItems = nonTeachingNavItems;
+            break;
+        default:
+            navItems = facultyNavItems;
     }
 
     const isActive = (path) => {
@@ -49,7 +77,7 @@ const Sidebar = () => {
     return (
         <>
             {/* Sidebar */}
-            <div className="w-[18%] bg-[#001d3b] flex flex-col">
+            <div className="w-[18%] bg-[#001d3b] flex flex-col relative">
 
                 {/* Logo */}
                 <div className="px-3 py-4 mt-4">
@@ -62,7 +90,7 @@ const Sidebar = () => {
 
                 {/* Menu */}
                 <div className="mt-6 px-2 flex flex-col gap-2">
-                    {finalNavItems.map((item) => {
+                    {navItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.path);
                         return (
@@ -83,6 +111,19 @@ const Sidebar = () => {
                         );
                     })}
                 </div>
+                <div className="btn-container absolute bottom-4 w-full px-4">
+                    <button 
+                        onClick={() => {
+                            logout();
+                            navigate('/');
+                        }}
+                        className="my-2 px-4 py-2 w-full bg-[#0b2a73] text-white rounded-md hover:bg-[#0d3a8f] flex items-center justify-center gap-2"
+                    >
+                        <LogOut size={16} />
+                        Logout
+                    </button>
+                </div>
+
             </div>
         </>
     );
