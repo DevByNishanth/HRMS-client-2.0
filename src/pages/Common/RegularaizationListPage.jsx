@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, X } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { getRoleFromToken } from "../../utils/tokenUtils";
 import Sidebar from "../../components/Siedbar";
 import CommonHeader from "../../components/CommonHeader";
 import userImg from "../../assets/userImg.svg";
@@ -337,8 +338,7 @@ const HodRegularizationTable = () => {
 };
 
 const RegularaizationListPage = () => {
-  // Auth: replace this hardcoded role with the decoded localStorage token role later.
-  const role = "hod";
+  const role = getRoleFromToken()?.toLowerCase();
   const location = useLocation();
   const hodTabs = ["My Regularizations", "Team Regularizations"];
   const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)

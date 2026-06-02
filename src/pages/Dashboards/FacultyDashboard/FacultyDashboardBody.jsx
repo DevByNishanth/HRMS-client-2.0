@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Clock, FileCheck2, FileText, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getRoleFromToken } from "../../../utils/tokenUtils";
 import ActiveDayCalendar from "./ActiveDayCalendar";
 import AttendanceGauge from "./AttendanceGauge";
 import LeaveOverview from "./LeaveOverview";
@@ -210,11 +211,11 @@ const FacultyRequestsPanel = () => {
 };
 
 const FacultyDashboardBody = () => {
-  // Auth: replace this hardcoded role with the decoded localStorage token role later.
-  const role = "hod";
+  const role = getRoleFromToken()?.toLowerCase();
   const [isLeaveApplyModal, setIsLeaveApplyModal] = useState(false);
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
   const isHod = role === "hod";
+
 
   return (
     <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
