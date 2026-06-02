@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
-// import loginImage from "../assets/login-bg-2.svg";
-// import loginImage from "../assets/bg.svg";
 import loginImage from "../assets/blur4.svg";
 import thunderIcon from "../assets/thunderIcon.svg";
+import { getRoleBasedRoute } from "../utils/tokenUtils";
 
 const slides = [
   {
@@ -29,7 +29,17 @@ const slides = [
 ];
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -38,6 +48,78 @@ const LoginPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    } else if (!email.endsWith("@sece.ac.in")) {
+      newErrors.email = "Email must be from @sece.ac.in domain";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setApiError("");
+    setSuccessMessage("");
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const errorMessage = data?.message || data?.error || "Login failed. Please try again.";
+        setApiError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // Store token in localStorage
+      if (data?.token) {
+        localStorage.setItem("hrms_token", data.token);
+      }
+
+      // Show success message
+      setSuccessMessage("Login successful! Redirecting...");
+
+      // Redirect to role-based dashboard after a short delay
+      setTimeout(() => {
+        navigate(getRoleBasedRoute());
+      }, 1500);
+    } catch (error) {
+      setApiError(error.message || "An error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="grid min-h-screen overflow-x-hidden bg-[#0F172A] lg:h-screen lg:grid-cols-2 lg:overflow-hidden">
@@ -61,7 +143,7 @@ const LoginPage = () => {
                 Email Address <span className="text-blue-500">*</span>
               </label>
 
-              <div className="flex items-center rounded-xl border border-[#1b2942] bg-[#0b1730] px-4">
+              <div className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${errors.email ? "border-[#f16868]" : "border-[#1b2942]"}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 shrink-0 text-[#8b9bb8]"
@@ -80,9 +162,16 @@ const LoginPage = () => {
                 <input
                   type="email"
                   placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: "" });
+                  }}
+                  autoComplete="off"
                   className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
                 />
               </div>
+              {errors.email && <p className="mt-1 text-xs text-[#f16868]">{errors.email}</p>}
             </div>
 
             <div className="mt-6">
@@ -90,7 +179,7 @@ const LoginPage = () => {
                 Password <span className="text-blue-500">*</span>
               </label>
 
-              <div className="flex items-center rounded-xl border border-[#1b2942] bg-[#0b1730] px-4">
+              <div className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${errors.password ? "border-[#f16868]" : "border-[#1b2942]"}`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 shrink-0 text-[#8b9bb8]"
@@ -107,14 +196,21 @@ const LoginPage = () => {
                 </svg>
 
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors({ ...errors, password: "" });
+                  }}
+                  autoComplete="off"
                   className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
                 />
 
                 <button
                   type="button"
-                  aria-label="Show password"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility"
                   className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[#8b9bb8] transition hover:bg-white/5 hover:text-white"
                 >
                   <svg
@@ -125,23 +221,52 @@ const LoginPage = () => {
                     stroke="currentColor"
                     strokeWidth={1.8}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.458 12C3.732 7.943 7.523 5.25 12 5.25c4.477 0 8.268 2.693 9.542 6.75-1.274 4.057-5.065 6.75-9.542 6.75-4.477 0-8.268-2.693-9.542-6.75z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
+                    {showPassword ? (
+                      <>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.458 12C3.732 7.943 7.523 5.25 12 5.25c4.477 0 8.268 2.693 9.542 6.75-1.274 4.057-5.065 6.75-9.542 6.75-4.477 0-8.268-2.693-9.542-6.75z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </>
+                    )}
                   </svg>
                 </button>
               </div>
+              {errors.password && <p className="mt-1 text-xs text-[#f16868]">{errors.password}</p>}
             </div>
 
-            <button className="mt-8 w-full rounded-xl bg-[#2563EB] py-3 text-base font-semibold text-white transition hover:bg-blue-500">
-              Sign In
+            {apiError && (
+              <div className="mt-4 rounded-lg bg-[#f1686812] px-4 py-3 text-sm text-[#f16868]">
+                {apiError}
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="mt-4 rounded-lg bg-[#18d3bf1f] px-4 py-3 text-sm text-[#18d3bf]">
+                {successMessage}
+              </div>
+            )}
+
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="mt-8 w-full rounded-xl bg-[#2563EB] py-3 text-base font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </div>

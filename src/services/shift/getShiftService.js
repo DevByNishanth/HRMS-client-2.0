@@ -4,7 +4,7 @@ const api_url = `${import.meta.env.VITE_API_BASE_URL}/api/shifts`;
 
 export const getShifts = async (shiftData)=>{
     try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("hrms_token");
 
         const response = await axios.get(api_url, {
             headers: {

@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { X } from "lucide-react";
-import {createShifts} from '../../../../services/shiftService';
+import {createShifts} from '../../../../services/shift/shiftService';
+import {updateShift} from '../../../../services/shift/updateShiftService'
+import CustomTimePicker from "../../../../components/CustomTimePicker";
 
     const ErrorMsg = ({ msg }) =>
     msg ? (
@@ -9,7 +11,7 @@ import {createShifts} from '../../../../services/shiftService';
         </p>
     ) : null;
 
-export default function AddShiftForm({ onClose }) {
+export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
     const [formData, setFormData] = useState({
         shiftName: "",
         startTime: "",
@@ -19,6 +21,19 @@ export default function AddShiftForm({ onClose }) {
     });
 
     const [errors, setErrors] = useState({});
+    const isEdit = !!shiftData;
+
+    useEffect(() => {
+        if (shiftData) {
+            setFormData({
+                shiftName: shiftData.shiftName || "",
+                startTime: shiftData.startTime || "",
+                endTime: shiftData.endTime || "",
+                graceTime: shiftData.graceTime || "",
+                workingHours: shiftData.workingHours || "",
+            });
+        }
+    }, [shiftData]);
 
     const validationRules = {
         shiftName: "Shift Name",
@@ -46,13 +61,45 @@ export default function AddShiftForm({ onClose }) {
     return Object.keys(newErrors).length === 0;
     };
 
+    const calculateWorkingHours = (startTime, endTime) => {
+        if (!startTime || !endTime) return "";
+
+        const start = new Date(`1970-01-01T${startTime}:00`);
+        let end = new Date(`1970-01-01T${endTime}:00`);
+
+        // Handle overnight shifts (e.g. 10 PM to 6 AM)
+        if (end < start) {
+            end.setDate(end.getDate() + 1);
+        }
+
+        const diffMs = end - start;
+        const diffHours = diffMs / (1000 * 60 * 60);
+
+        return diffHours.toFixed(2);
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => {
+            const updatedData = {
+                ...prev,
+                [name]: value,
+            };
+
+            // Auto-calculate working hours
+            if (
+                name === "startTime" ||
+                name === "endTime"
+            ) {
+                updatedData.workingHours = calculateWorkingHours(
+                    updatedData.startTime,
+                    updatedData.endTime
+                );
+            }
+
+            return updatedData;
+        });
 
         setErrors((prev) => ({
             ...prev,
@@ -73,19 +120,29 @@ export default function AddShiftForm({ onClose }) {
                 isActive: true,
             };
 
-            const result = await createShifts(payload);
+            if (isEdit) {
+                await updateShift(shiftData._id, payload);
 
-            console.log("Shift created successfully:", result);
+                console.log("Shift updated successfully");
+            } else {
+                await createShifts(payload);
+
+                console.log("Shift created successfully");
+            }
+
+            if (refreshShifts) {
+                refreshShifts();
+            }
 
             onClose();
         } catch (error) {
-            console.error("Error creating shift:", error);
+            console.error(error);
 
             setErrors((prev) => ({
                 ...prev,
                 shiftName:
                     error?.response?.data?.message ||
-                    "Failed to create shift",
+                    `Failed to ${isEdit ? "update" : "create"} shift`,
             }));
         }
     };
@@ -118,7 +175,9 @@ export default function AddShiftForm({ onClose }) {
                         Shift Management
                         </p>
 
-                        <h2 className="text-white text-xl font-semibold">Create Shift</h2>
+                        <h2 className="text-white text-xl font-semibold">
+                            {isEdit ? "Edit Shift" : "Create Shift"}
+                        </h2>
                     </div>
 
                     <button
@@ -159,7 +218,7 @@ export default function AddShiftForm({ onClose }) {
                         <div>
                             <label className="block text-white mb-2">Start Time</label>
 
-                            <input
+                            {/* <input
                                 type="time"
                                 name="startTime"
                                 value={formData.startTime}
@@ -170,6 +229,18 @@ export default function AddShiftForm({ onClose }) {
                                     ? "border-red-500"
                                     : "border-blue-900"
                                 }`}
+                            /> */}
+                            <CustomTimePicker
+                                value={formData.startTime}
+                                error={errors.startTime}
+                                onChange={(value) =>
+                                    handleChange({
+                                    target: {
+                                        name: "startTime",
+                                        value,
+                                    },
+                                    })
+                                }
                             />
                             <ErrorMsg msg={errors.startTime} />
                         </div>
@@ -177,7 +248,7 @@ export default function AddShiftForm({ onClose }) {
                         <div>
                             <label className="block text-white mb-2">End Time</label>
 
-                            <input
+                            {/* <input
                                 type="time"
                                 name="endTime"
                                 value={formData.endTime}
@@ -188,6 +259,18 @@ export default function AddShiftForm({ onClose }) {
                                     ? "border-red-500"
                                     : "border-blue-900"
                                 }`}
+                            /> */}
+                            <CustomTimePicker
+                                value={formData.endTime}
+                                error={errors.endTime}
+                                onChange={(value) =>
+                                    handleChange({
+                                    target: {
+                                        name: "endTime",
+                                        value,
+                                    },
+                                    })
+                                }
                             />
                             <ErrorMsg msg={errors.endTime} />
                         </div>
@@ -221,7 +304,7 @@ export default function AddShiftForm({ onClose }) {
                                 type="number"
                                 name="workingHours"
                                 value={formData.workingHours}
-                                onChange={handleChange}
+                                readOnly
                                 placeholder="Enter Hours"
                                 className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
                                 ${
@@ -248,7 +331,7 @@ export default function AddShiftForm({ onClose }) {
                         onClick={handleSubmit}
                         className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
                     >
-                        Create Shift
+                        {isEdit ? "Update Shift" : "Create Shift"}
                     </button>
                 </div>
             </div>
