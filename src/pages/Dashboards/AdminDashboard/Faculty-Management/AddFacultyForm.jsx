@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   BriefcaseBusiness,
-  Check,
   ChevronDown,
   GraduationCap,
   IdCard,
@@ -15,15 +14,42 @@ import {
   X,
 } from "lucide-react";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
+import userImg from "../../../../assets/userImg.svg";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
 const steps = [
-  { title: "Personal", icon: UserRound },
-  { title: "Employment", icon: BriefcaseBusiness },
-  { title: "Education", icon: GraduationCap },
-  { title: "Additional", icon: IdCard },
+  {
+    title: "Personal Identity",
+    shortTitle: "Personal",
+    description: "Capture the faculty member's core identity and contact information.",
+    icon: UserRound,
+  },
+  {
+    title: "Employment Details",
+    shortTitle: "Employment",
+    description: "Set job classification, department, reporting manager, and shift details.",
+    icon: BriefcaseBusiness,
+  },
+  {
+    title: "Educational Details",
+    shortTitle: "Education",
+    description: "Add qualifications listed in the faculty profile.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Experience Details",
+    shortTitle: "Experience",
+    description: "Add previous organization and designation history.",
+    icon: BriefcaseBusiness,
+  },
+  {
+    title: "Additional Details",
+    shortTitle: "Additional",
+    description: "Complete address, emergency contact, identity, and bank details.",
+    icon: IdCard,
+  },
 ];
 
 const salutations = ["Mr", "Mrs", "Ms", "Dr", "Prof"];
@@ -98,6 +124,84 @@ const initialForm = {
   branchLocation: "",
 };
 
+const toDateValue = (value) => (value ? new Date(value) : null);
+const toInputValue = (value) =>
+  value === null || value === undefined ? "" : String(value);
+
+const mapFacultyToForm = (faculty = {}) => ({
+  empId: faculty.empId || "",
+  salutation: faculty.salutation || "",
+  firstName: faculty.firstName || "",
+  lastName: faculty.lastName || "",
+  gender: faculty.gender || "",
+  dob: toDateValue(faculty.dob),
+  email: faculty.email || "",
+  organizationEmail: faculty.organizationEmail || "",
+  phone: faculty.phone || "",
+  workType: faculty.workType || "",
+  timeType: faculty.timeType || "",
+  employeeCategory: faculty.employeeCategory || "",
+  doj: toDateValue(faculty.doj),
+  probationPeriod: faculty.probationPeriod || "",
+  noticePeriod: faculty.noticePeriod || "",
+  designation: faculty.designation || "",
+  jobTitle: faculty.jobTitle || "",
+  department: faculty.department || "",
+  shiftId:
+    typeof faculty.shiftId === "object"
+      ? faculty.shiftId?._id || ""
+      : faculty.shiftId || "",
+  reportingManager: faculty.reportingTo?.facultyId
+    ? {
+        _id: faculty.reportingTo.facultyId,
+        empId: faculty.reportingTo.empId,
+        firstName: faculty.reportingTo.name || "",
+        lastName: "",
+      }
+    : null,
+  doorNo: faculty.address?.doorNo || "",
+  street: faculty.address?.street || "",
+  city: faculty.address?.city || "",
+  district: faculty.address?.district || "",
+  state: faculty.address?.state || "",
+  pincode: faculty.address?.pincode || "",
+  country: faculty.address?.country || "India",
+  emergencyName: faculty.emergencyContact?.name || "",
+  emergencyRelationship: faculty.emergencyContact?.relationship || "",
+  emergencyPhone: faculty.emergencyContact?.phone || "",
+  aadharNumber: faculty.identityDetails?.aadharNumber || "",
+  panNumber: faculty.identityDetails?.panNumber || "",
+  pfNumber: faculty.identityDetails?.pfNumber || "",
+  accountNumber: faculty.bankDetails?.accountNumber || "",
+  bankName: faculty.bankDetails?.bankName || "",
+  ifscCode: faculty.bankDetails?.ifscCode || "",
+  branchLocation: faculty.bankDetails?.branchLocation || "",
+});
+
+const mapQualifications = (qualifications = []) =>
+  qualifications.length
+    ? qualifications.map((qualification) => ({
+        degree: qualification.degree || "",
+        specialization: qualification.specialization || "",
+        institutionName: qualification.institutionName || "",
+        institutionLocation: qualification.institutionLocation || "",
+        yearOfPassing: toInputValue(qualification.yearOfPassing),
+        percentage: toInputValue(qualification.percentage),
+        cgpa: toInputValue(qualification.cgpa),
+      }))
+    : [{ ...emptyQualification }];
+
+const mapExperiences = (experiences = []) =>
+  experiences.length
+    ? experiences.map((experience) => ({
+        organization: experience.organization || "",
+        designation: experience.designation || "",
+        fromDate: toDateValue(experience.fromDate),
+        toDate: toDateValue(experience.toDate),
+        yearsOfExperience: toInputValue(experience.yearsOfExperience),
+      }))
+    : [{ ...emptyExperience }];
+
 const requiredByStep = {
   0: [
     ["empId", "Employee ID"],
@@ -124,6 +228,21 @@ const requiredByStep = {
 const toIsoDate = (date) => (date ? date.toISOString() : undefined);
 const toNumber = (value) => (value === "" || value === null ? undefined : Number(value));
 const isFilled = (value) => value !== "" && value !== null && value !== undefined;
+const getFacultyList = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.faculties)) return payload.faculties;
+  if (Array.isArray(payload?.data?.faculties)) return payload.data.faculties;
+  if (Array.isArray(payload?.facultyDetails)) return payload.facultyDetails;
+  if (Array.isArray(payload?.data?.facultyDetails)) return payload.data.facultyDetails;
+  if (Array.isArray(payload?.employees)) return payload.employees;
+  if (Array.isArray(payload?.data?.employees)) return payload.data.employees;
+  if (Array.isArray(payload?.results)) return payload.results;
+  if (Array.isArray(payload?.data?.results)) return payload.data.results;
+  if (Array.isArray(payload?.docs)) return payload.docs;
+  if (Array.isArray(payload?.data?.docs)) return payload.data.docs;
+  return [];
+};
 
 const FieldError = ({ message }) =>
   message ? <p className="mt-1 text-[11px] text-[#f16868]">{message}</p> : null;
@@ -153,17 +272,41 @@ const DropdownField = ({
   placeholder,
   required,
   error,
+  onOpenChange = () => { },
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [positionAbove, setPositionAbove] = useState(false);
+  const wrapperRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  const updateOpenState = (nextState) => {
+    setIsOpen(nextState);
+    onOpenChange(nextState);
+  };
+
+  useEffect(() => {
+    if (!isOpen || !buttonRef.current) return;
+
+    const button = buttonRef.current;
+    const rect = button.getBoundingClientRect();
+    const viewport = window.innerHeight;
+    const spaceBelow = viewport - rect.bottom;
+    const spaceAbove = rect.top;
+    const dropdownHeight = Math.min(options.length * 44 + 8, 220);
+
+    // Position above if not enough space below
+    setPositionAbove(spaceBelow < dropdownHeight + 16 && spaceAbove > dropdownHeight + 16);
+  }, [isOpen, options.length]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <span className="mb-2 block text-[13px] font-semibold text-white">
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => updateOpenState(!isOpen)}
         className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
           }`}
       >
@@ -182,17 +325,18 @@ const DropdownField = ({
           <button
             type="button"
             className="fixed inset-0 z-30 cursor-default"
-            onClick={() => setIsOpen(false)}
+            onClick={() => updateOpenState(false)}
             aria-label="Close dropdown"
           />
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[220px] overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar">
+          <div className={`absolute left-0 right-0 z-40 max-h-[220px] overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
+            }`}>
             {options.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => {
                   onChange(option);
-                  setIsOpen(false);
+                  updateOpenState(false);
                 }}
                 className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
                   ? "bg-[#132b49] text-white"
@@ -220,9 +364,31 @@ const ObjectDropdownField = ({
   required,
   error,
   isLoading,
+  onOpenChange = () => { },
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [positionAbove, setPositionAbove] = useState(false);
+  const buttonRef = useRef(null);
   const selectedOption = options.find((option) => getOptionValue(option) === value);
+
+  const updateOpenState = (nextState) => {
+    setIsOpen(nextState);
+    onOpenChange(nextState);
+  };
+
+  useEffect(() => {
+    if (!isOpen || !buttonRef.current) return;
+
+    const button = buttonRef.current;
+    const rect = button.getBoundingClientRect();
+    const viewport = window.innerHeight;
+    const spaceBelow = viewport - rect.bottom;
+    const spaceAbove = rect.top;
+    const dropdownHeight = Math.min(options.length * 44 + 8, 248);
+
+    // Position above if not enough space below
+    setPositionAbove(spaceBelow < dropdownHeight + 16 && spaceAbove > dropdownHeight + 16);
+  }, [isOpen, options.length]);
 
   return (
     <div className="relative">
@@ -230,11 +396,11 @@ const ObjectDropdownField = ({
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${
-          error ? "border-[#f16868]" : "border-[#244061]"
-        }`}
+        onClick={() => updateOpenState(!isOpen)}
+        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
+          }`}
       >
         <span className={selectedOption ? "text-white" : "text-[#6f839f]"}>
           {isLoading
@@ -255,10 +421,11 @@ const ObjectDropdownField = ({
           <button
             type="button"
             className="fixed inset-0 z-30 cursor-default"
-            onClick={() => setIsOpen(false)}
+            onClick={() => updateOpenState(false)}
             aria-label="Close dropdown"
           />
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[220px] overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar">
+          <div className={`absolute left-0 right-0 z-40 max-h-[220px] overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
+            }`}>
             {options.length > 0 ? (
               options.map((option) => {
                 const optionValue = getOptionValue(option);
@@ -268,13 +435,12 @@ const ObjectDropdownField = ({
                     type="button"
                     onClick={() => {
                       onChange(option);
-                      setIsOpen(false);
+                      updateOpenState(false);
                     }}
-                    className={`block w-full px-4 py-3 text-left text-[13px] transition ${
-                      value === optionValue
-                        ? "bg-[#132b49] text-white"
-                        : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
-                    }`}
+                    className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === optionValue
+                      ? "bg-[#132b49] text-white"
+                      : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                      }`}
                   >
                     {getOptionLabel(option)}
                   </button>
@@ -297,26 +463,55 @@ const FacultySearchDropdown = ({
   onChange,
   options,
   isLoading,
+  popupAlign = "down",
+  onOpenChange = () => { },
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const filteredOptions = options.filter((faculty) => {
+  const [positionAbove, setPositionAbove] = useState(false);
+  const buttonRef = useRef(null);
+
+  const facultyOptions = Array.isArray(options) ? options : [];
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredOptions = facultyOptions.filter((faculty) => {
     const name = `${faculty.firstName || ""} ${faculty.lastName || ""}`.trim();
     const searchable = `${name} ${faculty.empId || ""} ${faculty.designation || ""}`.toLowerCase();
-    return searchable.includes(query.trim().toLowerCase());
+    return searchable.includes(normalizedQuery);
   });
+  const filteredOptionCount = filteredOptions.length;
+
+  const updateOpenState = (nextState) => {
+    setIsOpen(nextState);
+    onOpenChange(nextState && popupAlign !== "up");
+  };
+
+  useEffect(() => {
+    if (!isOpen || !buttonRef.current) return;
+
+    const button = buttonRef.current;
+    const rect = button.getBoundingClientRect();
+    const viewport = window.innerHeight;
+    const spaceBelow = viewport - rect.bottom;
+    const spaceAbove = rect.top;
+    const dropdownHeight = Math.min(filteredOptionCount * 60 + 52, 300);
+
+    // Position above if not enough space below
+    setPositionAbove(spaceBelow < dropdownHeight + 16 && spaceAbove > dropdownHeight + 16);
+  }, [isOpen, filteredOptionCount]);
+
   const selectedName = value
     ? `${value.firstName || ""} ${value.lastName || ""}`.trim()
     : "";
 
   return (
-    <div className="relative col-span-2">
+    <div className="relative col-span-2 mb-2">
       <span className="mb-2 block text-[13px] font-semibold text-white">
         Reporting Manager
       </span>
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => updateOpenState(!isOpen)}
         className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value ? "text-white" : "text-[#6f839f]"}>
@@ -337,10 +532,15 @@ const FacultySearchDropdown = ({
           <button
             type="button"
             className="fixed inset-0 z-30 cursor-default"
-            onClick={() => setIsOpen(false)}
+            onClick={() => updateOpenState(false)}
             aria-label="Close reporting manager dropdown"
           />
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+          <div
+            className={`absolute left-0 right-0 z-40 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${positionAbove
+              ? "bottom-[calc(100%+8px)]"
+              : "top-[calc(100%+8px)]"
+              }`}
+          >
             <div className="relative border-b border-[#183052] p-2">
               <Search
                 size={15}
@@ -353,7 +553,7 @@ const FacultySearchDropdown = ({
                 className="h-10 w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-9 pr-3 text-[13px] text-white outline-none placeholder:text-[#6f839f] focus:border-[#3984ff]"
               />
             </div>
-            <div className="max-h-[240px] overflow-y-auto py-1 table-custom-scrollbar">
+            <div className="max-h-60 overflow-y-auto py-1 table-custom-scrollbar ">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((faculty) => {
                   const name = `${faculty.firstName || ""} ${faculty.lastName || ""}`.trim();
@@ -363,21 +563,27 @@ const FacultySearchDropdown = ({
                       type="button"
                       onClick={() => {
                         onChange(faculty);
-                        setIsOpen(false);
+                        updateOpenState(false);
                         setQuery("");
                       }}
-                      className={`block w-full px-4 py-3 text-left transition ${
-                        value?._id === faculty._id
-                          ? "bg-[#132b49] text-white"
-                          : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
-                      }`}
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${value?._id === faculty._id
+                        ? "bg-[#132b49] text-white"
+                        : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                        }`}
                     >
-                      <span className="block text-[13px] font-semibold">
-                        {name || faculty.empId}
-                      </span>
-                      <span className="mt-0.5 block text-[11px] text-[#8ca1bd]">
-                        {faculty.empId} {faculty.designation ? `- ${faculty.designation}` : ""}
-                      </span>
+                      <img
+                        src={userImg}
+                        alt={name}
+                        className="h-9 w-9 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <span className="block truncate text-[13px] font-semibold">
+                          {name || faculty.empId}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[11px] text-[#8ca1bd]">
+                          {faculty.empId} {faculty.designation ? `- ${faculty.designation}` : ""}
+                        </span>
+                      </div>
                     </button>
                   );
                 })
@@ -419,11 +625,25 @@ const SectionTitle = ({ title, description }) => (
   </div>
 );
 
-const AddFacultyForm = ({ onClose }) => {
+const AddFacultyForm = ({
+  onClose,
+  onCreated = () => { },
+  onSaved,
+  initialFaculty = null,
+  mode = "create",
+}) => {
+  const isEditMode = mode === "edit";
+  const facultyId = initialFaculty?._id;
   const [activeStep, setActiveStep] = useState(0);
-  const [form, setForm] = useState(initialForm);
-  const [qualifications, setQualifications] = useState([{ ...emptyQualification }]);
-  const [experiences, setExperiences] = useState([{ ...emptyExperience }]);
+  const [form, setForm] = useState(() =>
+    initialFaculty ? mapFacultyToForm(initialFaculty) : initialForm,
+  );
+  const [qualifications, setQualifications] = useState(() =>
+    mapQualifications(initialFaculty?.qualifications),
+  );
+  const [experiences, setExperiences] = useState(() =>
+    mapExperiences(initialFaculty?.experiences),
+  );
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -431,6 +651,22 @@ const AddFacultyForm = ({ onClose }) => {
   const [shifts, setShifts] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [isLoadingLookups, setIsLoadingLookups] = useState(false);
+
+  useEffect(() => {
+    if (!initialFaculty) return;
+
+    const timerId = window.setTimeout(() => {
+      setForm(mapFacultyToForm(initialFaculty));
+      setQualifications(mapQualifications(initialFaculty.qualifications));
+      setExperiences(mapExperiences(initialFaculty.experiences));
+      setActiveStep(0);
+      setErrors({});
+      setSubmitError("");
+      setSuccessMessage("");
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [initialFaculty]);
 
   useEffect(() => {
     const fetchLookups = async () => {
@@ -451,6 +687,7 @@ const AddFacultyForm = ({ onClose }) => {
 
         const shiftData = await shiftResponse.json().catch(() => null);
         const facultyData = await facultyResponse.json().catch(() => null);
+        const facultyList = getFacultyList(facultyData);
 
         if (!shiftResponse.ok) {
           throw new Error(shiftData?.message || "Unable to load shifts.");
@@ -460,7 +697,7 @@ const AddFacultyForm = ({ onClose }) => {
         }
 
         setShifts(Array.isArray(shiftData?.data) ? shiftData.data : []);
-        setFaculties(Array.isArray(facultyData?.data) ? facultyData.data : []);
+        setFaculties(facultyList);
       } catch (error) {
         setSubmitError(error.message || "Unable to load form dropdown data.");
       } finally {
@@ -663,7 +900,7 @@ const AddFacultyForm = ({ onClose }) => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     setSubmitError("");
     setSuccessMessage("");
 
@@ -681,8 +918,15 @@ const AddFacultyForm = ({ onClose }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/faculties/`, {
-        method: "POST",
+      if (isEditMode && !facultyId) {
+        throw new Error("Faculty ID is missing. Please reopen this form and try again.");
+      }
+
+      const endpoint = isEditMode
+        ? `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${facultyId}`
+        : `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/`;
+      const response = await fetch(endpoint, {
+        method: isEditMode ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -693,13 +937,26 @@ const AddFacultyForm = ({ onClose }) => {
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data?.message || data?.error || "Unable to create faculty.");
+        throw new Error(
+          data?.message ||
+            data?.error ||
+            `Unable to ${isEditMode ? "update" : "create"} faculty.`,
+        );
       }
 
-      setSuccessMessage("Faculty created successfully.");
+      setSuccessMessage(`Faculty ${isEditMode ? "updated" : "created"} successfully.`);
+      const savedFaculty = data?.data || data;
+      if (isEditMode) {
+        onSaved?.(savedFaculty);
+      } else {
+        onCreated(savedFaculty);
+      }
       setTimeout(onClose, 700);
     } catch (error) {
-      setSubmitError(error.message || "Something went wrong while creating faculty.");
+      setSubmitError(
+        error.message ||
+          `Something went wrong while ${isEditMode ? "updating" : "creating"} faculty.`,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -709,84 +966,56 @@ const AddFacultyForm = ({ onClose }) => {
 
   return (
     <section
-      className="fixed inset-0 z-50 flex justify-end bg-[#020817]/60 backdrop-blur-[4px]"
+      className="fixed inset-0 z-50 flex justify-end bg-[#020817]/50 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <form
-        className="flex h-full w-[32%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[60%] xl:w-[42%] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
-        onSubmit={handleSubmit}
+        onSubmit={(event) => event.preventDefault()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
-              Faculty Setup
-            </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
-              Add Faculty
-            </h2>
-          </div>
+        <div className="border-b border-[#173150] bg-[#08182a] px-5 py-4">
+          <div className="flex items-start justify-between gap-5">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a9c7ff]">
+                Step {activeStep + 1} of {steps.length}
+              </p>
+              <h3 className="mt-2 text-lg font-semibold leading-tight text-[#e4e9ff]">
+                {steps[activeStep].title}
+              </h3>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
-            aria-label="Close add faculty form"
-          >
-            <X size={17} />
-          </button>
-        </div>
+            </div>
 
-        <div className="border-b border-[#173150] bg-[#08182a] px-5 py-2">
-          <div className="flex items-start">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = activeStep === index;
-              const isCompleted = activeStep > index;
-
-              return (
-                <div key={step.title} className="flex flex-1 items-start">
+            <div className="flex shrink-0 items-start gap-3">
+              <div className="mt-5 flex w-[155px] items-center gap-2">
+                {steps.map((step, index) => (
                   <button
+                    key={step.shortTitle}
                     type="button"
                     onClick={() => setActiveStep(index)}
-                    className="group flex min-w-[86px] flex-col items-center text-center"
-                  >
-                    <span
-                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition ${isCompleted
-                        ? "border-[#24c784] bg-[#24c784] text-white"
-                        : isActive
-                          ? "border-[#4f63ff] bg-[#1d2b6d] text-white shadow-[0_0_0_4px_rgba(79,99,255,0.16)]"
-                          : "border-[#627089] bg-[#0d2138] text-[#9eb0cc] group-hover:border-[#3984ff]"
-                        }`}
-                    >
-                      {isCompleted ? <Check size={15} /> : <Icon size={14} />}
-                    </span>
-                    <span
-                      className={`mt-1 text-[11px] font-semibold ${isActive ? "text-white" : "text-[#9eb0cc]"
-                        }`}
-                    >
-                      {step.title}
-                    </span>
-                  </button>
-
-                  {index < steps.length - 1 && (
-                    <span
-                      className={`mt-4 h-[2px] flex-1 rounded-full ${activeStep > index
-                        ? "bg-[#24c784]"
-                        : activeStep === index
-                          ? "bg-[#4f63ff]"
-                          : "bg-[#2b3b55]"
-                        }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
+                    className={`h-1.5 flex-1 rounded-full transition ${index <= activeStep
+                      ? "bg-[#3984ff]"
+                      : "bg-[#354158] hover:bg-[#596782]"
+                      }`}
+                    aria-label={`Go to ${step.title}`}
+                    title={step.title}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                aria-label={`Close ${isEditMode ? "edit" : "add"} faculty form`}
+              >
+                <X size={17} />
+              </button>
+            </div>
           </div>
         </div>
 
         {(submitError || successMessage) && (
-          <div className="border-b border-[#173150] bg-[#08182a] px-5 py-3">
+          <div className=" px-4 py-3">
             <p
               className={`rounded-lg px-3 py-2 text-[12px] font-semibold ${successMessage
                 ? "bg-[#18d3bf1f] text-[#18d3bf]"
@@ -798,13 +1027,12 @@ const AddFacultyForm = ({ onClose }) => {
           </div>
         )}
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 table-custom-scrollbar">
+        <div
+          className={`min-h-0 flex-1 overflow-y-auto px-5 pt-4 table-custom-scrollbar ${activeStep === 1 ? "pb-24" : "pb-4"
+            }`}
+        >
           {activeStep === 0 && (
             <>
-              <SectionTitle
-                title="Personal Details"
-                description="Capture the faculty member's core identity and contact information."
-              />
               <div className="grid grid-cols-2 gap-4">
                 <Field
                   label="Employee ID"
@@ -894,11 +1122,13 @@ const AddFacultyForm = ({ onClose }) => {
 
           {activeStep === 1 && (
             <>
-              <SectionTitle
-                title="Employment Details"
-                description="Set job classification, department, reporting manager, and shift details."
+              <FacultySearchDropdown
+                value={form.reportingManager}
+                onChange={(faculty) => updateForm("reportingManager", faculty)}
+                options={faculties}
+                isLoading={isLoadingLookups}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-4">
                 <DropdownField
                   label="Work Type"
                   required
@@ -915,6 +1145,7 @@ const AddFacultyForm = ({ onClose }) => {
                   options={timeTypes}
                   error={errors.timeType}
                 />
+
                 <DropdownField
                   label="Employee Category"
                   required
@@ -923,6 +1154,7 @@ const AddFacultyForm = ({ onClose }) => {
                   options={employeeCategories}
                   error={errors.employeeCategory}
                 />
+
                 <DateField
                   id="faculty-doj"
                   label="Date of Joining"
@@ -933,6 +1165,7 @@ const AddFacultyForm = ({ onClose }) => {
                   placeholder="Select joining date"
                   popupAlign="right"
                 />
+
                 <Field
                   label="Probation Period"
                   name="probationPeriod"
@@ -940,6 +1173,7 @@ const AddFacultyForm = ({ onClose }) => {
                   onChange={updateForm}
                   placeholder="6 months"
                 />
+
                 <Field
                   label="Notice Period"
                   name="noticePeriod"
@@ -965,6 +1199,7 @@ const AddFacultyForm = ({ onClose }) => {
                   error={errors.jobTitle}
                   placeholder="Faculty"
                 />
+
                 <DropdownField
                   label="Department"
                   required
@@ -987,24 +1222,14 @@ const AddFacultyForm = ({ onClose }) => {
                   error={errors.shiftId}
                   isLoading={isLoadingLookups}
                 />
-                <FacultySearchDropdown
-                  value={form.reportingManager}
-                  onChange={(faculty) => updateForm("reportingManager", faculty)}
-                  options={faculties}
-                  isLoading={isLoadingLookups}
-                />
               </div>
             </>
           )}
 
           {activeStep === 2 && (
-            <div className="space-y-5">
+            <div>
               <div>
-                <div className="mb-4 flex items-start justify-between gap-3">
-                  <SectionTitle
-                    title="Educational Details"
-                    description="Add qualifications listed in the faculty profile."
-                  />
+                <div className="mb-4 flex items-center justify-end">
                   <button
                     type="button"
                     onClick={() =>
@@ -1117,13 +1342,13 @@ const AddFacultyForm = ({ onClose }) => {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
 
+          {activeStep === 3 && (
+            <div>
               <div>
-                <div className="mb-4 flex items-start justify-between gap-3">
-                  <SectionTitle
-                    title="Experience Details"
-                    description="Add previous organization and designation history."
-                  />
+                <div className="mb-4 flex items-center justify-end">
                   <button
                     type="button"
                     onClick={() =>
@@ -1215,7 +1440,7 @@ const AddFacultyForm = ({ onClose }) => {
             </div>
           )}
 
-          {activeStep === 3 && (
+          {activeStep === 4 && (
             <div className="space-y-5">
               <div>
                 <SectionTitle
@@ -1286,11 +1511,18 @@ const AddFacultyForm = ({ onClose }) => {
 
           {isLastStep ? (
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={isSubmitting}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#2563EB] px-5 text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Creating..." : "Create Faculty"}
+              {isSubmitting
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Update Faculty"
+                  : "Create Faculty"}
               <Send size={14} />
             </button>
           ) : (
