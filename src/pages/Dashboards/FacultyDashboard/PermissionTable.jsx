@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { getRoleFromToken } from "../../../utils/tokenUtils";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
@@ -152,8 +153,7 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
 
 const PermissionTable = () => {
   const location = useLocation();
-  // Auth: replace this hardcoded role with the decoded localStorage token role later.
-  const role = "hod";
+  const role = getRoleFromToken()?.toLowerCase();
   const [selectedPermission, setSelectedPermission] = useState(null);
   const [withdrawPermission, setWithdrawPermission] = useState(null);
   const [status, setStatus] = useState("All");

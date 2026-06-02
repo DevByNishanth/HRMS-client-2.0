@@ -45,11 +45,11 @@ function App() {
         {/* Public Route */}
         <Route path="/" element={<LoginPage />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes - Faculty, HOD, Non-Teaching */}
         <Route
           path="/dashboard-faculty"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
               <FacultyDashboard />
             </ProtectedRoute>
           }
@@ -57,7 +57,7 @@ function App() {
         <Route
           path="/dashboard-faculty/leaves"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
               <LeavePage />
             </ProtectedRoute>
           }
@@ -65,7 +65,7 @@ function App() {
         <Route
           path="/dashboard-faculty/attendance"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
               <AttendancePage />
             </ProtectedRoute>
           }
@@ -73,15 +73,17 @@ function App() {
         <Route
           path="/dashboard-faculty/permissions"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
               <PermissionPage />
             </ProtectedRoute>
           }
         />
+
+        {/* Protected Routes - Principal Only */}
         <Route
           path="/dashboard-principal"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['principal']}>
               <PrincipalDashboard />
             </ProtectedRoute>
           }
@@ -89,7 +91,7 @@ function App() {
         <Route
           path="/dashboard-principal/leaves"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['principal']}>
               <PrincipalLeavePage />
             </ProtectedRoute>
           }
@@ -97,15 +99,35 @@ function App() {
         <Route
           path="/dashboard-principal/permissions"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['principal']}>
               <PrincipalPermissionPage />
             </ProtectedRoute>
           }
         />
+
+        {/* Protected Routes - Admin Only */}
+        <Route
+          path="/dashboard-admin"
+          element={
+            <ProtectedRoute requiredRoles={['admin']}>
+              <FacultyManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/shifts"
+          element={
+            <ProtectedRoute requiredRoles={['admin']}>
+              <ShiftManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Routes - Profile (All Authenticated Users) */}
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'principal', 'admin', 'non-teaching']}>
               <ProfilePage />
             </ProtectedRoute>
           }
@@ -113,40 +135,28 @@ function App() {
         <Route
           path="/profile/:empid"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'principal', 'admin', 'non-teaching']}>
               <ProfilePage />
             </ProtectedRoute>
           }
         />
+
+        {/* Protected Routes - Regularization (Faculty, HOD, Non-Teaching) */}
         <Route
           path="/dashboard/regularizationList"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
               <RegularaizationListPage />
             </ProtectedRoute>
           }
         />
+
+        {/* Protected Routes - HOD Only */}
         <Route
           path="/dashboard-faculty/my-Team"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredRoles={['hod']}>
               <MyTeamPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard-admin/shifts"
-          element={
-            <ProtectedRoute>
-              <ShiftManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard-admin"
-          element={
-            <ProtectedRoute>
-              <FacultyManagementPage />
             </ProtectedRoute>
           }
         />

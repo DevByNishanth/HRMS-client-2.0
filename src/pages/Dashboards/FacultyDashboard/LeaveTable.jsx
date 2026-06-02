@@ -1,6 +1,7 @@
 import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
+import { getRoleFromToken } from "../../../utils/tokenUtils";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
@@ -290,11 +291,7 @@ const FilterDatePicker = ({
 
 const LeaveTable = () => {
   const location = useLocation();
-
-  // Auth 
-  // roles hardcoded for temporary
-
-  const role = "hod"
+  const role = getRoleFromToken()?.toLowerCase();
 
   // states 
   const [selectedLeave, setSelectedLeave] = useState(null);
