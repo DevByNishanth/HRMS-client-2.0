@@ -1,10 +1,32 @@
 import { AlertTriangle, Send, X } from "lucide-react";
-
-const WithdrawLeavePopup = ({ leave, onClose }) => {
+import axios from "axios";
+import { useState } from "react";
+const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
+  const [isLoading, setIsLoading] = useState(false);
   if (!leave) return null;
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    try {
+      setIsLoading(true)
+      const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${leave._id}/cancel`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
+        },
+      })
+      console.log("Leave withdrawn successfully:", res.data);
+      setIsLoading(false)
+      fetchLeaves()
+      onClose();
+    } catch (err) {
+      console.error("Error withdrawing leave:", err);
+      setIsLoading(false)
+      fetchLeaves()
+      onClose();
+    }
+
+
   };
 
   return (
@@ -78,8 +100,8 @@ const WithdrawLeavePopup = ({ leave, onClose }) => {
             type="submit"
             className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#2563EB] px-5 text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
           >
-            Withdraw
-            <Send size={14} />
+            {isLoading ? <div className="loader"></div> : <span className="flex items-center gap-2"> Withdraw
+              <Send size={14} /></span>}
           </button>
         </div>
       </form>
