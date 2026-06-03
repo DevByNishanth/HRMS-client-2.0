@@ -91,79 +91,90 @@ export default function ShiftBody() {
                     />
                 </div>
                 <div className="overflow-hidden ">
-                    <table className="w-full min-w-[650px] border-collapse text-left"> 
-                        <thead className="bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
-                            <tr>
-                                <th className="px-4 py-3 font-semibold">Shift Name</th>
-                                <th className="px-4 py-3 font-semibold">Start Time</th>
-                                <th className="px-4 py-3 font-semibold">End Time</th>
-                                <th className="px-4 py-3 font-semibold">Grace Time</th>
-                                <th className="px-4 py-3 font-semibold">Working Hours</th>
-                                <th className="px-4 py-3 font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-[12px] text-[#cad7eb]">
-                            {loading ? (
+                    <div className="
+                        max-h-[420px]
+                        overflow-y-auto
+                        scrollbar-thin
+                        scrollbar-track-[#0a1a2d]
+                        scrollbar-thumb-[#244061]
+                        hover:scrollbar-thumb-[#3984ff]
+                    ">
+                        <table className="w-full table-auto border-collapse text-left"> 
+                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
                                 <tr>
-                                    <td colSpan="6" className="text-center py-4">
-                                    Loading...
-                                    </td>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">Shift Name</th>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">Start Time</th>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">End Time</th>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">Grace Time</th>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">Working Hours</th>
+                                    <th className="px-5 py-4 font-semibold w-[20%]">Actions</th>
                                 </tr>
-                                ) : filteredShifts.length === 0 ? (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-4">
-                                    No matching shifts found
-                                    </td>
-                                </tr>
-                                ) : (
-                                filteredShifts.map((shift) => (
-                                    <tr
-                                    key={shift._id}
-                                    className="border-b border-[#132944] last:border-0"
-                                    >
-                                        <td className="px-4 py-4">{shift.shiftName}</td>
-                                        <td className="px-4 py-4">{shift.startTime}</td>
-                                        <td className="px-4 py-4">{shift.endTime}</td>
-                                        <td className="px-4 py-4">{shift.graceTime} minutes</td>
-                                        <td className="px-4 py-4">{shift.workingHours} hours</td>
-                                        <td className="px-4 py-4 text-center text-[#8ca1bd]">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setSelectedShift(shift);
-                                                    setShowDrawer(true);
-                                                }}
-                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white ml-8"
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setDeletingShift(shift);
-                                                    setDeleteError("");
-                                                }}
-                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white ml-2"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
+                            </thead>
+                            <tbody className="text-[15px] text-[#cad7eb]">
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-4">
+                                        Loading...
                                         </td>
                                     </tr>
-                                ))
-                                )}
-                        </tbody>
-                    </table>
-                    {showDrawer && (
-                        <AddShiftForm
-                            shiftData={selectedShift}
-                            refreshShifts={fetchShifts}
-                            onClose={() => {
-                                setShowDrawer(false);
-                                setSelectedShift(null);
-                                fetchShifts();
-                            }}
-                        />
-                    )}
+                                    ) : filteredShifts.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-4">
+                                        No matching shifts found
+                                        </td>
+                                    </tr>
+                                    ) : (
+                                    filteredShifts.map((shift) => (
+                                        <tr
+                                        key={shift._id}
+                                        className="border-b border-[#132944] last:border-0"
+                                        >
+                                            <td className="px-5 py-3">{shift.shiftName}</td>
+                                            <td className="px-5 py-3">{shift.startTime}</td>
+                                            <td className="px-5 py-3">{shift.endTime}</td>
+                                            <td className="px-5 py-3">{shift.graceTime} minutes</td>
+                                            <td className="px-5 py-3">{shift.workingHours} hours</td>
+                                            <td className="px-5 py-3 text-[#8ca1bd]">
+                                                <div className="flex items-center justify-center gap-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedShift(shift);
+                                                            setShowDrawer(true);
+                                                        }}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setDeletingShift(shift);
+                                                            setDeleteError("");
+                                                        }}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white "
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                    )}
+                            </tbody>
+                        </table>
+                        {showDrawer && (
+                            <AddShiftForm
+                                shiftData={selectedShift}
+                                refreshShifts={fetchShifts}
+                                onClose={() => {
+                                    setShowDrawer(false);
+                                    setSelectedShift(null);
+                                    fetchShifts();
+                                }}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
             {deletingShift && (

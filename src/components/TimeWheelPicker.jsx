@@ -7,7 +7,9 @@ export default function TimeWheelPicker({
     const [hour, setHour] = useState("09");
     const [minute, setMinute] = useState("00");
     const [period, setPeriod] = useState("AM");
+    const [hourOpen, setHourOpen] = useState(false);
     const [minuteOpen, setMinuteOpen] = useState(false);
+    const [periodOpen, setPeriodOpen] = useState(false);
 
     useEffect(() => {
         if (!value) {
@@ -69,26 +71,68 @@ export default function TimeWheelPicker({
         >
         <div className="flex items-center gap-3">
             {/* Hour */}
-            <select
-            value={hour}
-            onChange={(e) =>
-                setHour(e.target.value)
-            }
-            className="
-                flex-1
-                bg-[#132A47]
-                text-white
-                rounded-lg
-                p-2
-                outline-none
-            "
-            >
-            {hours.map((h) => (
-                <option key={h} value={h}>
-                {h}
-                </option>
-            ))}
-            </select>
+            <div className="relative flex-1">
+                <button
+                    type="button"
+                    onClick={() => {
+                    setHourOpen(!hourOpen);
+                    setMinuteOpen(false);
+                    setPeriodOpen(false);
+                    }}
+                    className="
+                    w-full
+                    bg-[#132A47]
+                    text-white
+                    rounded-lg
+                    p-2
+                    text-left
+                    flex
+                    items-center
+                    justify-between
+                    "
+                >
+                    {hour}
+                </button>
+
+                {hourOpen && (
+                    <div
+                    className="
+                        absolute
+                        top-full
+                        left-0
+                        mt-1
+                        w-full
+                        bg-[#132A47]
+                        border border-blue-900
+                        rounded-lg
+                        max-h-40
+                        overflow-y-auto
+                        scrollbar-hide
+                        z-50
+                    "
+                    >
+                    {hours.map((h) => (
+                        <div
+                        key={h}
+                        onClick={() => {
+                            setHour(h);
+                            setHourOpen(false);
+                        }}
+                        className={`
+                            px-3
+                            py-2
+                            text-white
+                            cursor-pointer
+                            hover:bg-blue-600
+                            ${hour === h ? "bg-blue-600" : ""}
+                        `}
+                        >
+                        {h}
+                        </div>
+                    ))}
+                    </div>
+                )}
+                </div>
 
             {/* Minute */}
             <div className="relative flex-1">
@@ -120,8 +164,8 @@ export default function TimeWheelPicker({
                         rounded-lg
                         max-h-40
                         overflow-y-auto
+                        scrollbar-hide
                         z-50
-                        custom-scrollbar
                     "
                     >
                     {minutes.map((m) => (
@@ -131,13 +175,14 @@ export default function TimeWheelPicker({
                             setMinute(m);
                             setMinuteOpen(false);
                         }}
-                        className="
+                        className={`
                             px-3
                             py-2
                             text-white
                             cursor-pointer
                             hover:bg-blue-600
-                        "
+                            ${minute === m ? "bg-blue-600" : ""}
+                        `}
                         >
                         {m}
                         </div>
@@ -147,28 +192,65 @@ export default function TimeWheelPicker({
                 </div>
 
             {/* AM PM */}
-            <select
-            value={period}
-            onChange={(e) =>
-                setPeriod(e.target.value)
-            }
-            className="
-                flex-1
-                bg-[#132A47]
-                text-white
-                rounded-lg
-                p-2
-                outline-none
-            "
-            >
-            <option value="AM">
-                AM
-            </option>
+            <div className="relative flex-1">
+                <button
+                    type="button"
+                    onClick={() => {
+                    setPeriodOpen(!periodOpen);
+                    setHourOpen(false);
+                    setMinuteOpen(false);
+                    }}
+                    className="
+                    w-full
+                    bg-[#132A47]
+                    text-white
+                    rounded-lg
+                    p-2
+                    text-left
+                    flex
+                    items-center
+                    justify-between
+                    "
+                >
+                    {period}
+                </button>
 
-            <option value="PM">
-                PM
-            </option>
-            </select>
+                {periodOpen && (
+                    <div
+                    className="
+                        absolute
+                        top-full
+                        left-0
+                        mt-1
+                        w-full
+                        bg-[#132A47]
+                        border border-blue-900
+                        rounded-lg
+                        overflow-hidden
+                        z-50
+                    "
+                    >
+                    {["AM", "PM"].map((p) => (
+                        <div
+                        key={p}
+                        onClick={() => {
+                            setPeriod(p);
+                            setPeriodOpen(false);
+                        }}
+                        className="
+                            px-3
+                            py-2
+                            text-white
+                            cursor-pointer
+                            hover:bg-blue-600
+                        "
+                        >
+                        {p}
+                        </div>
+                    ))}
+                    </div>
+                )}
+                </div>
         </div>
 
         <button
