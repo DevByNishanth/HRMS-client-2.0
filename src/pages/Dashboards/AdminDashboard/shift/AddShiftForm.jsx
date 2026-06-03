@@ -329,7 +329,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
                     <button
                         onClick={handleSubmit}
-                        className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
                     >
                         {isEdit ? "Update Shift" : "Create Shift"}
                     </button>
