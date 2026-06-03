@@ -56,7 +56,18 @@ const salutations = ["Mr", "Mrs", "Ms", "Dr", "Prof"];
 const genders = ["Male", "Female", "Other"];
 const workTypes = ["Permanent", "Temporary"];
 const timeTypes = ["Full-Time", "Part-Time", "Contract"];
-const employeeCategories = ["Teaching", "Non-Teaching", "Driver", "Housekeeping"];
+const employeeCategories = [
+  { label: "Teaching", value: "Teaching" },
+  { label: "Non-Teaching", value: "Non-Teaching" },
+  {
+    label: "Sub-Staff",
+    value: "Sub-Staff",
+    submenu: [
+      { label: "Driver", value: "Driver" },
+      { label: "Housekeeping", value: "Housekeeping" },
+    ],
+  },
+];
 const departments = [
   "Computer Science",
   "Information Technology",
@@ -153,11 +164,11 @@ const mapFacultyToForm = (faculty = {}) => ({
       : faculty.shiftId || "",
   reportingManager: faculty.reportingTo?.facultyId
     ? {
-        _id: faculty.reportingTo.facultyId,
-        empId: faculty.reportingTo.empId,
-        firstName: faculty.reportingTo.name || "",
-        lastName: "",
-      }
+      _id: faculty.reportingTo.facultyId,
+      empId: faculty.reportingTo.empId,
+      firstName: faculty.reportingTo.name || "",
+      lastName: "",
+    }
     : null,
   doorNo: faculty.address?.doorNo || "",
   street: faculty.address?.street || "",
@@ -181,25 +192,25 @@ const mapFacultyToForm = (faculty = {}) => ({
 const mapQualifications = (qualifications = []) =>
   qualifications.length
     ? qualifications.map((qualification) => ({
-        degree: qualification.degree || "",
-        specialization: qualification.specialization || "",
-        institutionName: qualification.institutionName || "",
-        institutionLocation: qualification.institutionLocation || "",
-        yearOfPassing: toInputValue(qualification.yearOfPassing),
-        percentage: toInputValue(qualification.percentage),
-        cgpa: toInputValue(qualification.cgpa),
-      }))
+      degree: qualification.degree || "",
+      specialization: qualification.specialization || "",
+      institutionName: qualification.institutionName || "",
+      institutionLocation: qualification.institutionLocation || "",
+      yearOfPassing: toInputValue(qualification.yearOfPassing),
+      percentage: toInputValue(qualification.percentage),
+      cgpa: toInputValue(qualification.cgpa),
+    }))
     : [{ ...emptyQualification }];
 
 const mapExperiences = (experiences = []) =>
   experiences.length
     ? experiences.map((experience) => ({
-        organization: experience.organization || "",
-        designation: experience.designation || "",
-        fromDate: toDateValue(experience.fromDate),
-        toDate: toDateValue(experience.toDate),
-        yearsOfExperience: toInputValue(experience.yearsOfExperience),
-      }))
+      organization: experience.organization || "",
+      designation: experience.designation || "",
+      fromDate: toDateValue(experience.fromDate),
+      toDate: toDateValue(experience.toDate),
+      yearsOfExperience: toInputValue(experience.yearsOfExperience),
+    }))
     : [{ ...emptyExperience }];
 
 const requiredByStep = {
@@ -219,7 +230,6 @@ const requiredByStep = {
     ["employeeCategory", "Employee Category"],
     ["doj", "Date of Joining"],
     ["designation", "Designation"],
-    ["jobTitle", "Job Title"],
     ["department", "Department"],
     ["shiftId", "Shift"],
   ],
@@ -276,12 +286,34 @@ const DropdownField = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [positionAbove, setPositionAbove] = useState(false);
+  const [expandedOption, setExpandedOption] = useState(null);
+  const [submenuPosition, setSubmenuPosition] = useState(null);
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
 
   const updateOpenState = (nextState) => {
     setIsOpen(nextState);
+    if (!nextState) {
+      setExpandedOption(null);
+      setSubmenuPosition(null);
+    }
     onOpenChange(nextState);
+  };
+
+  // Get display value
+  const getDisplayValue = () => {
+    if (typeof value === "string") {
+      // Check if it's a nested value
+      for (let option of options) {
+        if (option.submenu) {
+          const found = option.submenu.find((sub) => sub.value === value);
+          if (found) return found.label;
+        }
+        if (option.value === value) return option.label;
+      }
+      return value;
+    }
+    return value;
   };
 
   useEffect(() => {
@@ -295,12 +327,16 @@ const DropdownField = ({
     const dropdownHeight = Math.min(options.length * 44 + 8, 220);
 
     // Position above if not enough space below
-    setPositionAbove(spaceBelow < dropdownHeight + 16 && spaceAbove > dropdownHeight + 16);
+    setPositionAbove(
+      spaceBelow < dropdownHeight + 16 && spaceAbove > dropdownHeight + 16,
+    );
   }, [isOpen, options.length]);
+
+  const expandedOptionData = options.find((o) => (o.value || o) === expandedOption);
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <span className="mb-2 block text-[13px] font-semibold text-white">
+      <span className="mb-2 block text-[13px] font-semibold text-white ">
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
@@ -310,8 +346,8 @@ const DropdownField = ({
         className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
           }`}
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
-          {value || placeholder || `Select ${label.toLowerCase()}`}
+        <span className={getDisplayValue() ? "text-white" : "text-[#6f839f]"}>
+          {getDisplayValue() || placeholder || `Select ${label.toLowerCase()}`}
         </span>
         <ChevronDown
           size={16}
@@ -328,25 +364,93 @@ const DropdownField = ({
             onClick={() => updateOpenState(false)}
             aria-label="Close dropdown"
           />
-          <div className={`absolute left-0 right-0 z-40 max-h-[220px] overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
-            }`}>
-            {options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => {
-                  onChange(option);
-                  updateOpenState(false);
-                }}
-                className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
-                  ? "bg-[#132b49] text-white"
-                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
-                  }`}
-              >
-                {option}
-              </button>
-            ))}
+
+          <div
+            className={`absolute left-0 right-0 z-40 max-h-[220px]  overflow-y-auto rounded-lg border border-[#244061] bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
+              }`}
+          >
+            {options.map((option) => {
+              const displayLabel = option.label || option;
+              const displayValue = option.value || option;
+              const hasSubmenu = option.submenu && option.submenu.length > 0;
+              const isExpanded = expandedOption === displayValue;
+              const isNestedSelected =
+                hasSubmenu &&
+                option.submenu.some((subOption) => subOption.value === value);
+
+              return (
+                <div key={displayValue}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      if (hasSubmenu) {
+                        setExpandedOption((current) => (
+                          current === displayValue ? null : displayValue
+                        ));
+
+                        if (expandedOption !== displayValue) {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setSubmenuPosition({
+                            top: rect.top,
+                            left: rect.right,
+                            width: Math.max(220, rect.width),
+                          });
+                        } else {
+                          setSubmenuPosition(null);
+                        }
+                        return;
+                      }
+
+                      onChange(displayValue);
+                      updateOpenState(false);
+                    }}
+                    className={`flex items-center justify-between w-full px-4 py-3 text-left text-[13px] transition ${value === displayValue || isNestedSelected
+                      ? "bg-[#132b49] text-white"
+                      : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                      } ${hasSubmenu ? "cursor-pointer" : ""}`}
+                    aria-expanded={hasSubmenu ? isExpanded : undefined}
+                  >
+                    <span>{displayLabel}</span>
+                    {hasSubmenu && (
+                      <ChevronDown
+                        size={14}
+                        className={`transition ${isExpanded ? "rotate-180" : ""}`}
+                      />
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
+
+          {expandedOptionData?.submenu?.length > 0 && expandedOption && submenuPosition && (
+            <div
+              style={{
+                position: "fixed",
+                top: submenuPosition.top,
+                left: submenuPosition.left,
+                width: submenuPosition.width,
+              }}
+              className="z-[60] rounded-lg border border-[#244061] bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+            >
+              {expandedOptionData.submenu.map((subOption) => (
+                <button
+                  key={subOption.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(subOption.value);
+                    updateOpenState(false);
+                  }}
+                  className={`block w-full px-4 py-2.5 text-left text-[13px] transition ${value === subOption.value
+                    ? "bg-[#132b49] text-white"
+                    : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                    }`}
+                >
+                  {subOption.label}
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
@@ -939,8 +1043,8 @@ const AddFacultyForm = ({
       if (!response.ok) {
         throw new Error(
           data?.message ||
-            data?.error ||
-            `Unable to ${isEditMode ? "update" : "create"} faculty.`,
+          data?.error ||
+          `Unable to ${isEditMode ? "update" : "create"} faculty.`,
         );
       }
 
@@ -955,7 +1059,7 @@ const AddFacultyForm = ({
     } catch (error) {
       setSubmitError(
         error.message ||
-          `Something went wrong while ${isEditMode ? "updating" : "creating"} faculty.`,
+        `Something went wrong while ${isEditMode ? "updating" : "creating"} faculty.`,
       );
     } finally {
       setIsSubmitting(false);
@@ -1190,7 +1294,7 @@ const AddFacultyForm = ({
                   error={errors.designation}
                   placeholder="Assistant Professor"
                 />
-                <Field
+                {/* <Field
                   label="Job Title"
                   name="jobTitle"
                   required
@@ -1198,7 +1302,7 @@ const AddFacultyForm = ({
                   onChange={updateForm}
                   error={errors.jobTitle}
                   placeholder="Faculty"
-                />
+                /> */}
 
                 <DropdownField
                   label="Department"
@@ -1298,7 +1402,7 @@ const AddFacultyForm = ({
                           error={errors[`qualification-${index}-institutionName`]}
                           placeholder="Institution name"
                         />
-                        <Field
+                        {/* <Field
                           label="Institution Location"
                           name="institutionLocation"
                           value={qualification.institutionLocation}
@@ -1306,7 +1410,7 @@ const AddFacultyForm = ({
                             updateQualification(index, "institutionLocation", value)
                           }
                           placeholder="City"
-                        />
+                        /> */}
                         <Field
                           label="Year of Passing"
                           name="yearOfPassing"
@@ -1328,14 +1432,14 @@ const AddFacultyForm = ({
                             }
                             placeholder="85"
                           />
-                          <Field
+                          {/* <Field
                             label="CGPA"
                             name="cgpa"
                             type="number"
                             value={qualification.cgpa}
                             onChange={(_, value) => updateQualification(index, "cgpa", value)}
                             placeholder="8.5"
-                          />
+                          /> */}
                         </div>
                       </div>
                     </div>
@@ -1389,7 +1493,7 @@ const AddFacultyForm = ({
 
                       <div className="grid grid-cols-2 gap-4">
                         <Field
-                          label="Organization"
+                          label="Organization / Institution"
                           name="organization"
                           value={experience.organization}
                           onChange={(_, value) =>
