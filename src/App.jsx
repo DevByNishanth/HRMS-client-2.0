@@ -12,6 +12,7 @@ import PrincipalDashboard from "./pages/Dashboards/PRINCIPAL-Dashboard/Principal
 import PrincipalLeavePage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalLeavePage";
 import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPermissionPage";
 import FacultyManagementPage from "./pages/Dashboards/AdminDashboard/Faculty-Management/FacultyManagementPage";
+import HolidayManagement from "./pages/Dashboards/AdminDashboard/Holiday/HolidayManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 
@@ -147,6 +148,14 @@ function App() {
           element={
             <ProtectedRoute>
               <FacultyManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/holidays"
+          element={
+            <ProtectedRoute>
+              <HolidayManagement />
             </ProtectedRoute>
           }
         />

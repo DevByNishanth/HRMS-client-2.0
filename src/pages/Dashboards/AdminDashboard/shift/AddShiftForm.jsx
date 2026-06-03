@@ -19,8 +19,8 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
         graceTime: "",
         workingHours: "",
     });
-
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const isEdit = !!shiftData;
 
     useEffect(() => {
@@ -111,6 +111,8 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
         if (!validate()) return;
 
         try {
+            setLoading(true);
+
             const payload = {
                 shiftName: formData.shiftName,
                 startTime: formData.startTime,
@@ -122,18 +124,13 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
             if (isEdit) {
                 await updateShift(shiftData._id, payload);
-
                 console.log("Shift updated successfully");
             } else {
                 await createShifts(payload);
-
                 console.log("Shift created successfully");
             }
 
-            if (refreshShifts) {
-                refreshShifts();
-            }
-
+            refreshShifts?.();
             onClose();
         } catch (error) {
             console.error(error);
@@ -144,11 +141,14 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     error?.response?.data?.message ||
                     `Failed to ${isEdit ? "update" : "create"} shift`,
             }));
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
+
         {/* Backdrop */}
             <div className="absolute inset-0 " onClick={onClose} />
 
@@ -202,7 +202,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             value={formData.shiftName}
                             onChange={handleChange}
                             placeholder="Enter Shift Name"
-                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0f2749]
+                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0D2138]
                             ${
                                 errors.shiftName
                                 ? "border-red-500"
@@ -287,7 +287,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.graceTime}
                                 onChange={handleChange}
                                 placeholder="Enter Minutes"
-                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-[#0D2138] border border-blue-900 rounded-lg p-3 text-white outline-none
                                 ${
                                     errors.graceTime
                                     ? "border-red-500"
@@ -306,7 +306,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.workingHours}
                                 readOnly
                                 placeholder="Enter Hours"
-                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-[#0D2138] border border-blue-900 rounded-lg p-3 text-white outline-none
                                 ${
                                     errors.workingHours
                                     ? "border-red-500"
@@ -322,16 +322,45 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between gap-3">
                     <button
                         onClick={onClose}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700"
+                        disabled={loading}
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Cancel
                     </button>
 
                     <button
                         onClick={handleSubmit}
-                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
+                        disabled={loading}
+                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        {isEdit ? "Update Shift" : "Create Shift"}
+                        {loading ? (
+                            <>
+                                <svg
+                                    className="animate-spin h-4 w-4"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        className="opacity-25"
+                                    />
+                                    <path
+                                        fill="currentColor"
+                                        className="opacity-75"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                    />
+                                </svg>
+
+                                {isEdit ? "Updating..." : "Creating..."}
+                            </>
+                        ) : (
+                            isEdit ? "Update Shift" : "Create Shift"
+                        )}
                     </button>
                 </div>
             </div>
