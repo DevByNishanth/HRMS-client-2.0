@@ -12,8 +12,10 @@ import {
     Send,
     TimerReset,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import userImg from '../../../assets/userImg.svg';
+import { decodeToken, getTokenFromLocalStorage } from '../../../utils/tokenUtils';
+import axios from "axios";
 
 const statusStyles = {
     Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -419,6 +421,7 @@ const ConfirmationPopup = ({
     onReasonChange,
     onClose,
     onConfirm,
+    revokeLoading,
 }) => {
     if (!action || !request) return null;
 
@@ -456,10 +459,10 @@ const ConfirmationPopup = ({
                 </div>
 
                 <div className="px-5 py-4">
-                    <p className="text-[13px] leading-5 text-[#cad7eb]">{message}</p>
+                    {/* <p className="text-[13px] leading-5 text-[#cad7eb]">{message}</p> */}
 
                     {isReject && (
-                        <div className="mt-4">
+                        <div className="">
                             <label
                                 htmlFor="reject-reason"
                                 className="mb-2 block text-[13px] font-semibold text-white"
@@ -489,14 +492,13 @@ const ConfirmationPopup = ({
                     <button
                         type="button"
                         onClick={onConfirm}
-                        disabled={isReject && !reason.trim()}
-                        className={`h-10 rounded-md px-4 text-[13px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                            isRevoke
-                                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-                                : "bg-[#f16868] text-white hover:bg-[#d94f4f]"
-                        }`}
+                        disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
+                        className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
+                            ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+                            : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+                            }`}
                     >
-                        {isRevoke ? "Revoke Decision" : "Reject Request"}
+                        {isRevoke && revokeLoading ? <div className="loader"></div> : (isRevoke ? "Revoke Decision" : "Reject Request")}
                     </button>
                 </div>
             </div>
@@ -505,8 +507,15 @@ const ConfirmationPopup = ({
 };
 
 const HodLeaveRequestTable = () => {
+
+    // Auth 
+    const token = getTokenFromLocalStorage();
+    let decodedData = decodeToken(token);
+    let dept = decodedData ? decodedData.department : null;
+    console.log(decodedData);
+
     // States
-    const [requests, setRequests] = useState(leaveRequests);
+    const [requests, setRequests] = useState([]);
     const [filterLeaveType, setFilterLeaveType] = useState("All");
     const [filterStatus, setFilterStatus] = useState("All");
     const [filterDate, setFilterDate] = useState(null);
@@ -514,6 +523,8 @@ const HodLeaveRequestTable = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [confirmation, setConfirmation] = useState(null);
     const [rejectReason, setRejectReason] = useState("");
+    const [approveLoading, setApproveLoading] = useState(false);
+    const [revokeLoading, setRevokeLoading] = useState(false);
 
     // Get unique leave types
     const leaveTypes = ["All", ...new Set(requests.map((request) => request.type))];
@@ -526,8 +537,10 @@ const HodLeaveRequestTable = () => {
             const statusMatch = filterStatus === "All" || request.status === filterStatus;
 
             // Parse request dates for comparison
-            const requestDate = new Date(request.date.split(" - ")[0]);
-            const filterDateCheck = !filterDate || requestDate.toDateString() === filterDate.toDateString();
+            const requestFromDate = request.fromDate || request.from || (request.date ? new Date(request.date.split(" - ")[0]) : null);
+            const filterDateCheck =
+                !filterDate ||
+                (requestFromDate && new Date(requestFromDate).toDateString() === filterDate.toDateString());
 
             return leaveTypeMatch && statusMatch && filterDateCheck;
         });
@@ -551,12 +564,35 @@ const HodLeaveRequestTable = () => {
         return reason;
     };
 
-    const handleApprove = (request) => {
-        setRequests((currentRequests) =>
-            currentRequests.map((item) =>
-                item === request ? { ...item, status: "Approved", rejectionReason: "" } : item
-            )
-        );
+
+    async function fetchLeaveRequests() {
+        console.log("fetching req")
+        const reponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`, {
+            headers: {
+                Authorization: `Bearer ${getTokenFromLocalStorage()}`
+            }
+        });
+        console.log(reponse.data);
+        setRequests(reponse.data?.leaveApplications);
+    }
+
+
+    const handleApprove = async (request) => {
+        console.log("request id:", request?._id);
+        try {
+            setApproveLoading(true);
+            const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${request?._id}/approve`, {}, {
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`
+                }
+            })
+            console.log("leave approved : ", res);
+            await fetchLeaveRequests();
+            setApproveLoading(false);
+        } catch (error) {
+            console.error("Error approving leave:", error);
+            setApproveLoading(false);
+        }
     };
 
     const handleReject = (request) => {
@@ -577,52 +613,70 @@ const HodLeaveRequestTable = () => {
         setRejectReason("");
     };
 
-    const handleConfirmAction = () => {
+    const handleConfirmAction = async () => {
         if (!confirmation) return;
 
-        setRequests((currentRequests) =>
-            currentRequests.map((item) => {
-                if (item !== confirmation.request) return item;
+        try {
+            if (confirmation.action === "reject") {
+                // Call API to reject leave
+                await axios.patch(
+                    `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${confirmation.request?._id}/reject`,
+                    { remarks: rejectReason.trim() },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${getTokenFromLocalStorage()}`
+                        }
+                    }
+                );
+                console.log("leave rejected");
+            } else if (confirmation.action === "revoke") {
+                // Call API to revoke leave decision
+                setRevokeLoading(true);
+                const res = await axios.patch(
+                    `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${confirmation.request?._id}/revoke-hod`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${getTokenFromLocalStorage()}`
+                        }
+                    }
+                );
+                console.log("leave decision revoked: ", res);
+                setRevokeLoading(false);
+            }
 
-                if (confirmation.action === "reject") {
-                    return {
-                        ...item,
-                        status: "Rejected",
-                        rejectionReason: rejectReason.trim(),
-                    };
-                }
-
-                return {
-                    ...item,
-                    status: "Pending",
-                    rejectionReason: "",
-                };
-            })
-        );
-
-        if (selectedRequest === confirmation.request) {
-            setSelectedRequest((currentRequest) => {
-                if (!currentRequest) return currentRequest;
-
-                if (confirmation.action === "reject") {
-                    return {
-                        ...currentRequest,
-                        status: "Rejected",
-                        rejectionReason: rejectReason.trim(),
-                    };
-                }
-
-                return {
-                    ...currentRequest,
-                    status: "Pending",
-                    rejectionReason: "",
-                };
-            });
+            // Refresh the table after action
+            await fetchLeaveRequests();
+            closeConfirmation();
+        } catch (error) {
+            console.error("Error confirming action:", error);
+            setRevokeLoading(false);
         }
-
-        closeConfirmation();
     };
 
+
+    // format date 
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+
+    // API calls ================================ 
+
+
+    useEffect(() => {
+        if (dept) {
+            const run = async () => {
+                await fetchLeaveRequests();
+            };
+            run();
+        }
+    }, [dept])
     return (
         <>
             <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
@@ -687,8 +741,8 @@ const HodLeaveRequestTable = () => {
                             <tr>
                                 <th className="px-4 py-3 font-semibold">Name</th>
                                 <th className="px-4 py-3 font-semibold">Leave Type</th>
-                                <th className="px-4 py-3 font-semibold">Date</th>
-                                <th className="px-4 py-3 font-semibold">Duration</th>
+                                <th className="px-4 py-3 font-semibold">From Date</th>
+                                <th className="px-4 py-3 font-semibold">To Date</th>
                                 <th className="px-4 py-3 font-semibold">Reason</th>
                                 <th className="px-4 py-3 font-semibold">Status</th>
                                 <th className="px-4 py-3 text-right font-semibold">Action</th>
@@ -707,16 +761,16 @@ const HodLeaveRequestTable = () => {
                                                     <img src={userImg} alt="" className="h-10 w-10 rounded-full object-cover" />
                                                 </span>
                                                 <div className="flex flex-col">
-                                                    {request.name}
-                                                    <p className="text-[#8ca1bd]">{request.designation}</p>
+                                                    {request.facultyId?.firstName} {request.facultyId?.lastName}
+                                                    <p className="text-[#8ca1bd]">{request.facultyId?.designation}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2">{request.type}</td>
-                                        <td className="px-4 py-2">{request.date}</td>
-                                        <td className="px-4 py-2 font-semibold text-[#18d3bf]">{request.duration}</td>
-                                        <td className="px-4 py-2" title={request.reason}>
-                                            {truncateReason(request.reason)}
+                                        <td className="px-4 py-2">{request.leaveTypeId?.leaveName}</td>
+                                        <td className="px-4 py-2">{formatDate(request.fromDate || request.from || request.date) || request.fromDate || request.from || request.date}</td>
+                                        <td className="px-4 py-2">{formatDate(request.toDate || request.to || request.date) || request.toDate || request.to || request.date}</td>
+                                        <td className="px-4 py-2 truncate max-w-[120px]" title={request.reason}>
+                                            {request.reason}
                                         </td>
                                         <td className="px-4 py-2">
                                             <span
@@ -727,11 +781,12 @@ const HodLeaveRequestTable = () => {
                                                 {request.status}
                                             </span>
                                         </td>
+
                                         <td className="px-4 py-4">
                                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                                                {request.status === "Pending" ? (
+                                                {request.currentApprovalLevel === "hod" && request.status === "Pending" ? (
                                                     <>
-                                                        <button
+                                                        {approveLoading ? <div className="loader"></div> : <button
                                                             type="button"
                                                             onClick={() => handleApprove(request)}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
@@ -739,7 +794,7 @@ const HodLeaveRequestTable = () => {
                                                             title="Approve"
                                                         >
                                                             <Check className="h-4 w-4" />
-                                                        </button>
+                                                        </button>}
                                                         <button
                                                             type="button"
                                                             onClick={() => handleReject(request)}
@@ -751,16 +806,16 @@ const HodLeaveRequestTable = () => {
                                                         </button>
                                                     </>
                                                 ) : (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleRevoke(request)}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                                                            aria-label="Revoke leave decision"
-                                                            title={`Revoke ${request.status}`}
-                                                        >
-                                                            <RotateCcw className="h-4 w-4" />
-                                                        </button>
-                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRevoke(request)}
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                                                        aria-label="Revoke leave decision"
+                                                        title={`Revoke ${request.status}`}
+                                                    >
+                                                        <RotateCcw className="h-4 w-4" />
+                                                    </button>
+                                                )}
                                                 <button
                                                     type="button"
                                                     onClick={() => handleView(request)}
@@ -797,6 +852,7 @@ const HodLeaveRequestTable = () => {
                 onReasonChange={setRejectReason}
                 onClose={closeConfirmation}
                 onConfirm={handleConfirmAction}
+                revokeLoading={revokeLoading}
             />
         </>
     );

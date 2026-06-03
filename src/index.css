@@ -22,7 +22,6 @@ body {
   );
 }
 
-
 .table-custom-scrollbar {
   overflow-y: auto;
 }
@@ -43,6 +42,26 @@ body {
   scrollbar-color: #d8d2dab6 transparent;
 }
 
-input::-webkit-inner-spin-button{
+input::-webkit-inner-spin-button {
   display: none;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 20px;
+  padding: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #e9e9e9;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
 }
