@@ -1,0 +1,5 @@
+- [x] Inspect AddFacultyForm.jsx dropdown implementation for Employee Category nested submenu
+- [x] Implement overlay-positioned nested submenu in DropdownField using getBoundingClientRect + position: fixed
+- [x] Ensure z-index and clipping issues are resolved
+- [ ] Quick manual test: Employee Category -> Sub-Staff -> Driver/Housekeeping
+- [ ] (Optional) Validate behavior for clicks outside/closing submenu

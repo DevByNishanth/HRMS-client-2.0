@@ -115,7 +115,7 @@ const Sidebar = () => {
                     })}
                 </div>
                 <div className="btn-container absolute bottom-4 w-full px-4">
-                    <button 
+                    <button
                         onClick={() => {
                             logout();
                             navigate('/');

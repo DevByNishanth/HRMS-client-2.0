@@ -34,6 +34,7 @@ const CustomDatePicker = ({
     onChange,
     placeholder = "Select date",
     popupAlign = "left",
+    minDate = null,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [viewDate, setViewDate] = useState(value || new Date());
@@ -70,7 +71,18 @@ const CustomDatePicker = ({
         && value.getDate() === date.getDate()
     );
 
+    const isBeforeMinDate = (date) => {
+        if (!date || !minDate) return false;
+
+        const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const minimumDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+
+        return currentDate < minimumDate;
+    };
+
     const handleSelectDate = (date) => {
+        if (isBeforeMinDate(date)) return;
+
         onChange(date);
         setIsOpen(false);
     };
@@ -128,20 +140,24 @@ const CustomDatePicker = ({
                             </span>
                         ))}
 
-                        {calendarDays.map((date, index) => (
-                            <button
-                                key={date ? date.toISOString() : `empty-${index}`}
-                                type="button"
-                                disabled={!date}
-                                onClick={() => handleSelectDate(date)}
-                                className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
-                                        ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                        : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
-                                    } disabled:pointer-events-none disabled:opacity-0`}
-                            >
-                                {date?.getDate()}
-                            </button>
-                        ))}
+                        {calendarDays.map((date, index) => {
+                            const isDisabled = !date || isBeforeMinDate(date);
+
+                            return (
+                                <button
+                                    key={date ? date.toISOString() : `empty-${index}`}
+                                    type="button"
+                                    disabled={isDisabled}
+                                    onClick={() => handleSelectDate(date)}
+                                    className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
+                                            ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                            : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
+                                        } ${date && isDisabled ? "cursor-not-allowed text-[#4f5f7f] opacity-40" : ""} disabled:pointer-events-none ${!date ? "disabled:opacity-0" : ""}`}
+                                >
+                                    {date?.getDate()}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             )}

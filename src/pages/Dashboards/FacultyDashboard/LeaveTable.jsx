@@ -1,10 +1,12 @@
 import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { getRoleFromToken } from "../../../utils/tokenUtils";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import HodLeaveRequestTable from "./HodLeaveRequestTable";
+import axios from "axios";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -289,12 +291,11 @@ const FilterDatePicker = ({
 };
 
 const LeaveTable = () => {
+  // params and url 
   const location = useLocation();
 
-  // Auth 
-  // roles hardcoded for temporary
-
-  const role = "hod"
+  // getting role from token 
+  const role = getRoleFromToken()?.toLowerCase();
 
   // states 
   const [selectedLeave, setSelectedLeave] = useState(null);
@@ -305,6 +306,8 @@ const LeaveTable = () => {
   const [filterToDate, setFilterToDate] = useState(null);
   const [openDateFilter, setOpenDateFilter] = useState(null);
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
+
+  const [leaves, setLeaves] = useState([]);
 
   // tab data's
   const hodTabs = ["My Leaves", "Team Leaves"];
@@ -324,15 +327,30 @@ const LeaveTable = () => {
       const leaveTypeMatch = filterLeaveType === "All" || leave.type === filterLeaveType;
       const statusMatch = filterStatus === "All" || leave.status === filterStatus;
 
-      // Parse leave dates for comparison (format: "Oct 24, 2023")
-      const leaveFromDate = new Date(leave.from);
-      const leaveToDate = new Date(leave.to);
-      const filterFromDateCheck = !filterFromDate || leaveFromDate >= filterFromDate;
-      const filterToDateCheck = !filterToDate || leaveToDate <= filterToDate;
+      // Normalize dates to midnight UTC for fair comparison
+      const normalizeDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+      };
+
+      const leaveFromDate = normalizeDate(leave.fromDate);
+      const leaveToDate = normalizeDate(leave.toDate);
+      
+      // Create normalized filter dates
+      const filterFromNormalized = filterFromDate
+        ? new Date(Date.UTC(filterFromDate.getFullYear(), filterFromDate.getMonth(), filterFromDate.getDate()))
+        : null;
+      const filterToNormalized = filterToDate
+        ? new Date(Date.UTC(filterToDate.getFullYear(), filterToDate.getMonth(), filterToDate.getDate()))
+        : null;
+
+      // Check if leave falls within filter date range
+      const filterFromDateCheck = !filterFromNormalized || leaveFromDate >= filterFromNormalized;
+      const filterToDateCheck = !filterToNormalized || leaveToDate <= filterToNormalized;
 
       return leaveTypeMatch && statusMatch && filterFromDateCheck && filterToDateCheck;
     });
-  }, [filterLeaveType, filterStatus, filterFromDate, filterToDate]);
+  }, [filterLeaveType, filterStatus, filterFromDate, filterToDate, leaves]);
 
   const resetFilters = () => {
     setFilterLeaveType("All");
@@ -345,6 +363,48 @@ const LeaveTable = () => {
   const hasActiveFilters =
     (filterLeaveType !== "All") || (filterStatus !== "All") || filterFromDate || filterToDate;
 
+
+
+  // functions =========================================  
+
+  // format date 
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+
+  function daysLable(totalDays) {
+    if (totalDays == 1) return "Day"
+    return "Days"
+  }
+
+
+  // ============================== API calls ===========================================  
+
+  // api calling functions 
+  async function fetchLeaves() {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
+        }
+      });
+      setLeaves(response.data.leaveApplications);
+      console.log("Leaves fetched successfully:", response.data);
+    } catch (err) {
+      console.error("Error fetching leaves:", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchLeaves()
+  }, [])
   return (
     <>
 
@@ -448,7 +508,6 @@ const LeaveTable = () => {
             </div>
           </div>
         </div>
-
         <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[760px] border-collapse text-left">
             <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
@@ -474,10 +533,10 @@ const LeaveTable = () => {
                       key={`${leave.type}-${leave.from}-${index}`}
                       className="border-b border-[#132944] last:border-0"
                     >
-                      <td className="px-4 py-2 font-semibold text-white">{leave.type}</td>
-                      <td className="px-4 py-2">{leave.from}</td>
-                      <td className="px-4 py-2">{leave.to}</td>
-                      <td className="px-4 py-2 font-semibold text-[#18d3bf]">{leave.duration}</td>
+                      <td className="px-4 py-2 font-semibold text-white">{leave?.leaveTypeId?.leaveName}</td>
+                      <td className="px-4 py-2">{formatDate(leave.fromDate)}</td>
+                      <td className="px-4 py-2">{formatDate(leave.toDate)}</td>
+                      <td className="px-4 py-2 font-semibold text-[#18d3bf]">{leave.totalDays} {daysLable(leave.totalDays)}</td>
                       <td className="px-4 py-2">
                         <span
                           className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[leave.status]}`}
@@ -497,7 +556,7 @@ const LeaveTable = () => {
                             <Eye className="h-4 w-4" />
                           </button>
 
-                          {leave.status === "Pending" && (
+                          {leave.status === "Pending" && leave.currentApprovalLevel == "hod" && (
                             <button
                               type="button"
                               onClick={() => setWithdrawLeave(leaveWithColor)}
@@ -524,7 +583,7 @@ const LeaveTable = () => {
         </div>
 
         <LeaveDetailsPopup leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
-        <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} />
+        <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} fetchLeaves={fetchLeaves} />
       </section> : <HodLeaveRequestTable />
       }
       {/* Hod requests table */}

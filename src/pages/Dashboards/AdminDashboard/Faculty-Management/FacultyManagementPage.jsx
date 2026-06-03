@@ -331,7 +331,7 @@ const FacultyManagementPage = () => {
                                         {facultyError}
                                     </div>
                                 )}
-                                <table className="w-full min-w-[980px] table-fixed border-collapse text-left">
+                                <table className="w-full table-fixed border-collapse text-left">
                                     <colgroup>
                                         <col className="w-[24%]" />
                                         <col className="w-[12%]" />
