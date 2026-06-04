@@ -162,7 +162,7 @@ export default function LeaveTypeBody() {
                                     </th>
 
                                     <th className="px-5 py-4">
-                                        Days / Year
+                                        Number of Days
                                     </th>
 
                                     <th className="px-5 py-4">
@@ -170,11 +170,11 @@ export default function LeaveTypeBody() {
                                     </th>
 
                                     <th className="px-5 py-4">
-                                        Paid
+                                        Carry Forward Allowed
                                     </th>
 
                                     <th className="px-5 py-4">
-                                        Approval
+                                        Max Carry Forward
                                     </th>
 
                                     <th className="px-5 py-4 text-center">
@@ -241,15 +241,13 @@ export default function LeaveTypeBody() {
                                                 </td>
 
                                                 <td className="px-5 py-3">
-                                                    {leave.isPaidLeave
-                                                        ? "Yes"
-                                                        : "No"}
+                                                    {leave.carryForwardAllowed ? "Yes" : "No"}
                                                 </td>
 
                                                 <td className="px-5 py-3">
-                                                    {leave.requiresApproval
-                                                        ? "Yes"
-                                                        : "No"}
+                                                    {leave.carryForwardAllowed
+                                                        ? leave.maxCarryForwardDays ?? "-"
+                                                        : "-"}
                                                 </td>
 
                                                 <td className="px-5 py-3">
