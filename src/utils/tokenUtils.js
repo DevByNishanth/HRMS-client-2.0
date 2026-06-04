@@ -48,7 +48,7 @@ export const isTokenValid = () => {
 export const getRoleBasedRoute = () => {
   const role = getRoleFromToken();
   switch (role?.toLowerCase()) {
-    case "admin":
+    case "hr":
       return "/dashboard-admin";
     case "faculty":
       return "/dashboard-faculty";

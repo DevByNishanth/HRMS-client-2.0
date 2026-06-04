@@ -27,6 +27,7 @@ function App() {
     const role = getRoleFromToken();
     switch (role?.toLowerCase()) {
       case 'admin':
+      case 'hr':
         return '/dashboard-admin';
       case 'faculty':
         return '/dashboard-faculty';
@@ -111,7 +112,7 @@ function App() {
         <Route
           path="/dashboard-admin"
           element={
-            <ProtectedRoute requiredRoles={['admin']}>
+            <ProtectedRoute requiredRoles={['admin', 'hr']}>
               <FacultyManagementPage />
             </ProtectedRoute>
           }
@@ -119,7 +120,7 @@ function App() {
         <Route
           path="/dashboard-admin/shifts"
           element={
-            <ProtectedRoute requiredRoles={['admin']}>
+            <ProtectedRoute requiredRoles={['admin', 'hr']}>
               <ShiftManagement />
             </ProtectedRoute>
           }

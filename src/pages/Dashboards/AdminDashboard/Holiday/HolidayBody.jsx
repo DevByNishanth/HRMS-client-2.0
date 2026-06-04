@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
 import AddHoliday from "./AddHoliday";
-import { Pencil, Trash2 } from "lucide-react";
-
+import { Pencil, Trash2, X } from "lucide-react";
 import { getHolidays } from "../../../../services/holiday/getHolidayService";
 import { deleteHoliday } from "../../../../services/holiday/deleteHolidayService";
+import CustomDropdown from "../../../../components/CustomDropdown";
+import CustomDatePicker from "../../../../components/CustomDatePicker";
+
 
 export default function HolidayBody() {
     const [showDrawer, setShowDrawer] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const [holidays, setHolidays] = useState([]);
     const [selectedHoliday, setSelectedHoliday] = useState(null);
-
     const [deletingHoliday, setDeletingHoliday] = useState(null);
     const [isDeletingHoliday, setIsDeletingHoliday] = useState(false);
     const [deleteError, setDeleteError] = useState("");
-
     const [searchTerm, setSearchTerm] = useState("");
+    // const [holidayDateFilter, setHolidayDateFilter] = useState("");
+    const [employeeCategoryFilter, setEmployeeCategoryFilter] = useState("");
+    const [holidayTypeFilter, setHolidayTypeFilter] = useState("");
+    const [holidayDateFilter, setHolidayDateFilter] = useState(null);
 
     useEffect(() => {
         fetchHolidays();
@@ -69,11 +72,66 @@ export default function HolidayBody() {
         }
     };
 
-    const filteredHolidays = holidays.filter((holiday) =>
-        holiday.holidayName
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase())
-    );
+    const employeeCategories = [
+        ...new Set(
+            holidays.flatMap(
+                (holiday) => holiday.applicableEmployeeCategories || []
+            )
+        ),
+    ];
+
+    const holidayTypes = [
+        ...new Set([
+            ...holidays
+                .map((holiday) => holiday.holidayType)
+                .filter(Boolean),
+            "College",
+        ]),
+    ];
+
+    const filteredHolidays = holidays.filter((holiday) => {
+        const matchesSearch =
+            holiday.holidayName
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase());
+
+        const matchesDate =
+            !holidayDateFilter ||
+            (() => {
+                const holidayDate = new Date(holiday.holidayDate);
+
+                return (
+                    holidayDate.getDate() === holidayDateFilter.getDate() &&
+                    holidayDate.getMonth() === holidayDateFilter.getMonth() &&
+                    holidayDate.getFullYear() === holidayDateFilter.getFullYear()
+                );
+        })();
+
+        const matchesCategory =
+            !employeeCategoryFilter ||
+            employeeCategoryFilter === "All" ||
+            holiday.applicableEmployeeCategories?.includes(
+                employeeCategoryFilter
+            );
+
+        const matchesType =
+            !holidayTypeFilter ||
+            holidayTypeFilter === "All" ||
+            holiday.holidayType === holidayTypeFilter;
+
+        return (
+            matchesSearch &&
+            matchesDate &&
+            matchesCategory &&
+            matchesType
+        );
+    });
+
+    const hasActiveFilters =
+        searchTerm ||
+        holidayDateFilter ||
+        employeeCategoryFilter ||
+        holidayTypeFilter;
 
     return (
         <div className="p-6">
@@ -97,20 +155,63 @@ export default function HolidayBody() {
             </div>
 
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
-                <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex items-center justify-between gap-4">
-                    <h1 className="shrink-0 text-[18px] font-semibold text-white">
-                        Holiday List
-                    </h1>
+                <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h1 className="shrink-0 text-[18px] font-semibold text-white">
+                            Holiday List
+                        </h1>
+                    </div>
 
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) =>
-                            setSearchTerm(e.target.value)
-                        }
-                        className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                        placeholder="Search Holiday Name"
-                    />
+                    <div className="flex flex-wrap items-center gap-3">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                            }
+                            className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                            placeholder="Search Holiday Name..."
+                        />
+                        <div className="w-[180px]">
+                            <CustomDatePicker
+                                value={holidayDateFilter}
+                                onChange={setHolidayDateFilter}
+                                placeholder="Holiday Date"
+                            />
+                        </div>
+
+                        <div className="w-[220px]">
+                            <CustomDropdown
+                                value={employeeCategoryFilter}
+                                placeholder="Employee Categories"
+                                options={employeeCategories}
+                                onChange={setEmployeeCategoryFilter}
+                            />
+                        </div>
+
+                        <div className="w-[180px]">
+                            <CustomDropdown
+                                value={holidayTypeFilter}
+                                placeholder="Holiday Types"
+                                options={holidayTypes}
+                                onChange={setHolidayTypeFilter}
+                            />
+                        </div>
+
+                        {hasActiveFilters && (
+                            <button
+                                onClick={() => {
+                                    setSearchTerm("");
+                                    setHolidayDateFilter(null);
+                                    setEmployeeCategoryFilter("");
+                                    setHolidayTypeFilter("");
+                                }}
+                                className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                            >
+                                Reset Filters <X className="w-5 h-5"/>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="overflow-hidden">
@@ -127,29 +228,14 @@ export default function HolidayBody() {
                         <table className="w-full table-auto border-collapse text-left">
                             <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
                                 <tr>
-                                    <th className="px-5 py-4 font-semibold">
-                                        Holiday Name
-                                    </th>
-
-                                    <th className="px-5 py-4 font-semibold">
-                                        Holiday Date
-                                    </th>
-
-                                    <th className="px-5 py-4 font-semibold">
-                                        Employee Category
-                                    </th>
-
-                                    <th className="px-5 py-4 font-semibold">
-                                        Holiday Type
-                                    </th>
-
-                                    <th className="px-5 py-4 font-semibold">
+                                    <th className="px-5 py-4 w-[25%] font-semibold">Holiday Name</th>
+                                    <th className="px-5 py-4 w-[25%] font-semibold">Holiday Date</th>
+                                    <th className="px-5 py-4 w-[25%] font-semibold">Employee Category</th>
+                                    <th className="px-5 py-4 w-[20%] font-semibold">Holiday Type</th>
+                                    {/* <th className="px-5 py-4 font-semibold">
                                         Description
-                                    </th>
-
-                                    <th className="px-5 py-4 font-semibold text-center">
-                                        Actions
-                                    </th>
+                                    </th> */}
+                                    <th className="px-5 py-4 w-[25%] font-semibold text-center">Actions</th>
                                 </tr>
                             </thead>
 
@@ -200,9 +286,9 @@ export default function HolidayBody() {
                                                 {holiday.holidayType}
                                             </td>
 
-                                            <td className="px-5 py-3 max-w-[250px] truncate">
+                                            {/* <td className="px-5 py-3 max-w-[250px] truncate">
                                                 {holiday.description}
-                                            </td>
+                                            </td> */}
 
                                             <td className="px-5 py-3">
                                                 <div className="flex items-center justify-center gap-3">
@@ -246,6 +332,7 @@ export default function HolidayBody() {
                         {showDrawer && (
                             <AddHoliday
                                 holidayData={selectedHoliday}
+                                holidays={holidays}
                                 refreshHolidays={fetchHolidays}
                                 onClose={() => {
                                     setShowDrawer(false);

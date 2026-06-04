@@ -57,7 +57,7 @@ const Sidebar = () => {
         case 'hod':
             navItems = hodNavItems;
             break;
-        case 'admin':
+        case 'hr':
             navItems = adminNavItems;
             break;
         case 'principal':
