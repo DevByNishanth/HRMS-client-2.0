@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import logo from '../assets/logo.svg'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2  } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass} from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
@@ -35,6 +35,7 @@ const Sidebar = () => {
         { label: 'Shift Management', icon: CalendarSync, path: '/dashboard-admin/shifts' },
         { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
         { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
+        { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
     ];
 
     // Navigation items for Principal

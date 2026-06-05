@@ -9,6 +9,8 @@ console.log("API_URL =", API_URL);
 export const createLeaveType = async (leaveTypeData) => {
     const token = localStorage.getItem("hrms_token");
     console.log("TOKEN:", token);
+    console.log("API_URL:", API_URL);
+    console.log("Sending Payload:", leaveTypeData);
 
     const response = await axios.post(
         API_URL,

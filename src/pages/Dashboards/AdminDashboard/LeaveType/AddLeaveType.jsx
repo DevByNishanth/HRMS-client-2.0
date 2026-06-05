@@ -24,13 +24,14 @@ export default function AddLeaveType({
         // requiresApproval: true,
         // isPaidLeave: true,
         carryForwardAllowed: true,
-        maximumCarryForwardAllowed: "",
+        maxCarryForwardDays: "",
         allowHalfDay: true,
         sandwichRuleApplicable: true,
     });
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState("");
 
     useEffect(() => {
         if (leaveTypeData) {
@@ -47,8 +48,8 @@ export default function AddLeaveType({
                 //     leaveTypeData.isPaidLeave ?? true,
                 carryForwardAllowed:
                     leaveTypeData.carryForwardAllowed ?? true,
-                maximumCarryForwardAllowed:
-                    leaveTypeData.maximumCarryForwardAllowed || "",
+                maxCarryForwardDays:
+                    leaveTypeData.maxCarryForwardDays || "",
                 allowHalfDay:
                     leaveTypeData.allowHalfDay ?? true,
                 sandwichRuleApplicable:
@@ -140,12 +141,12 @@ export default function AddLeaveType({
 
         if (
             formData.carryForwardAllowed &&
-            (formData.maximumCarryForwardAllowed === "" ||
+            (formData.maxCarryForwardDays === "" ||
                 Number(
-                    formData.maximumCarryForwardAllowed
+                    formData.maxCarryForwardDays
                 ) < 0)
         ) {
-            newErrors.maximumCarryForwardAllowed =
+            newErrors.maxCarryForwardDays =
                 "Enter valid carry forward days";
         }
 
@@ -156,7 +157,6 @@ export default function AddLeaveType({
 
     const handleSubmit = async () => {
         if (!validate()) return;
-
         const payload = {
             leaveName: formData.leaveName,
             leaveCategory: formData.leaveCategory,
@@ -167,13 +167,14 @@ export default function AddLeaveType({
             isPaidLeave: true,
             carryForwardAllowed:
                 formData.carryForwardAllowed,
-            maximumCarryForwardAllowed:
-                Number(formData.maximumCarryForwardAllowed) ||
+            maxCarryForwardDays:
+                Number(formData.maxCarryForwardDays) ||
                 0,
             allowHalfDay: formData.allowHalfDay,
             sandwichRuleApplicable:
                 formData.sandwichRuleApplicable,
         };
+        console.log("Payload:", payload);
 
         try {
             setLoading(true);
@@ -190,7 +191,15 @@ export default function AddLeaveType({
             refreshLeaveTypes?.();
             onClose();
         } catch (error) {
-            console.error(error);
+                setApiError(
+                    error.response?.data?.message ||
+                    "Failed to create leave name"
+                );
+                console.log("Error Status:", error.response?.status);
+                console.log("Error Data:", error.response?.data);
+                console.log("Full Error Response:", error.response);
+
+                console.error(error);
         } finally {
             setLoading(false);
         }
@@ -365,9 +374,9 @@ export default function AddLeaveType({
                             <input
                                 type="number"
                                 min="0"
-                                name="maximumCarryForwardAllowed"
+                                name="maxCarryForwardDays"
                                 value={
-                                    formData.maximumCarryForwardAllowed
+                                    formData.maxCarryForwardDays
                                 }
                                 onChange={handleChange}
                                 placeholder="Enter Days"
@@ -376,7 +385,7 @@ export default function AddLeaveType({
 
                             <ErrorMsg
                                 msg={
-                                    errors.maximumCarryForwardAllowed
+                                    errors.maxCarryForwardDays
                                 }
                             />
                         </div>
@@ -392,6 +401,11 @@ export default function AddLeaveType({
                         field="sandwichRuleApplicable"
                     />
                 </div>
+                {apiError && (
+                    <p className="text-red-400 text-sm px-6">
+                        {apiError}
+                    </p>
+                )}
 
                 {/* Footer */}
                 <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
@@ -417,7 +431,9 @@ export default function AddLeaveType({
                             : "Create Leave Type"}
                     </button>
                 </div>
+                
             </div>
+            
         </div>
     );
 }
