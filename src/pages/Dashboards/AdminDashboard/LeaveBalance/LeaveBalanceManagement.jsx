@@ -1,7 +1,7 @@
-import React from 'react'
+import React,{useState} from 'react'
 import Sidebar from '../../../../components/Siedbar'
 import CommonHeader from '../../../../components/CommonHeader'
-// import LeaveTypeBody from './LeaveTypeBody'
+import LeaveBalanceBody from './LeaveBalanceBody'
 
 export default function LeaveTypeManagement() {
   return (
@@ -9,7 +9,7 @@ export default function LeaveTypeManagement() {
       <Sidebar/>
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        {/* <LeaveTypeBody /> */}
+        <LeaveBalanceBody /> 
       </div>
     </div>
   )

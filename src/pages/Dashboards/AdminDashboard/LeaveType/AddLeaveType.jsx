@@ -67,13 +67,16 @@ export default function AddLeaveType({
 
     const leaveNameOptions = [
         "Casual Leave",
-        "On-Duty",
+        "On Duty - Official",
+        "On Duty - Research",
+        "On Duty - Exam",
         "Medical Leave",
         "Vacation Leave",
         "Marriage Leave",
         "Compensation Leave",
         "Paternity Leave",
         "Maternity Leave",
+        "LOP",
     ];
 
     const leaveCategories = [
@@ -129,14 +132,6 @@ export default function AddLeaveType({
         if (!formData.resetFrequency) {
             newErrors.resetFrequency =
                 "Reset Frequency is required";
-        }
-
-        if (
-            formData.daysPerYear === "" ||
-            Number(formData.daysPerYear) <= 0
-        ) {
-            newErrors.daysPerYear =
-                "Days Per Year must be greater than 0";
         }
 
         if (
