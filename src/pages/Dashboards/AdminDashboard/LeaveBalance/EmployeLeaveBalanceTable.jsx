@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getEmployeLeaveBalance } from "../../../../services/LeaveBalance/getEmployeLeaveBalanceService";
+import { Pencil } from "lucide-react";
+import UpdateEmployeeLeaveBalance from "./updateEmployeLeaveBlance";
 
 export default function EmployeLeaveBalanceTable({
     employee,
@@ -50,75 +52,108 @@ export default function EmployeLeaveBalanceTable({
 
     return (
         <div className="mt-4">
-            {/* <div className="mb-4 rounded-lg bg-[#0d2138] p-4 text-white">
-                <h3 className="text-lg font-semibold">
-                    {employee.name}
-                </h3>
+            <div className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
+                {/* <div className="px-7 pt-7 pb-3"> */}
+                    {/* <h1 className="text-[18px] font-semibold text-white">
+                        Leave Balance
+                    </h1> */}
+                {/* </div> */}
 
-                <p className="text-sm text-gray-400">
-                    {employee.empId}
-                </p>
+                <div
+                    className="
+                        max-h-[420px]
+                        overflow-y-auto
+                        scrollbar-thin
+                        scrollbar-track-[#0a1a2d]
+                        scrollbar-thumb-[#244061]
+                    "
+                >
+                    <table className="w-full table-auto border-collapse text-left">
+                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
+                            <tr>
+                                <th className="px-5 py-4 rounded-tl-xl">
+                                    Leave Type
+                                </th>
 
-                <p className="text-sm text-gray-400">
-                    {employee.department}
-                </p>
-            </div> */}
+                                <th className="px-5 py-4">
+                                    Allocated
+                                </th>
 
-            <table className="w-full border-collapse text-white">
-                <thead>
-                    <tr className="bg-[#0d2138]">
-                        <th className="p-3 text-left">
-                            Leave Type
-                        </th>
-                        <th className="p-3 text-left">
-                            Total
-                        </th>
-                        <th className="p-3 text-left">
-                            Used
-                        </th>
-                        <th className="p-3 text-left">
-                            Available
-                        </th>
-                        <th className="p-3 text-left">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
+                                <th className="px-5 py-4">
+                                    Used
+                                </th>
 
-                <tbody>
-                    {leaveBalance.map((leave) => (
-                        <tr
-                            key={leave._id}
-                            className="border-b border-[#244061]"
-                        >
-                            <td className="p-3">
-                                {leave.leaveTypeId?.leaveName || "-"}
-                            </td>
+                                <th className="px-5 py-4">
+                                    Available
+                                </th>
 
-                            <td className="p-3">
-                                {leave.allocatedDays}
-                            </td>
+                                <th className="px-5 py-4 text-center rounded-tr-xl">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
 
-                            <td className="p-3">
-                                {leave.usedDays}
-                            </td>
+                        <tbody className="text-[15px] text-[#cad7eb]">
+                            {leaveBalance.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan="5"
+                                        className="py-10 text-center text-[#9eb0cc]"
+                                    >
+                                        No leave balance found
+                                    </td>
+                                </tr>
+                            ) : (
+                                leaveBalance.map((leave) => (
+                                    <tr
+                                        key={leave._id}
+                                        className="border-b border-[#132944] last:border-0"
+                                    >
+                                        <td className="px-5 py-3">
+                                            {leave.leaveTypeId?.leaveName}
+                                        </td>
 
-                            <td className="p-3">
-                                {leave.remainingDays}
-                            </td>
+                                        <td className="px-5 py-3">
+                                            {leave.allocatedDays}
+                                        </td>
 
-                            <td className="p-3">
-                                <button
-                                    onClick={() => handleEdit(leave)}
-                                    className="rounded bg-blue-600 px-3 py-1 text-white"
-                                >
-                                    Edit
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                        <td className="px-5 py-3">
+                                            {leave.usedDays}
+                                        </td>
+
+                                        <td className="px-5 py-3">
+                                            {leave.remainingDays}
+                                        </td>
+
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center justify-center">
+                                                <button
+                                                    onClick={() =>
+                                                        handleEdit(leave)
+                                                    }
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                >
+                                                    <Pencil className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {showDrawer && (
+                <UpdateEmployeeLeaveBalance
+                    leaveData={selectedLeave}
+                    onClose={() => {
+                        setShowDrawer(false);
+                        setSelectedLeave(null);
+                    }}
+                    refreshData={fetchLeaveBalance}
+                />
+            )}
         </div>
     );
 }

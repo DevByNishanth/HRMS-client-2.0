@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from "react";
 import AddLeaveType from "./AddLeaveType";
-import { Pencil, Trash2, X } from "lucide-react";
+import { Pencil, Trash2, X, Eye  } from "lucide-react";
 import { getLeaveTypes } from "../../../../services/leaveType/getLeaveTypeService";
 import { deleteLeaveType } from "../../../../services/leaveType/deleteLeaveTypeService";
 import CustomDropdown from "../../../../components/CustomDropdown";
+import ViewLeaveType from "./ViewLeaveType";
 
 export default function LeaveTypeBody() {
     const [showDrawer, setShowDrawer] = useState(false);
     const [loading, setLoading] = useState(true);
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [selectedLeaveType, setSelectedLeaveType] = useState(null);
-    const [deletingLeaveType, setDeletingLeaveType] =
-        useState(null);
-    const [isDeletingLeaveType, setIsDeletingLeaveType] =
-        useState(false);
+    const [deletingLeaveType, setDeletingLeaveType] = useState(null);
+    const [isDeletingLeaveType, setIsDeletingLeaveType] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [leaveCategoryFilter, setLeaveCategoryFilter] = useState("");
     const [employeeCategoryFilter, setEmployeeCategoryFilter] = useState("");
     const [resetFrequencyFilter, setResetFrequencyFilter] = useState("");
+    const [showViewDrawer, setShowViewDrawer] = useState(false);
+    const [viewLeaveType, setViewLeaveType] = useState(null);
 
     const LEAVE_CATEGORIES = [
         "Regular",
@@ -256,13 +257,13 @@ export default function LeaveTypeBody() {
                                         Reset Frequency
                                     </th>
 
-                                    <th className="px-5 py-4">
+                                    {/* <th className="px-5 py-4">
                                         Carry Forward Allowed
                                     </th>
 
                                     <th className="px-5 py-4">
                                         Max Carry Forward
-                                    </th>
+                                    </th> */}
 
                                     <th className="px-5 py-4 text-center">
                                         Actions
@@ -327,7 +328,7 @@ export default function LeaveTypeBody() {
                                                     }
                                                 </td>
 
-                                                <td className="px-5 py-3">
+                                                {/* <td className="px-5 py-3">
                                                     {leave.carryForwardAllowed ? "Yes" : "No"}
                                                 </td>
 
@@ -335,32 +336,37 @@ export default function LeaveTypeBody() {
                                                     {leave.carryForwardAllowed
                                                         ? leave.maxCarryForwardDays  ?? "-"
                                                         : "-"}
-                                                </td>
+                                                </td> */}
 
                                                 <td className="px-5 py-3">
                                                     <div className="flex items-center justify-center gap-3">
+                                                        {/* View */}
                                                         <button
                                                             onClick={() => {
-                                                                setSelectedLeaveType(
-                                                                    leave
-                                                                );
-                                                                setShowDrawer(
-                                                                    true
-                                                                );
+                                                                setViewLeaveType(leave);
+                                                                setShowViewDrawer(true);
+                                                            }}
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-blue-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                        </button>
+
+                                                        {/* Edit */}
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedLeaveType(leave);
+                                                                setShowDrawer(true);
                                                             }}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
                                                         >
                                                             <Pencil className="h-4 w-4" />
                                                         </button>
 
+                                                        {/* Delete */}
                                                         <button
                                                             onClick={() => {
-                                                                setDeletingLeaveType(
-                                                                    leave
-                                                                );
-                                                                setDeleteError(
-                                                                    ""
-                                                                );
+                                                                setDeletingLeaveType(leave);
+                                                                setDeleteError("");
                                                             }}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white"
                                                         >
@@ -374,6 +380,16 @@ export default function LeaveTypeBody() {
                                 )}
                             </tbody>
                         </table>
+
+                        {showViewDrawer && (
+                            <ViewLeaveType
+                                leaveType={viewLeaveType}
+                                onClose={() => {
+                                    setShowViewDrawer(false);
+                                    setViewLeaveType(null);
+                                }}
+                            />
+                        )}
 
                         {showDrawer && (
                             <AddLeaveType
