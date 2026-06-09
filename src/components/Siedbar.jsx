@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import logo from '../assets/logo.svg'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern} from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
@@ -36,7 +36,8 @@ const Sidebar = () => {
         { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
         { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
         { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
-        { label: 'Attendance', icon: FingerprintPattern, path: '/dashboard-admin/attendance' },
+        { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
+        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
     ];
 
     // Navigation items for Principal

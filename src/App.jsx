@@ -17,7 +17,8 @@ import LeaveTypeManagement from "./pages/Dashboards/AdminDashboard/LeaveType/Lea
 import LeaveBalanceManagement from './pages/Dashboards/AdminDashboard/LeaveBalance/LeaveBalanceManagement'
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
-import AttendanceManagement from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceManagement";
+import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
+import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 
 function App() {
   // Role-based default route redirect
@@ -190,10 +191,18 @@ function App() {
           }
         />
         <Route
-          path="/dashboard-admin/attendance"
+          path="/dashboard-admin/attendance-report"
           element={
             <ProtectedRoute>
               <AttendanceManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance-override"
+          element={
+            <ProtectedRoute>
+              <AttendanceOverrideManagement />
             </ProtectedRoute>
           }
         />
