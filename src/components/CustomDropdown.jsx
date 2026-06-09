@@ -56,7 +56,7 @@ const CustomDropdown = ({
       >
         <span
           className={
-            value ? "text-white" : "text-[#6f839f]"
+            value ? "text-white" : "text-white"
           }
         >
           {value || placeholder}

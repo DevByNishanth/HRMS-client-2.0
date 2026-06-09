@@ -22,8 +22,11 @@ import DeanPermissionPage from "./pages/Dashboards/DEAN-Dashboard/PermissionPage
 import OdApprovalsPage from "./pages/Dashboards/DEAN-Dashboard/OdApprovalsPage";
 import HolidayManagement from "./pages/Dashboards/AdminDashboard/Holiday/HolidayManagement";
 import LeaveTypeManagement from "./pages/Dashboards/AdminDashboard/LeaveType/LeaveTypeManagement";
+import LeaveBalanceManagement from './pages/Dashboards/AdminDashboard/LeaveBalance/LeaveBalanceManagement'
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
+import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
+import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 import { isFirstTimeLogin } from "./utils/firstTimeLogin";
 import DocumentUploadFormModal from "./components/DoumentUploadFormModal";
 
@@ -195,6 +198,7 @@ function App() {
         <Route
           path="/dashboard-admin"
           element={
+            <ProtectedRoute requiredRoles={['admin', 'hr']}>
             <ProtectedRoute requiredRoles={['admin', "hr"]}>
               <FacultyManagementPage />
             </ProtectedRoute>
@@ -203,6 +207,7 @@ function App() {
         <Route
           path="/dashboard-admin/shifts"
           element={
+            <ProtectedRoute requiredRoles={['admin', 'hr']}>
             <ProtectedRoute requiredRoles={['admin', "hr"]}>
               <ShiftManagement />
             </ProtectedRoute>
@@ -259,6 +264,30 @@ function App() {
           element={
             <ProtectedRoute>
               <LeaveTypeManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/leavebalance"
+          element={
+            <ProtectedRoute>
+              <LeaveBalanceManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance-report"
+          element={
+            <ProtectedRoute>
+              <AttendanceManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance-override"
+          element={
+            <ProtectedRoute>
+              <AttendanceOverrideManagement />
             </ProtectedRoute>
           }
         />

@@ -21,16 +21,17 @@ export default function AddLeaveType({
         employeeCategories: [],
         resetFrequency: "",
         daysPerYear: "",
-        requiresApproval: true,
-        isPaidLeave: true,
+        // requiresApproval: true,
+        // isPaidLeave: true,
         carryForwardAllowed: true,
-        maximumCarryForwardAllowed: "",
+        maxCarryForwardDays: "",
         allowHalfDay: true,
         sandwichRuleApplicable: true,
     });
 
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState("");
 
     useEffect(() => {
         if (leaveTypeData) {
@@ -41,14 +42,14 @@ export default function AddLeaveType({
                     leaveTypeData.employeeCategories || [],
                 resetFrequency: leaveTypeData.resetFrequency || "",
                 daysPerYear: leaveTypeData.daysPerYear || "",
-                requiresApproval:
-                    leaveTypeData.requiresApproval ?? true,
-                isPaidLeave:
-                    leaveTypeData.isPaidLeave ?? true,
+                // requiresApproval:
+                //     leaveTypeData.requiresApproval ?? true,
+                // isPaidLeave:
+                //     leaveTypeData.isPaidLeave ?? true,
                 carryForwardAllowed:
                     leaveTypeData.carryForwardAllowed ?? true,
-                maximumCarryForwardAllowed:
-                    leaveTypeData.maximumCarryForwardAllowed || "",
+                maxCarryForwardDays:
+                    leaveTypeData.maxCarryForwardDays || "",
                 allowHalfDay:
                     leaveTypeData.allowHalfDay ?? true,
                 sandwichRuleApplicable:
@@ -62,6 +63,20 @@ export default function AddLeaveType({
         "Non-Teaching",
         "Housekeeping",
         "Driver"
+    ];
+
+    const leaveNameOptions = [
+        "Casual Leave",
+        "On Duty - Official",
+        "On Duty - Research",
+        "On Duty - Exam",
+        "Medical Leave",
+        "Vacation Leave",
+        "Marriage Leave",
+        "Compensation Leave",
+        "Paternity Leave",
+        "Maternity Leave",
+        "LOP",
     ];
 
     const leaveCategories = [
@@ -120,21 +135,13 @@ export default function AddLeaveType({
         }
 
         if (
-            formData.daysPerYear === "" ||
-            Number(formData.daysPerYear) <= 0
-        ) {
-            newErrors.daysPerYear =
-                "Days Per Year must be greater than 0";
-        }
-
-        if (
             formData.carryForwardAllowed &&
-            (formData.maximumCarryForwardAllowed === "" ||
+            (formData.maxCarryForwardDays === "" ||
                 Number(
-                    formData.maximumCarryForwardAllowed
+                    formData.maxCarryForwardDays
                 ) < 0)
         ) {
-            newErrors.maximumCarryForwardAllowed =
+            newErrors.maxCarryForwardDays =
                 "Enter valid carry forward days";
         }
 
@@ -145,24 +152,24 @@ export default function AddLeaveType({
 
     const handleSubmit = async () => {
         if (!validate()) return;
-
         const payload = {
             leaveName: formData.leaveName,
             leaveCategory: formData.leaveCategory,
             employeeCategories: formData.employeeCategories,
             resetFrequency: formData.resetFrequency,
             daysPerYear: Number(formData.daysPerYear),
-            requiresApproval: formData.requiresApproval,
-            isPaidLeave: formData.isPaidLeave,
+            requiresApproval: true,
+            isPaidLeave: true,
             carryForwardAllowed:
                 formData.carryForwardAllowed,
-            maximumCarryForwardAllowed:
-                Number(formData.maximumCarryForwardAllowed) ||
+            maxCarryForwardDays:
+                Number(formData.maxCarryForwardDays) ||
                 0,
             allowHalfDay: formData.allowHalfDay,
             sandwichRuleApplicable:
                 formData.sandwichRuleApplicable,
         };
+        console.log("Payload:", payload);
 
         try {
             setLoading(true);
@@ -179,7 +186,15 @@ export default function AddLeaveType({
             refreshLeaveTypes?.();
             onClose();
         } catch (error) {
-            console.error(error);
+                setApiError(
+                    error.response?.data?.message ||
+                    "Failed to create leave name"
+                );
+                console.log("Error Status:", error.response?.status);
+                console.log("Error Data:", error.response?.data);
+                console.log("Full Error Response:", error.response);
+
+                console.error(error);
         } finally {
             setLoading(false);
         }
@@ -236,17 +251,19 @@ export default function AddLeaveType({
                 <div className="flex-1 overflow-y-auto p-6 space-y-5">
 
                     <div>
-                        <label className="block text-white mb-2">
-                            Leave Name
-                        </label>
-
-                        <input
-                            type="text"
-                            name="leaveName"
+                        <CustomDropdown
+                            id="leaveName"
+                            label="Leave Name"
                             value={formData.leaveName}
-                            onChange={handleChange}
-                            placeholder="Enter Leave Name"
-                            className="w-full rounded-lg p-3 text-white bg-[#0D2138] border border-blue-900 outline-none"
+                            options={leaveNameOptions}
+                            placeholder="Select Leave Name"
+                            error={errors.leaveName}
+                            onChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    leaveName: value,
+                                }))
+                            }
                         />
 
                         <ErrorMsg msg={errors.leaveName} />
@@ -309,7 +326,7 @@ export default function AddLeaveType({
 
                     <div>
                         <label className="block text-white mb-2">
-                            Days Per Year
+                            Number of Days
                         </label>
 
                         <input
@@ -318,7 +335,7 @@ export default function AddLeaveType({
                             name="daysPerYear"
                             value={formData.daysPerYear}
                             onChange={handleChange}
-                            placeholder="Enter Days"
+                            placeholder="Enter Number of Days"
                             className="w-full rounded-lg p-3 text-white bg-[#0D2138] border border-blue-900 outline-none"
                         />
 
@@ -329,14 +346,14 @@ export default function AddLeaveType({
                         label="Requires Approval"
                         field="requiresApproval"
                     /> */}
-                    <BooleanField
+                    {/* <BooleanField
                         label="Requires Approval"
                         field="requiresApproval"
                     />
                     <BooleanField
                         label="Paid Leave"
                         field="isPaidLeave"
-                    />
+                    /> */}
 
                     <BooleanField
                         label="Carry Forward Allowed"
@@ -352,9 +369,9 @@ export default function AddLeaveType({
                             <input
                                 type="number"
                                 min="0"
-                                name="maximumCarryForwardAllowed"
+                                name="maxCarryForwardDays"
                                 value={
-                                    formData.maximumCarryForwardAllowed
+                                    formData.maxCarryForwardDays
                                 }
                                 onChange={handleChange}
                                 placeholder="Enter Days"
@@ -363,7 +380,7 @@ export default function AddLeaveType({
 
                             <ErrorMsg
                                 msg={
-                                    errors.maximumCarryForwardAllowed
+                                    errors.maxCarryForwardDays
                                 }
                             />
                         </div>
@@ -379,6 +396,11 @@ export default function AddLeaveType({
                         field="sandwichRuleApplicable"
                     />
                 </div>
+                {apiError && (
+                    <p className="text-red-400 text-sm px-6">
+                        {apiError}
+                    </p>
+                )}
 
                 {/* Footer */}
                 <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
@@ -404,7 +426,9 @@ export default function AddLeaveType({
                             : "Create Leave Type"}
                     </button>
                 </div>
+                
             </div>
+            
         </div>
     );
 }

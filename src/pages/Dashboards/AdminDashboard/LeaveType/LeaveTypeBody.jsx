@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from "react";
 import AddLeaveType from "./AddLeaveType";
-import { Pencil, Trash2 } from "lucide-react";
-
+import { Pencil, Trash2, X, Eye  } from "lucide-react";
 import { getLeaveTypes } from "../../../../services/leaveType/getLeaveTypeService";
 import { deleteLeaveType } from "../../../../services/leaveType/deleteLeaveTypeService";
+import CustomDropdown from "../../../../components/CustomDropdown";
+import ViewLeaveType from "./ViewLeaveType";
 
 export default function LeaveTypeBody() {
     const [showDrawer, setShowDrawer] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [selectedLeaveType, setSelectedLeaveType] = useState(null);
-
-    const [deletingLeaveType, setDeletingLeaveType] =
-        useState(null);
-
-    const [isDeletingLeaveType, setIsDeletingLeaveType] =
-        useState(false);
-
+    const [deletingLeaveType, setDeletingLeaveType] = useState(null);
+    const [isDeletingLeaveType, setIsDeletingLeaveType] = useState(false);
     const [deleteError, setDeleteError] = useState("");
-
     const [searchTerm, setSearchTerm] = useState("");
+    const [leaveCategoryFilter, setLeaveCategoryFilter] = useState("");
+    const [employeeCategoryFilter, setEmployeeCategoryFilter] = useState("");
+    const [resetFrequencyFilter, setResetFrequencyFilter] = useState("");
+    const [showViewDrawer, setShowViewDrawer] = useState(false);
+    const [viewLeaveType, setViewLeaveType] = useState(null);
+
+    const LEAVE_CATEGORIES = [
+        "Regular",
+        "On Duty"
+    ];
+
+    const RESET_FREQUENCIES = [
+        "Academic Year",
+        "Semester"
+    ];
 
     useEffect(() => {
         fetchLeaveTypes();
@@ -83,14 +92,49 @@ export default function LeaveTypeBody() {
             setIsDeletingLeaveType(false);
         }
     };
-
+    const employeeCategories = [
+        ...new Set(
+            leaveTypes.flatMap(
+                (leave) => leave.employeeCategories || []
+            )
+        ),
+    ];
     const filteredLeaveTypes = Array.isArray(leaveTypes)
-        ? leaveTypes.filter((leave) =>
-            leave.leaveName
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase())
-        )
-    : [];
+        ? leaveTypes.filter((leave) => {
+            const matchesSearch =
+                leave.leaveName
+                    ?.toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+
+            const matchesCategory =
+                !leaveCategoryFilter ||
+                leave.leaveCategory === leaveCategoryFilter;
+
+            const matchesEmployeeCategory =
+                !employeeCategoryFilter ||
+                leave.employeeCategories?.includes(
+                    employeeCategoryFilter
+                );
+
+            const matchesResetFrequency =
+                !resetFrequencyFilter ||
+                leave.resetFrequency ===
+                    resetFrequencyFilter;
+
+            return (
+                matchesSearch &&
+                matchesCategory &&
+                matchesEmployeeCategory &&
+                matchesResetFrequency
+            );
+        })
+        : [];
+
+        const hasActiveFilters =
+            searchTerm ||
+            leaveCategoryFilter ||
+            employeeCategoryFilter ||
+            resetFrequencyFilter;
 
     return (
         <div className="p-6">
@@ -119,20 +163,64 @@ export default function LeaveTypeBody() {
             {/* Table */}
 
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
-                <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex items-center justify-between gap-4">
+                <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap  items-center justify-between">
                     <h1 className="shrink-0 text-[18px] font-semibold text-white">
                         Leave Type List
                     </h1>
 
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) =>
-                            setSearchTerm(e.target.value)
-                        }
-                        className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                        placeholder="Search Leave Name"
-                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) =>
+                                setSearchTerm(e.target.value)
+                            }
+                            className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                            placeholder="Search Leave Name..."
+                        />
+
+                        <div className="w-[180px]">
+                            <CustomDropdown
+                                value={leaveCategoryFilter}
+                                placeholder="Category"
+                                options={LEAVE_CATEGORIES}
+                                onChange={setLeaveCategoryFilter}
+                            />
+                        </div>
+
+                        <div className="w-[200px]">
+                            <CustomDropdown
+                                value={employeeCategoryFilter}
+                                placeholder="Employee Categories"
+                                options={employeeCategories}
+                                onChange={setEmployeeCategoryFilter}
+                            />
+                        </div>
+
+                        <div className="w-[170px]">
+                            <CustomDropdown
+                                value={resetFrequencyFilter}
+                                placeholder="Reset Frequency"
+                                options={RESET_FREQUENCIES}
+                                onChange={setResetFrequencyFilter}
+                            />
+                        </div>
+
+                        {hasActiveFilters && (
+                            <button
+                                onClick={() => {
+                                    setSearchTerm("");
+                                    setLeaveCategoryFilter("");
+                                    setEmployeeCategoryFilter("");
+                                    setResetFrequencyFilter("");
+                                }}
+                                className="flex flex-row items-center gap-2 h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                            >
+                                Reset Filters
+                                <X className="w-5 h-5" />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div className="overflow-hidden">
@@ -162,20 +250,20 @@ export default function LeaveTypeBody() {
                                     </th>
 
                                     <th className="px-5 py-4">
-                                        Days / Year
+                                        Number of Days
                                     </th>
 
                                     <th className="px-5 py-4">
                                         Reset Frequency
                                     </th>
 
-                                    <th className="px-5 py-4">
-                                        Paid
+                                    {/* <th className="px-5 py-4">
+                                        Carry Forward Allowed
                                     </th>
 
                                     <th className="px-5 py-4">
-                                        Approval
-                                    </th>
+                                        Max Carry Forward
+                                    </th> */}
 
                                     <th className="px-5 py-4 text-center">
                                         Actions
@@ -240,42 +328,45 @@ export default function LeaveTypeBody() {
                                                     }
                                                 </td>
 
-                                                <td className="px-5 py-3">
-                                                    {leave.isPaidLeave
-                                                        ? "Yes"
-                                                        : "No"}
+                                                {/* <td className="px-5 py-3">
+                                                    {leave.carryForwardAllowed ? "Yes" : "No"}
                                                 </td>
 
                                                 <td className="px-5 py-3">
-                                                    {leave.requiresApproval
-                                                        ? "Yes"
-                                                        : "No"}
-                                                </td>
+                                                    {leave.carryForwardAllowed
+                                                        ? leave.maxCarryForwardDays  ?? "-"
+                                                        : "-"}
+                                                </td> */}
 
                                                 <td className="px-5 py-3">
                                                     <div className="flex items-center justify-center gap-3">
+                                                        {/* View */}
                                                         <button
                                                             onClick={() => {
-                                                                setSelectedLeaveType(
-                                                                    leave
-                                                                );
-                                                                setShowDrawer(
-                                                                    true
-                                                                );
+                                                                setViewLeaveType(leave);
+                                                                setShowViewDrawer(true);
+                                                            }}
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-blue-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                        </button>
+
+                                                        {/* Edit */}
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedLeaveType(leave);
+                                                                setShowDrawer(true);
                                                             }}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
                                                         >
                                                             <Pencil className="h-4 w-4" />
                                                         </button>
 
+                                                        {/* Delete */}
                                                         <button
                                                             onClick={() => {
-                                                                setDeletingLeaveType(
-                                                                    leave
-                                                                );
-                                                                setDeleteError(
-                                                                    ""
-                                                                );
+                                                                setDeletingLeaveType(leave);
+                                                                setDeleteError("");
                                                             }}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white"
                                                         >
@@ -289,6 +380,16 @@ export default function LeaveTypeBody() {
                                 )}
                             </tbody>
                         </table>
+
+                        {showViewDrawer && (
+                            <ViewLeaveType
+                                leaveType={viewLeaveType}
+                                onClose={() => {
+                                    setShowViewDrawer(false);
+                                    setViewLeaveType(null);
+                                }}
+                            />
+                        )}
 
                         {showDrawer && (
                             <AddLeaveType
