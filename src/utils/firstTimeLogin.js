@@ -3,9 +3,8 @@ import { jwtDecode } from "jwt-decode";
 export const isFirstTimeLogin = async () => {
   let token = localStorage.getItem("hrms_token");
 
-  // ?   check token, if no token is found, redirect to login page
   if (!token) {
-    window.location.replace("/");
+    return false;
   }
 
   try {
