@@ -1486,8 +1486,8 @@ const AddFacultyForm = ({
                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
                             aria-label={`Remove experience ${index + 1}`}
                           >
-                            <Trash2 size={14} />
-                          </button>
+                            <Trash2 size={14} /> 
+                          </button> 
                         )}
                       </div>
 

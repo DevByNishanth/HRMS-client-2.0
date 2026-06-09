@@ -257,7 +257,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 className="fixed inset-0 z-50 flex justify-end bg-[#020817]/60 backdrop-blur-[4px]"
                 onClick={onClose}
             >
-                <div className="flex h-full w-[26%] min-w-[380px] flex-col items-center justify-center bg-[#071425]">
+                <div className="flex h-full w-[26%] min-w-[380px] flex-col items-center justify-center bg-[#071425]/">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#3984ff] border-t-transparent"></div>
                     <p className="mt-4 text-[13px] text-[#8ca1bd]">Loading leave types...</p>
                 </div>
