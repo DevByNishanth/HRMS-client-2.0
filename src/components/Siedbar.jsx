@@ -38,7 +38,7 @@ const Sidebar = () => {
         { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
         { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
         { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
-        { label: 'Attendance Override Management', icon: UserPen, path: '/dashboard-admin/attendance-override' },
+        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
     ];
 
     // Navigation items for Principal
