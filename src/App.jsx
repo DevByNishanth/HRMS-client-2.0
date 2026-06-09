@@ -20,6 +20,8 @@ import DeanLeavePage from "./pages/Dashboards/DEAN-Dashboard/LeavePage";
 import DeanAttendancePage from "./pages/Dashboards/DEAN-Dashboard/AttendancePage";
 import DeanPermissionPage from "./pages/Dashboards/DEAN-Dashboard/PermissionPage";
 import OdApprovalsPage from "./pages/Dashboards/DEAN-Dashboard/OdApprovalsPage";
+import HolidayManagement from "./pages/Dashboards/AdminDashboard/Holiday/HolidayManagement";
+import LeaveTypeManagement from "./pages/Dashboards/AdminDashboard/LeaveType/LeaveTypeManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import { isFirstTimeLogin } from "./utils/firstTimeLogin";
@@ -241,6 +243,22 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={['hod']}>
               <MyTeamPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/holidays"
+          element={
+            <ProtectedRoute>
+              <HolidayManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/leavetype"
+          element={
+            <ProtectedRoute>
+              <LeaveTypeManagement />
             </ProtectedRoute>
           }
         />

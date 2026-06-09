@@ -2,7 +2,7 @@
 // import logo from '../assets/logo.svg'
 import logo from '../assets/college_logo.png'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2  } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
@@ -33,6 +33,9 @@ const Sidebar = () => {
     // Navigation items for Admin
     const adminNavItems = [
         { label: 'Faculty Management', icon: Users, path: '/dashboard-admin' },
+        { label: 'Shift Management', icon: CalendarSync, path: '/dashboard-admin/shifts' },
+        { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
+        { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
     ];
 
     // Navigation items for Principal
