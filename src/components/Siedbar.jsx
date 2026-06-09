@@ -1,5 +1,6 @@
 // Sidebar.jsx
-import logo from '../assets/logo.svg'
+// import logo from '../assets/logo.svg'
+import logo from '../assets/college_logo.png'
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
@@ -37,6 +38,11 @@ const Sidebar = () => {
     // Navigation items for Principal
     const principalNavItems = [
         { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
+        { label: 'Faculty List', icon: Users, path: '/dashboard-principal/faculty-list' },
+        { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
+        { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
+        { label: 'Permission', icon: FileText, path: '/dashboard-principal/permissions' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard-principal/regularizationList' },
     ];
 
     // Navigation items for Non-Teaching (same as Faculty)
@@ -48,13 +54,23 @@ const Sidebar = () => {
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
     ];
 
+    // Navigation items for Dean (same as Faculty + OD Approvals)
+    const deanNavItems = [
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-dean' },
+        { label: 'Leaves', icon: Calendar, path: '/dashboard-dean/leaves' },
+        { label: 'Attendance', icon: Users, path: '/dashboard-dean/attendance' },
+        { label: 'Permission', icon: FileText, path: '/dashboard-dean/permissions' },
+        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'OD Approvals', icon: CalendarPlus, path: '/dashboard-dean/od-approvals' },
+    ];
+
     // Determine navigation items based on role
     let navItems = facultyNavItems;
     switch (role) {
         case 'hod':
             navItems = hodNavItems;
             break;
-        case 'admin':
+        case 'hr':
             navItems = adminNavItems;
             break;
         case 'principal':
@@ -62,6 +78,15 @@ const Sidebar = () => {
             break;
         case 'non-teaching':
             navItems = nonTeachingNavItems;
+            break;
+        case 'dean':
+            navItems = deanNavItems;
+            break;
+        case 'coe':
+            navItems = deanNavItems;
+            break;
+        case 'iqac':
+            navItems = deanNavItems;
             break;
         default:
             navItems = facultyNavItems;
@@ -84,7 +109,7 @@ const Sidebar = () => {
                     <img
                         src={logo}
                         alt="logo"
-                        className="w-[70%]  object-contain"
+                        className="w-[60%]  object-contain"
                     />
                 </div>
 
