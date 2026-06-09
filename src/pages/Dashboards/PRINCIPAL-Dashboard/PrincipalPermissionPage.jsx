@@ -1,34 +1,35 @@
-import { Clock3, FileText, Hourglass } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import PrincipalPermissionTable from "./PrincipalPermissionTable";
 import ApplyPermission from "../../../components/ApplyPermission";
 import FacultySearchPopup from "../../../components/FacultySearchPopup";
 import ApplyDropdown from "../../../components/ApplyDropdown";
-import { useState } from "react";
 
-const permissionStats = [
-  { title: "Total Permission", code: "TP", used: 4, total: 6, color: "#3984ff", icon: FileText },
-  { title: "Permission Taken", code: "PT", used: 4, total: 6, color: "#18d3bf", icon: Clock3 },
-  { title: "Remaining Permission", code: "RP", used: 2, total: 6, color: "#f0a15f", icon: Hourglass },
+const departments = [
+  "All",
+  "Computer Science",
+  "Electronics & Communication",
+  "Electrical & Electronics",
+  "Mechanical",
+  "Civil",
+  "Information Technology",
+  "Artificial Intelligence & Data Science",
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "English",
+  "Management Studies",
+  "MBA",
 ];
-
-const PermissionStatCard = ({ icon: Icon, title, code, used, total, color }) => {
-  return (
-    <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
-      <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-md" style={{ backgroundColor: `${color}22`, color }}>
-        <Icon size={15} />
-      </div>
-      <h3 className="text-[12px] uppercase tracking-wide text-white">{title} ({code})</h3>
-      <p className="mt-1 text-[12px] font-semibold text-white">{total} Hours</p>
-    </div>
-  );
-};
 
 const PrincipalPermissionPage = () => {
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
   const [isFacultySearch, setIsFacultySearch] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [filterDepartment, setFilterDepartment] = useState("All");
+  const [isDeptOpen, setIsDeptOpen] = useState(false);
 
   const handleForMe = () => {
     setSelectedEmployee(null);
@@ -55,7 +56,7 @@ const PrincipalPermissionPage = () => {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="h-[calc(100vh-64px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
           <div className="mx-auto">
             <div className="flex items-center justify-between">
               <div>
@@ -64,16 +65,54 @@ const PrincipalPermissionPage = () => {
                   Track monthly permission usage and request status across the institution.
                 </p>
               </div>
-              <ApplyDropdown label="Apply for Permission" onForMe={handleForMe} onForOthers={handleForOthers} />
+
+              <div className="flex items-center gap-3">
+                {/* Department Filter */}
+                <div className="relative min-w-[180px]">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeptOpen(!isDeptOpen)}
+                    className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                  >
+                    <span className={filterDepartment !== "All" ? "text-white" : "text-[#6f839f]"}>
+                      {filterDepartment !== "All" ? filterDepartment : "Department"}
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`text-[#3984ff] transition ${isDeptOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {isDeptOpen && (
+                    <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+                      <div className="max-h-[220px] overflow-y-auto table-custom-scrollbar">
+                        {departments.map((dept) => (
+                          <button
+                            key={dept}
+                            type="button"
+                            onClick={() => {
+                              setFilterDepartment(dept);
+                              setIsDeptOpen(false);
+                            }}
+                            className={`w-full px-3 py-2.5 text-left text-[12px] transition ${
+                              filterDepartment === dept
+                                ? "bg-[#2563EB] text-white"
+                                : "text-[#cad7eb] hover:bg-[#132b49]"
+                            }`}
+                          >
+                            {dept}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* <ApplyDropdown label="Apply for Permission" onForMe={handleForMe} onForOthers={handleForOthers} /> */}
+              </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
-              {permissionStats.map((item) => (
-                <PermissionStatCard key={item.title} {...item} />
-              ))}
-            </div>
-
-            <PrincipalPermissionTable />
+            <PrincipalPermissionTable filterDepartment={filterDepartment} />
           </div>
         </main>
       </div>

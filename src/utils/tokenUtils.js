@@ -58,6 +58,12 @@ export const getRoleBasedRoute = () => {
       return "/dashboard-principal";
     case "non-teaching":
       return "/dashboard-faculty";
+    case "dean":
+      return "/dashboard-dean";
+    case "coe":
+      return "/dashboard-dean";
+    case "iqac":
+      return "/dashboard-dean";
     default:
       return "/dashboard-faculty";
   }
