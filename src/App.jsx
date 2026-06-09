@@ -27,8 +27,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
 import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
-import { isFirstTimeLogin } from "./utils/firstTimeLogin";
-import DocumentUploadFormModal from "./components/DoumentUploadFormModal";
 
 function App() {
   // Role-based default route redirect
@@ -56,14 +54,8 @@ function App() {
     }
   };
 
-  console.log("Is First Time Login:", isFirstTimeLogin());
   return (
     <>
-
-      {/* {isFirstTimeLogin() && <>
-        <DocumentUploadFormModal />
-      </>} */}
-
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<LoginPage />} />
