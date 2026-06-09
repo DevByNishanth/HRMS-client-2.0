@@ -198,7 +198,8 @@ function App() {
         <Route
           path="/dashboard-admin"
           element={
-            <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            // <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            <ProtectedRoute requiredRoles={['admin', "hr"]}>
               <FacultyManagementPage />
             </ProtectedRoute>
           }
@@ -206,7 +207,8 @@ function App() {
         <Route
           path="/dashboard-admin/shifts"
           element={
-            <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            // <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            <ProtectedRoute requiredRoles={['admin', "hr"]}>
               <ShiftManagement />
             </ProtectedRoute>
           }
