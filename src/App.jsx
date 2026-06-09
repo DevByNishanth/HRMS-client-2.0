@@ -17,6 +17,7 @@ import LeaveTypeManagement from "./pages/Dashboards/AdminDashboard/LeaveType/Lea
 import LeaveBalanceManagement from './pages/Dashboards/AdminDashboard/LeaveBalance/LeaveBalanceManagement'
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
+import AttendanceManagement from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceManagement";
 
 function App() {
   // Role-based default route redirect
@@ -185,6 +186,14 @@ function App() {
           element={
             <ProtectedRoute>
               <LeaveBalanceManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance"
+          element={
+            <ProtectedRoute>
+              <AttendanceManagement />
             </ProtectedRoute>
           }
         />
