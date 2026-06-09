@@ -29,6 +29,24 @@ export const getRoleFromToken = () => {
   return decoded?.role || null;
 };
 
+export const getFacultyIdFromToken = () => {
+  const token = getTokenFromLocalStorage();
+  if (!token) return null;
+
+  const decoded = decodeToken(token);
+  if (!decoded) return null;
+
+  return (
+    decoded?.facultyId ||
+    decoded?.id ||
+    decoded?.sub ||
+    decoded?._id ||
+    decoded?.userId ||
+    decoded?.faculty_id ||
+    null
+  );
+};
+
 export const isTokenValid = () => {
   const token = getTokenFromLocalStorage();
   if (!token) return false;

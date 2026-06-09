@@ -1,10 +1,43 @@
 import { AlertTriangle, Send, X } from "lucide-react";
+import axios from "axios";
+import { useState } from "react";
 
-const WithdrawPermissionPopup = ({ permission, onClose }) => {
+const WithdrawPermissionPopup = ({ permission, onClose, fetchPermissions, onPermissionCancelled }) => {
+  const [remarks, setRemarks] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!permission) return null;
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    try {
+      setIsLoading(true);
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+      const id = permission.raw?._id || permission.id;
+
+      const res = await axios.patch(`${API_BASE_URL}/api/permissions/${id}/cancel`, { remarks }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
+        },
+      });
+
+      console.log("Permission cancelled successfully:", res.data);
+      setIsLoading(false);
+      
+      // Optimistically remove from table, then close
+      if (typeof onPermissionCancelled === "function") {
+        onPermissionCancelled();
+      }
+      
+      onClose();
+    } catch (err) {
+      console.error("Error cancelling permission:", err);
+      setIsLoading(false);
+      // On error, refetch to restore state
+      if (typeof fetchPermissions === "function") fetchPermissions();
+      onClose();
+    }
   };
 
   return (
@@ -62,6 +95,8 @@ const WithdrawPermissionPopup = ({ permission, onClose }) => {
             id="withdraw-permission-reason"
             rows={4}
             placeholder="Add a short reason..."
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
             className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
           />
         </div>
@@ -78,8 +113,7 @@ const WithdrawPermissionPopup = ({ permission, onClose }) => {
             type="submit"
             className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#2563EB] px-5 text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
           >
-            Withdraw
-            <Send size={14} />
+            {isLoading ? <div className="loader" /> : <span className="flex items-center gap-2">Withdraw <Send size={14} /></span>}
           </button>
         </div>
       </form>

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ChevronDown, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken } from "../../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
@@ -13,99 +13,7 @@ const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
 
-const permissions = [
-  {
-    date: "May 30, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Bank appointment during working hours.",
-    status: "Pending",
-  },
-  {
-    date: "May 24, 2026",
-    session: "Afternoon",
-    duration: "2 Hours",
-    reason: "Parent teacher meeting at school.",
-    status: "Approved",
-  },
-  {
-    date: "May 16, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Personal documentation work.",
-    status: "Rejected",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-];
+// permissions will be fetched from the API and stored in component state
 
 const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -156,10 +64,12 @@ const PermissionTable = () => {
   const role = getRoleFromToken()?.toLowerCase();
   const [selectedPermission, setSelectedPermission] = useState(null);
   const [withdrawPermission, setWithdrawPermission] = useState(null);
+  const [permissionsData, setPermissionsData] = useState([]);
   const [status, setStatus] = useState("All");
   const [session, setSession] = useState("All");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [teamPermissionCount, setTeamPermissionCount] = useState(0);
   const hodTabs = ["My Permissions", "Team Permissions"];
   const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
     ? location.state.hodSelectedTab
@@ -168,17 +78,19 @@ const PermissionTable = () => {
 
   const filteredPermissions = useMemo(
     () =>
-      permissions.filter((permission) => {
-        const permissionDate = new Date(permission.date);
+      permissionsData.filter((permission) => {
+        const permissionDate = permission.dateObj || (permission.raw?.permissionDate ? new Date(permission.raw.permissionDate) : new Date(permission.date));
         const statusMatch = status === "All" || permission.status === status;
-        const sessionMatch =
-          session === "All" || permission.session === session;
-        const fromMatch = !fromDate || permissionDate >= fromDate;
-        const toMatch = !toDate || permissionDate <= toDate;
+        const sessionMatch = session === "All" || permission.session === session;
+
+        const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+        const fromMatch = !fromDate || normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
+        const toMatch = !toDate || normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
 
         return statusMatch && sessionMatch && fromMatch && toMatch;
       }),
-    [fromDate, session, status, toDate],
+    [permissionsData, fromDate, session, status, toDate],
   );
 
   const hasFilters =
@@ -190,6 +102,69 @@ const PermissionTable = () => {
     setFromDate(null);
     setToDate(null);
   };
+  const fetchPermissions = async () => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+    const mapApiToPermission = (p) => {
+      // Normalize permissionDate as local date-only (avoid TZ shifts)
+      let dateObj = null;
+      if (p.permissionDate) {
+        const datePart = String(p.permissionDate).split("T")[0]; // YYYY-MM-DD
+        const [y, m, d] = datePart.split("-").map(Number);
+        if (y && m && d) {
+          dateObj = new Date(y, m - 1, d);
+        }
+      }
+
+      const hour = p.fromTime ? parseInt(p.fromTime.split(":")[0], 10) : 9;
+      const sessionLabel = hour >= 12 ? "Afternoon" : "Forenoon";
+      const durationLabel = p.totalMinutes
+        ? p.totalMinutes >= 120
+          ? `${p.totalMinutes / 60} Hours`
+          : `${p.totalMinutes / 60} Hour`
+        : "";
+
+      return {
+        id: p._id,
+        raw: p,
+        // keep a date-only object for comparisons and a formatted string for display
+        dateObj,
+        date: dateObj
+          ? dateObj.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "",
+        session: sessionLabel,
+        duration: durationLabel,
+        reason: p.reason || "",
+        status: p.status || "",
+        fromTime: p.fromTime,
+        toTime: p.toTime,
+      };
+    };
+
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/my`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const data = await res.json();
+      if (res.ok && data?.success) {
+        setPermissionsData(data.data.map(mapApiToPermission));
+      } else {
+        console.error("Failed to fetch permissions:", data?.message || data);
+      }
+    } catch (err) {
+      console.error("Error fetching permissions:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPermissions();
+  }, []);
 
   const myPermissionsTable = (
     <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
@@ -262,7 +237,7 @@ const PermissionTable = () => {
 
                 return (
                   <tr
-                    key={`${permission.date}-${permission.session}`}
+                    key={permission.id}
                     className="border-b border-[#132944] last:border-0"
                   >
                     <td className="px-4 py-3 font-semibold text-white">
@@ -333,6 +308,14 @@ const PermissionTable = () => {
       <WithdrawPermissionPopup
         permission={withdrawPermission}
         onClose={() => setWithdrawPermission(null)}
+        fetchPermissions={fetchPermissions}
+        onPermissionCancelled={() => {
+          if (withdrawPermission?.id) {
+            setPermissionsData((prev) =>
+              prev.filter((p) => p.id !== withdrawPermission.id)
+            );
+          }
+        }}
       />
     </section>
   );
@@ -363,7 +346,7 @@ const PermissionTable = () => {
                       : "bg-slate-700 text-white"
                   }`}
                 >
-                  5
+                  {teamPermissionCount}
                 </span>
               )}
             </button>
@@ -371,7 +354,7 @@ const PermissionTable = () => {
         </div>
       </div>
 
-      {hodSelectedTab === "My Permissions" ? myPermissionsTable : <HodPermissionRequestTable />}
+      {hodSelectedTab === "My Permissions" ? myPermissionsTable : <HodPermissionRequestTable onCountChange={setTeamPermissionCount} />}
     </>
   );
 };
