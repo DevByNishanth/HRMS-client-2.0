@@ -1,19 +1,128 @@
 import { useState } from "react";
 import { Clock3, FileText, Send, X } from "lucide-react";
 import CustomDatePicker from "./CustomDatePicker";
+import CustomDropdown from "./CustomDropdown";
+import { getFacultyIdFromToken, getTokenFromLocalStorage } from "../utils/tokenUtils";
 
 const sessionOptions = ["Forenoon", "Afternoon"];
 const durationOptions = ["1 Hour", "2 Hours"];
+const permissionTypeOptions = ["Personal", "Official", "Medical", "Urgent"];
 
-const ApplyPermission = ({ onClose, employee }) => {
+const formatDateToString = (date) => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
+const calculateEndTime = (fromTime, totalMinutes) => {
+    if (!fromTime) return "";
+    const [hour, minute] = fromTime.split(":").map(Number);
+    const startDate = new Date();
+    startDate.setHours(hour, minute, 0, 0);
+    startDate.setMinutes(startDate.getMinutes() + totalMinutes);
+    const endHour = String(startDate.getHours()).padStart(2, "0");
+    const endMinute = String(startDate.getMinutes()).padStart(2, "0");
+    return `${endHour}:${endMinute}`;
+};
+
+const getDefaultFromTime = (session) => {
+    return session === "Afternoon" ? "14:00" : "09:00";
+};
+
+const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPermissionSubmitted }) => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
     const [date, setDate] = useState(null);
     const [session, setSession] = useState(sessionOptions[0]);
     const [duration, setDuration] = useState(durationOptions[0]);
+    const [permissionType, setPermissionType] = useState(permissionTypeOptions[0]);
+    const [reason, setReason] = useState("");
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (event) => {
+    const totalMinutes = duration === "2 Hours" ? 120 : 60;
+    const fromTime = getDefaultFromTime(session);
+    const toTime = calculateEndTime(fromTime, totalMinutes);
+    const remainingMinutes = remainingPermission !== null ? remainingPermission * 60 : null;
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-    };
+        setError("");
 
+        if (!date) {
+            setError("Please select a permission date.");
+            return;
+        }
+
+        if (remainingMinutes !== null && totalMinutes > remainingMinutes) {
+            const availableHours = Math.floor(remainingMinutes / 60);
+            setError(
+                `You only have ${availableHours} hour${availableHours === 1 ? "" : "s"} remaining this month. ` +
+                "Choose a shorter duration or contact your administrator."
+            );
+            return;
+        }
+
+        if (!reason.trim()) {
+            setError("Please provide a reason for the permission request.");
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            const token = getTokenFromLocalStorage();
+            if (!token) {
+                throw new Error("Authentication token not found. Please log in again.");
+            }
+
+            const facultyId = getFacultyIdFromToken();
+            if (!facultyId) {
+                throw new Error("Unable to read faculty ID from token.");
+            }
+
+            const payload = {
+                facultyId,
+                permissionDate: formatDateToString(date),
+                permissionType,
+                fromTime,
+                toTime,
+                totalMinutes,
+                reason: reason.trim(),
+            };
+
+            const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data?.message || "Failed to submit permission request.");
+            }
+
+            setDate(null);
+            setSession(sessionOptions[0]);
+            setDuration(durationOptions[0]);
+            setPermissionType(permissionTypeOptions[0]);
+            setReason("");
+
+            if (typeof onPermissionSubmitted === "function") {
+                onPermissionSubmitted();
+            }
+            setTimeout(() => onClose(), 500);
+        } catch (err) {
+            setError(err.message || "An error occurred while submitting your permission request.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
     return (
         <section
             className="fixed inset-0 z-50 flex justify-end bg-[#020817]/60 backdrop-blur-[4px]"
@@ -70,6 +179,11 @@ const ApplyPermission = ({ onClose, employee }) => {
                             : 'Choose the permission date, session, duration, and provide the reason for approval.'
                         }
                     </p>
+                    <p className="mt-2 text-[12px] text-[#9eb0cc]">
+                      {remainingPermission === null
+                        ? 'Loading available permission hours...'
+                        : `Available this month: ${remainingPermission} hour${remainingPermission === 1 ? '' : 's'}`}
+                    </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4">
                         <CustomDatePicker
@@ -78,6 +192,15 @@ const ApplyPermission = ({ onClose, employee }) => {
                             value={date}
                             onChange={setDate}
                             placeholder="Select permission date"
+                        />
+
+                        <CustomDropdown
+                            id="permission-type"
+                            label="Permission Type"
+                            options={permissionTypeOptions}
+                            value={permissionType}
+                            onChange={setPermissionType}
+                            placeholder="Select permission type"
                         />
 
                         <div>
@@ -106,20 +229,44 @@ const ApplyPermission = ({ onClose, employee }) => {
                                 Duration
                             </p>
                             <div className="grid grid-cols-2 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
-                                {durationOptions.map((option) => (
-                                    <button
-                                        key={option}
-                                        type="button"
-                                        onClick={() => setDuration(option)}
-                                        className={`h-10 rounded-md text-[12px] font-semibold transition ${
-                                            duration === option
-                                                ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
-                                        }`}
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
+                                {durationOptions.map((option) => {
+                                    const optionMinutes = option === "2 Hours" ? 120 : 60;
+                                    const disabled = remainingMinutes !== null && optionMinutes > remainingMinutes;
+
+                                    return (
+                                        <button
+                                            key={option}
+                                            type="button"
+                                            onClick={() => !disabled && setDuration(option)}
+                                            disabled={disabled}
+                                            className={`h-10 rounded-md text-[12px] font-semibold transition ${
+                                                duration === option
+                                                    ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                                    : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                            } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                                        >
+                                            {option}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="rounded-lg border border-[#244061] bg-[#0d2138] p-4 text-[#cbd5e1]">
+                            <p className="mb-2 text-[13px] font-semibold text-white">Time Summary</p>
+                            <div className="grid gap-2 text-[13px]">
+                                <div className="flex justify-between">
+                                    <span>From</span>
+                                    <span>{fromTime}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>To</span>
+                                    <span>{toTime}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Total minutes</span>
+                                    <span>{totalMinutes}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -134,19 +281,28 @@ const ApplyPermission = ({ onClose, employee }) => {
                             <textarea
                                 id="permission-reason"
                                 rows={6}
+                                value={reason}
+                                onChange={(event) => setReason(event.target.value)}
                                 placeholder="Explain why you need permission..."
                                 className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                             />
                         </div>
+
+                        {error && (
+                            <div className="rounded-md border border-red-500 bg-[#631a1a] p-3 text-sm text-red-100">
+                                {error}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
                     <button
                         type="submit"
-                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
+                        disabled={submitting}
+                        className={`inline-flex h-11 w-full items-center justify-center gap-2 rounded-md text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition ${submitting ? "bg-[#1b3a66] cursor-not-allowed" : "bg-[#2563EB] hover:bg-[#1049c4]"}`}
                     >
-                        Submit Permission Request
+                        {submitting ? "Submitting..." : "Submit Permission Request"}
                         <Send size={14} />
                     </button>
                 </div>
