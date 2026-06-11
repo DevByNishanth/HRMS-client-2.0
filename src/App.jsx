@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./pages/LoginPage";
 import FacultyDashboard from "./pages/Dashboards/FacultyDashboard/FacultyDashboard";
 import ProfilePage from "./pages/ProfilePage";
@@ -56,6 +58,17 @@ function App() {
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<LoginPage />} />

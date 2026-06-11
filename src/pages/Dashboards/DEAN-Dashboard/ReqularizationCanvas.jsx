@@ -12,10 +12,39 @@ import {
     X,
 } from "lucide-react";
 
+const statusStyles = {
+    Present: "text-[#18d3bf] bg-[#18d3bf1f]",
+    "Partially Present": "text-[#f0a15f] bg-[#f0a15f1f]",
+    "Second Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
+    Absent: "text-[#f16868] bg-[#f168681f]",
+    "On Leave": "text-[#f16868] bg-[#f168681f]",
+    Holiday: "text-[#3984ff] bg-[#3984ff1f]",
+    "On Duty": "text-[#3984ff] bg-[#3984ff1f]",
+};
+
 const formatFileSize = (size) => {
     if (size < 1024) return `${size} B`;
     if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const formatMinutesToHours = (minutes) => {
+    if (minutes == null) return "--";
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${String(hrs).padStart(2, "0")}h ${String(mins).padStart(2, "0")}m`;
+};
+
+const formatTime = (dateStr) => {
+    if (!dateStr) return "--";
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+};
+
+const formatDateFromISO = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 };
 
 const ReqularizationCanvas = ({ log, onClose }) => {
@@ -33,6 +62,12 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     }, []);
 
     if (!log) return null;
+
+    const statusColor = statusStyles[log.status] || "text-[#f0a15f] bg-[#f0a15f1f]";
+    const displayDate = formatDateFromISO(log.checkIn);
+    const displayCheckIn = formatTime(log.checkIn);
+    const displayCheckOut = formatTime(log.checkOut);
+    const displayHours = formatMinutesToHours(log.workingHours);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -100,11 +135,11 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                     <CalendarDays size={13} className="text-[#3984ff]" />
                                     Date
                                 </div>
-                                <p className="mt-1 text-[16px] font-semibold text-white">{log.date}</p>
+                                <p className="mt-1 text-[16px] font-semibold text-white">{displayDate}</p>
                             </div>
 
                             <span
-                                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${log.statusColor}`}
+                                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${statusColor}`}
                             >
                                 <span className="h-[5px] w-[5px] rounded-full bg-current" />
                                 {log.status}
@@ -119,7 +154,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                     <ClockArrowDown size={14} className="text-[#b8c7dd]" />
                                     Check-in
                                 </div>
-                                <p className="mt-1 text-[15px] font-medium text-white">{log.checkIn}</p>
+                                <p className="mt-1 text-[15px] font-medium text-white">{displayCheckIn}</p>
                             </div>
 
                             <div>
@@ -127,7 +162,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                     <ClockArrowUp size={14} className="text-[#b8c7dd]" />
                                     Check-out
                                 </div>
-                                <p className="mt-1 text-[15px] font-medium text-white">{log.checkOut}</p>
+                                <p className="mt-1 text-[15px] font-medium text-white">{displayCheckOut}</p>
                             </div>
                         </div>
 
@@ -139,9 +174,9 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                 <p className="text-[13px] font-medium text-[#cad7eb]">Working Hours</p>
                             </div>
                             <p
-                                className={`text-[15px] font-semibold ${log.hours === "--" ? "text-[#f16868]" : "text-white"}`}
+                                className={`text-[15px] font-semibold ${log.workingHours == null ? "text-[#f16868]" : "text-white"}`}
                             >
-                                {log.hours}
+                                {displayHours}
                             </p>
                         </div>
                     </div>

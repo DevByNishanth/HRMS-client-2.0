@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, X } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken } from "../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage } from "../../utils/tokenUtils";
 import Sidebar from "../../components/Siedbar";
 import CommonHeader from "../../components/CommonHeader";
+import CustomDatePicker from "../../components/CustomDatePicker";
 import userImg from "../../assets/userImg.svg";
+import noDataFoundImg from "../../assets/no-data-found.svg";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -12,85 +17,60 @@ const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
 
-const regularizationListData = [
-  {
-    date: "Oct 24, 2023",
-    session: "F/N",
-    duration: "1 Hour",
-    reason: "Missed check-in because of biometric device issue.",
-    status: "Approved",
-  },
-  {
-    date: "Oct 23, 2023",
-    session: "A/N",
-    duration: "2 Hours",
-    reason: "Forgot to mark check-out after lab session.",
-    status: "Pending",
-  },
-  {
-    date: "Oct 21, 2023",
-    session: "F/N",
-    duration: "1 Hour",
-    reason: "Network issue while marking attendance.",
-    status: "Rejected",
-  },
-  {
-    date: "Oct 19, 2023",
-    session: "A/N",
-    duration: "1 Hour",
-    reason: "Attendance correction for approved on-duty work.",
-    status: "Approved",
-  },
-];
-
-const teamRegularizationRequests = [
-  {
-    name: "Surya Chandran",
-    designation: "Assistant Professor",
-    date: "Oct 24, 2023",
-    session: "F/N",
-    duration: "1 Hour",
-    reason: "Missed check-in because of biometric device issue.",
-    status: "Pending",
-  },
-  {
-    name: "Nivetha Kumar",
-    designation: "Associate Professor",
-    date: "Oct 23, 2023",
-    session: "A/N",
-    duration: "2 Hours",
-    reason: "Forgot to mark check-out after department meeting.",
-    status: "Approved",
-  },
-  {
-    name: "Arjun Prakash",
-    designation: "Lab Instructor",
-    date: "Oct 22, 2023",
-    session: "F/N",
-    duration: "1 Hour",
-    reason: "Attendance punch was not captured by the device.",
-    status: "Pending",
-  },
-  {
-    name: "Maya Srinivasan",
-    designation: "Professor",
-    date: "Oct 20, 2023",
-    session: "A/N",
-    duration: "1 Hour",
-    reason: "Requested correction for late checkout entry.",
-    status: "Rejected",
-    rejectionReason: "Checkout correction proof was not attached.",
-  },
-];
-
 const StatusBadge = ({ status }) => (
   <span
-    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[status]}`}
+    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[status] || statusStyles.Pending
+      }`}
   >
     <span className="h-[4px] w-[4px] rounded-full bg-current" />
-    {status}
+    {status || "Pending"}
   </span>
 );
+
+const EmptyTableRow = ({ colSpan }) => (
+  <tr>
+    <td colSpan={colSpan} className="px-4 py-10">
+      <div className="flex flex-col items-center justify-center">
+        <img src={noDataFoundImg} alt="No data found" className="h-32 w-auto opacity-95" />
+        <p className="mt-2 text-[14px] font-semibold text-[#cad7eb]">No data found</p>
+      </div>
+    </td>
+  </tr>
+);
+
+const getRegularizationList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.requests)) return data.requests;
+  if (Array.isArray(data?.regularizationRequests)) return data.regularizationRequests;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+};
+
+const getFacultyName = (request) => {
+  const fullName = `${request?.facultyId?.firstName || ""} ${request?.facultyId?.lastName || ""}`.trim();
+  return fullName || request?.name || "Faculty";
+};
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+};
+
+const formatTime = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+};
+
+const isSameDay = (dateA, dateB) => {
+  if (!dateA || !dateB) return false;
+  return (
+    dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate()
+  );
+};
 
 const RejectConfirmationPopup = ({
   request,
@@ -98,6 +78,7 @@ const RejectConfirmationPopup = ({
   onReasonChange,
   onClose,
   onConfirm,
+  submitting,
 }) => {
   if (!request) return null;
 
@@ -131,7 +112,8 @@ const RejectConfirmationPopup = ({
 
         <div className="px-5 py-4">
           <p className="text-[13px] leading-5 text-[#cad7eb]">
-            Reject {request.name}'s regularization request for {request.date}?
+            Reject {getFacultyName(request)}'s regularization request for{" "}
+            {formatDate(request.attendanceDate || request.date)}?
           </p>
 
           <div className="mt-4">
@@ -163,10 +145,10 @@ const RejectConfirmationPopup = ({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={!reason.trim()}
-            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            disabled={!reason.trim() || submitting}
+            className="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-[#2563EB] px-4 text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Reject Request
+            {submitting ? "Rejecting..." : "Reject Request"}
           </button>
         </div>
       </div>
@@ -174,56 +156,216 @@ const RejectConfirmationPopup = ({
   );
 };
 
-const MyRegularizationTable = () => (
-  <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
-    <div className="relative z-20 flex items-center justify-between px-4 py-3">
-      <h2 className="text-[18px] font-semibold text-white">
-        My regularization requests <span>({regularizationListData.length})</span>
-      </h2>
-    </div>
+const MyRegularizationTable = () => {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
-    <div className="relative z-0 mt-3 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
-      <table className="w-full min-w-[760px] border-collapse text-left">
-        <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
-          <tr>
-            <th className="px-4 py-3 font-semibold">Date</th>
-            <th className="px-4 py-3 font-semibold">Session</th>
-            <th className="px-4 py-3 font-semibold">Duration</th>
-            <th className="px-4 py-3 font-semibold">Reason</th>
-            <th className="px-8 py-3 text-right font-semibold">Status</th>
-          </tr>
-        </thead>
-        <tbody className="text-[14px] text-[#cad7eb]">
-          {regularizationListData.map((item, index) => (
-            <tr key={`${item.date}-${item.session}-${index}`} className="border-b border-[#132944] last:border-0">
-              <td className="px-4 py-3 font-semibold text-white">{item.date}</td>
-              <td className="px-4 py-3 font-semibold text-white">{item.session}</td>
-              <td className="px-4 py-3 font-semibold text-white">{item.duration}</td>
-              <td className="max-w-[260px] truncate px-4 py-3 text-white" title={item.reason}>
-                {item.reason}
-              </td>
-              <td className="px-4 py-3 text-right">
-                <StatusBadge status={item.status} />
-              </td>
+  const filteredRequests = useMemo(() => {
+    return requests.filter((request) => {
+      const matchesDate =
+        !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
+      const matchesStatus = selectedStatus === "All" || request.status === selectedStatus;
+
+      return matchesDate && matchesStatus;
+    });
+  }, [requests, selectedDate, selectedStatus]);
+
+  const fetchMyRegularizations = useCallback(async () => {
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/my`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await res.json();
+
+      if (res.ok && data?.success !== false) {
+        setRequests(getRegularizationList(data));
+      } else {
+        console.error("Failed to fetch regularizations:", data?.message || data);
+        setRequests([]);
+      }
+    } catch (err) {
+      console.error("Error fetching regularizations:", err);
+      setRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      fetchMyRegularizations();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [fetchMyRegularizations]);
+
+  return (
+    <section className="mt-4 rounded-xl border border-[#183052] min-h-[400px] max-h-[calc(100vh-200px)] overflow-y-auto bg-[#0a1a2d] ">
+      <div className="relative z-20 flex items-center justify-between px-4 py-3">
+        <h2 className="text-[18px] font-semibold text-white">
+          My regularization requests <span>({filteredRequests.length})</span>
+        </h2>
+
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex items-center gap-1">
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="my-regularization-date-filter"
+                value={selectedDate}
+                onChange={setSelectedDate}
+                placeholder="Filter by date"
+                popupAlign="right"
+              />
+            </div>
+            {selectedDate && (
+              <button
+                type="button"
+                onClick={() => setSelectedDate(null)}
+                className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
+                aria-label="Clear date filter"
+                title="Clear date filter"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <select
+            value={selectedStatus}
+            onChange={(event) => setSelectedStatus(event.target.value)}
+            className="h-11 rounded-md border border-[#244061] bg-[#0d2138] px-3 text-[13px] font-medium text-[#cad7eb] outline-none transition focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+            aria-label="Filter my regularizations by status"
+          >
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="relative z-0 mt-3 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
+        <table className="w-full min-w-[760px] border-collapse text-left">
+          <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Date</th>
+              <th className="px-4 py-3 font-semibold">In Time</th>
+              <th className="px-4 py-3 font-semibold">Out Time</th>
+              <th className="px-4 py-3 font-semibold">Reason</th>
+              <th className="px-8 py-3 text-right font-semibold">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </section>
-);
+          </thead>
+          <tbody className="text-[14px] text-[#cad7eb]">
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-[#9eb0cc]">
+                  Loading regularization requests...
+                </td>
+              </tr>
+            ) : filteredRequests.length === 0 ? (
+              <EmptyTableRow colSpan={5} />
+            ) : (
+              filteredRequests.map((item) => (
+                <tr key={item._id} className="border-b border-[#132944] last:border-0">
+                  <td className="px-4 py-3 font-semibold text-white">{formatDate(item.attendanceDate)}</td>
+                  <td className="px-4 py-3 font-semibold text-white">{formatTime(item.requestedInTime)}</td>
+                  <td className="px-4 py-3 font-semibold text-white">{formatTime(item.requestedOutTime)}</td>
+                  <td className="max-w-[260px] truncate px-4 py-3 text-white" title={item.reason}>
+                    {item.reason}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <StatusBadge status={item.status} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
 
-const HodRegularizationTable = () => {
-  const [requests, setRequests] = useState(teamRegularizationRequests);
+const HodRegularizationTable = ({ onCountChange }) => {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
   const [rejectRequest, setRejectRequest] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleApprove = (request) => {
-    setRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item === request ? { ...item, status: "Approved", rejectionReason: "" } : item,
-      ),
-    );
+  const filteredRequests = useMemo(() => {
+    return requests.filter((request) => {
+      return !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
+    });
+  }, [requests, selectedDate]);
+
+  const fetchHodRegularizations = useCallback(async () => {
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/list`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await res.json();
+
+      if (res.ok && data?.success !== false) {
+        setRequests(getRegularizationList(data));
+      } else {
+        console.error("Failed to fetch HOD regularizations:", data?.message || data);
+        setRequests([]);
+      }
+    } catch (err) {
+      console.error("Error fetching HOD regularizations:", err);
+      setRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      fetchHodRegularizations();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [fetchHodRegularizations]);
+
+  useEffect(() => {
+    onCountChange?.(requests.length);
+  }, [onCountChange, requests.length]);
+
+  const handleApprove = async (request) => {
+    const token = getTokenFromLocalStorage();
+    const requestId = request?._id;
+    if (!token || !requestId) return;
+
+    try {
+      setProcessingId(requestId);
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${requestId}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ approvalRemarks: "Approved" }),
+        },
+      );
+      const data = await res.json();
+
+      if (res.ok && data?.success !== false) {
+        await fetchHodRegularizations();
+      } else {
+        console.error("Failed to approve regularization:", data?.message || data);
+      }
+    } catch (err) {
+      console.error("Error approving regularization:", err);
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   const handleReject = (request) => {
@@ -236,24 +378,71 @@ const HodRegularizationTable = () => {
     setRejectReason("");
   };
 
-  const confirmReject = () => {
-    setRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item === rejectRequest
-          ? { ...item, status: "Rejected", rejectionReason: rejectReason.trim() }
-          : item,
-      ),
-    );
-    closeRejectPopup();
+  const confirmReject = async () => {
+    const token = getTokenFromLocalStorage();
+    const requestId = rejectRequest?._id;
+    if (!token || !requestId || !rejectReason.trim()) return;
+
+    try {
+      setProcessingId(requestId);
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${requestId}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ approvalRemarks: rejectReason.trim() }),
+        },
+      );
+      const data = await res.json();
+
+      if (res.ok && data?.success !== false) {
+        await fetchHodRegularizations();
+        closeRejectPopup();
+      } else {
+        console.error("Failed to reject regularization:", data?.message || data);
+      }
+    } catch (err) {
+      console.error("Error rejecting regularization:", err);
+    } finally {
+      setProcessingId(null);
+    }
   };
+
+  const isProcessing = (request) => processingId === request?._id;
 
   return (
     <>
       <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
         <div className="relative z-20 flex items-center justify-between px-4 py-3">
           <h2 className="text-[18px] font-semibold text-white">
-            Team regularization requests <span>({requests.length})</span>
+            Team regularization requests <span>({filteredRequests.length})</span>
           </h2>
+
+          <div className="flex items-center gap-1">
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="hod-regularization-date-filter"
+                value={selectedDate}
+                onChange={setSelectedDate}
+                placeholder="Filter by date"
+                popupAlign="right"
+              />
+            </div>
+            {selectedDate && (
+              <button
+                type="button"
+                onClick={() => setSelectedDate(null)}
+                className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
+                aria-label="Clear date filter"
+                title="Clear date filter"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="relative z-0 mt-3 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
@@ -262,65 +451,77 @@ const HodRegularizationTable = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Date</th>
-                <th className="px-4 py-3 font-semibold">Session</th>
-                <th className="px-4 py-3 font-semibold">Duration</th>
+                <th className="px-4 py-3 font-semibold">In Time</th>
+                <th className="px-4 py-3 font-semibold">Out Time</th>
                 <th className="px-4 py-3 font-semibold">Reason</th>
                 <th className="px-4 py-3 text-right font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="text-[14px] text-[#cad7eb]">
-              {requests.map((request, index) => (
-                <tr
-                  key={`${request.name}-${request.date}-${request.session}-${index}`}
-                  className="border-b border-[#132944] last:border-0"
-                >
-                  <td className="px-4 py-3 font-semibold text-white">
-                    <div className="flex items-center gap-2">
-                      <img src={userImg} alt="" className="h-10 w-10 rounded-full object-cover" />
-                      <div className="min-w-0">
-                        <p className="truncate">{request.name}</p>
-                        <p className="truncate text-[12px] font-normal text-[#8ca1bd]">
-                          {request.designation}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-semibold text-white">{request.date}</td>
-                  <td className="px-4 py-3">{request.session}</td>
-                  <td className="px-4 py-3 font-semibold text-[#18d3bf]">{request.duration}</td>
-                  <td className="max-w-[260px] truncate px-4 py-3" title={request.reason}>
-                    {request.reason}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      {request.status === "Pending" ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => handleApprove(request)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
-                            aria-label="Approve regularization request"
-                            title="Approve"
-                          >
-                            <Check className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleReject(request)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
-                            aria-label="Reject regularization request"
-                            title="Reject"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <StatusBadge status={request.status} />
-                      )}
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-[#9eb0cc]">
+                    Loading regularization requests...
                   </td>
                 </tr>
-              ))}
+              ) : filteredRequests.length === 0 ? (
+                <EmptyTableRow colSpan={6} />
+              ) : (
+                filteredRequests.map((request) => (
+                  <tr
+                    key={request._id}
+                    className="border-b border-[#132944] last:border-0"
+                  >
+                    <td className="px-4 py-3 font-semibold text-white">
+                      <div className="flex items-center gap-2">
+                        <img src={userImg} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        <div className="min-w-0">
+                          <p className="truncate">{getFacultyName(request)}</p>
+                          <p className="truncate text-[12px] font-normal text-[#8ca1bd]">
+                            {request.facultyId?.empId || request.facultyId?.department || "--"}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-white">{formatDate(request.attendanceDate)}</td>
+                    <td className="px-4 py-3 font-semibold text-white">{formatTime(request.requestedInTime)}</td>
+                    <td className="px-4 py-3 font-semibold text-white">{formatTime(request.requestedOutTime)}</td>
+                    <td className="max-w-[260px] truncate px-4 py-3" title={request.reason}>
+                      {request.reason}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        {request.status === "Pending" ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleApprove(request)}
+                              disabled={isProcessing(request)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                              aria-label="Approve regularization request"
+                              title="Approve"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleReject(request)}
+                              disabled={isProcessing(request)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                              aria-label="Reject regularization request"
+                              title="Reject"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <StatusBadge status={request.status} />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -332,6 +533,7 @@ const HodRegularizationTable = () => {
         onReasonChange={setRejectReason}
         onClose={closeRejectPopup}
         onConfirm={confirmReject}
+        submitting={processingId === rejectRequest?._id}
       />
     </>
   );
@@ -345,10 +547,11 @@ const RegularaizationListPage = () => {
     ? location.state.hodSelectedTab
     : "My Regularizations";
   const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
+  const [hodRegularizationCount, setHodRegularizationCount] = useState(0);
 
   const content = hodSelectedTab === "My Regularizations"
     ? <MyRegularizationTable />
-    : <HodRegularizationTable />;
+    : <HodRegularizationTable onCountChange={setHodRegularizationCount} />;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -376,19 +579,19 @@ const RegularaizationListPage = () => {
                     onClick={() => setHodSelectedTab(tab)}
                     key={tab}
                     className={`px-6 py-2 text-sm font-medium transition ${tab === hodSelectedTab
-                        ? "rounded-md bg-[#2563EB] text-white"
-                        : "rounded-md hover:bg-slate-600/20"
+                      ? "rounded-md bg-[#2563EB] text-white"
+                      : "rounded-md hover:bg-slate-600/20"
                       }`}
                   >
                     {tab}
                     {tab === "Team Regularizations" && (
                       <span
                         className={`ml-1 rounded px-2 py-[2px] text-xs ${tab === hodSelectedTab
-                            ? "bg-white font-semibold text-blue-700"
-                            : "bg-slate-700 text-white"
+                          ? "bg-white font-semibold text-blue-700"
+                          : "bg-slate-700 text-white"
                           }`}
                       >
-                        2
+                        {hodRegularizationCount}
                       </span>
                     )}
                   </button>
