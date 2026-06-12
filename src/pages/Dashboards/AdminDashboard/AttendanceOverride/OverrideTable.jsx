@@ -408,7 +408,17 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            <span>{formatTime(item.attendanceDate)}</span>
+                                            {item.fromDate && item.toDate ? (
+                                                <div className="flex flex-col">
+                                                    <span>{formatDate(item.fromDate)}</span>
+                                                    <span className="text-xs text-[#8ca1bd]">
+                                                        to
+                                                    </span>
+                                                    <span>{formatDate(item.toDate)}</span>
+                                                </div>
+                                            ) : (
+                                                formatDate(item.attendanceDate)
+                                            )}
                                         </td>
 
                                         <td className="px-5 py-3">
