@@ -1,4 +1,4 @@
-import { Search, Bell, Settings, UserRound } from "lucide-react";
+import { Search, Bell, Settings, UserRound, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 const CommonHeader = () => {
 
@@ -22,6 +22,9 @@ const CommonHeader = () => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-3">
+        <button className="text-[#d7e3ff] hover:text-white transition">
+            <Calendar size={14} />
+          </button>
           <button className="text-[#d7e3ff] hover:text-white transition">
             <Bell size={14} />
           </button>
