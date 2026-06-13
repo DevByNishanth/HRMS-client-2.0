@@ -1,254 +1,259 @@
+import React, { useEffect, useMemo, useState } from "react";
+import Sidebar from "../../../../components/Siedbar";
+import CommonHeader from "../../../../components/CommonHeader";
 
-import React, { useEffect, useMemo, useState } from 'react'
-import Sidebar from '../../../../components/Siedbar'
-import CommonHeader from '../../../../components/CommonHeader'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sece-hrms-server.onrender.com'
-const summaryColumns = ['P', 'L', 'H', 'A', 'OFF', 'R', 'OD', '?']
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
+const summaryColumns = ["P", "A", "OFF", "OD"];
 const monthOptions = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
-const yearOptions = [2024, 2025, 2026, 2027, 2028]
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const yearOptions = [2024, 2025, 2026, 2027, 2028];
 
 const fallbackEmployees = [
   {
-    id: 'SECENAD002',
-    name: 'A.ANBARASAN',
-    designation: 'Senior Lab Technician, Coimbatore',
+    id: "SECENAD002",
+    name: "A.ANBARASAN",
+    designation: "Senior Lab Technician, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'A',
-      '2026-06-03': 'A',
-      '2026-06-04': 'A',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A',
-      '2026-06-09': 'A',
-      '2026-06-10': 'A',
-      '2026-06-11': 'A',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'A',
+      "2026-06-01": "A",
+      "2026-06-02": "A",
+      "2026-06-03": "A",
+      "2026-06-04": "A",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A",
+      "2026-06-09": "A",
+      "2026-06-10": "A",
+      "2026-06-11": "A",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "A",
     },
-    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECETCS136',
-    name: 'ABINAYA M',
-    designation: 'ASSISTANT PROFESSOR, Coimbatore',
+    id: "SECETCS136",
+    name: "ABINAYA M",
+    designation: "ASSISTANT PROFESSOR, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'A',
-      '2026-06-03': 'A',
-      '2026-06-04': 'A',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A',
-      '2026-06-09': 'A',
-      '2026-06-10': 'A',
-      '2026-06-11': 'A',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'A',
+      "2026-06-01": "A",
+      "2026-06-02": "A",
+      "2026-06-03": "A",
+      "2026-06-04": "A",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A",
+      "2026-06-09": "A",
+      "2026-06-10": "A",
+      "2026-06-11": "A",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "A",
     },
-    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECEADM161',
-    name: 'ABISHEK K',
-    designation: 'Software Developer, Coimbatore',
+    id: "SECEADM161",
+    name: "ABISHEK K",
+    designation: "Software Developer, Coimbatore",
     attendance: {
-      '2026-06-01': 'P',
-      '2026-06-02': 'P',
-      '2026-06-03': 'A',
-      '2026-06-04': 'P',
-      '2026-06-05': 'A:P',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A:P',
-      '2026-06-09': 'A:P',
-      '2026-06-10': 'A:P',
-      '2026-06-11': 'A:P',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'A:P',
+      "2026-06-01": "P",
+      "2026-06-02": "P",
+      "2026-06-03": "A",
+      "2026-06-04": "P",
+      "2026-06-05": "A:P",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A:P",
+      "2026-06-09": "A:P",
+      "2026-06-10": "A:P",
+      "2026-06-11": "A:P",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "A:P",
     },
-    summary: { P: 6.5, L: 0, H: 0, A: 5.5, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 6.5, L: 0, H: 0, A: 5.5, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECETCS127',
-    name: 'AGALYA K',
-    designation: 'ASSISTANT PROFESSOR, Coimbatore',
+    id: "SECETCS127",
+    name: "AGALYA K",
+    designation: "ASSISTANT PROFESSOR, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'A',
-      '2026-06-03': 'A',
-      '2026-06-04': 'A',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A',
-      '2026-06-09': 'A',
-      '2026-06-10': 'A',
-      '2026-06-11': 'A',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'P',
+      "2026-06-01": "A",
+      "2026-06-02": "A",
+      "2026-06-03": "A",
+      "2026-06-04": "A",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A",
+      "2026-06-09": "A",
+      "2026-06-10": "A",
+      "2026-06-11": "A",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "P",
     },
-    summary: { P: 1, L: 0, H: 0, A: 11, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 1, L: 0, H: 0, A: 11, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECETMA012',
-    name: 'AKILADEVI N',
-    designation: 'ASSISTANT PROFESSOR, Coimbatore',
+    id: "SECETMA012",
+    name: "AKILADEVI N",
+    designation: "ASSISTANT PROFESSOR, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'A:P',
-      '2026-06-03': 'A',
-      '2026-06-04': 'P',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A',
-      '2026-06-09': 'A',
-      '2026-06-10': 'P',
-      '2026-06-11': 'A',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'P',
+      "2026-06-01": "A",
+      "2026-06-02": "A:P",
+      "2026-06-03": "A",
+      "2026-06-04": "P",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A",
+      "2026-06-09": "A",
+      "2026-06-10": "P",
+      "2026-06-11": "A",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "P",
     },
-    summary: { P: 3.5, L: 0, H: 0, A: 8.5, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 3.5, L: 0, H: 0, A: 8.5, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECEPLC013',
-    name: 'ALOYSIUS JUDE L D',
-    designation: 'Softskills Trainer, Coimbatore',
+    id: "SECEPLC013",
+    name: "ALOYSIUS JUDE L D",
+    designation: "Softskills Trainer, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'A',
-      '2026-06-03': 'A',
-      '2026-06-04': 'A',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'A',
-      '2026-06-09': 'P',
-      '2026-06-10': 'A',
-      '2026-06-11': 'A:P',
-      '2026-06-12': 'P',
-      '2026-06-13': 'A:P',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'P',
+      "2026-06-01": "A",
+      "2026-06-02": "A",
+      "2026-06-03": "A",
+      "2026-06-04": "A",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "A",
+      "2026-06-09": "P",
+      "2026-06-10": "A",
+      "2026-06-11": "A:P",
+      "2026-06-12": "P",
+      "2026-06-13": "A:P",
+      "2026-06-14": "OFF",
+      "2026-06-15": "P",
     },
-    summary: { P: 4, L: 0, H: 0, A: 8, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 4, L: 0, H: 0, A: 8, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECEADM102',
-    name: 'ANAND BABU P',
-    designation: 'Creative Head, Coimbatore',
+    id: "SECEADM102",
+    name: "ANAND BABU P",
+    designation: "Creative Head, Coimbatore",
     attendance: {
-      '2026-06-01': 'A',
-      '2026-06-02': 'P',
-      '2026-06-03': 'A',
-      '2026-06-04': 'P:A',
-      '2026-06-05': 'A',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'P',
-      '2026-06-09': 'P',
-      '2026-06-10': 'P',
-      '2026-06-11': 'P',
-      '2026-06-12': 'A',
-      '2026-06-13': 'A',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'A',
+      "2026-06-01": "A",
+      "2026-06-02": "P",
+      "2026-06-03": "A",
+      "2026-06-04": "P:A",
+      "2026-06-05": "A",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "P",
+      "2026-06-09": "P",
+      "2026-06-10": "P",
+      "2026-06-11": "P",
+      "2026-06-12": "A",
+      "2026-06-13": "A",
+      "2026-06-14": "OFF",
+      "2026-06-15": "A",
     },
-    summary: { P: 5.5, L: 0, H: 0, A: 6.5, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 5.5, L: 0, H: 0, A: 6.5, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
   {
-    id: 'SECETCS073',
-    name: 'ANANDARAJ A',
-    designation: 'ASSISTANT PROFESSOR, Coimbatore',
+    id: "SECETCS073",
+    name: "ANANDARAJ A",
+    designation: "ASSISTANT PROFESSOR, Coimbatore",
     attendance: {
-      '2026-06-01': 'P',
-      '2026-06-02': 'P',
-      '2026-06-03': 'A',
-      '2026-06-04': 'P',
-      '2026-06-05': 'P',
-      '2026-06-06': 'OFF',
-      '2026-06-07': 'OFF',
-      '2026-06-08': 'P',
-      '2026-06-09': 'P',
-      '2026-06-10': 'A',
-      '2026-06-11': 'P',
-      '2026-06-12': 'P',
-      '2026-06-13': 'P',
-      '2026-06-14': 'OFF',
-      '2026-06-15': 'A:P',
+      "2026-06-01": "P",
+      "2026-06-02": "P",
+      "2026-06-03": "A",
+      "2026-06-04": "P",
+      "2026-06-05": "P",
+      "2026-06-06": "OFF",
+      "2026-06-07": "OFF",
+      "2026-06-08": "P",
+      "2026-06-09": "P",
+      "2026-06-10": "A",
+      "2026-06-11": "P",
+      "2026-06-12": "P",
+      "2026-06-13": "P",
+      "2026-06-14": "OFF",
+      "2026-06-15": "A:P",
     },
-    summary: { P: 9.5, L: 0, H: 0, A: 2.5, OFF: 3, R: 0, OD: 0, '?': 0 },
+    summary: { P: 9.5, L: 0, H: 0, A: 2.5, OFF: 3, R: 0, OD: 0, "?": 0 },
   },
-]
+];
 
 function getMonthDates(year, monthIndex) {
-  const dates = []
-  const cursor = new Date(year, monthIndex, 1)
+  const dates = [];
+  const cursor = new Date(year, monthIndex, 1);
 
   while (cursor.getMonth() === monthIndex) {
-    const date = new Date(cursor)
+    const date = new Date(cursor);
     dates.push({
       date,
       day: date.getDate(),
-      weekday: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+      weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
+      key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
         date.getDate(),
-      ).padStart(2, '0')}`,
+      ).padStart(2, "0")}`,
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
-    })
-    cursor.setDate(cursor.getDate() + 1)
+    });
+    cursor.setDate(cursor.getDate() + 1);
   }
 
-  return dates
+  return dates;
 }
 
 function getCellClass(status, isWeekend) {
-  if (status === 'A') return 'attendance-cell attendance-cell-absent'
-  if (status === 'P') return 'attendance-cell attendance-cell-present'
-  if (status === 'OFF') return 'attendance-cell attendance-cell-off'
-  if (String(status).includes(':')) return 'attendance-cell attendance-cell-partial'
-  return `attendance-cell ${isWeekend ? 'attendance-cell-weekend' : ''}`
+  const normalizedStatus = String(status || "").trim();
+
+  if (normalizedStatus === "A") return "attendance-cell attendance-cell-absent";
+  if (normalizedStatus === "P")
+    return "attendance-cell attendance-cell-present";
+  if (normalizedStatus === "OFF") return "attendance-cell attendance-cell-off";
+  if (normalizedStatus === "OD") return "attendance-cell attendance-cell-od";
+  if (normalizedStatus.includes(":"))
+    return "attendance-cell attendance-cell-partial";
+  return `attendance-cell ${isWeekend ? "attendance-cell-weekend" : ""}`;
 }
 
 function getEmployeeList(payload) {
-  if (Array.isArray(payload)) return payload
-  if (Array.isArray(payload?.data)) return payload.data
-  if (Array.isArray(payload?.employees)) return payload.employees
-  if (Array.isArray(payload?.data?.employees)) return payload.data.employees
-  if (Array.isArray(payload?.records)) return payload.records
-  if (Array.isArray(payload?.data?.records)) return payload.data.records
-  if (Array.isArray(payload?.muster)) return payload.muster
-  if (Array.isArray(payload?.data?.muster)) return payload.data.muster
-  if (Array.isArray(payload?.attendance)) return payload.attendance
-  if (Array.isArray(payload?.data?.attendance)) return payload.data.attendance
-  return []
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.employees)) return payload.employees;
+  if (Array.isArray(payload?.data?.employees)) return payload.data.employees;
+  if (Array.isArray(payload?.records)) return payload.records;
+  if (Array.isArray(payload?.data?.records)) return payload.data.records;
+  if (Array.isArray(payload?.muster)) return payload.muster;
+  if (Array.isArray(payload?.data?.muster)) return payload.data.muster;
+  if (Array.isArray(payload?.attendance)) return payload.attendance;
+  if (Array.isArray(payload?.data?.attendance)) return payload.data.attendance;
+  return [];
 }
 
 function getEmployeeName(employee) {
@@ -256,91 +261,114 @@ function getEmployeeName(employee) {
     employee.name ||
     employee.employeeName ||
     employee.facultyName ||
-    [employee.firstName, employee.lastName].filter(Boolean).join(' ').trim() ||
-    [employee.facultyId?.firstName, employee.facultyId?.lastName].filter(Boolean).join(' ').trim() ||
-    'Unnamed Employee'
-  )
+    [employee.firstName, employee.lastName].filter(Boolean).join(" ").trim() ||
+    [employee.facultyId?.firstName, employee.facultyId?.lastName]
+      .filter(Boolean)
+      .join(" ")
+      .trim() ||
+    "Unnamed Employee"
+  );
 }
 
 function getEmployeeId(employee) {
-  return employee.id || employee.empId || employee.employeeId || employee.employeeCode || employee.facultyId?.empId || employee._id
+  return (
+    employee.id ||
+    employee.empId ||
+    employee.employeeId ||
+    employee.employeeCode ||
+    employee.facultyId?.empId ||
+    employee._id
+  );
 }
 
 function getEmployeeDesignation(employee) {
-  return (
-    employee.designation ||
-    employee.department ||
-    employee.facultyId?.designation ||
-    employee.employeeDesignation ||
-    employee.role ||
-    ''
-  )
+  // console.log("Employee:", employee);
+  return employee.department || "";
+}
+
+function getEmployeeDepartmentType(employee) {
+  const designation = getEmployeeDesignation(employee);
+
+  if (!designation) return "";
+
+  return designation.split(",")[0].trim();
 }
 
 function normalizeAttendanceMap(employee) {
   const rawAttendance =
-    employee.attendance || employee.attendanceMap || employee.days || employee.dailyAttendance || employee.muster || {}
+    employee.attendance ||
+    employee.attendanceMap ||
+    employee.days ||
+    employee.dailyAttendance ||
+    employee.muster ||
+    {};
 
   if (Array.isArray(rawAttendance)) {
     return rawAttendance.reduce((attendance, item) => {
-      const dateKey = item.date || item.attendanceDate || item.day || item.key
-      const status = item.status || item.attendance || item.value || item.mark || '-'
+      const dateKey = item.date || item.attendanceDate || item.day || item.key;
+      const status =
+        item.status || item.attendance || item.value || item.mark || "-";
 
       if (dateKey) {
-        const parsedDate = new Date(dateKey)
+        const parsedDate = new Date(dateKey);
         const normalizedKey = Number.isNaN(parsedDate.getTime())
           ? dateKey
-          : `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(
+          : `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, "0")}-${String(
               parsedDate.getDate(),
-            ).padStart(2, '0')}`
-        attendance[normalizedKey] = status
+            ).padStart(2, "0")}`;
+        attendance[normalizedKey] = status;
       }
 
-      return attendance
-    }, {})
+      return attendance;
+    }, {});
   }
 
-  return rawAttendance || {}
+  return rawAttendance || {};
 }
 
 function calculateSummary(attendance) {
   return Object.values(attendance).reduce(
     (summary, rawStatus) => {
-      const status = String(rawStatus || '-')
+      const status = String(rawStatus || "-");
 
-      if (status === 'P') summary.P += 1
-      else if (status === 'A') summary.A += 1
-      else if (status === 'OFF') summary.OFF += 1
-      else if (status === 'L') summary.L += 1
-      else if (status === 'H') summary.H += 1
-      else if (status === 'R') summary.R += 1
-      else if (status === 'OD') summary.OD += 1
-      else if (status.includes(':')) {
-        status.split(':').forEach((part) => {
-          if (summary[part] !== undefined) summary[part] += 0.5
-        })
-      } else if (status !== '-') {
-        summary['?'] += 1
+      if (status === "P") summary.P += 1;
+      else if (status === "A") summary.A += 1;
+      else if (status === "OFF") summary.OFF += 1;
+      else if (status === "L") summary.L += 1;
+      else if (status === "H") summary.H += 1;
+      else if (status === "R") summary.R += 1;
+      else if (status === "OD") summary.OD += 1;
+      else if (status.includes(":")) {
+        status.split(":").forEach((part) => {
+          if (summary[part] !== undefined) summary[part] += 0.5;
+        });
+      } else if (status !== "-") {
+        summary["?"] += 1;
       }
 
-      return summary
+      return summary;
     },
-    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, OD: 0, '?': 0 },
-  )
+    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, OD: 0, "?": 0 },
+  );
 }
 
 function normalizeEmployees(payload) {
   return getEmployeeList(payload).map((employee, index) => {
-    const attendance = normalizeAttendanceMap(employee)
+    const attendance = normalizeAttendanceMap(employee);
 
     return {
       id: getEmployeeId(employee) || `employee-${index}`,
       name: getEmployeeName(employee),
+      department: getEmployeeDepartmentType(employee),
       designation: getEmployeeDesignation(employee),
       attendance,
-      summary: employee.summary || employee.totals || employee.counts || calculateSummary(attendance),
-    }
-  })
+      summary:
+        employee.summary ||
+        employee.totals ||
+        employee.counts ||
+        calculateSummary(attendance),
+    };
+  });
 }
 
 function getAttendanceStatus(attendance, date) {
@@ -348,61 +376,99 @@ function getAttendanceStatus(attendance, date) {
     attendance[date.key] ||
     attendance[String(date.day)] ||
     attendance[date.day] ||
-    attendance[date.key.split('-').reverse().join('-')] ||
-    '-'
-  )
+    attendance[date.key.split("-").reverse().join("-")] ||
+    "-"
+  );
 }
 
 export default function AttendanceManagement() {
-  const [selectedMonth, setSelectedMonth] = useState(5)
-  const [selectedYear, setSelectedYear] = useState(2026)
-  const [employees, setEmployees] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const dates = useMemo(() => getMonthDates(selectedYear, selectedMonth), [selectedMonth, selectedYear])
-  const monthTitle = new Date(selectedYear, selectedMonth).toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric',
-  })
-  const visibleEmployees = employees
+  const [selectedMonth, setSelectedMonth] = useState(5);
+  const [selectedYear, setSelectedYear] = useState(2026);
+  const [employees, setEmployees] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("All");
+  const dates = useMemo(
+    () => getMonthDates(selectedYear, selectedMonth),
+    [selectedMonth, selectedYear],
+  );
+  const monthTitle = new Date(selectedYear, selectedMonth).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
+
+  const departmentOptions = useMemo(() => {
+    const types = employees
+      .map((employee) => getEmployeeDepartmentType(employee))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+
+    return ["All", ...new Set(types)];
+  }, [employees]);
+
+  const visibleEmployees = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return employees.filter((employee) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        [employee.name, employee.id, employee.designation]
+          .filter(Boolean)
+          .some((value) =>
+            String(value).toLowerCase().includes(normalizedSearch),
+          );
+
+      const departmentType = getEmployeeDepartmentType(employee);
+      const matchesDepartment =
+        selectedDepartment === "All" || departmentType === selectedDepartment;
+
+      return matchesSearch && matchesDepartment;
+    });
+  }, [employees, searchTerm, selectedDepartment]);
 
   useEffect(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
 
     async function fetchAttendanceMuster() {
-      const token = localStorage.getItem('hrms_token')
+      const token = localStorage.getItem("hrms_token");
 
-      setIsLoading(true)
-      setErrorMessage('')
+      setIsLoading(true);
+      setErrorMessage("");
 
       try {
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, '')}/api/attendance/muster?month=${selectedMonth + 1}&year=${selectedYear}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${selectedMonth + 1}&year=${selectedYear}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
           },
-        )
-        const data = await response.json().catch(() => null)
+        );
+        const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-          throw new Error(data?.message || data?.error || 'Unable to load attendance muster.')
+          throw new Error(
+            data?.message || data?.error || "Unable to load attendance muster.",
+          );
         }
 
-        setEmployees(normalizeEmployees(data))
+        setEmployees(normalizeEmployees(data));
       } catch (error) {
-        if (error.name === 'AbortError') return
-        setEmployees([])
-        setErrorMessage(error.message || 'Unable to load attendance muster.')
+        if (error.name === "AbortError") return;
+        setEmployees([]);
+        setErrorMessage(error.message || "Unable to load attendance muster.");
       } finally {
-        if (!controller.signal.aborted) setIsLoading(false)
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }
 
-    fetchAttendanceMuster()
+    fetchAttendanceMuster();
 
-    return () => controller.abort()
-  }, [selectedMonth, selectedYear])
+    return () => controller.abort();
+  }, [selectedMonth, selectedYear]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -414,12 +480,62 @@ export default function AttendanceManagement() {
             <div className="attendance-filter-bar">
               <div>
                 <h1>Attendance Report</h1>
-                <p>{isLoading ? 'Loading attendance...' : monthTitle}</p>
+                <p>{isLoading ? "Loading attendance..." : monthTitle}</p>
               </div>
               <div className="attendance-filter-controls">
+                <div
+                  className="attendance-status-legend"
+                  aria-label="Attendance status legend"
+                >
+                  <span className="attendance-status-legend-item">
+                    <span className="attendance-status-dot attendance-cell-present" />{" "}
+                    Present
+                  </span>
+                  <span className="attendance-status-legend-item">
+                    <span className="attendance-status-dot attendance-cell-absent" />{" "}
+                    Absent
+                  </span>
+                  <span className="attendance-status-legend-item">
+                    <span className="attendance-status-dot attendance-cell-off" />{" "}
+                    OFF
+                  </span>
+                  <span className="attendance-status-legend-item">
+                    <span className="attendance-status-dot attendance-cell-od" />{" "}
+                    OD
+                  </span>
+                </div>
+                <label className="attendance-search-field">
+                  <span>Search</span>
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Name /Employee ID "
+                  />
+                </label>
+                <label>
+                  <span>Department</span>
+                  <select
+                    value={selectedDepartment}
+                    onChange={(event) =>
+                      setSelectedDepartment(event.target.value)
+                    }
+                  >
+                    {departmentOptions.map((department) => (
+                      <option value={department} key={department}>
+                        {department}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <label>
                   <span>Month</span>
-                  <select value={selectedMonth} onChange={(event) => setSelectedMonth(Number(event.target.value))}>
+                  <select
+                    value={selectedMonth}
+                    onChange={(event) =>
+                      setSelectedMonth(Number(event.target.value))
+                    }
+                  >
                     {monthOptions.map((month, index) => (
                       <option value={index} key={month}>
                         {month}
@@ -429,7 +545,12 @@ export default function AttendanceManagement() {
                 </label>
                 <label>
                   <span>Year</span>
-                  <select value={selectedYear} onChange={(event) => setSelectedYear(Number(event.target.value))}>
+                  <select
+                    value={selectedYear}
+                    onChange={(event) =>
+                      setSelectedYear(Number(event.target.value))
+                    }
+                  >
                     {yearOptions.map((year) => (
                       <option value={year} key={year}>
                         {year}
@@ -440,9 +561,7 @@ export default function AttendanceManagement() {
               </div>
             </div>
             {errorMessage && (
-              <div className="attendance-alert">
-                {errorMessage}
-              </div>
+              <div className="attendance-alert">{errorMessage}</div>
             )}
             <div className="attendance-table-wrap">
               <table className="attendance-table">
@@ -451,9 +570,11 @@ export default function AttendanceManagement() {
                     <th className="employee-header sticky-employee" rowSpan="2">
                       Employee
                     </th>
-                    <th className="month-header" colSpan={dates.length}>
-                      {monthTitle}
-                    </th>
+                    <th
+                      className="month-header"
+                      colSpan={dates.length}
+                      aria-hidden="true"
+                    />
                     {summaryColumns.map((column) => (
                       <th className="summary-header" rowSpan="2" key={column}>
                         {column}
@@ -472,39 +593,57 @@ export default function AttendanceManagement() {
                 <tbody>
                   {isLoading && (
                     <tr>
-                      <td className="attendance-empty-state" colSpan={dates.length + summaryColumns.length + 1}>
+                      <td
+                        className="attendance-empty-state"
+                        colSpan={dates.length + summaryColumns.length + 1}
+                      >
                         Loading attendance muster...
                       </td>
                     </tr>
                   )}
                   {!isLoading &&
                     visibleEmployees.map((employee) => (
-                    <tr key={employee.id}>
-                      <th className="employee-cell sticky-employee" scope="row">
-                        <strong>
-                          {employee.name} [{employee.id}]
-                        </strong>
-                        <span>{employee.designation}</span>
-                      </th>
-                      {dates.map((date) => {
-                        const status = getAttendanceStatus(employee.attendance, date)
+                      <tr key={employee.id}>
+                        <th
+                          className="employee-cell sticky-employee"
+                          scope="row"
+                        >
+                          <strong>
+                            {employee.name} [{employee.id}]
+                          </strong>
+                          <span>{employee.designation}</span>
+                        </th>
+                        {dates.map((date) => {
+                          const status = getAttendanceStatus(
+                            employee.attendance,
+                            date,
+                          );
 
-                        return (
-                          <td className={getCellClass(status, date.isWeekend)} key={`${employee.id}-${date.key}`}>
-                            {status}
+                          return (
+                            <td
+                              className={getCellClass(status, date.isWeekend)}
+                              key={`${employee.id}-${date.key}`}
+                            >
+                              {status}
+                            </td>
+                          );
+                        })}
+                        {summaryColumns.map((column) => (
+                          <td
+                            className="summary-cell"
+                            key={`${employee.id}-${column}`}
+                          >
+                            {employee.summary?.[column] ?? 0}
                           </td>
-                        )
-                      })}
-                      {summaryColumns.map((column) => (
-                        <td className="summary-cell" key={`${employee.id}-${column}`}>
-                          {employee.summary?.[column] ?? 0}
-                        </td>
-                      ))}
-                    </tr>
+                        ))}
+                      </tr>
                     ))}
                   {!isLoading && visibleEmployees.length === 0 && (
                     <tr>
-                      <td className="attendance-empty-state" colSpan={dates.length + summaryColumns.length + 1}>
+                      <td
+                        className="attendance-empty-state"
+                        colSpan={dates.length + summaryColumns.length + 1}
+                      >
                         No attendance records found for {monthTitle}.
                       </td>
                     </tr>
@@ -552,6 +691,33 @@ export default function AttendanceManagement() {
             gap: 10px;
           }
 
+          .attendance-status-legend {
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 999px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 6px 10px;
+          }
+
+          .attendance-status-legend-item {
+            align-items: center;
+            color: #334155;
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 700;
+            gap: 6px;
+          }
+
+          .attendance-status-dot {
+            border-radius: 999px;
+            display: inline-block;
+            height: 10px;
+            width: 10px;
+          }
+
           .attendance-filter-controls label {
             color: #475569;
             display: grid;
@@ -561,33 +727,27 @@ export default function AttendanceManagement() {
             text-transform: uppercase;
           }
 
-          .attendance-filter-controls select {
+          .attendance-filter-controls select,
+          .attendance-filter-controls input {
             appearance: none;
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             color: #172554;
-            cursor: pointer;
             font-size: 14px;
             font-weight: 700;
             min-height: 36px;
             min-width: 120px;
-            padding: 7px 34px 7px 10px;
+            padding: 7px 10px;
           }
 
-          .attendance-filter-controls label {
-            position: relative;
-          }
-
-          .attendance-filter-controls label::after {
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 6px solid #475569;
-            bottom: 14px;
-            content: '';
-            pointer-events: none;
-            position: absolute;
-            right: 12px;
+          .attendance-filter-controls input {
+            min-width: 220px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none;
+            border-right: 1px solid #cbd5e1;
           }
 
           .attendance-alert {
@@ -634,7 +794,7 @@ export default function AttendanceManagement() {
           .attendance-table td {
             border-right: 1px dotted #cbd5e1;
             border-bottom: 1px solid #eef2f7;
-            height: 50px;
+            height: 42px;
             padding: 0;
             text-align: center;
             white-space: nowrap;
@@ -650,12 +810,12 @@ export default function AttendanceManagement() {
           }
 
           .attendance-table thead tr:nth-child(2) th {
-            top: 50px;
+            top: 36px;
           }
 
           .employee-header {
-            width: 310px;
-            min-width: 310px;
+            width: 270px;
+            min-width: 270px;
             font-size: 16px;
           }
 
@@ -670,14 +830,17 @@ export default function AttendanceManagement() {
           }
 
           .month-header {
-            height: 50px;
+            background: transparent;
+            border: 0;
+            height: 0;
             min-width: 1240px;
-            font-size: 16px;
+            padding: 0;
           }
 
           .date-header {
             width: 40px;
             min-width: 40px;
+            height: 40px;
           }
 
           .date-header span,
@@ -731,7 +894,7 @@ export default function AttendanceManagement() {
 
           .attendance-table tbody tr:nth-child(even) .employee-cell,
           .attendance-table tbody tr:nth-child(even) .summary-cell,
-          .attendance-table tbody tr:nth-child(even) .attendance-cell:not(.attendance-cell-absent):not(.attendance-cell-present):not(.attendance-cell-partial):not(.attendance-cell-off) {
+          .attendance-table tbody tr:nth-child(even) .attendance-cell:not(.attendance-cell-absent):not(.attendance-cell-present):not(.attendance-cell-partial):not(.attendance-cell-off):not(.attendance-cell-od) {
             background: #f9fafb;
           }
 
@@ -739,19 +902,32 @@ export default function AttendanceManagement() {
             background: #ffffff;
             color: #111827;
             font-weight: 500;
+            height: 42px;
           }
 
-          .attendance-cell-absent,
+          .attendance-cell-absent {
+            background: #ef4444;
+            color: #ffffff;
+          }
+
           .attendance-cell-partial {
-            background: #72c9e8;
+            background: #3b82f6;
+            color: #ffffff;
           }
 
           .attendance-cell-present {
-            background: #d5d5d5;
+            background: #22c55e;
+            color: #ffffff;
           }
 
           .attendance-cell-off {
-            background: #ffffff;
+            background: #fef3c7;
+            color: #92400e;
+          }
+
+          .attendance-cell-od {
+            background: #8b5cf6;
+            color: #ffffff;
           }
 
           .attendance-cell-weekend {
@@ -800,5 +976,5 @@ export default function AttendanceManagement() {
         `}</style>
       </div>
     </div>
-  )
+  );
 }
