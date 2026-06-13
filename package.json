@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.16.1",
+    "dayjs": "^1.11.21",
     "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^1.17.0",
