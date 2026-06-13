@@ -92,7 +92,7 @@ const RecentLogs = () => {
                 <td className="px-4 py-4">{formatDateFromISO(record.checkIn)}</td>
                 <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
                 <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
-                <td className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#4f7bd8]"}`}>
+                <td className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
                   {formatMinutesToHours(record.workingHours)}
                 </td>
                 <td className="px-4 py-4">
@@ -102,7 +102,7 @@ const RecentLogs = () => {
                   </span>
                 </td>
                 <td className="px-4 py-4 text-center text-[#8ca1bd]">
-                  {record.status.toLowerCase() !== "present" ? <button
+                  {record.status.toLowerCase() == "present" ? <button
                     type="button"
                     onClick={() => setSelectedLog(record)}
                     className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white ml-8"

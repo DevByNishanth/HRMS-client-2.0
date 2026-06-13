@@ -29,6 +29,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
 import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
+import DoumentUploadFormModal from './components/DoumentUploadFormModal'
 
 function App() {
   // Role-based default route redirect
@@ -58,6 +59,9 @@ function App() {
 
   return (
     <>
+
+    {/* <DoumentUploadFormModal/> */}
+    
       <ToastContainer
         position="top-right"
         autoClose={3000}

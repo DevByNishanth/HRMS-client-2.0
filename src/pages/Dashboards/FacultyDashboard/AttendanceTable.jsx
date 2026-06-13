@@ -1,66 +1,45 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUp, ArrowUpRight, ChevronDown } from "lucide-react";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import ReqularizationCanvas from "./ReqularizationCanvas";
-
-const attendanceLogs = [
-  {
-    date: "May 30, 2026",
-    checkIn: "08:45 AM",
-    checkOut: "01:00 PM",
-    hours: "04h 15m",
-    status: "Partially Present",
-  },
-  {
-    date: "May 29, 2026",
-    checkIn: "08:50 AM",
-    checkOut: "05:35 PM",
-    hours: "08h 45m",
-    status: "Present",
-  },
-  {
-    date: "May 28, 2026",
-    checkIn: "09:10 AM",
-    checkOut: "04:00 PM",
-    hours: "06h 50m",
-    status: "Partially Present",
-  },
-  {
-    date: "May 27, 2026",
-    checkIn: "08:55 AM",
-    checkOut: "05:00 PM",
-    hours: "08h 05m",
-    status: "Present",
-  },
-  {
-    date: "May 26, 2026",
-    checkIn: "--",
-    checkOut: "--",
-    hours: "--",
-    status: "On Leave",
-  },
-  {
-    date: "May 25, 2026",
-    checkIn: "09:00 AM",
-    checkOut: "05:30 PM",
-    hours: "08h 30m",
-    status: "Present",
-  },
-];
+import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../../../utils/tokenUtils";
 
 const statusStyles = {
   Present: "text-[#18d3bf] bg-[#18d3bf1f]",
   "Partially Present": "text-[#f0a15f] bg-[#f0a15f1f]",
+  "Second Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
+  Absent: "text-[#f16868] bg-[#f168681f]",
   "On Leave": "text-[#f16868] bg-[#f168681f]",
+  Holiday: "text-[#3984ff] bg-[#3984ff1f]",
+  "On Duty": "text-[#3984ff] bg-[#3984ff1f]",
 };
 
-const statuses = ["Present", "Partially Present", "On Leave"];
+const statuses = Object.keys(statusStyles);
+
+const formatMinutesToHours = (minutes) => {
+  if (minutes == null) return "--";
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${String(hrs).padStart(2, "0")}h ${String(mins).padStart(2, "0")}m`;
+};
+
+const formatTime = (dateStr) => {
+  if (!dateStr) return "--";
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+};
+
+const formatDateFromISO = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+};
 
 const StatusFilter = ({ value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative min-w-[170px]">
+    <div className="relative min-w-[170px] ">
       <button
         type="button"
         onClick={() => setIsOpen((currentState) => !currentState)}
@@ -76,7 +55,7 @@ const StatusFilter = ({ value, onChange }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] h-[200px] overflow-auto table-custom-scrollbar">
           {statuses.map((status) => (
             <button
               key={status}
@@ -100,21 +79,57 @@ const StatusFilter = ({ value, onChange }) => {
 };
 
 const AttendanceTable = () => {
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [status, setStatus] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
 
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        setLoading(true);
+        const token = getTokenFromLocalStorage();
+        if (!token) return;
+        const facultyId = getFacultyIdFromToken();
+        if (!facultyId) return;
+
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+        const res = await fetch(
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/faculty-attendance?facultyId=${facultyId}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        const data = await res.json();
+        if (res.ok && data?.success) {
+          setRecords(data.records);
+        }
+      } catch (err) {
+        console.error("Error fetching attendance:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttendance();
+  }, []);
+
   const filteredLogs = useMemo(() => {
-    return attendanceLogs.filter((log) => {
-      const logDate = new Date(log.date);
-      const fromMatch = !fromDate || logDate >= fromDate;
-      const toMatch = !toDate || logDate <= toDate;
-      const statusMatch = !status || log.status === status;
+    return records.filter((record) => {
+      const logDate = new Date(record.checkIn);
+      logDate.setHours(0, 0, 0, 0);
+      const from = fromDate ? new Date(fromDate) : null;
+      const to = toDate ? new Date(toDate) : null;
+      if (from) from.setHours(0, 0, 0, 0);
+      if (to) to.setHours(0, 0, 0, 0);
+
+      const fromMatch = !from || logDate >= from;
+      const toMatch = !to || logDate <= to;
+      const statusMatch = !status || record.status === status;
 
       return fromMatch && toMatch && statusMatch;
     });
-  }, [fromDate, toDate, status]);
+  }, [records, fromDate, toDate, status]);
 
   const hasFilters = fromDate || toDate || status;
 
@@ -164,59 +179,70 @@ const AttendanceTable = () => {
       </div>
 
       <div className="relative z-0 max-h-[38vh] min-h-[240px] overflow-auto table-custom-scrollbar">
-        <table className="w-full min-w-[760px] border-collapse text-left">
-          <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
-            <tr>
-              <th className="px-4 py-3 font-semibold">Date</th>
-              <th className="px-4 py-3 font-semibold">Check-In</th>
-              <th className="px-4 py-3 font-semibold">Check-Out</th>
-              <th className="px-4 py-3 font-semibold">Working Hours</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Action</th>
-            </tr>
-          </thead>
-          <tbody className="text-[16px] text-[#cad7eb]">
-            {filteredLogs.length > 0 ? (
-              filteredLogs.map((log) => (
-                <tr key={`${log.date}-${log.status}`} className="border-b border-[#132944] last:border-0">
-                  <td className="px-4 py-4">{log.date}</td>
-                  <td className="px-4 py-4">{log.checkIn}</td>
-                  <td className="px-4 py-4">{log.checkOut}</td>
+        {loading ? (
+          <div className="flex min-h-[240px] items-center justify-center">
+            <p className="text-[14px] text-[#8ca1bd]">Loading attendance records...</p>
+          </div>
+        ) : filteredLogs.length > 0 ? (
+          <table className="w-full min-w-[760px] border-collapse text-left">
+            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+              <tr>
+                <th className="px-4 py-3 font-semibold">Date</th>
+                <th className="px-4 py-3 font-semibold">Check-In</th>
+                <th className="px-4 py-3 font-semibold">Check-Out</th>
+                <th className="px-4 py-3 font-semibold">Working Hours</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody className="text-[13px] text-[#cad7eb]">
+              {filteredLogs.map((record) => (
+                <tr key={record.attendanceId || record.checkIn} className="border-b border-[#132944] last:border-0">
+                  <td className="px-4 py-4">{formatDateFromISO(record.checkIn)}</td>
+                  <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
+                  <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
                   <td
-                    className={`px-4 py-4 font-semibold ${log.hours === "--" ? "text-[#f16868]" : "text-[#18d3bf]"
+                    className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"
                       }`}
                   >
-                    {log.hours}
+                    {formatMinutesToHours(record.workingHours)}
                   </td>
                   <td className="px-4 py-4">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[log.status]}`}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}
                     >
                       <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                      {log.status}
+                      {record.status}
                     </span>
                   </td>
                   <td className="px-4 py-4">
                     <button
                       type="button"
-                      onClick={() => setSelectedLog({ ...log, statusColor: statusStyles[log.status] })}
-                      className="flex items-center gap-1 rounded-md bg-[#102640] px-3 py-2 text-[10px] text-[#a9bddb] transition hover:bg-[#183052] hover:text-white"
-                      aria-label={`Open regularization form for ${log.date}`}
+                      onClick={() => setSelectedLog(record)}
+                      disabled={record.status?.toLowerCase() !== "present"}
+                      className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
+                        ${record.status?.toLowerCase() === "present"
+                          ? "bg-[#102640] text-[#a9bddb] hover:bg-[#183052] hover:text-white"
+                          : "bg-[#102640]/30 text-[#6f839f] cursor-not-allowed"
+                        }`}
+                      aria-label={`Open regularization form for ${formatDateFromISO(record.checkIn)}`}
                     >
                       <ArrowUpRight size={16} />
                     </button>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="px-4 py-8 text-center text-[#8ca1bd]">
-                  No attendance logs found for the selected filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="flex min-h-[240px] items-center justify-center">
+            <p className="text-[14px] text-[#8ca1bd]">
+              {records.length === 0
+                ? "No attendance records found."
+                : "No attendance logs found for the selected filters."}
+            </p>
+          </div>
+        )}
       </div>
 
       <ReqularizationCanvas log={selectedLog} onClose={() => setSelectedLog(null)} />

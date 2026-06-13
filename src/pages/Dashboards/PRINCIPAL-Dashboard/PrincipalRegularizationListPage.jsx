@@ -13,6 +13,7 @@ import {
   CalendarDays,
   TimerReset,
   FileText,
+  ShieldCheck,
   Send,
   AlertCircle,
   SunMedium,
@@ -59,6 +60,27 @@ const formatDateDisplay = (dateString) => {
     day: "2-digit",
     year: "numeric",
   });
+};
+
+const calculateDuration = (request) => {
+  if (request.duration) return request.duration;
+  if (request.totalHours) return `${request.totalHours} Hours`;
+
+  const inTime = request.requestedInTime || request.inTime;
+  const outTime = request.requestedOutTime || request.outTime;
+
+  if (!inTime || !outTime) return "N/A";
+
+  const start = new Date(inTime);
+  const end = new Date(outTime);
+  const diffMs = end - start;
+
+  if (isNaN(diffMs) || diffMs < 0) return "N/A";
+
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `${diffHrs}h ${diffMins}m`;
 };
 
 const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onRevoke, approvingId }) => {
@@ -148,7 +170,7 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
                   Duration
                 </div>
                 <p className="mt-1 text-[15px] font-medium text-white">
-                  {request.duration || `${request.totalHours || 0} Hours`}
+                  {calculateDuration(request)}
                 </p>
               </div>
             </div>
@@ -184,6 +206,92 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
               </p>
               <div className="rounded-lg border border-[#f1686833] bg-[#f1686812] px-4 py-3 text-[13px] leading-5 text-[#ffd1d1]">
                 {request.rejectionReason}
+              </div>
+            </div>
+          )}
+
+          {request.approvalHistory && request.approvalHistory.length > 0 && (
+            <div className="mt-3 border-t border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] font-semibold text-white">
+                <ShieldCheck size={15} className="text-[#3984ff]" />
+                Approval Workflow
+              </p>
+
+              <div className="space-y-0">
+                {request.approvalHistory.map((history, index) => {
+                  const isLast = index === request.approvalHistory.length - 1;
+                  const isApproved = history.action?.toLowerCase() === "approved";
+                  const isRejected = history.action?.toLowerCase() === "rejected";
+
+                  return (
+                    <div key={history._id || index} className="relative">
+                      {!isLast && (
+                        <div
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
+                            ? "bg-[#10b981]"
+                            : isRejected
+                              ? "bg-[#ef4444]"
+                              : "bg-[#444c63]"
+                            }`}
+                        />
+                      )}
+
+                      <div className="relative flex gap-3 pb-4">
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                              ? "bg-emerald-800 border-emerald-200/20"
+                              : isRejected
+                                ? "bg-[#ef4444] border-[#ef4444]"
+                                : "bg-[#f59e0b15] border-[#444c63]"
+                              } text-white`}
+                          >
+                            {isApproved ? (
+                              <CheckCircle2 size={18} />
+                            ) : isRejected ? (
+                              <XCircle size={18} />
+                            ) : (
+                              <Clock size={18} />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                {history.role}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                ? "bg-[#10b98120] text-[#10b981]"
+                                : isRejected
+                                  ? "bg-[#ef444420] text-[#ef4444]"
+                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                }`}
+                            >
+                              {history.action}
+                            </span>
+                          </div>
+
+                          <p className="text-[12px] text-[#cad7eb]">{history.remarks}</p>
+
+                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                            <Clock size={11} />
+                            {new Date(history.actionDate).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -382,12 +490,12 @@ const PrincipalRegularizationListPage = () => {
   async function fetchRegularizationRequests() {
     try {
       const response = await axios.get(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/regularization-application/?currentApprovalLevel=${decodedData?.role}`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/principal/list`,
         {
           headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
         }
       );
-      setRequests(response.data?.regularizationApplications || []);
+      setRequests(response.data?.requests || []);
     } catch (error) {
       console.error("Error fetching regularization requests:", error);
       setRequests([]);
@@ -460,9 +568,9 @@ const PrincipalRegularizationListPage = () => {
     try {
       setApprovingId(requestId);
       await axios.patch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/regularization-application/${requestId}/approve`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${requestId}/approve`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("hrms_token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       await fetchRegularizationRequests();
       setSelectedRequest(null);
@@ -503,8 +611,8 @@ const PrincipalRegularizationListPage = () => {
     try {
       if (confirmation.action === "reject") {
         await axios.patch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/regularization-application/${confirmation.request?._id}/reject`,
-          { remarks: rejectReason.trim() },
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${confirmation.request?._id}/reject`,
+          { approvalRemarks: rejectReason.trim() },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else if (confirmation.action === "revoke") {
@@ -709,13 +817,13 @@ const PrincipalRegularizationListPage = () => {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            {formatDate(request.date || request.fromDate || request.regularizationDate)}
+                            {formatDate(request.date || request.fromDate || request.attendanceDate)}
                           </td>
                           <td className="px-4 py-3">
                             {request.session || request.leaveSession || "Full Day"}
                           </td>
                           <td className="px-4 py-3 font-semibold text-[#18d3bf]">
-                            {request.duration || `${request.totalHours || 0} Hours`}
+                            {calculateDuration(request)}
                           </td>
                           <td className="max-w-[200px] truncate px-4 py-3" title={request.reason || request.regularizationReason}>
                             {request.reason || request.regularizationReason}

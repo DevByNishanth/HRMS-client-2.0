@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+    AlertCircle,
     CalendarDays,
     ClockArrowDown,
     ClockArrowUp,
@@ -55,6 +56,8 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     const [reason, setReason] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [attachments, setAttachments] = useState([]);
+    const [formError, setFormError] = useState("");
+    const [fieldErrors, setFieldErrors] = useState({});
     const attachmentsRef = useRef([]);
 
     useEffect(() => {
@@ -78,8 +81,12 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // Clear previous errors
+        setFormError("");
+        setFieldErrors({});
+
         if (!reason.trim()) {
-            toast.error("Please provide a reason for regularization.");
+            setFieldErrors({ reason: "Please provide a reason for regularization." });
             return;
         }
 
@@ -88,7 +95,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
         try {
             const token = getTokenFromLocalStorage();
             if (!token) {
-                toast.error("Authentication token not found. Please log in again.");
+                setFormError("Authentication token not found. Please log in again.");
                 setSubmitting(false);
                 return;
             }
@@ -97,12 +104,16 @@ const ReqularizationCanvas = ({ log, onClose }) => {
             const checkInDate = new Date(log.checkIn);
             const attendanceDate = checkInDate.toISOString().split("T")[0];
 
-            const payload = {
-                attendanceDate,
-                requestedInTime: log.checkIn,
-                requestedOutTime: log.checkOut,
-                reason: reason.trim(),
-            };
+            const formData = new FormData();
+            formData.append("attendanceDate", attendanceDate);
+            formData.append("requestedInTime", log.checkIn);
+            formData.append("requestedOutTime", log.checkOut);
+            formData.append("reason", reason.trim());
+
+            // Append all attachment files
+            attachments.forEach(({ file }) => {
+                formData.append("attachments", file);
+            });
 
             const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
             const res = await fetch(
@@ -110,10 +121,9 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify(payload),
+                    body: formData,
                 },
             );
 
@@ -121,14 +131,25 @@ const ReqularizationCanvas = ({ log, onClose }) => {
 
             if (res.ok && data?.success) {
                 toast.success("Regularization request submitted successfully!");
-                setReason("")
+                setReason("");
+                setFormError("");
+                setFieldErrors({});
                 setTimeout(() => onClose(), 2000);
             } else {
-                toast.error(data?.message || "Failed to submit regularization request.");
+                // Extract field-level errors if available
+                const serverFieldErrors = {};
+                if (data?.errors && typeof data.errors === "object") {
+                    Object.entries(data.errors).forEach(([key, value]) => {
+                        serverFieldErrors[key] = typeof value === "string" ? value : Array.isArray(value) ? value.join(", ") : String(value);
+                    });
+                }
+
+                setFormError(data?.message || data?.error || "Failed to submit regularization request.");
+                setFieldErrors(serverFieldErrors);
             }
         } catch (err) {
             console.error("Error submitting regularization:", err);
-            toast.error("Network error. Please try again.");
+            setFormError("Network error. Please try again.");
         } finally {
             setSubmitting(false);
         }
@@ -156,7 +177,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     return (
         <section
             className="fixed inset-0 z-50 flex justify-end bg-[#020817]/50 backdrop-blur-[2px]"
-            onClick={onClose}
+            onClick={() => { onClose(); setFormError(""); setReason("") }}
         >
             <form
                 className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
@@ -175,7 +196,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
 
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={() => { onClose(); setFormError(""); setReason("") }}
                         className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
                         aria-label="Close regularization form"
                     >
@@ -184,6 +205,8 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
+
+
                     <p className="text-[12px] leading-5 text-[#b8c7dd]">
                         Please review your logged hours for the selected date to identify any
                         discrepancies before submitting your regularization request.
@@ -253,10 +276,24 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                             id="regularization-reason"
                             rows={3}
                             value={reason}
-                            onChange={(e) => setReason(e.target.value)}
+                            onChange={(e) => {
+                                setReason(e.target.value);
+                                if (fieldErrors.reason) {
+                                    setFieldErrors((prev) => ({ ...prev, reason: "" }));
+                                }
+                            }}
                             placeholder="Explain the discrepancy..."
-                            className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                            className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:ring-2 ${fieldErrors.reason
+                                ? "border-[#ef4444] bg-[#0d2138] focus:border-[#ef4444] focus:ring-[#ef4444]/20"
+                                : "border-[#244061] bg-[#0d2138] focus:border-[#3984ff] focus:ring-[#3984ff33]"
+                                }`}
                         />
+                        {fieldErrors.reason && (
+                            <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#ef4444]">
+                                <AlertCircle size={12} />
+                                {fieldErrors.reason}
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-3">
@@ -327,9 +364,16 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                             </div>
                         )}
                     </div>
+
                 </div>
 
                 <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+                    {formError && (
+                        <div className="mb-3  mt-4 flex items-start gap-3 rounded-lg border border-[#ef4444]/40 bg-[#ef4444]/10 px-4 py-3">
+                            <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#ef4444]" />
+                            <p className="text-[13px] leading-5 text-[#ef4444]">{formError}</p>
+                        </div>
+                    )}
                     <button
                         type="submit"
                         disabled={submitting}

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { Check, ChevronDown, Eye, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
@@ -42,8 +42,8 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
                 setIsOpen(false);
               }}
               className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
-                  ? "bg-[#132b49] text-white"
-                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                ? "bg-[#132b49] text-white"
+                : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
                 }`}
             >
               {option}
@@ -131,7 +131,7 @@ const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onCon
   );
 };
 
-const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoading, onRefresh }) => {
+const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
   const [requests, setRequests] = useState([]);
   const [selectedPermission, setSelectedPermission] = useState(null);
   const [rejectRequest, setRejectRequest] = useState(null);
@@ -140,7 +140,7 @@ const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoadi
   const [session, setSession] = useState("All");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const [loading, setLoading] = useState(initialRawData === null && initialLoading !== false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionInProgress, setActionInProgress] = useState(null);
 
@@ -181,7 +181,7 @@ const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoadi
     };
   };
 
-  const fetchTeamPermissions = async () => {
+  const fetchTeamPermissions = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -196,7 +196,7 @@ const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoadi
         throw new Error(data?.message || "Failed to load team permissions.");
       }
 
-      const mappedRequests = data.data.map(mapApiToPermission);
+      const mappedRequests = (data.data || []).map(mapApiToPermission);
       setRequests(mappedRequests);
       if (typeof onCountChange === "function") {
         onCountChange(mappedRequests.length);
@@ -207,30 +207,11 @@ const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoadi
     } finally {
       setLoading(false);
     }
-  };
-
-  // Use pre-fetched data from parent, or fallback to our own fetch
-  const dataReadyRef = useRef(false);
+  }, [onCountChange]);
 
   useEffect(() => {
-    if (dataReadyRef.current) return;
-
-    if (initialRawData !== null) {
-      dataReadyRef.current = true;
-      // Data was pre-fetched by parent, just map it
-      const mappedRequests = (initialRawData || []).map(mapApiToPermission);
-      setRequests(mappedRequests);
-      setLoading(false);
-      if (typeof onCountChange === "function") {
-        onCountChange(mappedRequests.length);
-      }
-    } else if (!initialLoading) {
-      // Parent finished loading with no data → fallback fetch
-      dataReadyRef.current = true;
-      fetchTeamPermissions();
-    }
-    // If parent is still loading (initialLoading is true), wait
-  }, [initialRawData, initialLoading]);
+    fetchTeamPermissions();
+  }, [fetchTeamPermissions]);
 
   const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
@@ -271,7 +252,7 @@ const HodPermissionRequestTable = ({ onCountChange, initialRawData, initialLoadi
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ remarks: "Approved for department requirement" }),
+        body: JSON.stringify({ remarks: "Approved Permission" }),
       });
       const data = await response.json();
 

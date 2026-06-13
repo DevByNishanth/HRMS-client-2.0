@@ -61,8 +61,8 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                   setIsOpen(false);
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
-                    ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                  ? "bg-[#2563EB] text-white"
+                  : "text-[#cad7eb] hover:bg-[#132b49]"
                   }`}
               >
                 {option}
@@ -332,8 +332,8 @@ const ConfirmationPopup = ({
             onClick={onConfirm}
             disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
             className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
-                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-                : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+              : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
               }`}
           >
             {isRevoke && revokeLoading ? (
@@ -390,12 +390,12 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
   async function fetchPermissions() {
     try {
       const response = await axios.get(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/?currentApprovalLevel=${decodedData?.role}`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/principal/list`,
         {
           headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
         }
       );
-      setPermissions(response.data?.permissionApplications || []);
+      setPermissions(response.data?.data || []);
     } catch (error) {
       console.error("Error fetching permission requests:", error);
       setPermissions([]);
@@ -469,7 +469,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
     try {
       setApprovingId(requestId);
       await axios.patch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${requestId}/approve`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/approve`,
         {},
         { headers: { Authorization: `Bearer ${localStorage.getItem("hrms_token")}` } }
       );
@@ -512,14 +512,14 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
     try {
       if (confirmation.action === "reject") {
         await axios.patch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${confirmation.request?._id}/reject`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${confirmation.request?._id}/reject`,
           { remarks: rejectReason.trim() },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else if (confirmation.action === "revoke") {
         setRevokeLoading(true);
         await axios.patch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${confirmation.request?._id}/revoke-principal`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${confirmation.request?._id}/revoke-principal`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -658,7 +658,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{formatDate(permission.fromDate || permission.date)}</td>
+                    <td className="px-4 py-3">{formatDate(permission.fromDate || permission.date || permission.permissionDate)}</td>
                     <td className="px-4 py-3">{permission.session || permission.leaveSession || "Full Day"}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration || `${permission.totalHours || 0} Hours`}

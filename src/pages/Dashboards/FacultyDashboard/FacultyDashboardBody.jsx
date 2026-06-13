@@ -10,6 +10,7 @@ import TimeTracker from "./TimeTracker";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import ApplyPermission from "../../../components/ApplyPermission";
 import userImg from "../../../assets/userImg.svg";
+import { jwtDecode } from "jwt-decode";
 
 
 const requestTabs = [
@@ -217,12 +218,17 @@ const FacultyDashboardBody = () => {
   const isHod = role === "hod";
 
 
+  // decoding token 
+  let token = localStorage.getItem("hrms_token");
+  const decodedToken = jwtDecode(token);
+  console.log("decoded", decodedToken)
+
   return (
     <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
       <div className="mx-auto">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-xl font-semibold leading-tight text-white">Hello, Alex!</h1>
+            <h1 className="text-xl font-semibold leading-tight text-white">Hello, {decodedToken?.firstName} {decodedToken?.lastName} !</h1>
             <p className="mt-1 text-[13px] text-[#9eb0cc]">
               Here's your weekly leave and attendance overview
             </p>
