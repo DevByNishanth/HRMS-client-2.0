@@ -57,7 +57,7 @@ export default function AttendanceOverrideModal({
                 {/* Body */}
                 <div className="space-y-5 p-6">
 
-                    {mode === "bulk" && (
+                    {mode === "bulk-selected" && (
                         <>
                             <div>
                                 <label className="mb-2 block text-sm text-[#8ca1bd]">

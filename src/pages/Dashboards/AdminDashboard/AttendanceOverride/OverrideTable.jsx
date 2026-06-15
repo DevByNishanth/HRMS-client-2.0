@@ -19,15 +19,13 @@ export default function OverrideTable({ data = [] }) {
 
     const formatDate = (value) => {
         if (!value) return "-";
-
-        return new Date(value).toLocaleDateString(
-            "en-IN",
-            {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-            }
-        );
+        const date = new Date(value);
+        return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            timeZone: "UTC",
+        });
     };
 
     const formatTime = (value) => {
@@ -66,6 +64,7 @@ export default function OverrideTable({ data = [] }) {
             )
         )
     ];
+    
 
     const hasActiveFilters =
         dateRange ||
@@ -116,13 +115,13 @@ export default function OverrideTable({ data = [] }) {
         }
     };
 
-    const handleRowSelection = (employeeNo) => {
+    const handleRowSelection = (employeeId) => {
         setSelectedRows((prev) =>
-            prev.includes(employeeNo)
+            prev.includes(employeeId)
                 ? prev.filter(
-                    (id) => id !== employeeNo
+                    (id) => id !== employeeId
                 )
-                : [...prev, employeeNo]
+                : [...prev, employeeId]
         );
     };
 
@@ -138,7 +137,7 @@ export default function OverrideTable({ data = [] }) {
 
             setSelectedRows(
                 filteredData.map(
-                    (item) => item.employeeNo
+                    (item) => item.employeeId
                 )
             );
         }
@@ -148,7 +147,7 @@ export default function OverrideTable({ data = [] }) {
         const selectedData =
             filteredData.filter((item) =>
                 selectedRows.includes(
-                    item.employeeNo
+                    item.employeeId
                 )
             );
 
@@ -164,7 +163,7 @@ export default function OverrideTable({ data = [] }) {
                 Employee_Name:
                     item.employeeName,
                 Employee_ID:
-                    item.employeeNo,
+                    item.employeeId,
                 Department:
                     item.department,
                 Attendance_Date:
@@ -174,7 +173,7 @@ export default function OverrideTable({ data = [] }) {
                 Last_Out:
                     item.lastOut,
                 Status:
-                    item.status,
+                    item.statusCode,
                 Overridden_On:
                     item.overriddenOn,
                 Remarks:
@@ -214,6 +213,18 @@ export default function OverrideTable({ data = [] }) {
             `Override_History_${new Date().getTime()}.xlsx`
         );
     };
+
+    
+    useEffect(() => {
+        console.log("overrideData:", overrideData);
+
+        overrideData.forEach(item => {
+            console.log(
+                "Raw Attendance Date:",
+                item.attendanceDate
+            );
+        });
+    }, [overrideData]);
 
     return (
         <>
@@ -382,10 +393,10 @@ export default function OverrideTable({ data = [] }) {
                                         <td className="px-5 py-3">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedRows.includes(item.employeeNo)}
+                                                checked={selectedRows.includes(item.employeeId)}
                                                 onChange={() =>
                                                     handleRowSelection(
-                                                        item.employeeNo
+                                                        item.employeeId
                                                     )
                                                 }
                                             />
@@ -398,7 +409,7 @@ export default function OverrideTable({ data = [] }) {
                                                 </span>
 
                                                 <span className="text-sm text-[#8ca1bd]">
-                                                    {item.employeeNo || "-"}
+                                                    {item.employeeId || "-"}
                                                 </span>
                                             </div>
                                         </td>
@@ -408,13 +419,13 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            {item.fromDate && item.toDate ? (
+                                            {item.attendanceDate?.includes(" to ") ? (
                                                 <div className="flex flex-col">
-                                                    <span>{formatDate(item.fromDate)}</span>
+                                                    <span>{item.attendanceDate.split(" to ")[0]}</span>
                                                     <span className="text-xs text-[#8ca1bd]">
                                                         to
                                                     </span>
-                                                    <span>{formatDate(item.toDate)}</span>
+                                                    <span>{item.attendanceDate.split(" to ")[1]}</span>
                                                 </div>
                                             ) : (
                                                 formatDate(item.attendanceDate)
@@ -430,7 +441,7 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            {item.status}
+                                            {item.statusCode}
                                         </td>
 
                                         <td className="px-5 py-3">

@@ -22,6 +22,7 @@ export default function EmployeeWiseAttendanceUpdate() {
     const [showModal, setShowModal] = useState(false);
     const [modalMode, setModalMode] = useState("single");
     const [selectedRowData, setSelectedRowData] = useState(null);
+    const [editedRows, setEditedRows] = useState([]);
     // const [isBulkOverride, setIsBulkOverride] = useState(false);
 
     const dropdownRef = useRef();
@@ -134,13 +135,15 @@ export default function EmployeeWiseAttendanceUpdate() {
         const updated = filteredAttendance.map((row) =>
             row._id === rowId
                 ? {
-                      ...row,
-                      [field]: value,
-                  }
+                    ...row,
+                    [field]: value,
+                }
                 : row
         );
-
         setFilteredAttendance(updated);
+        if (!editedRows.includes(rowId)) {
+            setEditedRows((prev) => [...prev, rowId]);
+        }
     };
 
     const handleRowSelection = (rowId) => {
@@ -166,19 +169,31 @@ export default function EmployeeWiseAttendanceUpdate() {
     };
 
     const openOverrideModal = () => {
-        if (selectedRows.length === 0) {
-            alert(
-                "Please select at least one attendance record"
+        // Bulk Selected (checkbox based)
+        if (selectedRows.length > 0) {
+            const isDateRangeSelection =
+                fromDate &&
+                toDate &&
+                selectedRows.length ===
+                filteredAttendance.length;
+            setModalMode(
+                isDateRangeSelection
+                    ? "bulk-selected"
+                    : "bulk-selected"
             );
+            setShowModal(true);
             return;
         }
-
+        // Single / Bulk Row Edit
+        if (editedRows.length === 0) {
+            alert("Please modify at least one attendance record");
+            return;
+        }
         setModalMode(
-            selectedRows.length > 1
-                ? "bulk"
-                : "single"
+            editedRows.length === 1
+                ? "single"
+                : "bulk-row"
         );
-
         setShowModal(true);
     };
 
@@ -540,12 +555,14 @@ export default function EmployeeWiseAttendanceUpdate() {
                 onSubmit={async (formData) => {
                     try {
                         setLoading(true);
-
                         if (modalMode === "single") {
-                            const row = filteredAttendance.find(
-                                item => selectedRows.includes(item._id)
-                            );
-
+                            const row =
+                                filteredAttendance.find(
+                                    item =>
+                                        editedRows.includes(
+                                            item._id
+                                        )
+                                );
                             await updateAttendanceOverrideSingle(
                                 row.employeeId,
                                 row.date.split("T")[0],
@@ -557,56 +574,67 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     remarks: formData.remarks,
                                 }
                             );
-                        } else {
-                            console.log("Bulk Payload", {
-                                employeeId: selectedEmployee.facultyId,
-                                fromDate: fromDate
-                                    ? new Date(fromDate).toISOString().split("T")[0]
-                                    : "",
-                                toDate: toDate
-                                    ? new Date(toDate).toISOString().split("T")[0]
-                                    : "",
-                                session1: formData.session1,
-                                session2: formData.session2,
-                                remarks: formData.remarks,
-                            });
+                        }
+                        else if (modalMode === "bulk-row") {
+                            const editedRecords = filteredAttendance.filter(row =>
+                                editedRows.includes(row._id)
+                            );
                             await updateAttendanceOverrideBulk({
-                                employeeId: selectedEmployee.facultyId,
-                                fromDate: fromDate
-                                    ? new Date(fromDate).toISOString().split("T")[0]
-                                    : "",
-                                toDate: toDate
-                                    ? new Date(toDate).toISOString().split("T")[0]
-                                    : "",
-                                session1: formData.session1,
-                                session2: formData.session2,
+                                fromDate: editedRecords[0].date.split("T")[0],
+                                toDate:
+                                    editedRecords[
+                                        editedRecords.length - 1
+                                    ].date.split("T")[0],
                                 remarks: formData.remarks,
+                                updates: [
+                                    {
+                                        employeeId:
+                                            selectedEmployee.facultyId,
+                                        session1:
+                                            editedRecords[0].session1,
+                                        session2:
+                                            editedRecords[0].session2,
+                                    },
+                                ],
                             });
                         }
-
-                        // alert(
-                        //     "Attendance Override Updated Successfully"
-                        // );
-
+                        else if (
+                            modalMode === "bulk-selected"
+                        ) {
+                            await updateAttendanceOverrideBulk({
+                                fromDate: new Date(fromDate)
+                                    .toISOString()
+                                    .split("T")[0],
+                                toDate: new Date(toDate)
+                                    .toISOString()
+                                    .split("T")[0],
+                                remarks: formData.remarks,
+                                updates: [
+                                    {
+                                        employeeId: selectedEmployee.facultyId,
+                                        session1: formData.session1,
+                                        session2: formData.session2,
+                                    },
+                                ],
+                            });
+                        }
                         setShowModal(false);
-
                         const refreshed =
                             await getEmployeeAttendanceOverride(
                                 selectedEmployee.facultyId
                             );
-                            console.log("Refreshed Data", refreshed.data);
-
-if (refreshed?.success) {
-    setAttendanceData(refreshed.data || []);
-    setFilteredAttendance(refreshed.data || []);
-}
-
+                        if (refreshed?.success) {
+                            setAttendanceData(
+                                refreshed.data || []
+                            );
+                            setFilteredAttendance(
+                                refreshed.data || []
+                            );
+                        }
                         setSelectedRows([]);
+                        setEditedRows([]);
                     } catch (error) {
-                        console.error(
-                            error
-                        );
-
+                        console.error(error);
                         alert(
                             "Failed To Update Attendance"
                         );
@@ -615,7 +643,6 @@ if (refreshed?.success) {
                     }
                 }}
             />
-
             {/* Fixed Footer */}
 
             {/* <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#244061] bg-[#0d2138] p-4">

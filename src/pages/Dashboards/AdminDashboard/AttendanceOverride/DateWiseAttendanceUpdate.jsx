@@ -150,23 +150,28 @@ export default function DateWiseAttendanceUpdate() {
 
     const handleBulkEditedOverride = async ({ remarks }) => {
         try {
-            const updates = Object.keys(editedRows).map(
-                (employeeId) => {
-                    const row = attendanceData.find(
-                        (r) => r.facultyId === employeeId
-                    );
 
-                    return {
-                        employeeId,
-                        session1:
-                            editedRows[employeeId]?.session1 ??
-                            row.session1,
-                        session2:
-                            editedRows[employeeId]?.session2 ??
-                            row.session2,
-                    };
-                }
-            );
+            const updates = Object.keys(
+                editedRows
+            ).map((employeeId) => {
+
+                const row = attendanceData.find(
+                    (r) => r.facultyId === employeeId
+                );
+
+                return {
+                    employeeId,
+                    session1:
+                        editedRows[employeeId]
+                            ?.session1 ??
+                        row.session1,
+
+                    session2:
+                        editedRows[employeeId]
+                            ?.session2 ??
+                        row.session2,
+                };
+            });
 
             const payload = {
                 fromDate: dayjs(attendanceDate).format(
@@ -189,15 +194,68 @@ export default function DateWiseAttendanceUpdate() {
             );
 
             setOverrideModal(false);
+            setSelectedRows([]);
             setEditedRows({});
-
             fetchAttendance();
+
         } catch (error) {
             console.error(
-                "Bulk Update Error:",
                 error.response?.data || error
             );
         }
+    };
+
+    const handleBulkSelectedOverride = async ({
+        session1,
+        session2,
+        remarks,
+    }) => {
+        try {
+
+            const updates = selectedRows.map((employeeId) => ({
+                employeeId,
+                session1,
+                session2,
+            }));
+
+            const payload = {
+                fromDate: dayjs(attendanceDate).format("YYYY-MM-DD"),
+                toDate: dayjs(attendanceDate).format("YYYY-MM-DD"),
+                remarks,
+                updates,
+            };
+
+            console.log(
+                "Bulk Selected Payload:",
+                payload
+            );
+
+            console.log("Bulk Selected Payload:", payload);
+            const response = await updateAttendanceOverrideBulk(
+                payload
+            );
+            console.log("Bulk Response:", response);
+
+            setOverrideModal(false);
+            setSelectedRows([]);
+            fetchAttendance();
+
+        } catch (error) {
+            console.error(
+                "Bulk Selected Error:",
+                error.response?.data || error
+            );
+        }
+    };
+
+    const getModalMode = () => {
+        if (selectedRows.length > 0)
+            return "bulk-selected";
+        if (
+            Object.keys(editedRows).length === 1
+        )
+            return "single";
+        return "bulk-edited";
     };
 
     return (
@@ -443,7 +501,16 @@ export default function DateWiseAttendanceUpdate() {
                 "
             >
                 <button
-                    onClick={() => {
+                     onClick={() => {
+                        if (
+                            selectedRows.length > 0 &&
+                            Object.keys(editedRows).length > 0
+                        ) {
+                            alert(
+                                "Please use either checkbox bulk override or row edit override, not both."
+                            );
+                            return;
+                        }
                         if (
                             Object.keys(editedRows).length === 0 &&
                             selectedRows.length === 0
@@ -453,7 +520,6 @@ export default function DateWiseAttendanceUpdate() {
                             );
                             return;
                         }
-
                         setOverrideModal(true);
                     }}
                     className="
@@ -471,18 +537,24 @@ export default function DateWiseAttendanceUpdate() {
             </div>
             <AttendanceOverrideModal
                 isOpen={overrideModal}
-                mode={
-                    Object.keys(editedRows).length === 1
-                        ? "single"
-                        : "bulk"
-                }
+                mode={getModalMode()}
                 onClose={() => setOverrideModal(false)}
                 onSubmit={(data) => {
-                    if (Object.keys(editedRows).length === 1) {
-                        handleSingleOverride(data);
-                    } else {
-                        handleBulkEditedOverride(data);
+                    if (
+                        selectedRows.length > 0
+                    ) {
+                        handleBulkSelectedOverride(data);
+                        return;
                     }
+
+                    if (
+                        Object.keys(editedRows).length === 1
+                    ) {
+                        handleSingleOverride(data);
+                        return;
+                    }
+
+                    handleBulkEditedOverride(data);
                 }}
             />
         </>
