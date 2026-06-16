@@ -35,6 +35,15 @@ export default function DateWiseAttendanceUpdate() {
             const formattedDate = dayjs(attendanceDate).format("YYYY-MM-DD");
             const response = await getAttendanceByDate(formattedDate);
             console.log("API Response:", response.data);
+            console.log("Fresh Attendance Response:");
+            console.table(
+                response.data.map((r) => ({
+                    name: r.employeeName,
+                    session1: r.session1,
+                    session2: r.session2,
+                    status: r.status,
+                }))
+        );
             setAttendanceData(response.data || []);
         } catch (error) {
             console.error(error);
@@ -81,7 +90,7 @@ export default function DateWiseAttendanceUpdate() {
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedRows(
-                filteredData.map((row) => row.facultyId)
+                filteredData.map((row) => row.facultyId)          
             );
         } else {
             setSelectedRows([]);
