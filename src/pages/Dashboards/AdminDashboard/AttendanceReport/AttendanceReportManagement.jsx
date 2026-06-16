@@ -475,8 +475,8 @@ export default function AttendanceManagement() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <main className="min-h-0 flex-1 overflow-hidden bg-slate-100 ">
-          <section className="attendance-report flex h-full flex-col overflow-hidden rounded border border-slate-300 bg-white p-2">
+        <main className="min-h-0 flex-1 overflow-hidden">
+          <section className="attendance-report flex h-full flex-col overflow-hidden rounded p-2">
             <div className="attendance-filter-bar">
               <div>
                 <h1>Attendance Report</h1>
@@ -656,12 +656,13 @@ export default function AttendanceManagement() {
         <style>{`
           .attendance-report {
             box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
+            background: #071425;
           }
 
           .attendance-filter-bar {
             align-items: center;
-            background: #f8fafc;
-            border-bottom: 1px solid #dbe3ed;
+            background: #071425;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
             display: flex;
             flex-wrap: wrap;
             gap: 14px;
@@ -670,7 +671,7 @@ export default function AttendanceManagement() {
           }
 
           .attendance-filter-bar h1 {
-            color: #1e293b;
+            color: #ffffff;
             font-size: 18px;
             font-weight: 800;
             line-height: 1.25;
@@ -678,7 +679,7 @@ export default function AttendanceManagement() {
           }
 
           .attendance-filter-bar p {
-            color: #0077aa;
+            color: #ffffff;
             font-size: 13px;
             font-weight: 700;
             margin: 2px 0 0;
@@ -693,8 +694,8 @@ export default function AttendanceManagement() {
 
           .attendance-status-legend {
             align-items: center;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.18);
             border-radius: 999px;
             display: flex;
             flex-wrap: wrap;
@@ -704,7 +705,7 @@ export default function AttendanceManagement() {
 
           .attendance-status-legend-item {
             align-items: center;
-            color: #334155;
+            color: #ffffff;
             display: inline-flex;
             font-size: 12px;
             font-weight: 700;
@@ -719,7 +720,7 @@ export default function AttendanceManagement() {
           }
 
           .attendance-filter-controls label {
-            color: #475569;
+            color: #ffffff;
             display: grid;
             font-size: 12px;
             font-weight: 800;
@@ -730,15 +731,24 @@ export default function AttendanceManagement() {
           .attendance-filter-controls select,
           .attendance-filter-controls input {
             appearance: none;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
+            background: #071425 !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
             border-radius: 6px;
-            color: #172554;
+            color: #ffffff !important;
             font-size: 14px;
             font-weight: 700;
             min-height: 36px;
             min-width: 120px;
             padding: 7px 10px;
+          }
+
+          .attendance-filter-controls select option {
+            background: #071425;
+            color: #ffffff;
+          }
+
+          .attendance-filter-controls input::placeholder {
+            color: rgba(255,255,255,0.65);
           }
 
           .attendance-filter-controls input {
@@ -747,7 +757,7 @@ export default function AttendanceManagement() {
             -moz-appearance: none;
             appearance: none;
             background-image: none;
-            border-right: 1px solid #cbd5e1;
+            border-right: 1px solid rgba(255,255,255,0.18);
           }
 
           .attendance-alert {
@@ -763,6 +773,7 @@ export default function AttendanceManagement() {
             flex: 1;
             min-height: 0;
             overflow: auto;
+            background: #071425;
             scrollbar-color: #b7c4d3 #eef2f7;
             scrollbar-width: thin;
           }
@@ -788,12 +799,13 @@ export default function AttendanceManagement() {
             border-spacing: 0;
             color: #1f2937;
             font-size: 14px;
+            background: #071425;
           }
 
           .attendance-table th,
           .attendance-table td {
-            border-right: 1px dotted #cbd5e1;
-            border-bottom: 1px solid #eef2f7;
+            border-right: 1px dotted rgba(255,255,255,0.12);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
             height: 42px;
             padding: 0;
             text-align: center;
@@ -804,8 +816,8 @@ export default function AttendanceManagement() {
             position: sticky;
             top: 0;
             z-index: 10;
-            background: #e5ebf2;
-            color: #334155;
+            background: #071425;
+            color: #ffffff;
             font-weight: 700;
           }
 
@@ -841,12 +853,14 @@ export default function AttendanceManagement() {
             width: 40px;
             min-width: 40px;
             height: 40px;
+            color: #ffffff;
           }
 
           .date-header span,
           .date-header small {
             display: block;
             line-height: 1.3;
+            color: #ffffff;
           }
 
           .date-header span {
@@ -865,7 +879,7 @@ export default function AttendanceManagement() {
           }
 
           .employee-cell {
-            background: #f8fafc;
+            background: #071425;
             padding: 6px 10px !important;
             text-align: left !important;
             vertical-align: middle;
@@ -879,13 +893,13 @@ export default function AttendanceManagement() {
           }
 
           .employee-cell strong {
-            color: #334155;
+            color: #ffffff;
             font-size: 14px;
             line-height: 1.25;
           }
 
           .employee-cell span {
-            color: #0077aa;
+            color: #ffffff;
             font-size: 12px;
             font-weight: 700;
             line-height: 1.35;
@@ -895,12 +909,12 @@ export default function AttendanceManagement() {
           .attendance-table tbody tr:nth-child(even) .employee-cell,
           .attendance-table tbody tr:nth-child(even) .summary-cell,
           .attendance-table tbody tr:nth-child(even) .attendance-cell:not(.attendance-cell-absent):not(.attendance-cell-present):not(.attendance-cell-partial):not(.attendance-cell-off):not(.attendance-cell-od) {
-            background: #f9fafb;
+            background: #0a1a2e;
           }
 
           .attendance-cell {
-            background: #ffffff;
-            color: #111827;
+            background: #1a2847;
+            color: #ffffff;
             font-weight: 500;
             height: 42px;
           }
@@ -931,18 +945,62 @@ export default function AttendanceManagement() {
           }
 
           .attendance-cell-weekend {
-            background: #f3f6fa;
-            color: #64748b;
+            background: #0f1e36;
+            color: #ffffff;
           }
 
           .summary-cell {
-            background: #ffffff;
+            background: #1a2847;
+            color: #ffffff;
             font-weight: 700;
           }
 
+          /* Make the right-most summary columns sticky (fixed) so only date columns scroll */
+          .attendance-table th.summary-header {
+            position: sticky;
+            background: #071425;
+            color: #ffffff;
+            z-index: 35;
+            top: 0;
+          }
+
+          .attendance-table td.summary-cell {
+            position: sticky;
+            background: #1a2847;
+            color: #ffffff;
+            z-index: 25;
+          }
+
+          /* Adjust right offset for each of the four summary columns so they stack correctly */
+          .attendance-table th.summary-header:nth-last-child(1),
+          .attendance-table td.summary-cell:nth-last-child(1) {
+            right: 0px;
+          }
+
+          .attendance-table th.summary-header:nth-last-child(2),
+          .attendance-table td.summary-cell:nth-last-child(2) {
+            right: 38px;
+          }
+
+          .attendance-table th.summary-header:nth-last-child(3),
+          .attendance-table td.summary-cell:nth-last-child(3) {
+            right: 76px;
+          }
+
+          .attendance-table th.summary-header:nth-last-child(4),
+          .attendance-table td.summary-cell:nth-last-child(4) {
+            right: 114px;
+          }
+
+          /* Ensure summary headers sit above the date header row */
+          .attendance-table thead th.summary-header {
+            z-index: 35;
+            top: 0;
+          }
+
           .attendance-empty-state {
-            background: #ffffff;
-            color: #64748b;
+            background: #1a2847;
+            color: #ffffff;
             font-size: 14px;
             font-weight: 700;
             height: 120px !important;
