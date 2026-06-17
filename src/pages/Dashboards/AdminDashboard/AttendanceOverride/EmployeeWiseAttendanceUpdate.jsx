@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-
+import { X } from "lucide-react";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
@@ -24,6 +24,7 @@ export default function EmployeeWiseAttendanceUpdate() {
     const [selectedRowData, setSelectedRowData] = useState(null);
     const [editedRows, setEditedRows] = useState([]);
     // const [isBulkOverride, setIsBulkOverride] = useState(false);
+    const [updateLoading, setUpdateLoading] = useState(false);
 
     const dropdownRef = useRef();
 
@@ -123,8 +124,14 @@ export default function EmployeeWiseAttendanceUpdate() {
     const handleReset = () => {
         setFromDate(null);
         setToDate(null);
-
-        setFilteredAttendance(attendanceData);
+        setEmployeeSearch("");
+        setEmployeeSuggestions([]);
+        setShowDropdown(false);
+        setSelectedEmployee(null);
+        setAttendanceData([]);
+        setFilteredAttendance([]);
+        setSelectedRows([]);
+        setEditedRows([]);
     };
 
     const handleSessionChange = (
@@ -216,6 +223,11 @@ export default function EmployeeWiseAttendanceUpdate() {
             ? new Date(record.date).toLocaleDateString("en-GB")
             : "-";
     };
+
+    const showResetButton =
+        fromDate ||
+        toDate ||
+        employeeSearch.trim() !== "";
 
     return (
         <>
@@ -321,12 +333,29 @@ export default function EmployeeWiseAttendanceUpdate() {
                         Show
                     </button> */}
 
-                    <button
-                        onClick={handleReset}
-                        className="h-10 px-6 rounded-lg bg-[#223d5f] text-white"
-                    >
-                        Reset
-                    </button>
+                    {
+                        showResetButton && (
+                            <button
+                                onClick={handleReset}
+                                className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                    h-11
+                                    px-4
+                                    rounded-lg
+                                    border
+                                    border-[#244061]
+                                    bg-[#0d2138]
+                                    text-[#8ca1bd]
+                                    hover:bg-[#13263d]
+                                "
+                            >
+                                Reset Filters 
+                                <X size={18} />
+                            </button>
+                        )
+                    }
                 </div>
             </div>
 
@@ -420,7 +449,8 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         colSpan="8"
                                         className="py-10 text-center text-[#9eb3cf]"
                                     >
-                                        No Attendance Records Found
+                                        {/* No Attendance Records Found */}
+                                        Search Employe Name to display Attendance Records
                                     </td>
                                 </tr>
                             ) : (
@@ -548,13 +578,14 @@ export default function EmployeeWiseAttendanceUpdate() {
             <AttendanceOverrideModal
                 isOpen={showModal}
                 mode={modalMode}
+                loading={updateLoading}
                 selectedRow={selectedRowData}
                 onClose={() =>
                     setShowModal(false)
                 }
                 onSubmit={async (formData) => {
                     try {
-                        setLoading(true);
+                        setUpdateLoading(true);
                         if (modalMode === "single") {
                             const row =
                                 filteredAttendance.find(
@@ -634,7 +665,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                             "Failed To Update Attendance"
                         );
                     } finally {
-                        setLoading(false);
+                        setUpdateLoading(false);
                     }
                 }}
             />

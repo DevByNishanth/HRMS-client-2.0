@@ -20,6 +20,7 @@ export default function AttendanceOverrideModal({
     }, [isOpen]);
 
     const handleSubmit = () => {
+        if (loading) return;
         if (!remarks.trim()) {
             alert("Please enter remarks");
             return;

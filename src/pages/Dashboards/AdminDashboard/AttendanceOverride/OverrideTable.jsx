@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import { X } from "lucide-react";
 import * as XLSX from "xlsx";
+import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import { getAttendanceOverrideHistory } from "../../../../services/AttendanceOverride/GetAttendanceOverrideHistory";
+import CustomDatePicker from '../../../../components/CustomDatePicker';
 
 export default function OverrideTable({ data = [] }) {  
-    const [dateRange, setDateRange] = useState("");
+    const [attendanceDate, setAttendanceDate] = useState(null);
     const [overrideData, setOverrideData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [department, setDepartment] = useState("");
@@ -57,24 +59,26 @@ export default function OverrideTable({ data = [] }) {
         })}`;
     };
 
-    const dateOptions = [
-        ...new Set(
-            overrideData.map(
-                item => item.attendanceDate
-            )
-        )
-    ];
+    // const dateOptions = [
+    //     ...new Set(
+    //         overrideData.map(
+    //             item => item.attendanceDate
+    //         )
+    //     )
+    // ];
     
 
     const hasActiveFilters =
-        dateRange ||
+        attendanceDate ||
+        // dateRange ||
         employeeSearch ||
         department;
 
     const filteredData = overrideData.filter((item) => {
         const dateMatch =
-            !dateRange ||
-            item.attendanceDate === dateRange;
+            !attendanceDate ||
+            dayjs(item.attendanceDate?.split(" to ")[0]).format("YYYY-MM-DD") ===
+            dayjs(attendanceDate).format("YYYY-MM-DD");
 
         const employeeMatch =
             !employeeSearch ||
@@ -238,11 +242,11 @@ export default function OverrideTable({ data = [] }) {
                 <div className="flex flex-wrap items-center gap-3">
 
                     <div className="w-[270px]">
-                        <CustomDropdown
-                            value={dateRange}
+                        <CustomDatePicker
+                            value={attendanceDate}
+                            onChange={setAttendanceDate}
                             placeholder="Attendance Date"
-                            options={dateOptions}
-                            onChange={setDateRange}
+                            // options={dateOptions}
                         />
                     </div>
 
@@ -303,7 +307,8 @@ export default function OverrideTable({ data = [] }) {
                     {hasActiveFilters && (
                         <button
                             onClick={() => {
-                                setDateRange("");
+                                // setDateRange("");
+                                setAttendanceDate(null);
                                 setEmployeeSearch("");
                                 setDepartment("");
                             }}
