@@ -48,7 +48,13 @@ export default function AttendanceOverrideModal({
 
                     <button
                         onClick={onClose}
-                        className="text-xl text-[#8ca1bd] hover:text-white"
+                        disabled={loading}
+                        className={`
+                            text-xl
+                            text-[#8ca1bd]
+                            hover:text-white
+                            ${loading ? "opacity-50 cursor-not-allowed" : ""}
+                        `}
                     >
                         ✕
                     </button>
@@ -121,7 +127,14 @@ export default function AttendanceOverrideModal({
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="rounded-lg bg-[#223d5f] px-6 py-2 text-white"
+                        className={`
+                            rounded-lg
+                            bg-[#223d5f]
+                            px-6
+                            py-2
+                            text-white
+                            ${loading ? "opacity-50 cursor-not-allowed" : ""}
+                        `}
                     >
                         Cancel
                     </button>
@@ -129,8 +142,32 @@ export default function AttendanceOverrideModal({
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="rounded-lg bg-[#3984ff] px-6 py-2 text-white"
+                        className={`
+                            flex
+                            items-center
+                            gap-2
+                            rounded-lg
+                            bg-[#3984ff]
+                            px-6
+                            py-2
+                            text-white
+                            ${loading ? "opacity-70 cursor-not-allowed" : ""}
+                        `}
                     >
+                        {loading && (
+                            <div
+                                className="
+                                    h-4
+                                    w-4
+                                    animate-spin
+                                    rounded-full
+                                    border-2
+                                    border-white
+                                    border-t-transparent
+                                "
+                            />
+                        )}
+
                         {loading ? "Updating..." : "Update"}
                     </button>
 

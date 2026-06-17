@@ -5,7 +5,7 @@ import AttendanceOverrideModal from "./AttendanceOverrideModal";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
-import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideBulk";
+import { updateAttendanceOverrideEmployeeBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideEmployeeBulk";
 
 export default function EmployeeWiseAttendanceUpdate() {
 
@@ -576,47 +576,42 @@ export default function EmployeeWiseAttendanceUpdate() {
                             );
                         }
                         else if (modalMode === "bulk-row") {
-                            const editedRecords = filteredAttendance.filter(row =>
-                                editedRows.includes(row._id)
+                            const editedRecords = filteredAttendance.filter(
+                                row => editedRows.includes(row._id)
                             );
-                            await updateAttendanceOverrideBulk({
-                                fromDate: editedRecords[0].date.split("T")[0],
-                                toDate:
-                                    editedRecords[
-                                        editedRecords.length - 1
-                                    ].date.split("T")[0],
+
+                            const payload = {
                                 remarks: formData.remarks,
-                                updates: [
-                                    {
-                                        employeeId:
-                                            selectedEmployee.facultyId,
-                                        session1:
-                                            editedRecords[0].session1,
-                                        session2:
-                                            editedRecords[0].session2,
-                                    },
-                                ],
-                            });
+                                updates: editedRecords.map(row => ({
+                                    date: row.date.split("T")[0],
+                                    session1: row.session1,
+                                    session2: row.session2,
+                                })),
+                            };
+
+                            await updateAttendanceOverrideEmployeeBulk(
+                                selectedEmployee.facultyId,
+                                payload
+                            );
                         }
-                        else if (
-                            modalMode === "bulk-selected"
-                        ) {
-                            await updateAttendanceOverrideBulk({
-                                fromDate: new Date(fromDate)
-                                    .toISOString()
-                                    .split("T")[0],
-                                toDate: new Date(toDate)
-                                    .toISOString()
-                                    .split("T")[0],
+                        else if (modalMode === "bulk-selected") {
+                            const selectedRecords = filteredAttendance.filter(
+                                row => selectedRows.includes(row._id)
+                            );
+
+                            const payload = {
                                 remarks: formData.remarks,
-                                updates: [
-                                    {
-                                        employeeId: selectedEmployee.facultyId,
-                                        session1: formData.session1,
-                                        session2: formData.session2,
-                                    },
-                                ],
-                            });
+                                updates: selectedRecords.map(row => ({
+                                    date: row.date.split("T")[0],
+                                    session1: formData.session1,
+                                    session2: formData.session2,
+                                })),
+                            };
+
+                            await updateAttendanceOverrideEmployeeBulk(
+                                selectedEmployee.facultyId,
+                                payload
+                            );
                         }
                         setShowModal(false);
                         const refreshed =

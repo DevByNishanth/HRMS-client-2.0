@@ -5,6 +5,8 @@ import { getAttendanceByDate } from "../../../../services/attendanceOverride/get
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
 import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideBulk";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
+import { X } from "lucide-react";
+import CustomDropdown from "../../../../components/CustomDropdown";
 
 export default function DateWiseAttendanceUpdate() {
 
@@ -17,6 +19,19 @@ export default function DateWiseAttendanceUpdate() {
     const [selectedRows, setSelectedRows] = useState([]);
     const [editedRows, setEditedRows] = useState({});
     const [overrideModal, setOverrideModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const departmentOptions = [
+        "AIDS","AIML","CYS","CSBS","VLSI","CCE","CSE","ECE","EEE","MECH","IT","ADMIN",
+    ];
+
+    const categoryOptions = [
+        "Teaching",
+        "Non Teaching",
+        "Drivers",
+        "House Keeping",
+        "Security",
+    ];
 
     const hasFilters =
         attendanceDate ||
@@ -89,8 +104,9 @@ export default function DateWiseAttendanceUpdate() {
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
+            setEditedRows({}); // clear row edits
             setSelectedRows(
-                filteredData.map((row) => row.facultyId)          
+                filteredData.map((row) => row.facultyId)
             );
         } else {
             setSelectedRows([]);
@@ -98,6 +114,7 @@ export default function DateWiseAttendanceUpdate() {
     };
 
     const handleRowSelection = (facultyId) => {
+        setEditedRows({}); // clear row edits
         setSelectedRows((prev) =>
             prev.includes(facultyId)
                 ? prev.filter((id) => id !== facultyId)
@@ -117,6 +134,7 @@ export default function DateWiseAttendanceUpdate() {
 
     const handleSingleOverride = async ({ remarks }) => {
         try {
+            setLoading(true);
             const employeeId = Object.keys(editedRows)[0];
             if (!employeeId) {
                 alert("Please modify attendance before updating");
@@ -154,12 +172,14 @@ export default function DateWiseAttendanceUpdate() {
             fetchAttendance();
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleBulkEditedOverride = async ({ remarks }) => {
         try {
-
+            setLoading(true);
             const updates = Object.keys(
                 editedRows
             ).map((employeeId) => {
@@ -211,6 +231,8 @@ export default function DateWiseAttendanceUpdate() {
             console.error(
                 error.response?.data || error
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -220,7 +242,7 @@ export default function DateWiseAttendanceUpdate() {
         remarks,
     }) => {
         try {
-
+            setLoading(true);   
             const updates = selectedRows.map((employeeId) => ({
                 employeeId,
                 session1,
@@ -254,6 +276,8 @@ export default function DateWiseAttendanceUpdate() {
                 "Bulk Selected Error:",
                 error.response?.data || error
             );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -266,6 +290,8 @@ export default function DateWiseAttendanceUpdate() {
             return "single";
         return "bulk-edited";
     };
+
+    const isBulkSelectionMode = selectedRows.length > 0;
 
     return (
         <>
@@ -297,63 +323,46 @@ export default function DateWiseAttendanceUpdate() {
                         "
                     />
 
-                    <select
-                        value={departmentFilter}
-                        onChange={(e) => setDepartmentFilter(e.target.value)}
-                        className="
-                            h-11
-                            w-[180px]
-                            rounded-lg
-                            bg-[#13263d]
-                            border
-                            border-[#23476f]
-                            px-3
-                            text-white
-                        "
-                    >
-                        <option value="">All Departments</option>
-                        <option value="CSE">CSE</option>
-                        <option value="ECE">ECE</option>
-                        <option value="EEE">EEE</option>
-                        <option value="MECH">MECH</option>
-                        <option value="ADMIN">ADMIN</option>
-                    </select>
+                    <div className="w-[180px]">
+                        <CustomDropdown
+                            id="departmentFilter"
+                            value={departmentFilter}
+                            options={departmentOptions}
+                            placeholder="All Departments"
+                            onChange={setDepartmentFilter}
+                        />
+                    </div>
 
-                    <select
-                        value={categoryFilter}
-                        onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="
-                            h-11
-                            w-[200px]
-                            rounded-lg
-                            bg-[#13263d]
-                            border
-                            border-[#23476f]
-                            px-3
-                            text-white
-                        "
-                    >
-                        <option value="">All Categories</option>
-                        <option value="Teaching">Teaching</option>
-                        <option value="Non Teaching">Non Teaching</option>
-                        <option value="Drivers">Drivers</option>
-                        <option value="House Keeping">House Keeping</option>
-                        <option value="Security">Security</option>
-                    </select>
-                    <button
-                        onClick={resetFilters}
-                        disabled={!hasFilters}
-                        className={`
-                            h-11 px-4 rounded-lg
-                            ${
-                                hasFilters
-                                    ? "bg-red-500 text-white"
-                                    : "bg-gray-500 text-gray-300 cursor-not-allowed"
-                            }
-                        `}
-                    >
-                        Reset Filters
-                    </button>
+                    <div className="w-[200px]">
+                        <CustomDropdown
+                            id="categoryFilter"
+                            value={categoryFilter}
+                            options={categoryOptions}
+                            placeholder="All Categories"
+                            onChange={setCategoryFilter}
+                        />
+                    </div>
+                    {hasFilters && (
+                        <button
+                            onClick={resetFilters}
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                                h-11
+                                px-4
+                                rounded-lg
+                                border
+                                border-[#244061]
+                                bg-[#0d2138]
+                                text-[#8ca1bd]
+                                hover:bg-[#13263d]
+                            "
+                        >
+                            Reset Filters
+                            <X size={18} />
+                        </button>
+                    )}
                 </div>  
             </div>
             {/* Table */}
@@ -424,16 +433,21 @@ export default function DateWiseAttendanceUpdate() {
                                             {row.shiftCode}
                                         </td>
                                         <td className="px-5 py-3">
-                                            {row.firstIn || "-"}
+                                            {row.firstIn
+                                                ? dayjs(row.firstIn).format("hh:mm A")
+                                                : "-"}
                                         </td>
+
                                         <td className="px-5 py-3">
-                                            {row.lastOut || "-"}
+                                            {row.lastOut
+                                                ? dayjs(row.lastOut).format("hh:mm A")
+                                                : "-"}
                                         </td>
                                         <td className="px-5 py-3">
                                             <select
+                                                disabled={isBulkSelectionMode}
                                                 value={
-                                                    editedRows[row.facultyId]
-                                                        ?.session1 ??
+                                                    editedRows[row.facultyId]?.session1 ??
                                                     row.session1
                                                 }
                                                 onChange={(e) =>
@@ -443,27 +457,28 @@ export default function DateWiseAttendanceUpdate() {
                                                         e.target.value
                                                     )
                                                 }
-                                                className="
+                                                className={`
                                                     bg-[#13263d]
                                                     border
                                                     border-[#23476f]
                                                     rounded
                                                     px-2
                                                     py-1
-                                                "
+                                                    ${isBulkSelectionMode
+                                                        ? "opacity-50 cursor-not-allowed"
+                                                        : ""}
+                                                `}
                                             >
                                                 <option value="P">P</option>
                                                 <option value="A">A</option>
                                                 <option value="OD">OD</option>
-                                                <option value="CL">CL</option>
-                                                <option value="EL">EL</option>
                                             </select>
                                         </td>
                                         <td className="px-5 py-3">
                                             <select
+                                                disabled={isBulkSelectionMode}
                                                 value={
-                                                    editedRows[row.facultyId]
-                                                        ?.session2 ??
+                                                    editedRows[row.facultyId]?.session2 ??
                                                     row.session2
                                                 }
                                                 onChange={(e) =>
@@ -473,20 +488,21 @@ export default function DateWiseAttendanceUpdate() {
                                                         e.target.value
                                                     )
                                                 }
-                                                className="
+                                                className={`
                                                     bg-[#13263d]
                                                     border
                                                     border-[#23476f]
                                                     rounded
                                                     px-2
                                                     py-1
-                                                "
+                                                    ${isBulkSelectionMode
+                                                        ? "opacity-50 cursor-not-allowed"
+                                                        : ""}
+                                                `}
                                             >
                                                 <option value="P">P</option>
                                                 <option value="A">A</option>
                                                 <option value="OD">OD</option>
-                                                <option value="CL">CL</option>
-                                                <option value="EL">EL</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -546,6 +562,7 @@ export default function DateWiseAttendanceUpdate() {
             </div>
             <AttendanceOverrideModal
                 isOpen={overrideModal}
+                loading={loading}
                 mode={getModalMode()}
                 onClose={() => setOverrideModal(false)}
                 onSubmit={(data) => {
