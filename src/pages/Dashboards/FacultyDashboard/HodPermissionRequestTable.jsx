@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { Check, ChevronDown, Eye, X } from "lucide-react";
+import { toast } from "react-toastify";
+import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import userImg from "../../../assets/userImg.svg";
@@ -9,54 +11,6 @@ const statusStyles = {
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
-
-const permissionRequests = [
-  {
-    name: "Surya Chandran",
-    designation: "Assistant Professor",
-    date: "May 30, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Bank appointment during working hours.",
-    status: "Pending",
-  },
-  {
-    name: "Nivetha Kumar",
-    designation: "Associate Professor",
-    date: "May 24, 2026",
-    session: "Afternoon",
-    duration: "2 Hours",
-    reason: "Parent teacher meeting at school.",
-    status: "Approved",
-  },
-  {
-    name: "Arjun Prakash",
-    designation: "Lab Instructor",
-    date: "May 16, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Personal documentation work.",
-    status: "Rejected",
-  },
-  {
-    name: "Maya Srinivasan",
-    designation: "Assistant Professor",
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Pending",
-  },
-  {
-    name: "Karthik Raman",
-    designation: "Associate Professor",
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-];
 
 const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -87,11 +41,10 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              className={`block w-full px-4 py-3 text-left text-[13px] transition ${
-                value === option
-                  ? "bg-[#132b49] text-white"
-                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
-              }`}
+              className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
+                ? "bg-[#132b49] text-white"
+                : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                }`}
             >
               {option}
             </button>
@@ -102,22 +55,174 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   );
 };
 
-const HodPermissionRequestTable = () => {
-  const [requests, setRequests] = useState(permissionRequests);
+const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onConfirm, submitting }) => {
+  if (!request) return null;
+
+  return (
+    <section
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/60 px-4 backdrop-blur-[2px]"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
+              Confirmation
+            </p>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              Reject Permission
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            aria-label="Close rejection confirmation"
+          >
+            <X size={17} />
+          </button>
+        </div>
+
+        <div className="px-5 py-4">
+          <p className="text-[13px] leading-5 text-[#cad7eb]">
+            Reject {request.name}'s permission request for {request.date}?
+          </p>
+
+          <div className="mt-4">
+            <label
+              htmlFor="permission-reject-reason"
+              className="mb-2 block text-[13px] font-semibold text-white"
+            >
+              Reason for rejection
+            </label>
+            <textarea
+              id="permission-reject-reason"
+              value={reason}
+              onChange={(event) => onReasonChange(event.target.value)}
+              rows={4}
+              placeholder="Type the reason..."
+              className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={!reason.trim() || submitting}
+            className="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-[#2563EB] px-4 text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "Rejecting..." : "Reject Request"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
+  const [requests, setRequests] = useState([]);
   const [selectedPermission, setSelectedPermission] = useState(null);
+  const [rejectRequest, setRejectRequest] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
   const [status, setStatus] = useState("All");
   const [session, setSession] = useState("All");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [actionInProgress, setActionInProgress] = useState(null);
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+  const mapApiToPermission = (p) => {
+    const dateObj = p.permissionDate ? new Date(p.permissionDate) : null;
+    const permissionDate = dateObj || new Date();
+    const hour = p.fromTime ? parseInt(p.fromTime.split(":")[0], 10) : 9;
+    const sessionLabel = hour >= 12 ? "Afternoon" : "Forenoon";
+    const durationLabel = p.totalMinutes
+      ? p.totalMinutes >= 120
+        ? `${p.totalMinutes / 60} Hours`
+        : `${p.totalMinutes / 60} Hour`
+      : "";
+    const name = p.facultyId
+      ? `${p.facultyId.firstName || ""} ${p.facultyId.lastName || ""}`.trim()
+      : "";
+    const designation = p.facultyId?.department || "";
+
+    return {
+      id: p._id,
+      raw: p,
+      dateObj: dateObj,
+      date: dateObj
+        ? dateObj.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+        : "",
+      name,
+      designation,
+      session: sessionLabel,
+      duration: durationLabel,
+      reason: p.reason || "",
+      status: p.status || "",
+    };
+  };
+
+  const fetchTeamPermissions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("hrms_token");
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/list`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to load team permissions.");
+      }
+
+      const mappedRequests = (data.data || []).map(mapApiToPermission);
+      setRequests(mappedRequests);
+      if (typeof onCountChange === "function") {
+        onCountChange(mappedRequests.length);
+      }
+    } catch (fetchError) {
+      console.error("Failed to fetch HOD permissions:", fetchError);
+      setError(fetchError.message || "Unable to load team permissions.");
+    } finally {
+      setLoading(false);
+    }
+  }, [onCountChange]);
+
+  useEffect(() => {
+    fetchTeamPermissions();
+  }, [fetchTeamPermissions]);
+
+  const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
   const filteredRequests = useMemo(
     () =>
       requests.filter((permission) => {
-        const permissionDate = new Date(permission.date);
+        const permissionDate = permission.dateObj || new Date(permission.date);
         const statusMatch = status === "All" || permission.status === status;
         const sessionMatch = session === "All" || permission.session === session;
-        const fromMatch = !fromDate || permissionDate >= fromDate;
-        const toMatch = !toDate || permissionDate <= toDate;
+        const fromMatch = !fromDate || normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
+        const toMatch = !toDate || normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
 
         return statusMatch && sessionMatch && fromMatch && toMatch;
       }),
@@ -133,12 +238,101 @@ const HodPermissionRequestTable = () => {
     setToDate(null);
   };
 
-  const updateStatus = (request, nextStatus) => {
-    setRequests((currentRequests) =>
-      currentRequests.map((item) =>
-        item === request ? { ...item, status: nextStatus } : item,
-      ),
-    );
+  const handleApprove = async (request) => {
+    const url = `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${request.id}/approve`;
+
+    setActionInProgress(request.id);
+    setError(null);
+
+    try {
+      const token = getTokenFromLocalStorage();
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ remarks: "Approved Permission" }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Unable to approve request.");
+      }
+
+      setRequests((currentRequests) =>
+        currentRequests.map((item) =>
+          item.id === request.id ? { ...item, status: "Approved" } : item,
+        ),
+      );
+
+      toast.success("Permission approved successfully");
+
+      if (typeof onRefresh === "function") {
+        onRefresh();
+      }
+    } catch (fetchError) {
+      console.error("Failed to approve permission:", fetchError);
+      toast.error(fetchError.message || "Failed to approve permission");
+      setError(fetchError.message || "Unable to approve request.");
+    } finally {
+      setActionInProgress(null);
+    }
+  };
+
+  const handleRejectClick = (request) => {
+    setRejectReason("");
+    setRejectRequest(request);
+  };
+
+  const closeRejectPopup = () => {
+    setRejectRequest(null);
+    setRejectReason("");
+  };
+
+  const confirmReject = async () => {
+    if (!rejectRequest || !rejectReason.trim()) return;
+
+    const url = `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${rejectRequest.id}/reject`;
+
+    setActionInProgress(rejectRequest.id);
+    setError(null);
+
+    try {
+      const token = getTokenFromLocalStorage();
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ remarks: rejectReason.trim() }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Unable to reject request.");
+      }
+
+      setRequests((currentRequests) =>
+        currentRequests.map((item) =>
+          item.id === rejectRequest.id ? { ...item, status: "Rejected" } : item,
+        ),
+      );
+
+      toast.success("Permission rejected successfully");
+      closeRejectPopup();
+
+      if (typeof onRefresh === "function") {
+        onRefresh();
+      }
+    } catch (fetchError) {
+      console.error("Failed to reject permission:", fetchError);
+      toast.error(fetchError.message || "Failed to reject permission");
+      setError(fetchError.message || "Unable to reject request.");
+    } finally {
+      setActionInProgress(null);
+    }
   };
 
   return (
@@ -204,7 +398,19 @@ const HodPermissionRequestTable = () => {
             </tr>
           </thead>
           <tbody className="text-[13px] text-[#cad7eb]">
-            {filteredRequests.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                  Loading team permission requests...
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan="7" className="px-4 py-8 text-center text-[#f16868]">
+                  {error}
+                </td>
+              </tr>
+            ) : filteredRequests.length > 0 ? (
               filteredRequests.map((permission, index) => {
                 const permissionWithColor = {
                   ...permission,
@@ -249,8 +455,9 @@ const HodPermissionRequestTable = () => {
                           <>
                             <button
                               type="button"
-                              onClick={() => updateStatus(permission, "Approved")}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                              onClick={() => handleApprove(permission)}
+                              disabled={actionInProgress === permission.id}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                               aria-label="Approve permission request"
                               title="Approve"
                             >
@@ -258,8 +465,9 @@ const HodPermissionRequestTable = () => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => updateStatus(permission, "Rejected")}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
+                              onClick={() => handleRejectClick(permission)}
+                              disabled={actionInProgress === permission.id}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                               aria-label="Reject permission request"
                               title="Reject"
                             >
@@ -295,6 +503,15 @@ const HodPermissionRequestTable = () => {
       <PermissionDetailsPopup
         permission={selectedPermission}
         onClose={() => setSelectedPermission(null)}
+      />
+
+      <RejectPermissionPopup
+        request={rejectRequest}
+        reason={rejectReason}
+        onReasonChange={setRejectReason}
+        onClose={closeRejectPopup}
+        onConfirm={confirmReject}
+        submitting={actionInProgress === rejectRequest?.id}
       />
     </section>
   );
