@@ -1,7 +1,7 @@
 import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken } from "../../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
@@ -308,6 +308,7 @@ const LeaveTable = () => {
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
 
   const [leaves, setLeaves] = useState([]);
+  const [teamLeavesCount, setTeamLeavesCount] = useState(0);
 
   // tab data's
   const hodTabs = ["My Leaves", "Team Leaves"];
@@ -335,7 +336,7 @@ const LeaveTable = () => {
 
       const leaveFromDate = normalizeDate(leave.fromDate);
       const leaveToDate = normalizeDate(leave.toDate);
-      
+
       // Create normalized filter dates
       const filterFromNormalized = filterFromDate
         ? new Date(Date.UTC(filterFromDate.getFullYear(), filterFromDate.getMonth(), filterFromDate.getDate()))
@@ -402,8 +403,31 @@ const LeaveTable = () => {
     }
   }
 
+  // Fetch team leaves count on mount so the badge shows immediately
+  async function fetchTeamLeavesCount() {
+    try {
+      const token = getTokenFromLocalStorage();
+      const decodedData = decodeToken(token);
+      const dept = decodedData?.department;
+      if (!dept) return;
+
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const applications = response.data?.leaveApplications || [];
+      setTeamLeavesCount(applications.length);
+    } catch (err) {
+      console.error("Error fetching team leaves count:", err);
+    }
+  }
+
   useEffect(() => {
     fetchLeaves()
+    if (role === "hod") {
+      fetchTeamLeavesCount();
+    }
   }, [])
   return (
     <>
@@ -429,7 +453,7 @@ const LeaveTable = () => {
                     : "bg-slate-700 text-white"
                     } rounded ml-1 px-2 py-[2px] text-xs`}
                 >
-                  5
+                  {teamLeavesCount}
                 </span>
               )}
             </button>
@@ -584,7 +608,7 @@ const LeaveTable = () => {
 
         <LeaveDetailsPopup leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
         <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} fetchLeaves={fetchLeaves} />
-      </section> : <HodLeaveRequestTable />
+      </section> : <HodLeaveRequestTable onCountChange={setTeamLeavesCount} />
       }
       {/* Hod requests table */}
 

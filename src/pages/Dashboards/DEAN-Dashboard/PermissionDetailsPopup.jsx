@@ -1,7 +1,45 @@
-import { CalendarDays, Clock3, FileText, Send, SunMedium, TimerReset, X } from "lucide-react";
+import {
+  CalendarDays,
+  Clock,
+  Clock3,
+  FileText,
+  Send,
+  SunMedium,
+  TimerReset,
+  X,
+  ShieldCheck,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 
 const PermissionDetailsPopup = ({ permission, onClose }) => {
   if (!permission) return null;
+
+  // Get color based on action status
+  const getActionColor = (action) => {
+    if (action?.toLowerCase() === "approved") {
+      return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+    } else if (action?.toLowerCase() === "rejected") {
+      return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+    }
+    return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+  };
+
+  // Get icon for action
+  const getActionIcon = (action) => {
+    switch (action?.toLowerCase()) {
+      case "approved":
+        return <CheckCircle2 size={18} />;
+      case "rejected":
+        return <AlertCircle size={18} />;
+      case "submitted":
+        return <Clock size={18} />;
+      default:
+        return <Clock size={18} />;
+    }
+  };
+
+  const approvalHistory = permission.raw?.approvalHistory || [];
 
   return (
     <section
@@ -95,6 +133,89 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
               {permission.reason}
             </div>
           </div>
+
+          {approvalHistory.length > 0 && (
+            <div className="mt-3 border-t border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+                <ShieldCheck size={15} className="text-[#3984ff]" />
+                Approval Workflow
+              </p>
+
+              <div className="space-y-0">
+                {approvalHistory.map((history, index) => {
+                  const actionColor = getActionColor(history.action);
+                  const isLast = index === approvalHistory.length - 1;
+                  const isApproved = history.action?.toLowerCase() === "approved";
+                  const isRejected = history.action?.toLowerCase() === "rejected";
+
+                  return (
+                    <div key={history._id || index} className="relative">
+                      {/* Connector line */}
+                      {!isLast && (
+                        <div
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved ? "bg-[#10b981]" : isRejected ? "bg-[#ef4444]" : "bg-[#444c63]"
+                            }`}
+                        />
+                      )}
+
+                      {/* Step content */}
+                      <div className="relative flex gap-3 pb-4">
+                        {/* Step circle */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                              ? `${actionColor.bg} border-emerald-200/20`
+                              : isRejected
+                                ? `${actionColor.bg} border-[#ef4444]`
+                                : `${actionColor.light} border-[#444c63]`
+                              } text-white`}
+                          >
+                            {getActionIcon(history.action)}
+                          </div>
+                        </div>
+
+                        {/* Step details */}
+                        <div className="flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                {history.role}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                ? "bg-[#10b98120] text-[#10b981]"
+                                : isRejected
+                                  ? "bg-[#ef444420] text-[#ef4444]"
+                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                }`}
+                            >
+                              {history.action}
+                            </span>
+                          </div>
+
+                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                            {history.remarks}
+                          </p>
+
+                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                            <Clock size={11} />
+                            {new Date(history.actionDate).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">

@@ -128,6 +128,7 @@ const LeavePage = () => {
 
   // states 
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
 
   const leaveStatGroups = [
@@ -182,8 +183,8 @@ const LeavePage = () => {
             </div>
           </div>
 
-          <LeaveTable />
-          {isLeaveApplyForm && <ApplyLeaveForm onClose={() => setIsLeaveApplyForm(false)} />}
+          <LeaveTable key={refreshKey} />
+          {isLeaveApplyForm && <ApplyLeaveForm onClose={() => { setIsLeaveApplyForm(false); setRefreshKey(prev => prev + 1); }} />}
 
 
         </main>

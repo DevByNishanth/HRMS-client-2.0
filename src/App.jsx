@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./pages/LoginPage";
 import FacultyDashboard from "./pages/Dashboards/FacultyDashboard/FacultyDashboard";
 import ProfilePage from "./pages/ProfilePage";
@@ -28,6 +30,9 @@ import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
 import AttendanceOverrideManagement from "./pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement";
 import FacultyCalendar from "./pages/Common/Calendar";
+import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
+import DoumentUploadFormModal from './components/DoumentUploadFormModal'
+import CompoffPage from "./components/CompoffPage";
 
 function App() {
   // Role-based default route redirect
@@ -57,6 +62,20 @@ function App() {
 
   return (
     <>
+
+    {/* <DoumentUploadFormModal/> */}
+    
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<LoginPage />} />
@@ -251,6 +270,14 @@ function App() {
               requiredRoles={["faculty", "hod", "non-teaching", "dean"]}
             >
               <RegularaizationListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/compoff"
+          element={
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean', 'principal']}>
+              <CompoffPage />
             </ProtectedRoute>
           }
         />

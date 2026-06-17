@@ -3,30 +3,31 @@ import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import ApplyPerimission from "../../../components/ApplyPermission";
 import PermissionTable from "./PermissionTable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 
-const permissionStats = [
+const defaultPermissionStats = [
   {
     title: "Total Permission",
     code: "TP",
-    used: 4,
-    total: 6,
+    used: 0,
+    total: 0,
     color: "#3984ff",
     icon: FileText,
   },
   {
     title: "Permission Taken",
     code: "PT",
-    used: 4,
-    total: 6,
+    used: 0,
+    total: 0,
     color: "#18d3bf",
     icon: Clock3,
   },
   {
     title: "Remaining Permission",
     code: "RP",
-    used: 2,
-    total: 6,
+    used: 0,
+    total: 0,
     color: "#f0a15f",
     icon: Hourglass,
   },
@@ -70,6 +71,66 @@ const PermissionStatCard = ({
 const PermissionPage = () => {
   // states
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
+  const [permissionStats, setPermissionStats] = useState(defaultPermissionStats);
+  const [remainingPermission, setRemainingPermission] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handlePermissionSubmitted = () => {
+    fetchPermissionStats();
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const fetchPermissionStats = async () => {
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+      const token = getTokenFromLocalStorage();
+
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/card/month`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const data = await res.json();
+      if (res.ok && data?.success && data?.data) {
+        const { totalPermission, permissionTaken, remainingPermission } = data.data;
+
+        setPermissionStats([
+          {
+            title: "Total Permission",
+            code: "TP",
+            used: permissionTaken || 0,
+            total: totalPermission || 0,
+            color: "#3984ff",
+            icon: FileText,
+          },
+          {
+            title: "Permission Taken",
+            code: "PT",
+            used: permissionTaken || 0,
+            total: permissionTaken || 0,
+            color: "#18d3bf",
+            icon: Clock3,
+          },
+          {
+            title: "Remaining Permission",
+            code: "RP",
+            used: remainingPermission || 0,
+            total: remainingPermission || 0,
+            color: "#f0a15f",
+            icon: Hourglass,
+          },
+        ]);
+        setRemainingPermission(remainingPermission ?? 0);
+      } else {
+        console.error("Failed to fetch permission stats:", data?.message || data);
+      }
+    } catch (err) {
+      console.error("Error fetching permission stats:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPermissionStats();
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -106,13 +167,17 @@ const PermissionPage = () => {
               ))}
             </div>
 
-            <PermissionTable />
+            <PermissionTable key={refreshKey} />
           </div>
         </main>
       </div>
 
       {isPermissionApplyModal && (
-        <ApplyPerimission onClose={() => setIsPermissionApplyModal(false)} />
+        <ApplyPerimission
+          onClose={() => setIsPermissionApplyModal(false)}
+          remainingPermission={remainingPermission}
+          onPermissionSubmitted={handlePermissionSubmitted}
+        />
       )}
     </div>
   );
