@@ -16,10 +16,14 @@ import {
   Send,
   AlertCircle,
   SunMedium,
+  ShieldCheck,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import userImg from "../../../assets/userImg.svg";
-import { decodeToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
+import {
+  decodeToken,
+  getTokenFromLocalStorage,
+} from "../../../utils/tokenUtils";
 import axios from "axios";
 
 const API_BASE_URL =
@@ -31,8 +35,32 @@ const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
 
+function formatDate(dateString) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+function formatDateDisplay(dateString) {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+}
+
 // ---------- Custom Dropdown Component ----------
-const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) => {
+const CustomDropdown = ({
+  placeholder = "Select",
+  value,
+  onChange,
+  options,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -60,10 +88,11 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
+                className={`w-full px-3 py-2 text-left text-[12px] transition ${
+                  value === option
                     ? "bg-[#2563EB] text-white"
                     : "text-[#cad7eb] hover:bg-[#132b49]"
-                  }`}
+                }`}
               >
                 {option}
               </button>
@@ -76,11 +105,57 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
 };
 
 // ---------- Detail Slide Panel ----------
-const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevoke, approvingId }) => {
+const PermissionDetailsPanel = ({
+  request,
+  onClose,
+  onApprove,
+  onReject,
+  onRevoke,
+  approvingId,
+}) => {
   if (!request) return null;
 
   const canApprove = request.status === "Pending";
-  const canRevoke = request.status === "Approved" || request.status === "Rejected";
+  const canRevoke =
+    request.status === "Approved" || request.status === "Rejected";
+
+  // Get color based on action status
+  const getActionColor = (action) => {
+    if (action?.toLowerCase() === "approved") {
+      return {
+        bg: "bg-emerald-800",
+        text: "text-[#10b981]",
+        light: "bg-[#10b98115]",
+      };
+    } else if (action?.toLowerCase() === "rejected") {
+      return {
+        bg: "bg-[#ef4444]",
+        text: "text-[#ef4444]",
+        light: "bg-[#ef444415]",
+      };
+    }
+    return {
+      bg: "bg-[#f59e0b]",
+      text: "text-[#f59e0b]",
+      light: "bg-[#f59e0b15]",
+    };
+  };
+
+  // Get icon for action
+  const getActionIcon = (action) => {
+    switch (action?.toLowerCase()) {
+      case "approved":
+        return <CheckCircle2 size={18} />;
+      case "rejected":
+        return <AlertCircle size={18} />;
+      case "submitted":
+        return <Clock size={18} />;
+      default:
+        return <Clock size={18} />;
+    }
+  };
+
+  const approvalHistory = request.approvalHistory || [];
 
   return (
     <section
@@ -115,7 +190,11 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
           <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <img src={userImg} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                <img
+                  src={userImg}
+                  alt=""
+                  className="h-11 w-11 shrink-0 rounded-full object-cover"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-[16px] font-semibold text-white">
                     {request.facultyId?.firstName} {request.facultyId?.lastName}
@@ -141,7 +220,10 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
                 <CalendarDays size={13} className="text-[#3984ff]" />
                 Date
               </div>
-              <p className="mt-1 text-[16px] font-semibold text-white">{request.date || formatDateDisplay(request.fromDate)}</p>
+              <p className="mt-1 text-[16px] font-semibold text-white">
+                {request.date ||
+                  formatDateDisplay(request.fromDate || request.permissionDate)}
+              </p>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-3">
@@ -150,7 +232,9 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
                   <SunMedium size={14} className="text-[#b8c7dd]" />
                   Session
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">{request.session || request.leaveSession || "Full Day"}</p>
+                <p className="mt-1 text-[15px] font-medium text-white">
+                  {request.session || request.leaveSession || "Full Day"}
+                </p>
               </div>
 
               <div>
@@ -158,7 +242,9 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
                   <Clock3 size={14} className="text-[#b8c7dd]" />
                   Duration
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">{request.duration || `${request.totalHours || 0} Hours`}</p>
+                <p className="mt-1 text-[15px] font-medium text-white">
+                  {request.duration || `${request.totalHours || 0} `}
+                </p>
               </div>
             </div>
 
@@ -168,9 +254,13 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <TimerReset size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Approval Level</p>
+                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                    Approval Level
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">{request.currentApprovalLevel}</p>
+                <p className="text-[15px] font-semibold text-white capitalize">
+                  {request.currentApprovalLevel}
+                </p>
               </div>
             )}
           </div>
@@ -196,9 +286,104 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
               </div>
             </div>
           )}
+
+          {approvalHistory.length > 0 && (
+            <div className="mt-3 border-t border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+                <ShieldCheck size={15} className="text-[#3984ff]" />
+                Approval Workflow
+              </p>
+
+              <div className="space-y-0">
+                {approvalHistory.map((history, index) => {
+                  const actionColor = getActionColor(history.action);
+                  const isLast = index === approvalHistory.length - 1;
+                  const isApproved =
+                    history.action?.toLowerCase() === "approved";
+                  const isRejected =
+                    history.action?.toLowerCase() === "rejected";
+
+                  return (
+                    <div key={history._id || index} className="relative">
+                      {/* Connector line */}
+                      {!isLast && (
+                        <div
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                            isApproved
+                              ? "bg-[#10b981]"
+                              : isRejected
+                                ? "bg-[#ef4444]"
+                                : "bg-[#444c63]"
+                          }`}
+                        />
+                      )}
+
+                      {/* Step content */}
+                      <div className="relative flex gap-3 pb-4">
+                        {/* Step circle */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                              isApproved
+                                ? `${actionColor.bg} border-emerald-200/20`
+                                : isRejected
+                                  ? `${actionColor.bg} border-[#ef4444]`
+                                  : `${actionColor.light} border-[#444c63]`
+                            } text-white`}
+                          >
+                            {getActionIcon(history.action)}
+                          </div>
+                        </div>
+
+                        {/* Step details */}
+                        <div className="flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                {history.role}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${
+                                isApproved
+                                  ? "bg-[#10b98120] text-[#10b981]"
+                                  : isRejected
+                                    ? "bg-[#ef444420] text-[#ef4444]"
+                                    : "bg-[#f59e0b20] text-[#f59e0b]"
+                              }`}
+                            >
+                              {history.action}
+                            </span>
+                          </div>
+
+                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                            {history.remarks}
+                          </p>
+
+                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                            <Clock size={11} />
+                            {new Date(history.actionDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        {/* <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           {canApprove ? (
             <div className="flex flex-col gap-2">
               <button
@@ -245,7 +430,7 @@ const PermissionDetailsPanel = ({ request, onClose, onApprove, onReject, onRevok
               <Send size={14} />
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -265,7 +450,9 @@ const ConfirmationPopup = ({
 
   const isReject = action === "reject";
   const isRevoke = action === "revoke";
-  const title = isReject ? "Reject Permission Request" : "Revoke Permission Decision";
+  const title = isReject
+    ? "Reject Permission Request"
+    : "Revoke Permission Decision";
   const message = isReject
     ? `Reject ${request.facultyId?.firstName}'s permission request?`
     : `Revoke the ${request.status.toLowerCase()} decision for ${request.facultyId?.firstName}?`;
@@ -284,7 +471,9 @@ const ConfirmationPopup = ({
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">{title}</h2>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              {title}
+            </h2>
           </div>
           <button
             type="button"
@@ -330,11 +519,14 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
-            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
+            disabled={
+              (isReject && !reason.trim()) || (isRevoke && revokeLoading)
+            }
+            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
+              isRevoke
                 ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
                 : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
-              }`}
+            }`}
           >
             {isRevoke && revokeLoading ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
@@ -362,7 +554,9 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
       </div>
       <div>
         <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-white">{value}</p>
+        <p className="text-[16px] font-semibold leading-none text-white">
+          {value}
+        </p>
       </div>
     </div>
   </div>
@@ -390,12 +584,12 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
   async function fetchPermissions() {
     try {
       const response = await axios.get(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/?currentApprovalLevel=${decodedData?.role}`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/principal/list`,
         {
           headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
-        }
+        },
       );
-      setPermissions(response.data?.permissionApplications || []);
+      setPermissions(response.data?.data || []);
     } catch (error) {
       console.error("Error fetching permission requests:", error);
       setPermissions([]);
@@ -409,18 +603,36 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
   // ---------- Stat Cards (filtered by department) ----------
   const deptPermissions = useMemo(() => {
     if (filterDepartment === "All") return permissions;
-    return permissions.filter((p) => p.facultyId?.department === filterDepartment);
+    return permissions.filter(
+      (p) => p.facultyId?.department === filterDepartment,
+    );
   }, [filterDepartment, permissions]);
 
   const statCards = useMemo(() => {
     const total = deptPermissions.length;
-    const approved = deptPermissions.filter((p) => p.status === "Approved").length;
-    const rejected = deptPermissions.filter((p) => p.status === "Rejected").length;
-    const pending = deptPermissions.filter((p) => p.status === "Pending").length;
+    const approved = deptPermissions.filter(
+      (p) => p.status === "Approved",
+    ).length;
+    const rejected = deptPermissions.filter(
+      (p) => p.status === "Rejected",
+    ).length;
+    const pending = deptPermissions.filter(
+      (p) => p.status === "Pending",
+    ).length;
 
     return [
-      { label: "Total Permissions", value: total, icon: Users, color: "#3984ff" },
-      { label: "Approved", value: approved, icon: CheckCircle2, color: "#18d3bf" },
+      {
+        label: "Total Permissions",
+        value: total,
+        icon: Users,
+        color: "#3984ff",
+      },
+      {
+        label: "Approved",
+        value: approved,
+        icon: CheckCircle2,
+        color: "#18d3bf",
+      },
       { label: "Rejected", value: rejected, icon: XCircle, color: "#f16868" },
       { label: "Pending", value: pending, icon: Clock, color: "#f0a15f" },
     ];
@@ -431,7 +643,8 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
 
     return permissions.filter((perm) => {
-      const name = `${perm.facultyId?.firstName || ""} ${perm.facultyId?.lastName || ""}`.trim();
+      const name =
+        `${perm.facultyId?.firstName || ""} ${perm.facultyId?.lastName || ""}`.trim();
       const matchesSearch =
         !normalizedSearch ||
         [name, perm.facultyId?.empId, perm.reason]
@@ -439,15 +652,23 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
           .toLowerCase()
           .includes(normalizedSearch);
 
-      const statusMatch = filterStatus === "All" || perm.status === filterStatus;
-      const sessionMatch = filterSession === "All" || (perm.session || perm.leaveSession) === filterSession;
-      const deptMatch = filterDepartment === "All" || perm.facultyId?.department === filterDepartment;
+      const statusMatch =
+        filterStatus === "All" || perm.status === filterStatus;
+      const sessionMatch =
+        filterSession === "All" ||
+        (perm.session || perm.leaveSession) === filterSession;
+      const deptMatch =
+        filterDepartment === "All" ||
+        perm.facultyId?.department === filterDepartment;
 
       return matchesSearch && statusMatch && sessionMatch && deptMatch;
     });
   }, [filterDepartment, filterSession, filterStatus, permissions, searchQuery]);
 
-  const hasFilters = filterStatus !== "All" || filterSession !== "All" || searchQuery.trim() !== "";
+  const hasFilters =
+    filterStatus !== "All" ||
+    filterSession !== "All" ||
+    searchQuery.trim() !== "";
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -469,14 +690,21 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
     try {
       setApprovingId(requestId);
       await axios.patch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${requestId}/approve`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/approve`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("hrms_token")}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
+          },
+        },
       );
       await fetchPermissions();
       setSelectedPermission(null);
     } catch (error) {
-      console.error("Error approving permission:", error?.response?.data || error.message);
+      console.error(
+        "Error approving permission:",
+        error?.response?.data || error.message,
+      );
     } finally {
       setApprovingId(null);
     }
@@ -512,16 +740,16 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
     try {
       if (confirmation.action === "reject") {
         await axios.patch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${confirmation.request?._id}/reject`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${confirmation.request?._id}/reject`,
           { remarks: rejectReason.trim() },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
       } else if (confirmation.action === "revoke") {
         setRevokeLoading(true);
         await axios.patch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/permission-application/${confirmation.request?._id}/revoke-principal`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${confirmation.request?._id}/revoke-principal`,
           {},
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         setRevokeLoading(false);
       }
@@ -530,30 +758,13 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
       closeConfirmation();
       setSelectedPermission(null);
     } catch (error) {
-      console.error("Error confirming action:", error?.response?.data || error.message);
+      console.error(
+        "Error confirming action:",
+        error?.response?.data || error.message,
+      );
       setRevokeLoading(false);
     }
   };
-
-  // ---------- Helper ----------
-  function formatDate(dateString) {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    const day = String(date.getUTCDate()).padStart(2, "0");
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const year = date.getUTCFullYear();
-    return `${day}-${month}-${year}`;
-  }
-
-  function formatDateDisplay(dateString) {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    });
-  }
 
   return (
     <>
@@ -658,12 +869,26 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{formatDate(permission.fromDate || permission.date)}</td>
-                    <td className="px-4 py-3">{permission.session || permission.leaveSession || "Full Day"}</td>
-                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
-                      {permission.duration || `${permission.totalHours || 0} Hours`}
+                    <td className="px-4 py-3">
+                      {formatDate(
+                        permission.fromDate ||
+                          permission.date ||
+                          permission.permissionDate,
+                      )}
                     </td>
-                    <td className="max-w-[200px] truncate px-4 py-3" title={permission.reason}>
+                    <td className="px-4 py-3">
+                      {permission.session ||
+                        permission.leaveSession ||
+                        "Full Day"}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                      {permission.duration ||
+                        `${permission.totalHours || 0} Hours`}
+                    </td>
+                    <td
+                      className="max-w-[200px] truncate px-4 py-3"
+                      title={permission.reason}
+                    >
                       {permission.reason}
                     </td>
                     <td className="px-4 py-3">

@@ -4,7 +4,8 @@ const CommonHeader = () => {
 
   return (
     <>
-      <div className="w-full py-2.5 bg-[#001d3b] flex items-center justify-between px-4">
+      {/* <div className="w-full py-2.5 bg-[#001d3b] flex items-center justify-between px-4"> */}
+      <div className="w-full py-2.5 bg-[#0d2643] flex items-center justify-between px-4">
         {/* Search Bar */}
         <div className="relative ml-auto mr-4">
           <Search

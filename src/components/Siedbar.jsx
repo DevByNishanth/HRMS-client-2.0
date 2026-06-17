@@ -108,7 +108,8 @@ const Sidebar = () => {
     return (
         <>
             {/* Sidebar */}
-            <div className="w-[18%] bg-[#001d3b] flex flex-col relative">
+            {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
+            <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
 
                 {/* Logo */}
                 <div className="px-3 py-4 mt-4">

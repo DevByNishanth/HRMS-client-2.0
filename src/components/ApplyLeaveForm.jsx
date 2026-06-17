@@ -296,12 +296,6 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 table-custom-scrollbar">
-                    {/* Error Message */}
-                    {error && (
-                        <div className="mb-4 rounded-lg bg-[#f168681f] border border-[#f16868] px-4 py-3 text-[13px] text-[#f16868]">
-                            {error}
-                        </div>
-                    )}
 
                     {/* Employee Details Banner */}
                     {employee && (
@@ -533,6 +527,13 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 </div>
 
                 <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-4 rounded-lg bg-[#f168681f] border border-[#f16868] px-4 py-3 text-[13px] text-[#f16868]">
+                            {error}
+                        </div>
+                    )}
+
                     <button
                         type="submit"
                         disabled={submitting}
