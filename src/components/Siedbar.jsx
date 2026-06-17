@@ -18,6 +18,8 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+        { label: 'Calender', icon: Calendar, path: '/dashboard-faculty/calender' },
+
     ];
 
     // Navigation items for HOD (same as Faculty + My Team)
@@ -28,7 +30,7 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
-    ];
+        ];
 
     // Navigation items for Admin
     const adminNavItems = [

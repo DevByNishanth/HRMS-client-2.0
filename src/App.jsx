@@ -24,10 +24,12 @@ import DeanPermissionPage from "./pages/Dashboards/DEAN-Dashboard/PermissionPage
 import OdApprovalsPage from "./pages/Dashboards/DEAN-Dashboard/OdApprovalsPage";
 import HolidayManagement from "./pages/Dashboards/AdminDashboard/Holiday/HolidayManagement";
 import LeaveTypeManagement from "./pages/Dashboards/AdminDashboard/LeaveType/LeaveTypeManagement";
-import LeaveBalanceManagement from './pages/Dashboards/AdminDashboard/LeaveBalance/LeaveBalanceManagement'
+import LeaveBalanceManagement from "./pages/Dashboards/AdminDashboard/LeaveBalance/LeaveBalanceManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
+import AttendanceOverrideManagement from "./pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement";
+import FacultyCalendar from "./pages/Common/Calendar";
 import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 import DoumentUploadFormModal from './components/DoumentUploadFormModal'
 import CompoffPage from "./components/CompoffPage";
@@ -41,20 +43,20 @@ function App() {
 
     const role = getRoleFromToken();
     switch (role?.toLowerCase()) {
-      case 'hr':
-        return '/dashboard-admin';
-      case 'faculty':
-        return '/dashboard-faculty';
-      case 'hod':
-        return '/dashboard-faculty';
-      case 'principal':
-        return '/dashboard-principal';
-      case 'dean':
-        return '/dashboard-dean';
-      case 'non-teaching':
-        return '/dashboard-faculty';
+      case "hr":
+        return "/dashboard-admin";
+      case "faculty":
+        return "/dashboard-faculty";
+      case "hod":
+        return "/dashboard-faculty";
+      case "principal":
+        return "/dashboard-principal";
+      case "dean":
+        return "/dashboard-dean";
+      case "non-teaching":
+        return "/dashboard-faculty";
       default:
-        return '/';
+        return "/";
     }
   };
 
@@ -82,7 +84,7 @@ function App() {
         <Route
           path="/dashboard-faculty"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <FacultyDashboard />
             </ProtectedRoute>
           }
@@ -90,7 +92,7 @@ function App() {
         <Route
           path="/dashboard-faculty/leaves"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <LeavePage />
             </ProtectedRoute>
           }
@@ -98,7 +100,7 @@ function App() {
         <Route
           path="/dashboard-faculty/attendance"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <AttendancePage />
             </ProtectedRoute>
           }
@@ -106,7 +108,7 @@ function App() {
         <Route
           path="/dashboard-faculty/permissions"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching']}>
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <PermissionPage />
             </ProtectedRoute>
           }
@@ -116,7 +118,7 @@ function App() {
         <Route
           path="/dashboard-principal"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalDashboard />
             </ProtectedRoute>
           }
@@ -124,7 +126,7 @@ function App() {
         <Route
           path="/dashboard-principal/faculty-list"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalFacultyListPage />
             </ProtectedRoute>
           }
@@ -132,7 +134,7 @@ function App() {
         <Route
           path="/dashboard-principal/leaves"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalLeaveRequestPage />
             </ProtectedRoute>
           }
@@ -140,7 +142,7 @@ function App() {
         <Route
           path="/dashboard-principal/attendance"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalAttendancePage />
             </ProtectedRoute>
           }
@@ -148,7 +150,7 @@ function App() {
         <Route
           path="/dashboard-principal/permissions"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalPermissionPage />
             </ProtectedRoute>
           }
@@ -156,7 +158,7 @@ function App() {
         <Route
           path="/dashboard-principal/regularizationList"
           element={
-            <ProtectedRoute requiredRoles={['principal']}>
+            <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalRegularizationListPage />
             </ProtectedRoute>
           }
@@ -166,7 +168,7 @@ function App() {
         <Route
           path="/dashboard-dean"
           element={
-            <ProtectedRoute requiredRoles={['dean', 'coe', 'iqac']}>
+            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
               <DeanDashboard />
             </ProtectedRoute>
           }
@@ -174,7 +176,7 @@ function App() {
         <Route
           path="/dashboard-dean/leaves"
           element={
-            <ProtectedRoute requiredRoles={['dean', 'coe', 'iqac']}>
+            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
               <DeanLeavePage />
             </ProtectedRoute>
           }
@@ -182,7 +184,7 @@ function App() {
         <Route
           path="/dashboard-dean/attendance"
           element={
-            <ProtectedRoute requiredRoles={['dean', 'coe', 'iqac']}>
+            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
               <DeanAttendancePage />
             </ProtectedRoute>
           }
@@ -190,7 +192,7 @@ function App() {
         <Route
           path="/dashboard-dean/permissions"
           element={
-            <ProtectedRoute requiredRoles={['dean', 'coe', 'iqac']}>
+            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
               <DeanPermissionPage />
             </ProtectedRoute>
           }
@@ -198,7 +200,7 @@ function App() {
         <Route
           path="/dashboard-dean/od-approvals"
           element={
-            <ProtectedRoute requiredRoles={['dean', 'coe', 'iqac']}>
+            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
               <OdApprovalsPage />
             </ProtectedRoute>
           }
@@ -209,7 +211,7 @@ function App() {
           path="/dashboard-admin"
           element={
             // <ProtectedRoute requiredRoles={['admin', 'hr']}>
-            <ProtectedRoute requiredRoles={['admin', "hr"]}>
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
               <FacultyManagementPage />
             </ProtectedRoute>
           }
@@ -218,7 +220,7 @@ function App() {
           path="/dashboard-admin/shifts"
           element={
             // <ProtectedRoute requiredRoles={['admin', 'hr']}>
-            <ProtectedRoute requiredRoles={['admin', "hr"]}>
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
               <ShiftManagement />
             </ProtectedRoute>
           }
@@ -228,7 +230,16 @@ function App() {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'principal', 'admin', 'non-teaching', 'dean']}>
+            <ProtectedRoute
+              requiredRoles={[
+                "faculty",
+                "hod",
+                "principal",
+                "admin",
+                "non-teaching",
+                "dean",
+              ]}
+            >
               <ProfilePage />
             </ProtectedRoute>
           }
@@ -236,7 +247,16 @@ function App() {
         <Route
           path="/profile/:empid"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'principal', 'admin', 'non-teaching', 'dean']}>
+            <ProtectedRoute
+              requiredRoles={[
+                "faculty",
+                "hod",
+                "principal",
+                "admin",
+                "non-teaching",
+                "dean",
+              ]}
+            >
               <ProfilePage />
             </ProtectedRoute>
           }
@@ -246,7 +266,9 @@ function App() {
         <Route
           path="/dashboard/regularizationList"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean']}>
+            <ProtectedRoute
+              requiredRoles={["faculty", "hod", "non-teaching", "dean"]}
+            >
               <RegularaizationListPage />
             </ProtectedRoute>
           }
@@ -264,7 +286,7 @@ function App() {
         <Route
           path="/dashboard-faculty/my-Team"
           element={
-            <ProtectedRoute requiredRoles={['hod']}>
+            <ProtectedRoute requiredRoles={["hod"]}>
               <MyTeamPage />
             </ProtectedRoute>
           }
@@ -309,9 +331,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard-faculty/calender"
+          element={
+            <ProtectedRoute>
+              <FacultyCalendar />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
-  )
+  );
 }
 
 export default App;
