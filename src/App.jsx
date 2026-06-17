@@ -30,7 +30,7 @@ import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
 import AttendanceOverrideManagement from "./pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement";
 import FacultyCalendar from "./pages/Common/Calendar";
-import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
+// import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 import DoumentUploadFormModal from './components/DoumentUploadFormModal'
 import CompoffPage from "./components/CompoffPage";
 
