@@ -87,38 +87,59 @@ const RecentLogs = () => {
             </tr>
           </thead>
           <tbody className="text-[12px] text-[#cad7eb] ">
-            {records.map((record) => (
-              <tr key={record.attendanceId} className="border-b border-[#132944] last:border-0">
-                <td className="px-4 py-4">{formatDateFromISO(record.checkIn)}</td>
-                <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
-                <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
-                <td className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
-                  {formatMinutesToHours(record.workingHours)}
-                </td>
-                <td className="px-4 py-4">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}>
-                    <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                    {record.status}
-                  </span>
-                </td>
-                <td className="px-4 py-4 text-center text-[#8ca1bd]">
-                  {record.status.toLowerCase() == "present" ? <button
-                    type="button"
-                    onClick={() => setSelectedLog(record)}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white ml-8"
-                    aria-label={`Open regularization form for ${formatDateFromISO(record.checkIn)}`}
-                  >
-                    <MoveUpRight className="h-4 w-4" />
-                  </button> : <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010]/30 transition ml-8 cursor-not-allowed"
-                    aria-label={`Open regularization form for ${formatDateFromISO(record.checkIn)}`}
-                  >
-                    <MoveUpRight className="h-4 w-4 text-white/10" />
-                  </button>}
-                </td>
-              </tr>
-            ))}
+            {records.map((record) => {
+              const isHoliday = record.status === "Holiday" || record.holidayName;
+
+              if (isHoliday) {
+                return (
+                  <tr key={record.attendanceId || record.date} className="">
+                    <td className="bg-orange-300/20 rounded-bl-lg"></td>
+                    <td className="bg-orange-300/20 "></td>
+                    <td className="bg-orange-300/20 "></td>
+                    <td className="py-2 bg-orange-300/20 pl-4"><h1 className="text-xl text-orange-300">{record?.holidayName}</h1></td>
+                    <td className="bg-orange-300/20 -b-lg"></td>
+                    <td className="bg-orange-300/20 rounded-br-lg"></td>
+                  </tr>
+                );
+              }
+
+              return (
+                <tr key={record.attendanceId} className="border-b border-[#132944] last:border-0">
+                  <td className="px-4 py-4">{formatDateFromISO(record?.date)}</td>
+                  <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
+                  <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
+                  <td className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
+                    {formatMinutesToHours(record.workingHours)}
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}>
+                      <span className="h-[4px] w-[4px] rounded-full bg-current" />
+                      {record.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-center text-[#8ca1bd]">
+                    {record.status.toLowerCase() == "present" ? (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLog(record)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white ml-8"
+                        aria-label={`Open regularization form for ${formatDateFromISO(record.date)}`}
+                      >
+                        <MoveUpRight className="h-4 w-4" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010]/30 transition ml-8 cursor-not-allowed"
+                        aria-label={`Open regularization form for ${formatDateFromISO(record.date)}`}
+                      >
+                        <MoveUpRight className="h-4 w-4 text-white/10" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

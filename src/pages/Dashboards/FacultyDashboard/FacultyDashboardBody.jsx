@@ -255,12 +255,12 @@ const FacultyDashboardBody = () => {
             <AttendanceGauge />
           </div>
 
-          <div className={isHod ? "recent-logs-section grid grid-cols-12 gap-4" : "recent-logs-section"}>
+          <div className={isHod ? "recent-logs-section grid grid-cols-12 gap-2" : "recent-logs-section"}>
             <div className={isHod ? "table-container col-span-12 xl:col-span-8" : "table-container"}>
               <RecentLogs />
             </div>
             {isHod && (
-              <div className="col-span-12 xl:col-span-4">
+              <div className="col-span-12 xl:col-span-4 ">
                 <FacultyRequestsPanel />
               </div>
             )}

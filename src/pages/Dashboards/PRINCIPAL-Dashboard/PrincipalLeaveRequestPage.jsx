@@ -22,7 +22,10 @@ import { useState, useMemo, useEffect } from "react";
 import Sidebar from "../../../components/Siedbar";
 import CommonHeader from "../../../components/CommonHeader";
 import userImg from "../../../assets/userImg.svg";
-import { decodeToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
+import {
+  decodeToken,
+  getTokenFromLocalStorage,
+} from "../../../utils/tokenUtils";
 import axios from "axios";
 
 const API_BASE_URL =
@@ -34,7 +37,12 @@ const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
 
-const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) => {
+const CustomDropdown = ({
+  placeholder = "Select",
+  value,
+  onChange,
+  options,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -62,10 +70,11 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
-                  ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
-                  }`}
+                className={`w-full px-3 py-2 text-left text-[12px] transition ${
+                  value === option
+                    ? "bg-[#2563EB] text-white"
+                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                }`}
               >
                 {option}
               </button>
@@ -109,10 +118,11 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
       </div>
       <div>
         <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className=" text-[16px] font-semibold leading-none text-white">{value}</p>
+        <p className=" text-[16px] font-semibold leading-none text-white">
+          {value}
+        </p>
       </div>
     </div>
-
   </div>
 );
 
@@ -120,7 +130,8 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
 const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
   if (!request) return null;
 
-  const canRevoke = request.status === "Approved" || request.status === "Rejected";
+  const canRevoke =
+    request.status === "Approved" || request.status === "Rejected";
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -165,7 +176,11 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
           <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <img src={userImg} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                <img
+                  src={userImg}
+                  alt=""
+                  className="h-11 w-11 shrink-0 rounded-full object-cover"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-[16px] font-semibold text-white">
                     {request.facultyId?.firstName} {request.facultyId?.lastName}
@@ -223,10 +238,13 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                   <TimerReset size={18} />
                 </div>
-                <p className="text-[13px] font-medium text-[#cad7eb]">Leave Duration</p>
+                <p className="text-[13px] font-medium text-[#cad7eb]">
+                  Leave Duration
+                </p>
               </div>
               <p className="text-[15px] font-semibold text-white">
-                {request.totalDays || 0} {request.totalDays === 1 ? "Day" : "Days"}
+                {request.totalDays || 0}{" "}
+                {request.totalDays === 1 ? "Day" : "Days"}
               </p>
             </div>
 
@@ -236,9 +254,13 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <Clock3 size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Leave Session</p>
+                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                    Leave Session
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white">{request.leaveSession}</p>
+                <p className="text-[15px] font-semibold text-white">
+                  {request.leaveSession}
+                </p>
               </div>
             )}
 
@@ -248,9 +270,13 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <ShieldCheck size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Approval Level</p>
+                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                    Approval Level
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">{request.currentApprovalLevel}</p>
+                <p className="text-[15px] font-semibold text-white capitalize">
+                  {request.currentApprovalLevel}
+                </p>
               </div>
             )}
           </div>
@@ -287,31 +313,35 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
               <div className="space-y-0">
                 {request.approvalHistory.map((history, index) => {
                   const isLast = index === request.approvalHistory.length - 1;
-                  const isApproved = history.action?.toLowerCase() === "approved";
-                  const isRejected = history.action?.toLowerCase() === "rejected";
+                  const isApproved =
+                    history.action?.toLowerCase() === "approved";
+                  const isRejected =
+                    history.action?.toLowerCase() === "rejected";
 
                   return (
                     <div key={index} className="relative">
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
-                            ? "bg-[#10b981]"
-                            : isRejected
-                              ? "bg-[#ef4444]"
-                              : "bg-[#444c63]"
-                            }`}
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                            isApproved
+                              ? "bg-[#10b981]"
+                              : isRejected
+                                ? "bg-[#ef4444]"
+                                : "bg-[#444c63]"
+                          }`}
                         />
                       )}
 
                       <div className="relative flex gap-3 pb-4">
                         <div className="flex-shrink-0">
                           <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
-                              ? "bg-emerald-800 border-emerald-200/20"
-                              : isRejected
-                                ? "bg-[#ef4444] border-[#ef4444]"
-                                : "bg-[#f59e0b15] border-[#444c63]"
-                              } text-white`}
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                              isApproved
+                                ? "bg-emerald-800 border-emerald-200/20"
+                                : isRejected
+                                  ? "bg-[#ef4444] border-[#ef4444]"
+                                  : "bg-[#f59e0b15] border-[#444c63]"
+                            } text-white`}
                           >
                             {isApproved ? (
                               <CheckCircle2 size={18} />
@@ -331,28 +361,34 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                               </p>
                             </div>
                             <span
-                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
-                                ? "bg-[#10b98120] text-[#10b981]"
-                                : isRejected
-                                  ? "bg-[#ef444420] text-[#ef4444]"
-                                  : "bg-[#f59e0b20] text-[#f59e0b]"
-                                }`}
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${
+                                isApproved
+                                  ? "bg-[#10b98120] text-[#10b981]"
+                                  : isRejected
+                                    ? "bg-[#ef444420] text-[#ef4444]"
+                                    : "bg-[#f59e0b20] text-[#f59e0b]"
+                              }`}
                             >
                               {history.action}
                             </span>
                           </div>
 
-                          <p className="text-[12px] text-[#cad7eb]">{history.remarks}</p>
+                          <p className="text-[12px] text-[#cad7eb]">
+                            {history.remarks}
+                          </p>
 
                           <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
                             <Clock size={11} />
-                            {new Date(history.actionDate).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                            {new Date(history.actionDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </p>
                         </div>
                       </div>
@@ -363,7 +399,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
             </div>
           )}
         </div>
-
+        {/* 
         <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           {canRevoke ? (
             <button
@@ -384,7 +420,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
               <Send size={14} />
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -423,7 +459,9 @@ const ConfirmationPopup = ({
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">{title}</h2>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              {title}
+            </h2>
           </div>
           <button
             type="button"
@@ -469,11 +507,14 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
-            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
-              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-              : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
-              }`}
+            disabled={
+              (isReject && !reason.trim()) || (isRevoke && revokeLoading)
+            }
+            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
+              isRevoke
+                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+                : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+            }`}
           >
             {isRevoke && revokeLoading ? (
               <div className="loader"></div>
@@ -510,11 +551,7 @@ const PrincipalLeaveRequestPage = () => {
     () => [
       "All",
       ...Array.from(
-        new Set(
-          requests
-            .map((r) => r.facultyId?.department)
-            .filter(Boolean),
-        ),
+        new Set(requests.map((r) => r.facultyId?.department).filter(Boolean)),
       ),
     ],
     [requests],
@@ -523,12 +560,20 @@ const PrincipalLeaveRequestPage = () => {
   async function fetchLeaveRequests() {
     try {
       const response = await axios.get(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/?currentApprovalLevel=${decodedData?.role}`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application`,
         {
           headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
         },
       );
-      setRequests(response.data?.leaveApplications || []);
+      let filteredRequests = response.data?.leaveApplications.filter((item) => {
+        return (
+          item.currentApprovalLevel.toLowerCase() == "completed" ||
+          item.currentApprovalLevel.toLowerCase() == "principal"
+        );
+      });
+
+      console.log("filtered principal reqs : ", filteredRequests);
+      setRequests(filteredRequests || []);
     } catch (error) {
       console.error("Error fetching leave requests:", error);
       setRequests([]);
@@ -553,9 +598,24 @@ const PrincipalLeaveRequestPage = () => {
 
     return [
       { label: "Total Requests", value: total, icon: Users, color: "#3984ff" },
-      { label: "Approved Leaves", value: approved, icon: CheckCircle2, color: "#18d3bf" },
-      { label: "Rejected Leaves", value: rejected, icon: XCircle, color: "#f16868" },
-      { label: "Pending Leaves", value: pending, icon: Clock, color: "#f0a15f" },
+      {
+        label: "Approved Leaves",
+        value: approved,
+        icon: CheckCircle2,
+        color: "#18d3bf",
+      },
+      {
+        label: "Rejected Leaves",
+        value: rejected,
+        icon: XCircle,
+        color: "#f16868",
+      },
+      {
+        label: "Pending Leaves",
+        value: pending,
+        icon: Clock,
+        color: "#f0a15f",
+      },
     ];
   }, [deptRequests]);
 
@@ -563,16 +623,24 @@ const PrincipalLeaveRequestPage = () => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
 
     return requests.filter((request) => {
-      const name = `${request.facultyId?.firstName || ""} ${request.facultyId?.lastName || ""}`.trim();
+      const name =
+        `${request.facultyId?.firstName || ""} ${request.facultyId?.lastName || ""}`.trim();
       const matchesSearch =
         !normalizedSearch ||
-        [name, request.facultyId?.empId, request.leaveTypeId?.leaveName, request.reason]
+        [
+          name,
+          request.facultyId?.empId,
+          request.leaveTypeId?.leaveName,
+          request.reason,
+        ]
           .join(" ")
           .toLowerCase()
           .includes(normalizedSearch);
-      const statusMatch = filterStatus === "All" || request.status === filterStatus;
+      const statusMatch =
+        filterStatus === "All" || request.status === filterStatus;
       const deptMatch =
-        filterDepartment === "All" || request.facultyId?.department === filterDepartment;
+        filterDepartment === "All" ||
+        request.facultyId?.department === filterDepartment;
 
       return matchesSearch && statusMatch && deptMatch;
     });
@@ -593,11 +661,18 @@ const PrincipalLeaveRequestPage = () => {
       await axios.patch(
         `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/${requestId}/approve`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("hrms_token")}` } },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
+          },
+        },
       );
       await fetchLeaveRequests();
     } catch (error) {
-      console.error("Error approving leave:", error?.response?.data || error.message);
+      console.error(
+        "Error approving leave:",
+        error?.response?.data || error.message,
+      );
     } finally {
       setApprovingId(null);
     }
@@ -650,7 +725,10 @@ const PrincipalLeaveRequestPage = () => {
       await fetchLeaveRequests();
       closeConfirmation();
     } catch (error) {
-      console.error("Error confirming action:", error?.response?.data || error.message);
+      console.error(
+        "Error confirming action:",
+        error?.response?.data || error.message,
+      );
       setRevokeLoading(false);
     }
   };
@@ -713,8 +791,6 @@ const PrincipalLeaveRequestPage = () => {
               ))}
             </div>
 
-
-
             {/* Leave Requests Table */}
             <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
               <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-3 ">
@@ -756,7 +832,9 @@ const PrincipalLeaveRequestPage = () => {
                       <th className="px-4 py-3 font-semibold">To</th>
                       <th className="px-4 py-3 font-semibold">Duration</th>
                       <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 text-right font-semibold">Action</th>
+                      <th className="px-4 py-3 text-right font-semibold">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-[12px] text-[#cad7eb]">
@@ -799,8 +877,9 @@ const PrincipalLeaveRequestPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[request.status]
-                                }`}
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${
+                                statusStyles[request.status]
+                              }`}
                             >
                               <span className="h-[4px] w-[4px] rounded-full bg-current" />
                               {request.status}
@@ -837,15 +916,7 @@ const PrincipalLeaveRequestPage = () => {
                                   </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleRevoke(request)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                                  aria-label="Revoke leave decision"
-                                  title={`Revoke ${request.status}`}
-                                >
-                                  <RotateCcw className="h-4 w-4" />
-                                </button>
+                                ""
                               )}
                               <button
                                 type="button"

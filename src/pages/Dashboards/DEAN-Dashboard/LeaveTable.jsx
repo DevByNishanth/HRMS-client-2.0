@@ -1,7 +1,7 @@
 import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken } from "../../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
@@ -308,14 +308,21 @@ const LeaveTable = () => {
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
 
   const [leaves, setLeaves] = useState([]);
+  const [teamLeavesCount, setTeamLeavesCount] = useState(0);
 
   // tab data's
-  const hodTabs = ["My Leaves", "Team Leaves"];
-  const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
-    ? location.state.hodSelectedTab
+  const isDeanOrIqac = role === "dean" || role === "iqac";
+  const deanTabs = ["My Leaves", "Leave Requests"];
+  
+  const activeTabs = isDeanOrIqac ? deanTabs : ["My Leaves"];
+  const initialTabKey = isDeanOrIqac ? "deanSelectedTab" : "hodSelectedTab";
+  const initialTabs = isDeanOrIqac ? deanTabs : ["My Leaves"];
+  
+  const initialSelectedTab = initialTabs.includes(location.state?.[initialTabKey])
+    ? location.state[initialTabKey]
     : "My Leaves";
 
-  const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
+  const [selectedTab, setSelectedTab] = useState(initialSelectedTab);
 
   // Get unique leave types
   const leaveTypes = ["All", ...new Set(leaves.map((leave) => leave.type))];
@@ -363,8 +370,6 @@ const LeaveTable = () => {
   const hasActiveFilters =
     (filterLeaveType !== "All") || (filterStatus !== "All") || filterFromDate || filterToDate;
 
-
-
   // functions =========================================  
 
   // format date 
@@ -402,20 +407,52 @@ const LeaveTable = () => {
     }
   }
 
+  // Fetch team leaves count on mount so the badge shows immediately
+  async function fetchTeamLeavesCount() {
+    try {
+      const token = getTokenFromLocalStorage();
+      const decodedData = decodeToken(token);
+      const dept = decodedData?.department;
+      const userRole = decodedData?.role;
+      
+      let endpoint;
+      if ((role === "dean" || role === "iqac") && userRole) {
+        endpoint = `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?currentApprovalLevel=${userRole}`;
+      } else if (dept) {
+        endpoint = `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`;
+      } else {
+        return;
+      }
+      
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const applications = response.data?.leaveApplications || [];
+      setTeamLeavesCount(applications.length);
+    } catch (err) {
+      console.error("Error fetching team leaves count:", err);
+    }
+  }
+
   useEffect(() => {
     fetchLeaves()
+    if (isDeanOrIqac) {
+      fetchTeamLeavesCount();
+    }
   }, [])
   return (
     <>
 
-      {/* tab section for hod  */}
-      {role == "hod" && <div className="tab-container bg-[#0d2138] w-full py-2 mt-4 px-4 rounded-lg border border-[#213857] ">
+      {/* tab section for dean / iqac */}
+      {isDeanOrIqac && <div className="tab-container bg-[#0d2138] w-full py-2 mt-4 px-4 rounded-lg border border-[#213857] ">
         <div className="flex items-center gap-2 ">
-          {hodTabs.map((tab) => (
+          {activeTabs.map((tab) => (
             <button
-              onClick={() => setHodSelectedTab(tab)}
+              onClick={() => setSelectedTab(tab)}
               key={tab}
-              className={`px-6 py-2 text-sm font-medium transition ${tab === hodSelectedTab
+              className={`px-6 py-2 text-sm font-medium transition ${tab === selectedTab
                 ? "bg-[#2563EB] text-white rounded-md"
                 : "hover:bg-slate-600/20 rounded-md"
                 }`}
@@ -424,12 +461,23 @@ const LeaveTable = () => {
 
               {tab === "Team Leaves" && (
                 <span
-                  className={`${tab === hodSelectedTab
+                  className={`${tab === selectedTab
                     ? "bg-white text-blue-700 font-semibold"
                     : "bg-slate-700 text-white"
                     } rounded ml-1 px-2 py-[2px] text-xs`}
                 >
-                  5
+                  {teamLeavesCount}
+                </span>
+              )}
+
+              {tab === "Leave Requests" && (
+                <span
+                  className={`${tab === selectedTab
+                    ? "bg-white text-blue-700 font-semibold"
+                    : "bg-slate-700 text-white"
+                    } rounded ml-1 px-2 py-[2px] text-xs`}
+                >
+                  {teamLeavesCount}
                 </span>
               )}
             </button>
@@ -439,7 +487,7 @@ const LeaveTable = () => {
       }
 
       {/* my leave list table */}
-      {hodSelectedTab === "My Leaves" ? <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
+      {selectedTab === "My Leaves" ? <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
         <div className="relative z-20 space-y-3 px-4 py-3 flex items-start justify-between">
           <div className="flex items-center justify-between">
             <h2 className="text-[18px] font-semibold text-white">
@@ -584,9 +632,11 @@ const LeaveTable = () => {
 
         <LeaveDetailsPopup leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
         <WithdrawLeavePopup leave={withdrawLeave} onClose={() => setWithdrawLeave(null)} fetchLeaves={fetchLeaves} />
-      </section> : <HodLeaveRequestTable />
+      </section> : (
+        <HodLeaveRequestTable onCountChange={setTeamLeavesCount} fetchByApprovalLevel={true} />
+      )
       }
-      {/* Hod requests table */}
+      {/* Dean / IQAC leave requests table */}
 
 
     </>

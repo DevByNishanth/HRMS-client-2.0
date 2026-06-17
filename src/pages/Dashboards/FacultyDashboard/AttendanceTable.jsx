@@ -198,7 +198,7 @@ const AttendanceTable = () => {
             <tbody className="text-[13px] text-[#cad7eb]">
               {filteredLogs.map((record) => (
                 <tr key={record.attendanceId || record.checkIn} className="border-b border-[#132944] last:border-0">
-                  <td className="px-4 py-4">{formatDateFromISO(record.checkIn)}</td>
+                  <td className="px-4 py-4">{formatDateFromISO(record.date)}</td>
                   <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
                   <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
                   <td

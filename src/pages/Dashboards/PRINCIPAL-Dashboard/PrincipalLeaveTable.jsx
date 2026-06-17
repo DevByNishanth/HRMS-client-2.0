@@ -40,19 +40,17 @@ const PrincipalLeaveTable = () => {
               type="button"
               onClick={() => setActiveTab(tab)}
               key={tab}
-              className={`px-6 py-2 text-sm font-medium transition ${
-                tab === activeTab
-                  ? "rounded-md bg-[#2563EB] text-white"
-                  : "rounded-md hover:bg-slate-600/20"
-              }`}
+              className={`px-6 py-2 text-sm font-medium transition ${tab === activeTab
+                ? "rounded-md bg-[#2563EB] text-white"
+                : "rounded-md hover:bg-slate-600/20"
+                }`}
             >
               {tab}
               {tab === "All Leaves" && (
-                <span className={`ml-1 rounded px-2 py-[2px] text-xs ${
-                  tab === activeTab
-                    ? "bg-white font-semibold text-blue-700"
-                    : "bg-slate-700 text-white"
-                }`}>
+                <span className={`ml-1 rounded px-2 py-[2px] text-xs ${tab === activeTab
+                  ? "bg-white font-semibold text-blue-700"
+                  : "bg-slate-700 text-white"
+                  }`}>
                   {allLeaves.length}
                 </span>
               )}
@@ -64,7 +62,7 @@ const PrincipalLeaveTable = () => {
       <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
         <div className="px-4 py-3">
           <h2 className="text-[18px] font-semibold text-white">
-            All Leave Requests <span>({filteredLeaves.length})</span>
+            All  Leave Requests <span>({filteredLeaves.length})</span>
           </h2>
         </div>
 

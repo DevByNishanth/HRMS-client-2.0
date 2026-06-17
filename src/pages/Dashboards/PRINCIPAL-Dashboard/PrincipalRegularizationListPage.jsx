@@ -297,7 +297,7 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
           )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        {/* <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           {canApprove ? (
             <div className="flex flex-col gap-2">
               <button
@@ -344,7 +344,7 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
               <Send size={14} />
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -430,11 +430,10 @@ const ConfirmationPopup = ({
             type="button"
             onClick={onConfirm}
             disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
-            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
-              isRevoke
-                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-                : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
-            }`}
+            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
+              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+              : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+              }`}
           >
             {isRevoke && revokeLoading ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
@@ -700,11 +699,10 @@ const PrincipalRegularizationListPage = () => {
                             setFilterDepartment(dept);
                             setIsDeptOpen(false);
                           }}
-                          className={`w-full px-3 py-2.5 text-left text-[12px] transition ${
-                            filterDepartment === dept
-                              ? "bg-[#2563EB] text-white"
-                              : "text-[#cad7eb] hover:bg-[#132b49]"
-                          }`}
+                          className={`w-full px-3 py-2.5 text-left text-[12px] transition ${filterDepartment === dept
+                            ? "bg-[#2563EB] text-white"
+                            : "text-[#cad7eb] hover:bg-[#132b49]"
+                            }`}
                         >
                           {dept}
                         </button>
@@ -867,15 +865,7 @@ const PrincipalRegularizationListPage = () => {
                                   </button>
                                 </>
                               ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleRevoke(request)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                                  aria-label="Revoke regularization decision"
-                                  title={`Revoke ${request.status}`}
-                                >
-                                  <RotateCcw className="h-4 w-4" />
-                                </button>
+                                ""
                               )}
                               <button
                                 type="button"

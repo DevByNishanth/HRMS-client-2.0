@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ChevronDown, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken } from "../../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
@@ -12,100 +12,6 @@ const statusStyles = {
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
-
-const permissions = [
-  {
-    date: "May 30, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Bank appointment during working hours.",
-    status: "Pending",
-  },
-  {
-    date: "May 24, 2026",
-    session: "Afternoon",
-    duration: "2 Hours",
-    reason: "Parent teacher meeting at school.",
-    status: "Approved",
-  },
-  {
-    date: "May 16, 2026",
-    session: "Forenoon",
-    duration: "1 Hour",
-    reason: "Personal documentation work.",
-    status: "Rejected",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-  {
-    date: "May 09, 2026",
-    session: "Afternoon",
-    duration: "1 Hour",
-    reason: "Medical consultation.",
-    status: "Approved",
-  },
-  {
-    date: "May 03, 2026",
-    session: "Forenoon",
-    duration: "2 Hours",
-    reason: "Family emergency.",
-    status: "Pending",
-  },
-];
 
 const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -154,31 +60,38 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
 const PermissionTable = () => {
   const location = useLocation();
   const role = getRoleFromToken()?.toLowerCase();
+  const isDeanOrIqac = role === "dean" || role === "iqac";
   const [selectedPermission, setSelectedPermission] = useState(null);
   const [withdrawPermission, setWithdrawPermission] = useState(null);
+  const [permissionsData, setPermissionsData] = useState([]);
   const [status, setStatus] = useState("All");
   const [session, setSession] = useState("All");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const hodTabs = ["My Permissions", "Team Permissions"];
-  const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
-    ? location.state.hodSelectedTab
+  const [teamPermissionCount, setTeamPermissionCount] = useState(0);
+
+  // Tabs for dean/iqac
+  const deanTabs = ["My Permissions"];
+  const initialTab = deanTabs.includes(location.state?.deanSelectedTab)
+    ? location.state.deanSelectedTab
     : "My Permissions";
-  const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
+  const [selectedTab, setSelectedTab] = useState(initialTab);
 
   const filteredPermissions = useMemo(
     () =>
-      permissions.filter((permission) => {
-        const permissionDate = new Date(permission.date);
+      permissionsData.filter((permission) => {
+        const permissionDate = permission.dateObj || (permission.raw?.permissionDate ? new Date(permission.raw.permissionDate) : new Date(permission.date));
         const statusMatch = status === "All" || permission.status === status;
         const sessionMatch =
           session === "All" || permission.session === session;
-        const fromMatch = !fromDate || permissionDate >= fromDate;
-        const toMatch = !toDate || permissionDate <= toDate;
+
+        const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const fromMatch = !fromDate || normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
+        const toMatch = !toDate || normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
 
         return statusMatch && sessionMatch && fromMatch && toMatch;
       }),
-    [fromDate, session, status, toDate],
+    [permissionsData, fromDate, session, status, toDate],
   );
 
   const hasFilters =
@@ -190,6 +103,69 @@ const PermissionTable = () => {
     setFromDate(null);
     setToDate(null);
   };
+
+  // Fetch my permissions from API
+  const fetchPermissions = async () => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+    const mapApiToPermission = (p) => {
+      let dateObj = null;
+      if (p.permissionDate) {
+        const datePart = String(p.permissionDate).split("T")[0];
+        const [y, m, d] = datePart.split("-").map(Number);
+        if (y && m && d) {
+          dateObj = new Date(y, m - 1, d);
+        }
+      }
+
+      const hour = p.fromTime ? parseInt(p.fromTime.split(":")[0], 10) : 9;
+      const sessionLabel = hour >= 12 ? "Afternoon" : "Forenoon";
+      const durationLabel = p.totalMinutes
+        ? p.totalMinutes >= 120
+          ? `${p.totalMinutes / 60} Hours`
+          : `${p.totalMinutes / 60} Hour`
+        : "";
+
+      return {
+        id: p._id,
+        raw: p,
+        dateObj,
+        date: dateObj
+          ? dateObj.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          : "",
+        session: sessionLabel,
+        duration: durationLabel,
+        reason: p.reason || "",
+        status: p.status || "",
+        fromTime: p.fromTime,
+        toTime: p.toTime,
+      };
+    };
+
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/my`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const data = await res.json();
+      if (res.ok && data?.success) {
+        setPermissionsData(data.data.map(mapApiToPermission));
+      } else {
+        console.error("Failed to fetch permissions:", data?.message || data);
+      }
+    } catch (err) {
+      console.error("Error fetching permissions:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPermissions();
+  }, []);
 
   const myPermissionsTable = (
     <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
@@ -262,7 +238,7 @@ const PermissionTable = () => {
 
                 return (
                   <tr
-                    key={`${permission.date}-${permission.session}`}
+                    key={permission.id || `${permission.date}-${permission.session}`}
                     className="border-b border-[#132944] last:border-0"
                   >
                     <td className="px-4 py-3 font-semibold text-white">
@@ -333,45 +309,57 @@ const PermissionTable = () => {
       <WithdrawPermissionPopup
         permission={withdrawPermission}
         onClose={() => setWithdrawPermission(null)}
+        fetchPermissions={fetchPermissions}
+        onPermissionCancelled={() => {
+          if (withdrawPermission?.id) {
+            setPermissionsData((prev) =>
+              prev.filter((p) => p.id !== withdrawPermission.id)
+            );
+          }
+        }}
       />
     </section>
   );
 
-  if (role !== "hod") return myPermissionsTable;
+  if (!isDeanOrIqac) return myPermissionsTable;
 
   return (
     <>
-      <div className="tab-container mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138] px-4 py-2">
-        <div className="flex items-center gap-2">
-          {hodTabs.map((tab) => (
+      {/* <div className="tab-container mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138] px-4 py-2">
+<div className="flex items-center gap-2">
+          {deanTabs.map((tab) => (
             <button
               type="button"
-              onClick={() => setHodSelectedTab(tab)}
+              onClick={() => setSelectedTab(tab)}
               key={tab}
               className={`px-6 py-2 text-sm font-medium transition ${
-                tab === hodSelectedTab
+                tab === selectedTab
                   ? "rounded-md bg-[#2563EB] text-white"
                   : "rounded-md hover:bg-slate-600/20"
               }`}
             >
               {tab}
-              {tab === "Team Permissions" && (
+              {tab === "Permission Requests" && (
                 <span
                   className={`ml-1 rounded px-2 py-[2px] text-xs ${
-                    tab === hodSelectedTab
+                    tab === selectedTab
                       ? "bg-white font-semibold text-blue-700"
                       : "bg-slate-700 text-white"
                   }`}
                 >
-                  5
+                  {teamPermissionCount}
                 </span>
               )}
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
-      {hodSelectedTab === "My Permissions" ? myPermissionsTable : <HodPermissionRequestTable />}
+      {selectedTab === "My Permissions" ? myPermissionsTable : (
+        <HodPermissionRequestTable
+          onCountChange={setTeamPermissionCount}
+        />
+      )}
     </>
   );
 };

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+    AlertCircle,
     CalendarDays,
     ClockArrowDown,
     ClockArrowUp,
@@ -10,7 +11,11 @@ import {
     TimerReset,
     UploadCloud,
     X,
+    Loader2,
 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 
 const statusStyles = {
     Present: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -48,7 +53,11 @@ const formatDateFromISO = (dateStr) => {
 };
 
 const ReqularizationCanvas = ({ log, onClose }) => {
+    const [reason, setReason] = useState("");
+    const [submitting, setSubmitting] = useState(false);
     const [attachments, setAttachments] = useState([]);
+    const [formError, setFormError] = useState("");
+    const [fieldErrors, setFieldErrors] = useState({});
     const attachmentsRef = useRef([]);
 
     useEffect(() => {
@@ -69,8 +78,81 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     const displayCheckOut = formatTime(log.checkOut);
     const displayHours = formatMinutesToHours(log.workingHours);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+
+        // Clear previous errors
+        setFormError("");
+        setFieldErrors({});
+
+        if (!reason.trim()) {
+            setFieldErrors({ reason: "Please provide a reason for regularization." });
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            const token = getTokenFromLocalStorage();
+            if (!token) {
+                setFormError("Authentication token not found. Please log in again.");
+                setSubmitting(false);
+                return;
+            }
+
+            // Extract the date (YYYY-MM-DD) from the checkIn timestamp
+            const checkInDate = new Date(log.checkIn);
+            const attendanceDate = checkInDate.toISOString().split("T")[0];
+
+            const formData = new FormData();
+            formData.append("attendanceDate", attendanceDate);
+            formData.append("requestedInTime", log.checkIn);
+            formData.append("requestedOutTime", log.checkOut);
+            formData.append("reason", reason.trim());
+
+            // Append all attachment files
+            attachments.forEach(({ file }) => {
+                formData.append("attachments", file);
+            });
+
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+            const res = await fetch(
+                `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: formData,
+                },
+            );
+
+            const data = await res.json();
+
+            if (res.ok && data?.success) {
+                toast.success("Regularization request submitted successfully!");
+                setReason("");
+                setFormError("");
+                setFieldErrors({});
+                setTimeout(() => onClose(), 2000);
+            } else {
+                // Extract field-level errors if available
+                const serverFieldErrors = {};
+                if (data?.errors && typeof data.errors === "object") {
+                    Object.entries(data.errors).forEach(([key, value]) => {
+                        serverFieldErrors[key] = typeof value === "string" ? value : Array.isArray(value) ? value.join(", ") : String(value);
+                    });
+                }
+
+                setFormError(data?.message || data?.error || "Failed to submit regularization request.");
+                setFieldErrors(serverFieldErrors);
+            }
+        } catch (err) {
+            console.error("Error submitting regularization:", err);
+            setFormError("Network error. Please try again.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     const handleFilesChange = (event) => {
@@ -95,7 +177,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
     return (
         <section
             className="fixed inset-0 z-50 flex justify-end bg-[#020817]/50 backdrop-blur-[2px]"
-            onClick={onClose}
+            onClick={() => { onClose(); setFormError(""); setReason("") }}
         >
             <form
                 className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
@@ -111,10 +193,10 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                             Review Logged Hours
                         </h2>
                     </div>
-        
+
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={() => { onClose(); setFormError(""); setReason("") }}
                         className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
                         aria-label="Close regularization form"
                     >
@@ -123,6 +205,8 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
+
+
                     <p className="text-[12px] leading-5 text-[#b8c7dd]">
                         Please review your logged hours for the selected date to identify any
                         discrepancies before submitting your regularization request.
@@ -188,13 +272,28 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                         >
                             <FileText size={15} className="text-[#3984ff]" />
                             Reasong for Regularization
-                        </label>
-                        <textarea
+                        </label>                            <textarea
                             id="regularization-reason"
                             rows={3}
+                            value={reason}
+                            onChange={(e) => {
+                                setReason(e.target.value);
+                                if (fieldErrors.reason) {
+                                    setFieldErrors((prev) => ({ ...prev, reason: "" }));
+                                }
+                            }}
                             placeholder="Explain the discrepancy..."
-                            className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                            className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:ring-2 ${fieldErrors.reason
+                                ? "border-[#ef4444] bg-[#0d2138] focus:border-[#ef4444] focus:ring-[#ef4444]/20"
+                                : "border-[#244061] bg-[#0d2138] focus:border-[#3984ff] focus:ring-[#3984ff33]"
+                                }`}
                         />
+                        {fieldErrors.reason && (
+                            <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#ef4444]">
+                                <AlertCircle size={12} />
+                                {fieldErrors.reason}
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-3">
@@ -265,18 +364,48 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                             </div>
                         )}
                     </div>
+
                 </div>
 
                 <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+                    {formError && (
+                        <div className="mb-3  mt-4 flex items-start gap-3 rounded-lg border border-[#ef4444]/40 bg-[#ef4444]/10 px-4 py-3">
+                            <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#ef4444]" />
+                            <p className="text-[13px] leading-5 text-[#ef4444]">{formError}</p>
+                        </div>
+                    )}
                     <button
                         type="submit"
-                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+                        disabled={submitting}
+                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        Submit Request
-                        <Send size={14} />
+                        {submitting ? (
+                            <>
+                                <Loader2 size={14} className="animate-spin" />
+                                Submitting...
+                            </>
+                        ) : (
+                            <>
+                                Submit Request
+                                <Send size={14} />
+                            </>
+                        )}
                     </button>
                 </div>
             </form>
+
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+                toastClassName="!rounded-lg !text-[13px] !font-medium !shadow-lg"
+            />
         </section>
     );
 };

@@ -30,6 +30,7 @@ import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
 import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 import DoumentUploadFormModal from './components/DoumentUploadFormModal'
+import CompoffPage from "./components/CompoffPage";
 
 function App() {
   // Role-based default route redirect
@@ -247,6 +248,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean']}>
               <RegularaizationListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/compoff"
+          element={
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean', 'principal']}>
+              <CompoffPage />
             </ProtectedRoute>
           }
         />
