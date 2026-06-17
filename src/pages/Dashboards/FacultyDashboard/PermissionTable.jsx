@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { ChevronDown, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { getRoleFromToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
@@ -70,11 +70,42 @@ const PermissionTable = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [teamPermissionCount, setTeamPermissionCount] = useState(0);
+  const [teamPermissionsRaw, setTeamPermissionsRaw] = useState(null);
+  const [teamPermissionsLoading, setTeamPermissionsLoading] = useState(true);
   const hodTabs = ["My Permissions", "Team Permissions"];
   const initialHodSelectedTab = hodTabs.includes(location.state?.hodSelectedTab)
     ? location.state.hodSelectedTab
     : "My Permissions";
   const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
+
+  const fetchTeamPermissions = useCallback(async () => {
+    setTeamPermissionsLoading(true);
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+      const token = localStorage.getItem("hrms_token");
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/list`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await res.json();
+      if (res.ok && data?.success) {
+        setTeamPermissionsRaw(data.data || []);
+        setTeamPermissionCount(data.data?.length || 0);
+      } else {
+        setTeamPermissionsRaw([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch team permissions:", err);
+      setTeamPermissionsRaw([]);
+    } finally {
+      setTeamPermissionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role === "hod") {
+      fetchTeamPermissions();
+    }
+  }, [role, fetchTeamPermissions]);
 
   const filteredPermissions = useMemo(
     () =>
@@ -354,7 +385,14 @@ const PermissionTable = () => {
         </div>
       </div>
 
-      {hodSelectedTab === "My Permissions" ? myPermissionsTable : <HodPermissionRequestTable onCountChange={setTeamPermissionCount} />}
+      {hodSelectedTab === "My Permissions" ? myPermissionsTable : (
+        <HodPermissionRequestTable
+          onCountChange={setTeamPermissionCount}
+          initialRawData={teamPermissionsRaw}
+          initialLoading={teamPermissionsLoading}
+          onRefresh={fetchTeamPermissions}
+        />
+      )}
     </>
   );
 };

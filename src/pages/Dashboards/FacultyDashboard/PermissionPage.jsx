@@ -4,6 +4,7 @@ import Sidebar from "../../../components/Siedbar";
 import ApplyPerimission from "../../../components/ApplyPermission";
 import PermissionTable from "./PermissionTable";
 import { useState, useEffect } from "react";
+import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 
 const defaultPermissionStats = [
   {
@@ -51,7 +52,7 @@ const PermissionStatCard = ({
         </div>
         <p className="bg-white/6 py-1 px-2 rounded-full w-fit text-[11px] text-white/40">
           This month
-        </p> 
+        </p>
       </div>
 
       <h3 className="text-[12px]  uppercase tracking-wide text-white">
@@ -85,9 +86,9 @@ const PermissionPage = () => {
   const fetchPermissionStats = async () => {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
-      const token = localStorage.getItem("hrms_token");
+      const token = getTokenFromLocalStorage();
 
-      const res = await fetch(`${API_BASE_URL}/api/permissions/card/month`, {
+      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/card/month`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 

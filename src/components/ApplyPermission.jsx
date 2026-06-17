@@ -162,7 +162,7 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                             </p>
                             <div className="mt-2 flex items-center gap-3">
                                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
-                                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239eb0cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' className='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>
+                                    <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239eb0cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' className='h-5 w-5'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' /><circle cx='12' cy='7' r='4' /></svg>
                                 </span>
                                 <div>
                                     <p className="text-[14px] font-semibold text-white">{employee.name}</p>
@@ -180,9 +180,9 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                         }
                     </p>
                     <p className="mt-2 text-[12px] text-[#9eb0cc]">
-                      {remainingPermission === null
-                        ? 'Loading available permission hours...'
-                        : `Available this month: ${remainingPermission} hour${remainingPermission === 1 ? '' : 's'}`}
+                        {remainingPermission === null
+                            ? 'Loading available permission hours...'
+                            : `Available this month: ${remainingPermission} hour${remainingPermission === 1 ? '' : 's'}`}
                     </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4">
@@ -211,11 +211,10 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                                         key={option}
                                         type="button"
                                         onClick={() => setSession(option)}
-                                        className={`h-10 rounded-md text-[12px] font-semibold transition ${
-                                            session === option
-                                                ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
-                                        }`}
+                                        className={`h-10 rounded-md text-[12px] font-semibold transition ${session === option
+                                            ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                            : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                            }`}
                                     >
                                         {option}
                                     </button>
@@ -239,11 +238,10 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                                             type="button"
                                             onClick={() => !disabled && setDuration(option)}
                                             disabled={disabled}
-                                            className={`h-10 rounded-md text-[12px] font-semibold transition ${
-                                                duration === option
-                                                    ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                                    : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
-                                            } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                                            className={`h-10 rounded-md text-[12px] font-semibold transition ${duration === option
+                                                ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                                } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
                                         >
                                             {option}
                                         </button>

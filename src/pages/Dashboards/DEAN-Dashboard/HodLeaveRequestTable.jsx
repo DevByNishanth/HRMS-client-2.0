@@ -11,11 +11,16 @@ import {
     RotateCcw,
     Send,
     TimerReset,
+    ShieldCheck,
+    CheckCircle2,
+    Clock,
+    AlertCircle,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import userImg from '../../../assets/userImg.svg';
 import { decodeToken, getTokenFromLocalStorage } from '../../../utils/tokenUtils';
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const statusStyles = {
     Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -221,7 +226,7 @@ const FilterDatePicker = ({
             {isOpen && (
                 <div
                     className={`absolute ${showAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
-                        } z-[9999] w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "left-0"
+                        } z-[9999] w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "-left-30"
                         }`}
                 >
                     <div className="mb-3 flex items-center justify-between">
@@ -281,6 +286,30 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
     if (!request) return null;
 
     const canRevoke = request.status === "Approved" || request.status === "Rejected";
+
+    // Get color based on action status
+    const getActionColor = (action) => {
+        if (action?.toLowerCase() === "approved") {
+            return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+        } else if (action?.toLowerCase() === "rejected") {
+            return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+        }
+        return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+    };
+
+    // Get icon for action
+    const getActionIcon = (action) => {
+        switch (action?.toLowerCase()) {
+            case "approved":
+                return <CheckCircle2 size={18} />;
+            case "rejected":
+                return <AlertCircle size={18} />;
+            case "submitted":
+                return <Clock size={18} />;
+            default:
+                return <Clock size={18} />;
+        }
+    };
 
     return (
         <section
@@ -383,6 +412,90 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                             </p>
                             <div className="rounded-lg border border-[#f1686833] bg-[#f1686812] px-4 py-3 text-[13px] leading-5 text-[#ffd1d1]">
                                 {request.rejectionReason}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Approval Workflow */}
+                    {request.approvalHistory && request.approvalHistory.length > 0 && (
+                        <div className="mt-4 border-t border-gray-400/20 pt-4">
+                            <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+                                <ShieldCheck size={15} className="text-[#3984ff]" />
+                                Approval Workflow
+                            </p>
+
+                            <div className="space-y-0">
+                                {request.approvalHistory.map((history, index) => {
+                                    const actionColor = getActionColor(history.action);
+                                    const isLast = index === request.approvalHistory.length - 1;
+                                    const isApproved = history.action?.toLowerCase() === "approved";
+                                    const isRejected = history.action?.toLowerCase() === "rejected";
+
+                                    return (
+                                        <div key={index} className="relative">
+                                            {/* Connector line */}
+                                            {!isLast && (
+                                                <div
+                                                    className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved ? "bg-[#10b981]" : isRejected ? "bg-[#ef4444]" : "bg-[#444c63]"
+                                                        }`}
+                                                />
+                                            )}
+
+                                            {/* Step content */}
+                                            <div className="relative flex gap-3 pb-4">
+                                                {/* Step circle */}
+                                                <div className="flex-shrink-0">
+                                                    <div
+                                                        className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                                                            ? `${actionColor.bg} border-emerald-200/20`
+                                                            : isRejected
+                                                                ? `${actionColor.bg} border-[#ef4444]`
+                                                                : `${actionColor.light} border-[#444c63]`
+                                                            } text-white`}
+                                                    >
+                                                        {getActionIcon(history.action)}
+                                                    </div>
+                                                </div>
+
+                                                {/* Step details */}
+                                                <div className="flex-1 pt-0.5">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div>
+                                                            <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                                                {history.role}
+                                                            </p>
+                                                        </div>
+                                                        <span
+                                                            className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                                                ? "bg-[#10b98120] text-[#10b981]"
+                                                                : isRejected
+                                                                    ? "bg-[#ef444420] text-[#ef4444]"
+                                                                    : "bg-[#f59e0b20] text-[#f59e0b]"
+                                                                }`}
+                                                        >
+                                                            {history.action}
+                                                        </span>
+                                                    </div>
+
+                                                    <p className="text-[12px] text-[#cad7eb] mt-1">
+                                                        {history.remarks}
+                                                    </p>
+
+                                                    <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                                                        <Clock size={11} />
+                                                        {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                                            month: "short",
+                                                            day: "2-digit",
+                                                            year: "numeric",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -504,13 +617,13 @@ const ConfirmationPopup = ({
     );
 };
 
-const HodLeaveRequestTable = () => {
+const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
     // Auth 
     const token = getTokenFromLocalStorage();
     let decodedData = decodeToken(token);
     let dept = decodedData ? decodedData.department : null;
-    console.log(decodedData);
+    let role = decodedData ? decodedData.role : null;
 
     // States
     const [requests, setRequests] = useState([]);
@@ -521,7 +634,7 @@ const HodLeaveRequestTable = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [confirmation, setConfirmation] = useState(null);
     const [rejectReason, setRejectReason] = useState("");
-    const [approveLoading, setApproveLoading] = useState(false);
+    const [approvingId, setApprovingId] = useState(null);
     const [revokeLoading, setRevokeLoading] = useState(false);
 
     // Get unique leave types
@@ -564,32 +677,36 @@ const HodLeaveRequestTable = () => {
 
 
     async function fetchLeaveRequests() {
-        console.log("fetching req")
-        const reponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`, {
+        let endpoint;
+        if (fetchByApprovalLevel && role) {
+            endpoint = `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?currentApprovalLevel=${role}`;
+        } else {
+            endpoint = `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`;
+        }
+        const reponse = await axios.get(endpoint, {
             headers: {
                 Authorization: `Bearer ${getTokenFromLocalStorage()}`
             }
         });
-        console.log(reponse.data);
         setRequests(reponse.data?.leaveApplications);
     }
 
 
     const handleApprove = async (request) => {
-        console.log("request id:", request?._id);
         try {
-            setApproveLoading(true);
-            const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${request?._id}/approve`, {}, {
+            setApprovingId(request?._id);
+            await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${request?._id}/approve`, {}, {
                 headers: {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`
                 }
-            })
-            console.log("leave approved : ", res);
+            });
+            toast.success("Leave approved successfully!");
             await fetchLeaveRequests();
-            setApproveLoading(false);
+            setApprovingId(null);
         } catch (error) {
             console.error("Error approving leave:", error);
-            setApproveLoading(false);
+            toast.error(error?.response?.data?.message || "Failed to approve leave");
+            setApprovingId(null);
         }
     };
 
@@ -616,7 +733,6 @@ const HodLeaveRequestTable = () => {
 
         try {
             if (confirmation.action === "reject") {
-                // Call API to reject leave
                 await axios.patch(
                     `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${confirmation.request?._id}/reject`,
                     { remarks: rejectReason.trim() },
@@ -626,11 +742,10 @@ const HodLeaveRequestTable = () => {
                         }
                     }
                 );
-                console.log("leave rejected");
+                toast.success("Leave rejected successfully!");
             } else if (confirmation.action === "revoke") {
-                // Call API to revoke leave decision
                 setRevokeLoading(true);
-                const res = await axios.patch(
+                await axios.patch(
                     `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${confirmation.request?._id}/revoke-hod`,
                     {},
                     {
@@ -639,15 +754,15 @@ const HodLeaveRequestTable = () => {
                         }
                     }
                 );
-                console.log("leave decision revoked: ", res);
+                toast.success("Leave decision revoked successfully!");
                 setRevokeLoading(false);
             }
 
-            // Refresh the table after action
             await fetchLeaveRequests();
             closeConfirmation();
         } catch (error) {
             console.error("Error confirming action:", error);
+            toast.error(error?.response?.data?.message || "Failed to process request");
             setRevokeLoading(false);
         }
     };
@@ -664,17 +779,22 @@ const HodLeaveRequestTable = () => {
         return `${day}-${month}-${year}`;
     }
 
+    // Report count to parent whenever requests change
+    useEffect(() => {
+        if (typeof onCountChange === "function") {
+            onCountChange(requests.length);
+        }
+    }, [requests.length, onCountChange]);
+
     // API calls ================================ 
 
 
     useEffect(() => {
-        if (dept) {
-            const run = async () => {
-                await fetchLeaveRequests();
-            };
-            run();
+        const canFetch = fetchByApprovalLevel ? !!role : !!dept;
+        if (canFetch) {
+            fetchLeaveRequests();
         }
-    }, [dept])
+    }, [dept, role, fetchByApprovalLevel])
     return (
         <>
             <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
@@ -687,15 +807,7 @@ const HodLeaveRequestTable = () => {
 
                     <div className="filter-container">
                         <div className="flex flex-wrap items-center gap-3">
-                            {/* Leave Type Filter */}
-                            <div className="flex-shrink-0">
-                                <CustomDropdown
-                                    placeholder="Leave Type"
-                                    value={filterLeaveType}
-                                    onChange={setFilterLeaveType}
-                                    options={leaveTypes}
-                                />
-                            </div>
+                          
 
                             {/* Status Filter */}
                             <div className="flex-shrink-0">
@@ -782,9 +894,9 @@ const HodLeaveRequestTable = () => {
 
                                         <td className="px-4 py-4">
                                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                                                {request.currentApprovalLevel === "hod" && request.status === "Pending" ? (
+                                                {(request.currentApprovalLevel === (fetchByApprovalLevel ? role : "hod") && request.status === "Pending") ? (
                                                     <>
-                                                        {approveLoading ? <div className="loader"></div> : <button
+                                                        {approvingId === request?._id ? <div className="loader"></div> : <button
                                                             type="button"
                                                             onClick={() => handleApprove(request)}
                                                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"

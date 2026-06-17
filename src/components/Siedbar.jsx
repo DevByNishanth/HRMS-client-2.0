@@ -18,6 +18,8 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+        { label: 'Calender', icon: Calendar, path: '/dashboard-faculty/calender' },
+
     ];
 
     // Navigation items for HOD (same as Faculty + My Team)
@@ -28,7 +30,7 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
-    ];
+        ];
 
     // Navigation items for Admin
     const adminNavItems = [
@@ -38,7 +40,7 @@ const Sidebar = () => {
         { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
         { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
         { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
-        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
+        { label: 'Attendance Override Management', icon: UserPen, path: '/dashboard-admin/attendance-override' },
     ];
 
     // Navigation items for Principal
@@ -108,7 +110,8 @@ const Sidebar = () => {
     return (
         <>
             {/* Sidebar */}
-            <div className="w-[18%] bg-[#001d3b] flex flex-col relative">
+            {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
+            <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
 
                 {/* Logo */}
                 <div className="px-3 py-4 mt-4">
