@@ -5,6 +5,8 @@ import { getHolidays } from "../../../../services/holiday/getHolidayService";
 import { deleteHoliday } from "../../../../services/holiday/deleteHolidayService";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 
 export default function HolidayBody() {
@@ -133,6 +135,38 @@ export default function HolidayBody() {
         employeeCategoryFilter ||
         holidayTypeFilter;
 
+    const handleExportExcel = () => {
+        const exportData = filteredHolidays.map((holiday) => ({
+            "Holiday Name": holiday.holidayName,
+            "Holiday Date": new Date(
+                holiday.holidayDate
+            ).toLocaleDateString("en-GB"),
+            "Employee Categories":
+                holiday.applicableEmployeeCategories?.join(", "),
+            "Holiday Type": holiday.holidayType,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Holidays"
+        );
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const file = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        saveAs(file, "Holiday_List.xlsx");
+    };
+
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-5">
@@ -197,6 +231,25 @@ export default function HolidayBody() {
                                 onChange={setHolidayTypeFilter}
                             />
                         </div>
+
+                        <button
+                            onClick={handleExportExcel}
+                            className="
+                                h-12
+                                px-5
+                                rounded-lg
+                                border
+                                border-[#3984ff]
+                                text-[#3984ff]
+                                text-[14px]
+                                font-semibold
+                                transition
+                                hover:bg-[#3984ff]
+                                hover:text-white
+                            "
+                        >
+                            Export Excel
+                        </button>
 
                         {hasActiveFilters && (
                             <button

@@ -6,6 +6,8 @@ import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNa
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
 import { updateAttendanceOverrideEmployeeBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideEmployeeBulk";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function EmployeeWiseAttendanceUpdate() {
 
@@ -229,6 +231,64 @@ export default function EmployeeWiseAttendanceUpdate() {
         toDate ||
         employeeSearch.trim() !== "";
 
+    const handleExportExcel = () => {
+        const exportData = filteredAttendance.map((row) => ({
+            Date:
+                row.overrideType === "BULK"
+                    ? `${new Date(row.fromDate).toLocaleDateString("en-GB")} - ${new Date(row.toDate).toLocaleDateString("en-GB")}`
+                    : new Date(row.date).toLocaleDateString("en-GB"),
+            "Employee Category": row.employeeCategory || "-",
+
+            Shift: row.shiftCode || "-",
+            Status: row.status || "-",
+
+            "First In": row.firstIn
+                ? new Date(row.firstIn).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                })
+                : "-",
+
+            "Last Out": row.lastOut
+                ? new Date(row.lastOut).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                })
+                : "-",
+
+            Session1: row.session1,
+            Session2: row.session2,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Attendance Override"
+        );
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const file = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const employeeName =
+            selectedEmployee?.name?.replace(/\s+/g, "_") ||
+            "Employee";
+
+        saveAs(
+            file,
+            `${employeeName}_Attendance_Override.xlsx`
+        );
+    };
+
     return (
         <>
             {/* FILTERS */}
@@ -326,12 +386,25 @@ export default function EmployeeWiseAttendanceUpdate() {
                         />
                     </div>
 
-                    {/* <button
-                        onClick={handleShow}
-                        className="h-11 px-8 rounded-lg bg-[#3984ff] text-white"
-                    >
-                        Show
-                    </button> */}
+                    {filteredAttendance.length > 0 && (
+                        <button
+                            onClick={handleExportExcel}
+                            className="
+                                h-11
+                                px-5
+                                rounded-lg
+                                border
+                                border-[#3984ff]
+                                text-[#3984ff]
+                                font-medium
+                                transition
+                                hover:bg-[#3984ff]
+                                hover:text-white
+                            "
+                        >
+                            Export Excel
+                        </button>
+                    )}
 
                     {
                         showResetButton && (
@@ -381,7 +454,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
             <div className="overflow-hidden px-7 pb-24">
 
-                <div className="max-h-[420px] overflow-y-auto rounded-lg border border-[#1d3657]">
+                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-fixed border-collapse">
 
@@ -398,6 +471,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                                             )
                                         }
                                     />
+                                </th>
+
+                                <th className="px-3 py-3 text-center">
+                                    Category
                                 </th>
 
                                 <th className="px-3 py-3 text-center">
@@ -472,6 +549,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
+                                            {row.employeeCategory || "-"}
+                                        </td>
+
+                                        <td className="px-3 py-3 text-center">
                                             {formatOverrideDate(row)}
                                         </td>
 
@@ -526,9 +607,6 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 <option value="OD">
                                                     OD
                                                 </option>
-                                                <option value="L">
-                                                    L
-                                                </option>
                                             </select>
                                         </td>
 
@@ -552,9 +630,6 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 </option>
                                                 <option value="OD">
                                                     OD
-                                                </option>
-                                                <option value="L">
-                                                    L
                                                 </option>
                                             </select>
                                         </td>

@@ -5,6 +5,8 @@ import { getLeaveTypes } from "../../../../services/leaveType/getLeaveTypeServic
 import { deleteLeaveType } from "../../../../services/leaveType/deleteLeaveTypeService";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import ViewLeaveType from "./ViewLeaveType";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function LeaveTypeBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -136,6 +138,43 @@ export default function LeaveTypeBody() {
             employeeCategoryFilter ||
             resetFrequencyFilter;
 
+        const handleExportExcel = () => {
+            const exportData = filteredLeaveTypes.map((leave) => ({
+                "Leave Name": leave.leaveName,
+                "Category": leave.leaveCategory,
+                "Employee Categories":
+                    leave.employeeCategories?.join(", "),
+                "Number of Days": leave.daysPerYear,
+                "Reset Frequency": leave.resetFrequency,
+                "Carry Forward Allowed":
+                    leave.carryForwardAllowed ? "Yes" : "No",
+                "Max Carry Forward Days":
+                    leave.carryForwardAllowed
+                        ? leave.maxCarryForwardDays ?? "-"
+                        : "-"
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+
+            XLSX.utils.book_append_sheet(
+                workbook,
+                worksheet,
+                "Leave Types"
+            );
+
+            const excelBuffer = XLSX.write(workbook, {
+                bookType: "xlsx",
+                type: "array",
+            });
+
+            const file = new Blob([excelBuffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+
+            saveAs(file, "Leave_Type_List.xlsx");
+        };
+
     return (
         <div className="p-6">
             {/* Header */}
@@ -205,6 +244,25 @@ export default function LeaveTypeBody() {
                                 onChange={setResetFrequencyFilter}
                             />
                         </div>
+
+                        <button
+                            onClick={handleExportExcel}
+                            className="
+                                h-12
+                                px-5
+                                rounded-lg
+                                border
+                                border-[#3984ff]
+                                text-[#3984ff]
+                                text-[14px]
+                                font-semibold
+                                transition
+                                hover:bg-[#3984ff]
+                                hover:text-white
+                            "
+                        >
+                            Export Excel
+                        </button>
 
                         {hasActiveFilters && (
                             <button

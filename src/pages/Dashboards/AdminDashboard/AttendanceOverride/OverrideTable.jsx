@@ -6,6 +6,9 @@ import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import { getAttendanceOverrideHistory } from "../../../../services/AttendanceOverride/GetAttendanceOverrideHistory";
 import CustomDatePicker from '../../../../components/CustomDatePicker';
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
 
 export default function OverrideTable({ data = [] }) {  
     const [attendanceDate, setAttendanceDate] = useState(null);
@@ -14,21 +17,28 @@ export default function OverrideTable({ data = [] }) {
     const [department, setDepartment] = useState("");
     const [selectedRows, setSelectedRows] = useState([]);
     const [employeeSearch, setEmployeeSearch] = useState("");
+    const [employeeCategory, setEmployeeCategory] = useState("");
 
     useEffect(() => {
         console.log("overrideData:", overrideData);
     }, [overrideData]);
 
-    const formatDate = (value) => {
-        if (!value) return "-";
-        const date = new Date(value);
-        return date.toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            timeZone: "UTC",
+    useEffect(() => {
+        overrideData.forEach(item => {
+            console.log("attendanceDate:", item.attendanceDate);
         });
-    };
+    }, [overrideData]);
+
+    const formatDate = (value) => {
+    if (!value) return "-";
+
+    return new Date(value).toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+};
 
     const formatTime = (value) => {
         if (!value) return "-";
@@ -66,19 +76,36 @@ export default function OverrideTable({ data = [] }) {
     //         )
     //     )
     // ];
-    
 
     const hasActiveFilters =
         attendanceDate ||
         // dateRange ||
         employeeSearch ||
-        department;
+        department ||
+        employeeCategory;
 
     const filteredData = overrideData.filter((item) => {
-        const dateMatch =
-            !attendanceDate ||
-            dayjs(item.attendanceDate?.split(" to ")[0]).format("YYYY-MM-DD") ===
-            dayjs(attendanceDate).format("YYYY-MM-DD");
+        let dateMatch = true;
+        if (attendanceDate) {
+            const selectedDate = dayjs(attendanceDate);
+
+            if (item.attendanceDate?.includes(" to ")) {
+                const [fromDate, toDate] =
+                    item.attendanceDate.split(" to ");
+
+                dateMatch = selectedDate.isBetween(
+                    dayjs(fromDate),
+                    dayjs(toDate),
+                    "day",
+                    "[]"
+                );
+            } else {
+                dateMatch = selectedDate.isSame(
+                    dayjs(item.attendanceDate),
+                    "day"
+                );
+            }
+        }
 
         const employeeMatch =
             !employeeSearch ||
@@ -90,10 +117,15 @@ export default function OverrideTable({ data = [] }) {
             !department ||
             item.department === department;
 
+        const employeeCategoryMatch =
+            !employeeCategory ||
+            item.employeeCategory === employeeCategory;
+
         return (
             dateMatch &&
             employeeMatch &&
-            departmentMatch
+            departmentMatch &&
+            employeeCategoryMatch
         );
     });
 
@@ -168,6 +200,7 @@ export default function OverrideTable({ data = [] }) {
                     item.employeeName,
                 Employee_ID:
                     item.employeeId,
+                Employee_Category: item.employeeCategory,
                 Department:
                     item.department,
                 Attendance_Date:
@@ -288,6 +321,21 @@ export default function OverrideTable({ data = [] }) {
                         />
                     </div>
 
+                    <div className="w-[220px]">
+                        <CustomDropdown
+                            value={employeeCategory}
+                            placeholder="Employee Category"
+                            options={[
+                                ...new Set(
+                                    overrideData
+                                        .map(item => item.employeeCategory)
+                                        .filter(Boolean)
+                                )
+                            ]}
+                            onChange={setEmployeeCategory}
+                        />
+                    </div>
+
                     <button
                         onClick={exportSelectedEmployees}
                         className="
@@ -311,6 +359,7 @@ export default function OverrideTable({ data = [] }) {
                                 setAttendanceDate(null);
                                 setEmployeeSearch("");
                                 setDepartment("");
+                                setEmployeeCategory("");
                             }}
                             className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd]"
                         >
@@ -324,7 +373,7 @@ export default function OverrideTable({ data = [] }) {
             {/* Table */}
 
             <div className="overflow-hidden">
-                <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-auto border-collapse text-left">
 
@@ -345,6 +394,10 @@ export default function OverrideTable({ data = [] }) {
 
                                 <th className="px-5 py-4">
                                     Employee
+                                </th>
+
+                                <th className="px-5 py-4">
+                                    Category
                                 </th>
 
                                 <th className="px-5 py-4">
@@ -420,6 +473,10 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
+                                            {item.employeeCategory || "-"}
+                                        </td>
+
+                                        <td className="px-5 py-3">
                                             {item.department}
                                         </td>
 
@@ -459,7 +516,12 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            {item.remarks}
+                                            <div
+                                                className="w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
+                                                title={item.remarks}
+                                            >
+                                                {item.remarks || "-"}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

@@ -59,6 +59,7 @@ export default function AddLeaveType({
     }, [leaveTypeData]);
 
     const employeeCategories = [
+        "All",
         "Teaching",
         "Non-Teaching",
         "Housekeeping",
@@ -295,12 +296,26 @@ export default function AddLeaveType({
                         }
                         placeholder="Select Categories"
                         error={errors.employeeCategories}
-                        onChange={(values) =>
+                        onChange={(values) => {
+                        const actualCategories = [
+                            "Teaching",
+                            "Non-Teaching",
+                            "Housekeeping",
+                            "Driver",
+                        ];
+
+                        if (values.includes("All")) {
+                            setFormData((prev) => ({
+                                ...prev,
+                                employeeCategories: actualCategories,
+                            }));
+                        } else {
                             setFormData((prev) => ({
                                 ...prev,
                                 employeeCategories: values,
-                            }))
+                            }));
                         }
+                    }}
                     />
 
                     <ErrorMsg
