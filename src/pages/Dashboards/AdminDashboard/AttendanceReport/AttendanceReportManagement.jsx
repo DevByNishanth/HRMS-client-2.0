@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
 
@@ -20,6 +21,13 @@ const monthOptions = [
   "December",
 ];
 const yearOptions = [2024, 2025, 2026, 2027, 2028];
+
+const tableCellBase =
+  "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
+const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
+const filterInputBase =
+  "min-h-9 w-full appearance-none rounded-md border border-[rgba(255,255,255,0.18)] bg-[#071425] px-2.5 py-[7px] text-sm font-bold text-white outline-none";
+const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
 const fallbackEmployees = [
   {
@@ -229,17 +237,20 @@ function getMonthDates(year, monthIndex) {
   return dates;
 }
 
-function getCellClass(status, isWeekend) {
+function getCellClass(status, isWeekend, isAlternateRow = false) {
   const normalizedStatus = String(status || "").trim();
+  const baseClass = `${tableCellBase} font-medium text-white`;
+  const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
 
-  if (normalizedStatus === "A") return "attendance-cell attendance-cell-absent";
+  if (normalizedStatus === "A") return `${baseClass} bg-[#ef4444]`;
   if (normalizedStatus === "P")
-    return "attendance-cell attendance-cell-present";
-  if (normalizedStatus === "OFF") return "attendance-cell attendance-cell-off";
-  if (normalizedStatus === "OD") return "attendance-cell attendance-cell-od";
+    return `${baseClass} bg-[#22c55e]`;
+  if (normalizedStatus === "OFF")
+    return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
+  if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":"))
-    return "attendance-cell attendance-cell-partial";
-  return `attendance-cell ${isWeekend ? "attendance-cell-weekend" : ""}`;
+    return `${baseClass} bg-[#3b82f6]`;
+  return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
 }
 
 function getEmployeeList(payload) {
@@ -430,6 +441,48 @@ export default function AttendanceManagement() {
     });
   }, [employees, searchTerm, selectedDepartment]);
 
+  function exportToExcel() {
+    const headerRow = [
+      "Employee",
+      ...dates.map((date) => `${date.day}-${date.weekday}`),
+      ...summaryColumns,
+    ];
+
+    const dataRows = visibleEmployees.map((employee) => {
+      const row = [
+        `${employee.name} [${employee.id}]`,
+        ...dates.map((date) => getAttendanceStatus(employee.attendance, date)),
+        ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
+      ];
+      return row;
+    });
+
+    const worksheet = utils.aoa_to_sheet([[monthTitle], headerRow, ...dataRows]);
+    worksheet.A1.s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center",
+      },
+      font: {
+        bold: true,
+      },
+    };
+    worksheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: headerRow.length - 1 },
+      },
+    ];
+
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "Attendance Report");
+
+    writeFile(
+      workbook,
+      `Attendance_Report_${selectedYear}_${String(selectedMonth + 1).padStart(2, "0")}.xlsx`,
+    );
+  }
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -476,83 +529,112 @@ export default function AttendanceManagement() {
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
-          <section className="attendance-report flex h-full flex-col overflow-hidden rounded p-2">
-            <div className="attendance-filter-bar">
-              <div>
-                <h1>Attendance Report</h1>
-                <p>{isLoading ? "Loading attendance..." : monthTitle}</p>
+          <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3.5 bg-[#071425] px-4 py-3 max-md:grid-cols-1 max-md:items-start">
+              <div className="min-w-0">
+                <h1 className="m-0 text-2xl font-black text-white">
+                  Attendance Report Management
+                </h1>
+                <p className="mt-1 mb-0 text-base font-bold text-white">
+                  {monthTitle}
+                </p>
               </div>
-              <div className="attendance-filter-controls">
-                <div
-                  className="attendance-status-legend"
-                  aria-label="Attendance status legend"
-                >
-                  <span className="attendance-status-legend-item">
-                    <span className="attendance-status-dot attendance-cell-present" />{" "}
-                    Present
-                  </span>
-                  <span className="attendance-status-legend-item">
-                    <span className="attendance-status-dot attendance-cell-absent" />{" "}
-                    Absent
-                  </span>
-                  <span className="attendance-status-legend-item">
-                    <span className="attendance-status-dot attendance-cell-off" />{" "}
-                    OFF
-                  </span>
-                  <span className="attendance-status-legend-item">
-                    <span className="attendance-status-dot attendance-cell-od" />{" "}
-                    OD
-                  </span>
-                </div>
-                <label className="attendance-search-field">
+              <div
+                className="justify-self-center inline-flex flex-none flex-wrap items-center gap-2 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-2.5 py-1.5 max-md:justify-self-start"
+                aria-label="Attendance status legend"
+              >
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e]" />{" "}
+                  Present
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ef4444]" />{" "}
+                  Absent
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />{" "}
+                  OFF
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />{" "}
+                  OD
+                </span>
+              </div>
+              <button
+                type="button"
+                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8]`}
+                onClick={exportToExcel}
+              >
+                Export Excel
+              </button>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3.5 border-b border-b-[rgba(255,255,255,0.12)] bg-[#071425] px-4 py-3 max-md:items-stretch">
+              <div className="grid w-4/5 grid-cols-[260px_170px_150px_135px] items-end gap-5 max-md:w-full max-md:grid-cols-1">
+                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
                   <span>Search</span>
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
                     placeholder="Name /Employee ID "
+                    className={`${filterInputBase} border-r border-r-[rgba(255,255,255,0.18)] bg-none placeholder:text-[rgba(255,255,255,0.65)]`}
                   />
                 </label>
-                <label>
+                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
                   <span>Department</span>
                   <select
                     value={selectedDepartment}
                     onChange={(event) =>
                       setSelectedDepartment(event.target.value)
                     }
+                    className={filterInputBase}
                   >
                     {departmentOptions.map((department) => (
-                      <option value={department} key={department}>
+                      <option
+                        className="bg-[#071425] text-white"
+                        value={department}
+                        key={department}
+                      >
                         {department}
                       </option>
                     ))}
                   </select>
                 </label>
-                <label>
+                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
                   <span>Month</span>
                   <select
                     value={selectedMonth}
                     onChange={(event) =>
                       setSelectedMonth(Number(event.target.value))
                     }
+                    className={filterInputBase}
                   >
                     {monthOptions.map((month, index) => (
-                      <option value={index} key={month}>
+                      <option
+                        className="bg-[#071425] text-white"
+                        value={index}
+                        key={month}
+                      >
                         {month}
                       </option>
                     ))}
                   </select>
                 </label>
-                <label>
+                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
                   <span>Year</span>
                   <select
                     value={selectedYear}
                     onChange={(event) =>
                       setSelectedYear(Number(event.target.value))
                     }
+                    className={filterInputBase}
                   >
                     {yearOptions.map((year) => (
-                      <option value={year} key={year}>
+                      <option
+                        className="bg-[#071425] text-white"
+                        value={year}
+                        key={year}
+                      >
                         {year}
                       </option>
                     ))}
@@ -561,31 +643,47 @@ export default function AttendanceManagement() {
               </div>
             </div>
             {errorMessage && (
-              <div className="attendance-alert">{errorMessage}</div>
+              <div className="border-b border-b-[#fed7aa] bg-[#fff7ed] px-4 py-2.5 text-[13px] font-bold text-[#9a3412]">
+                {errorMessage}
+              </div>
             )}
-            <div className="attendance-table-wrap">
-              <table className="attendance-table">
+            <div className="min-h-0 flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-[1750px] border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
                 <thead>
                   <tr>
-                    <th className="employee-header sticky-employee" rowSpan="2">
+                    <th
+                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base max-md:w-[240px] max-md:min-w-[240px]`}
+                      rowSpan="2"
+                    >
                       Employee
                     </th>
                     <th
-                      className="month-header"
+                      className={`${tableHeadCellBase} h-[42px] min-w-[1240px] border border-[rgba(255,255,255,0.12)] border-b-0 p-0`}
                       colSpan={dates.length}
                       aria-hidden="true"
                     />
-                    {summaryColumns.map((column) => (
-                      <th className="summary-header" rowSpan="2" key={column}>
+                    {summaryColumns.map((column, index) => (
+                      <th
+                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
+                        rowSpan="2"
+                        key={column}
+                      >
                         {column}
                       </th>
                     ))}
                   </tr>
                   <tr>
                     {dates.map((date) => (
-                      <th className="date-header" key={date.key}>
-                        <span>{date.day}</span>
-                        <small>{date.weekday}</small>
+                      <th
+                        className={`${tableCellBase} sticky top-[42px] z-[15] h-10 w-10 min-w-10 border-t border-t-[rgba(255,255,255,0.12)] bg-[#071425] font-bold text-white`}
+                        key={date.key}
+                      >
+                        <span className="block text-base leading-[1.3] text-white">
+                          {date.day}
+                        </span>
+                        <small className="block text-[13px] leading-[1.3] font-bold text-white">
+                          {date.weekday}
+                        </small>
                       </th>
                     ))}
                   </tr>
@@ -594,7 +692,7 @@ export default function AttendanceManagement() {
                   {isLoading && (
                     <tr>
                       <td
-                        className="attendance-empty-state"
+                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold text-white`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         Loading attendance muster...
@@ -602,16 +700,22 @@ export default function AttendanceManagement() {
                     </tr>
                   )}
                   {!isLoading &&
-                    visibleEmployees.map((employee) => (
+                    visibleEmployees.map((employee, employeeIndex) => (
                       <tr key={employee.id}>
                         <th
-                          className="employee-cell sticky-employee"
+                          className={`${tableCellBase} sticky left-0 z-20 w-[270px] min-w-[270px] ${
+                            employeeIndex % 2 === 1
+                              ? "bg-[#0a1a2e]"
+                              : "bg-[#071425]"
+                          } px-2.5 py-1.5 text-left align-middle max-md:w-[240px] max-md:min-w-[240px]`}
                           scope="row"
                         >
-                          <strong>
+                          <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-white">
                             {employee.name} [{employee.id}]
                           </strong>
-                          <span>{employee.designation}</span>
+                          <span className="mt-0.5 block overflow-hidden text-ellipsis text-xs leading-[1.35] font-bold text-white">
+                            {employee.designation}
+                          </span>
                         </th>
                         {dates.map((date) => {
                           const status = getAttendanceStatus(
@@ -621,16 +725,24 @@ export default function AttendanceManagement() {
 
                           return (
                             <td
-                              className={getCellClass(status, date.isWeekend)}
+                              className={getCellClass(
+                                status,
+                                date.isWeekend,
+                                employeeIndex % 2 === 1,
+                              )}
                               key={`${employee.id}-${date.key}`}
                             >
                               {status}
                             </td>
                           );
                         })}
-                        {summaryColumns.map((column) => (
+                        {summaryColumns.map((column, index) => (
                           <td
-                            className="summary-cell"
+                            className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-[25] w-[38px] min-w-[38px] ${
+                              employeeIndex % 2 === 1
+                                ? "bg-[#0a1a2e]"
+                                : "bg-[#1a2847]"
+                            } font-bold text-white`}
                             key={`${employee.id}-${column}`}
                           >
                             {employee.summary?.[column] ?? 0}
@@ -641,7 +753,7 @@ export default function AttendanceManagement() {
                   {!isLoading && visibleEmployees.length === 0 && (
                     <tr>
                       <td
-                        className="attendance-empty-state"
+                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold text-white`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         No attendance records found for {monthTitle}.
@@ -653,387 +765,6 @@ export default function AttendanceManagement() {
             </div>
           </section>
         </main>
-        <style>{`
-          .attendance-report {
-            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
-            background: #071425;
-          }
-
-          .attendance-filter-bar {
-            align-items: center;
-            background: #071425;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: space-between;
-            padding: 12px 16px;
-          }
-
-          .attendance-filter-bar h1 {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 800;
-            line-height: 1.25;
-            margin: 0;
-          }
-
-          .attendance-filter-bar p {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            margin: 2px 0 0;
-          }
-
-          .attendance-filter-controls {
-            align-items: end;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-          }
-
-          .attendance-status-legend {
-            align-items: center;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 999px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 6px 10px;
-          }
-
-          .attendance-status-legend-item {
-            align-items: center;
-            color: #ffffff;
-            display: inline-flex;
-            font-size: 12px;
-            font-weight: 700;
-            gap: 6px;
-          }
-
-          .attendance-status-dot {
-            border-radius: 999px;
-            display: inline-block;
-            height: 10px;
-            width: 10px;
-          }
-
-          .attendance-filter-controls label {
-            color: #ffffff;
-            display: grid;
-            font-size: 12px;
-            font-weight: 800;
-            gap: 5px;
-            text-transform: uppercase;
-          }
-
-          .attendance-filter-controls select,
-          .attendance-filter-controls input {
-            appearance: none;
-            background: #071425 !important;
-            border: 1px solid rgba(255,255,255,0.18) !important;
-            border-radius: 6px;
-            color: #ffffff !important;
-            font-size: 14px;
-            font-weight: 700;
-            min-height: 36px;
-            min-width: 120px;
-            padding: 7px 10px;
-          }
-
-          .attendance-filter-controls select option {
-            background: #071425;
-            color: #ffffff;
-          }
-
-          .attendance-filter-controls input::placeholder {
-            color: rgba(255,255,255,0.65);
-          }
-
-          .attendance-filter-controls input {
-            min-width: 220px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: none;
-            border-right: 1px solid rgba(255,255,255,0.18);
-          }
-
-          .attendance-alert {
-            background: #fff7ed;
-            border-bottom: 1px solid #fed7aa;
-            color: #9a3412;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 10px 16px;
-          }
-
-          .attendance-table-wrap {
-            flex: 1;
-            min-height: 0;
-            overflow: auto;
-            background: #071425;
-            scrollbar-color: #b7c4d3 #eef2f7;
-            scrollbar-width: thin;
-          }
-
-          .attendance-table-wrap::-webkit-scrollbar {
-            height: 10px;
-            width: 10px;
-          }
-
-          .attendance-table-wrap::-webkit-scrollbar-track {
-            background: #eef2f7;
-          }
-
-          .attendance-table-wrap::-webkit-scrollbar-thumb {
-            background: #b7c4d3;
-            border-radius: 999px;
-          }
-
-          .attendance-table {
-            min-width: 1750px;
-            width: max-content;
-            border-collapse: separate;
-            border-spacing: 0;
-            color: #1f2937;
-            font-size: 14px;
-            background: #071425;
-          }
-
-          .attendance-table th,
-          .attendance-table td {
-            border-right: 1px dotted rgba(255,255,255,0.12);
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-            height: 42px;
-            padding: 0;
-            text-align: center;
-            white-space: nowrap;
-          }
-
-          .attendance-table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: #071425;
-            color: #ffffff;
-            font-weight: 700;
-          }
-
-          .attendance-table thead tr:nth-child(2) th {
-            position: sticky;
-            top: 42px;
-            z-index: 15;
-          }
-
-          .employee-header {
-            width: 270px;
-            min-width: 270px;
-            font-size: 16px;
-          }
-
-          .sticky-employee {
-            left: 0;
-            position: sticky;
-            z-index: 20;
-          }
-
-          .attendance-table thead .sticky-employee {
-            z-index: 30;
-          }
-
-          .month-header {
-            background: transparent;
-            border: 0;
-            height: 0;
-            min-width: 1240px;
-            padding: 0;
-          }
-
-          .date-header {
-            width: 40px;
-            min-width: 40px;
-            height: 40px;
-            color: #ffffff;
-          }
-
-          .date-header span,
-          .date-header small {
-            display: block;
-            line-height: 1.3;
-            color: #ffffff;
-          }
-
-          .date-header span {
-            font-size: 16px;
-          }
-
-          .date-header small {
-            font-size: 13px;
-            font-weight: 700;
-          }
-
-          .summary-header,
-          .summary-cell {
-            width: 38px;
-            min-width: 38px;
-          }
-
-          .employee-cell {
-            background: #071425;
-            padding: 6px 10px !important;
-            text-align: left !important;
-            vertical-align: middle;
-          }
-
-          .employee-cell strong,
-          .employee-cell span {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          .employee-cell strong {
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.25;
-          }
-
-          .employee-cell span {
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 1.35;
-            margin-top: 2px;
-          }
-
-          .attendance-table tbody tr:nth-child(even) .employee-cell,
-          .attendance-table tbody tr:nth-child(even) .summary-cell,
-          .attendance-table tbody tr:nth-child(even) .attendance-cell:not(.attendance-cell-absent):not(.attendance-cell-present):not(.attendance-cell-partial):not(.attendance-cell-off):not(.attendance-cell-od) {
-            background: #0a1a2e;
-          }
-
-          .attendance-cell {
-            background: #1a2847;
-            color: #ffffff;
-            font-weight: 500;
-            height: 42px;
-          }
-
-          .attendance-cell-absent {
-            background: #ef4444;
-            color: #ffffff;
-          }
-
-          .attendance-cell-partial {
-            background: #3b82f6;
-            color: #ffffff;
-          }
-
-          .attendance-cell-present {
-            background: #22c55e;
-            color: #ffffff;
-          }
-
-          .attendance-cell-off {
-            background: #fef3c7;
-            color: #92400e;
-          }
-
-          .attendance-cell-od {
-            background: #8b5cf6;
-            color: #ffffff;
-          }
-
-          .attendance-cell-weekend {
-            background: #0f1e36;
-            color: #ffffff;
-          }
-
-          .summary-cell {
-            background: #1a2847;
-            color: #ffffff;
-            font-weight: 700;
-          }
-
-          /* Make the right-most summary columns sticky (fixed) so only date columns scroll */
-          .attendance-table th.summary-header {
-            position: sticky;
-            background: #071425;
-            color: #ffffff;
-            z-index: 35;
-            top: 0;
-          }
-
-          .attendance-table td.summary-cell {
-            position: sticky;
-            background: #1a2847;
-            color: #ffffff;
-            z-index: 25;
-          }
-
-          /* Adjust right offset for each of the four summary columns so they stack correctly */
-          .attendance-table th.summary-header:nth-last-child(1),
-          .attendance-table td.summary-cell:nth-last-child(1) {
-            right: 0px;
-          }
-
-          .attendance-table th.summary-header:nth-last-child(2),
-          .attendance-table td.summary-cell:nth-last-child(2) {
-            right: 38px;
-          }
-
-          .attendance-table th.summary-header:nth-last-child(3),
-          .attendance-table td.summary-cell:nth-last-child(3) {
-            right: 76px;
-          }
-
-          .attendance-table th.summary-header:nth-last-child(4),
-          .attendance-table td.summary-cell:nth-last-child(4) {
-            right: 114px;
-          }
-
-          /* Ensure summary headers sit above the date header row */
-          .attendance-table thead th.summary-header {
-            z-index: 35;
-            top: 0;
-          }
-
-          .attendance-empty-state {
-            background: #1a2847;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 700;
-            height: 120px !important;
-          }
-
-          @media (max-width: 768px) {
-            .attendance-filter-bar {
-              align-items: stretch;
-            }
-
-            .attendance-filter-controls,
-            .attendance-filter-controls label {
-              width: 100%;
-            }
-
-            .attendance-filter-controls select {
-              width: 100%;
-            }
-
-            .attendance-table {
-              min-width: 1620px;
-              font-size: 13px;
-            }
-
-            .employee-header,
-            .employee-cell {
-              width: 240px;
-              min-width: 240px;
-            }
-          }
-        `}</style>
       </div>
     </div>
   );
