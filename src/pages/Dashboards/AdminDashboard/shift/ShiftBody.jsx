@@ -158,7 +158,7 @@ export default function ShiftBody() {
                         hover:scrollbar-thumb-[#3984ff]
                     ">
                         <table className="w-full table-auto border-collapse text-left"> 
-                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
+                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
                                 <tr>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Shift Name</th>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Start Time</th>
@@ -168,7 +168,7 @@ export default function ShiftBody() {
                                     <th className="px-5 py-4 font-semibold w-[20%]">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="text-[15px] text-[#cad7eb]">
+                            <tbody className="text-[14px] text-[#cad7eb]">
                                 {loading ? (
                                     <tr>
                                         <td colSpan="6" className="text-center py-4">

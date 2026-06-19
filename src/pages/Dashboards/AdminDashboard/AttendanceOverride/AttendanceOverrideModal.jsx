@@ -80,8 +80,7 @@ export default function AttendanceOverrideModal({
                                 >
                                     <option value="P">Present (P)</option>
                                     <option value="A">Absent (A)</option>
-                                    <option value="OD">OD</option>
-                                    <option value="L">Leave</option>
+                                    <option value="OD">On-Duty (OD)</option>
                                 </select>
                             </div>
 
@@ -99,8 +98,7 @@ export default function AttendanceOverrideModal({
                                 >
                                     <option value="P">Present (P)</option>
                                     <option value="A">Absent (A)</option>
-                                    <option value="OD">OD</option>
-                                    <option value="L">Leave</option>
+                                    <option value="OD">On-Duty (OD)</option>
                                 </select>
                             </div>
                         </>

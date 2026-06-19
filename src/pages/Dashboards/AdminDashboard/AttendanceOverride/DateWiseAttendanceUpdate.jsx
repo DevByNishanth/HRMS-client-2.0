@@ -12,8 +12,7 @@ import { saveAs } from "file-saver";
 
 export default function DateWiseAttendanceUpdate() {
 
-    const [attendanceDate, setAttendanceDate] =useState(null);
-    // const [attendanceDate, setAttendanceDate] = useState(null);
+    const [attendanceDate, setAttendanceDate] =useState(dayjs().subtract(1, "day").toDate());
     const [searchTerm, setSearchTerm] = useState("");
     const [departmentFilter, setDepartmentFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
@@ -36,7 +35,7 @@ export default function DateWiseAttendanceUpdate() {
     ];
 
     const hasFilters =
-        attendanceDate ||
+        // attendanceDate ||
         searchTerm ||
         departmentFilter ||
         categoryFilter;
@@ -125,7 +124,7 @@ export default function DateWiseAttendanceUpdate() {
     };
 
     const resetFilters = () => {
-        setAttendanceDate(null);
+        // setAttendanceDate(null);
         setSearchTerm("");
         setDepartmentFilter("");
         setCategoryFilter("");
@@ -439,7 +438,7 @@ export default function DateWiseAttendanceUpdate() {
             <div className="overflow-hidden">
                 <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
                     <table className="w-full table-auto border-collapse text-left">
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] text-[#9aacc7]">
                             <tr>
                                 <th className="px-5 py-4">
                                     <input
@@ -462,7 +461,7 @@ export default function DateWiseAttendanceUpdate() {
                                 <th className="px-5 py-4">Session 2</th>
                             </tr>
                         </thead>
-                        <tbody className="text-[#cad7eb]">
+                        <tbody className="text-[#cad7eb] text-[14px]">
                             {filteredData.length === 0 ? (
                                 <tr>
                                     <td

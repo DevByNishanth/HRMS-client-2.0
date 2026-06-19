@@ -458,7 +458,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                     <table className="w-full table-fixed border-collapse">
 
-                        <thead className="sticky top-0 bg-[#172c46] text-[#9aacc7] z-10">
+                        <thead className="sticky top-0 bg-[#172c46] text-[14px] text-[#9aacc7] z-10">
 
                             <tr>
 
@@ -509,7 +509,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                         </thead>
 
-                        <tbody className="text-[#cad7eb]">
+                        <tbody className="text-[#cad7eb] text-[14px]">
                         {
                             loading ? (
                                 <tr>
@@ -549,11 +549,11 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
-                                            {row.employeeCategory || "-"}
+                                            {formatOverrideDate(row)}
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
-                                            {formatOverrideDate(row)}
+                                            {row.employeeCategory || "-"}
                                         </td>
 
                                         <td className="px-3 py-3 text-center">

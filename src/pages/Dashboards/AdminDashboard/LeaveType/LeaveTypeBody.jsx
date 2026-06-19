@@ -293,7 +293,7 @@ export default function LeaveTypeBody() {
                         "
                     >
                         <table className="w-full table-auto border-collapse text-left">
-                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
+                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
                                 <tr>
                                     <th className="px-5 py-4">
                                         Leave Name
@@ -329,7 +329,7 @@ export default function LeaveTypeBody() {
                                 </tr>
                             </thead>
 
-                            <tbody className="text-[15px] text-[#cad7eb]">
+                            <tbody className="text-[14px] text-[#cad7eb]">
                                 {loading ? (
                                     <tr>
                                         <td

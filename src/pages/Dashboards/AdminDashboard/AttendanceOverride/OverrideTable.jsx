@@ -142,7 +142,13 @@ export default function OverrideTable({ data = [] }) {
             console.log("API Response:", response);
             console.log("API Data:", response.data);
 
-            setOverrideData(response.data);
+            const sortedData = [...response.data].sort(
+                (a, b) =>
+                    new Date(b.overriddenOn) -
+                    new Date(a.overriddenOn)
+            );
+
+            setOverrideData(sortedData);
 
         } catch (error) {
             console.error("API Error:", error);
@@ -263,6 +269,20 @@ export default function OverrideTable({ data = [] }) {
         });
     }, [overrideData]);
 
+    const getStatusColor = (value) => {
+        switch (value) {
+            case "P":
+                return "text-[#155DFC]";
+                // return "text-green-500"
+            case "A":
+                return "text-[#155DFC]";
+            case "OD":
+                return "text-[#155DFC]";
+            default:
+                return "";
+        }
+    };
+
     return (
         <>
             {/* Filters */}
@@ -373,11 +393,11 @@ export default function OverrideTable({ data = [] }) {
             {/* Table */}
 
             <div className="overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-auto border-collapse text-left">
 
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
 
                             <tr>
                                 <th className="px-5 py-4">
@@ -431,7 +451,7 @@ export default function OverrideTable({ data = [] }) {
 
                         </thead>
 
-                        <tbody className="text-[15px] text-[#cad7eb]">
+                        <tbody className="text-[14px] text-[#cad7eb]">
 
                             {filteredData.length === 0 ? (
                                 <tr>
@@ -483,11 +503,21 @@ export default function OverrideTable({ data = [] }) {
                                         <td className="px-5 py-3">
                                             {item.attendanceDate?.includes(" to ") ? (
                                                 <div className="flex flex-col">
-                                                    <span>{item.attendanceDate.split(" to ")[0]}</span>
+                                                    <span>
+                                                        {formatDate(
+                                                            item.attendanceDate.split(" to ")[0]
+                                                        )}
+                                                    </span>
+
                                                     <span className="text-xs text-[#8ca1bd]">
                                                         to
                                                     </span>
-                                                    <span>{item.attendanceDate.split(" to ")[1]}</span>
+
+                                                    <span>
+                                                        {formatDate(
+                                                            item.attendanceDate.split(" to ")[1]
+                                                        )}
+                                                    </span>
                                                 </div>
                                             ) : (
                                                 formatDate(item.attendanceDate)
@@ -503,7 +533,27 @@ export default function OverrideTable({ data = [] }) {
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            {item.statusCode}
+                                            <span
+                                                className={`${
+                                                    item.oldSession1 !== item.newSession1
+                                                        ? `font-bold ${getStatusColor(item.newSession1)}`
+                                                        : ""
+                                                }`}
+                                            >
+                                                {item.newSession1}
+                                            </span>
+
+                                            {" : "}
+
+                                            <span
+                                                className={`${
+                                                    item.oldSession2 !== item.newSession2
+                                                        ? `font-bold ${getStatusColor(item.newSession2)}`
+                                                        : ""
+                                                }`}
+                                            >
+                                                {item.newSession2}
+                                            </span>
                                         </td>
 
                                         <td className="px-5 py-3">
@@ -517,7 +567,7 @@ export default function OverrideTable({ data = [] }) {
 
                                         <td className="px-5 py-3">
                                             <div
-                                                className="w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
+                                                className="w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
                                                 title={item.remarks}
                                             >
                                                 {item.remarks || "-"}
