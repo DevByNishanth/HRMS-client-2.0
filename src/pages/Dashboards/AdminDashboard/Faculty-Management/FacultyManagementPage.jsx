@@ -340,7 +340,7 @@ const FacultyManagementPage = () => {
                                         <col className="w-[14%]" />
                                         <col className="w-[12%]" />
                                     </colgroup>
-                                    <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+                                    <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
                                         <tr>
                                             <th className="py-3 pl-5 pr-4 font-semibold">Name</th>
                                             <th className="px-4 py-3 font-semibold">Emp ID</th>
@@ -352,7 +352,7 @@ const FacultyManagementPage = () => {
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="text-[13px] text-[#cad7eb]">
+                                    <tbody className="text-[14px] text-[#cad7eb]">
                                         {isLoadingFaculty ? (
                                             <tr>
                                                 <td

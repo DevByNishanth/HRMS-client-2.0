@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import OverrideTable from "./OverrideTable";
 import EmployeeWiseAttendanceUpdate from "./EmployeeWiseAttendanceUpdate";
 import DateWiseAttendanceUpdate from "./DateWiseAttendanceUpdate";
+import { ChevronRight } from "lucide-react";
 
 export default function AttendanceOverrideBody() {
     const [activeView, setActiveView] = useState("history");
@@ -41,69 +42,58 @@ export default function AttendanceOverrideBody() {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-5">
-                <div>
-                    <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-medium text-white">
-                            Attendance Override
-                        </h1>
+            {/* Header / Breadcrumb */}
+            <div className="mb-6">
+                {activeView === "history" ? (
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-2xl font-semibold text-white">
+                                Attendance Override
+                            </h1>
 
-                        {activeView !== "history" && (
-                            <>
-                                <span className="text-[#6d87ad]">
-                                    /
-                                </span>
+                            <p className="text-[#9eb0cc] mt-1">
+                                Manage Attendance efficiently and effectively.
+                            </p>
+                        </div>
 
-                                <button
-                                    onClick={() =>
-                                        setActiveView("history")
-                                    }
-                                    className="text-blue-400 hover:text-blue-300"
-                                >
-                                    Override History
-                                </button>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setActiveView("employee")}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer"
+                            >
+                                Employee Wise
+                            </button>
 
-                                <span className="text-[#6d87ad]">
-                                    /
-                                </span>
-
-                                <span className="text-white">
-                                    {activeView === "employee"
-                                        ? "Employee Wise"
-                                        : "Date Wise"}
-                                </span>
-                            </>
-                        )}
+                            <button
+                                onClick={() => setActiveView("date")}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer"
+                            >
+                                Date Wise
+                            </button>
+                        </div>
                     </div>
-
-                    <p className="text-[16px] text-[#9eb0cc]">
-                        Manage Attendance efficiently and effectively.
-                    </p>
-                </div>
-
-                {activeView === "history" && (
-                    <div className="flex gap-4">
+                ) : (
+                    <div className="flex items-center gap-3 text-[18px]">
                         <button
-                            onClick={() =>
-                                setActiveView("employee")
-                            }
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                            onClick={() => setActiveView("history")}
+                            className="text-[#4A90E2] hover:text-[#69a7ff] cursor-pointer"
                         >
-                            Employee Wise
+                            Override History
                         </button>
 
-                        <button
-                            onClick={() =>
-                                setActiveView("date")
-                            }
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                        >
-                            Date Wise
-                        </button>
+                        <ChevronRight
+                            size={18}
+                            className="text-[#ffffff]"
+                        />
+
+                        <span className="text-white font-medium ">
+                            {activeView === "employee"
+                                ? "Employee Wise"
+                                : "Date Wise"}
+                        </span>
                     </div>
                 )}
             </div>
-
             <div className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
                 {renderContent()}
             </div>

@@ -1,8 +1,10 @@
 import React,{useState,useEffect} from 'react'
 import AddShiftForm from './AddShiftForm';
-import { Pencil,Trash2  } from 'lucide-react';
+import { Pencil,Trash2, X } from 'lucide-react';
 import {getShifts} from '../../../../services/shift/getShiftService'
 import {deleteShift} from '../../../../services/shift/deleteShiftService'
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function ShiftBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -64,6 +66,36 @@ export default function ShiftBody() {
         shift.shiftName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleResetFilter = () => {
+        setSearchTerm("");
+    };
+
+    const handleExportExcel = () => {
+        const exportData = filteredShifts.map((shift) => ({
+            "Shift Name": shift.shiftName,
+            "Start Time": shift.startTime,
+            "End Time": shift.endTime,
+            "Grace Time (Minutes)": shift.graceTime,
+            "Working Hours": shift.workingHours,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Shifts");
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const file = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        saveAs(file, "Shift_List.xlsx");
+    };
+
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-5">
@@ -82,13 +114,39 @@ export default function ShiftBody() {
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
                 <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex items-center justify-between gap-4">
                     <h1 className="shrink-0 text-[18px] font-semibold text-white">Shift List</h1>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                        placeholder="Search Shift Name"
-                    />
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                            placeholder="Search Shift Name"
+                        />
+                        <button
+                            onClick={handleExportExcel}
+                            className="
+                                h-11
+                                px-5
+                                rounded-lg
+                                border
+                                border-[#3984ff]
+                                text-[#3984ff]
+                                hover:bg-[#3984ff]
+                                hover:text-white
+                            "
+                        >
+                            Export Excel
+                        </button>
+                        {searchTerm.trim() !== "" && (
+                            <button
+                                onClick={handleResetFilter}
+                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd]"
+                            >
+                                Reset Filter
+                                <X size={18} />
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div className="overflow-hidden ">
                     <div className="
@@ -100,7 +158,7 @@ export default function ShiftBody() {
                         hover:scrollbar-thumb-[#3984ff]
                     ">
                         <table className="w-full table-auto border-collapse text-left"> 
-                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[15px] uppercase tracking-wide text-[#9aacc7]">
+                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
                                 <tr>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Shift Name</th>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Start Time</th>
@@ -110,7 +168,7 @@ export default function ShiftBody() {
                                     <th className="px-5 py-4 font-semibold w-[20%]">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="text-[15px] text-[#cad7eb]">
+                            <tbody className="text-[14px] text-[#cad7eb]">
                                 {loading ? (
                                     <tr>
                                         <td colSpan="6" className="text-center py-4">

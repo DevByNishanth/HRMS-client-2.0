@@ -7,11 +7,12 @@ import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOve
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
 import { X } from "lucide-react";
 import CustomDropdown from "../../../../components/CustomDropdown";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function DateWiseAttendanceUpdate() {
 
-    const [attendanceDate, setAttendanceDate] =useState(null);
-    // const [attendanceDate, setAttendanceDate] = useState(null);
+    const [attendanceDate, setAttendanceDate] =useState(dayjs().subtract(1, "day").toDate());
     const [searchTerm, setSearchTerm] = useState("");
     const [departmentFilter, setDepartmentFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
@@ -34,7 +35,7 @@ export default function DateWiseAttendanceUpdate() {
     ];
 
     const hasFilters =
-        attendanceDate ||
+        // attendanceDate ||
         searchTerm ||
         departmentFilter ||
         categoryFilter;
@@ -123,7 +124,7 @@ export default function DateWiseAttendanceUpdate() {
     };
 
     const resetFilters = () => {
-        setAttendanceDate(null);
+        // setAttendanceDate(null);
         setSearchTerm("");
         setDepartmentFilter("");
         setCategoryFilter("");
@@ -293,6 +294,56 @@ export default function DateWiseAttendanceUpdate() {
 
     const isBulkSelectionMode = selectedRows.length > 0;
 
+    const exportToExcel = () => {
+        const exportData = filteredData.map((row) => ({
+            Employee: row.employeeName,
+            Department: row.department,
+            Category: row.employeeCategory,
+            ShiftCode: row.shiftCode,
+            FirstIn: row.firstIn
+                ? dayjs(row.firstIn).format("hh:mm A")
+                : "-",
+            LastOut: row.lastOut
+                ? dayjs(row.lastOut).format("hh:mm A")
+                : "-",
+            Session1:
+                editedRows[row.facultyId]?.session1 ??
+                row.session1,
+            Session2:
+                editedRows[row.facultyId]?.session2 ??
+                row.session2,
+        }));
+
+        const worksheet =
+            XLSX.utils.json_to_sheet(exportData);
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Attendance Override"
+        );
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const fileData = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const dateText = attendanceDate
+            ? dayjs(attendanceDate).format("DD-MM-YYYY")
+            : "All";
+
+        saveAs(
+            fileData,
+            `DateWise_Attendance_Override_${dateText}.xlsx`
+        );
+    };
+
     return (
         <>
             {/* Filters */}
@@ -342,6 +393,24 @@ export default function DateWiseAttendanceUpdate() {
                             onChange={setCategoryFilter}
                         />
                     </div>
+                    <button
+                        onClick={exportToExcel}
+                        disabled={filteredData.length === 0}
+                        className="
+                            h-11
+                            px-5
+                            rounded-lg
+                            border
+                            border-[#3984ff]
+                            text-[#3984ff]
+                            font-medium
+                            transition
+                            hover:bg-[#3984ff]
+                            hover:text-white
+                        "
+                    >
+                        Export Excel
+                    </button>
                     {hasFilters && (
                         <button
                             onClick={resetFilters}
@@ -367,9 +436,9 @@ export default function DateWiseAttendanceUpdate() {
             </div>
             {/* Table */}
             <div className="overflow-hidden">
-                <div className="max-h-[550px] overflow-y-auto">
+                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
                     <table className="w-full table-auto border-collapse text-left">
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] text-[#9aacc7]">
                             <tr>
                                 <th className="px-5 py-4">
                                     <input
@@ -385,13 +454,14 @@ export default function DateWiseAttendanceUpdate() {
                                 <th className="px-5 py-4">Department</th>
                                 <th className="px-5 py-4">Category</th>
                                 <th className="px-5 py-4">Shift Code</th>
+                                <th className="px-5 py-4">Status</th>
                                 <th className="px-5 py-4">First In</th>
                                 <th className="px-5 py-4">Last Out</th>
                                 <th className="px-5 py-4">Session 1</th>
                                 <th className="px-5 py-4">Session 2</th>
                             </tr>
                         </thead>
-                        <tbody className="text-[#cad7eb]">
+                        <tbody className="text-[#cad7eb] text-[14px]">
                             {filteredData.length === 0 ? (
                                 <tr>
                                     <td
@@ -431,6 +501,9 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {row.shiftCode}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            {row.status || "-"}
                                         </td>
                                         <td className="px-5 py-3">
                                             {row.firstIn

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import EmployeLeaveBalanceTable from "./EmployeLeaveBalanceTable";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { X } from "lucide-react";
 
 export default function LeaveBalanceBody() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -8,6 +11,7 @@ export default function LeaveBalanceBody() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
+    const [leaveBalanceData, setLeaveBalanceData] = useState([]);
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -80,6 +84,52 @@ export default function LeaveBalanceBody() {
         }
     };
 
+    const handleReset = () => {
+        setSearchTerm("");
+        setSelectedEmployee(null);
+        setEmployees([]);
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+    };
+
+    const handleExportExcel = () => {
+        if (!leaveBalanceData.length) return;
+
+        const exportData = leaveBalanceData
+            .filter(
+                (leave) =>
+                    leave.leaveTypeId?.leaveName?.toUpperCase() !== "LOP"
+            )
+            .map((leave) => ({
+                "Leave Type": leave.leaveTypeId?.leaveName,
+                Allocated: leave.allocatedDays,
+                Used: leave.usedDays,
+                Available: leave.remainingDays,
+            }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Leave Balance"
+        );
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const blob = new Blob([excelBuffer], {
+            type:
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        saveAs(blob, "Employee_Leave_Balance.xlsx");
+    };
+
     return (
         <div className="p-6">
             {/* Header */}
@@ -100,47 +150,46 @@ export default function LeaveBalanceBody() {
                         Employee Leave Balance
                     </h1>
 
-                    <div className="relative z-50">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) =>
-                                setSearchTerm(e.target.value)
-                            }
-                            onKeyDown={handleKeyDown}
-                            className="
-                                h-11
-                                w-[350px]
-                                rounded-lg
-                                border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                pl-5
-                                text-[14px]
-                                text-white
-                                outline-none
-                                transition
-                                placeholder:text-[#6f839f]
-                                hover:border-[#3984ff]
-                                focus:border-[#3984ff]
-                                focus:ring-2
-                                focus:ring-[#3984ff33]
-                            "
-                            placeholder="Search Employee Name or Employee ID..."
-                        />
-
-                        {showDropdown &&
-                            employees.length > 0 && (
-                                <div className="absolute z-50 mt-1 w-[350px]
-                                    h-[300px]
-                                    overflow-y-auto
+                    <div className="flex items-center gap-3">
+                        <div className="relative z-50">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="
+                                    h-11
+                                    w-[350px]
                                     rounded-lg
-                                    border border-[#244061]
+                                    border
+                                    border-[#244061]
                                     bg-[#0d2138]
-                                    shadow-lg
-                                    scrollbar-thin
-                                    scrollbar-track-[#0a1a2d]
-                                    scrollbar-thumb-[#244061]">
+                                    pl-5
+                                    text-[14px]
+                                    text-white
+                                    outline-none
+                                    transition
+                                    placeholder:text-[#6f839f]
+                                    hover:border-[#3984ff]
+                                    focus:border-[#3984ff]
+                                    focus:ring-2
+                                    focus:ring-[#3984ff33]
+                                "
+                                placeholder="Search Employee Name or Employee ID..."
+                            />
+
+                            {showDropdown && employees.length > 0 && (
+                                <div
+                                    className="
+                                        absolute z-50 mt-1 w-[350px]
+                                        h-[300px]
+                                        overflow-y-auto
+                                        rounded-lg
+                                        border border-[#244061]
+                                        bg-[#0d2138]
+                                        shadow-lg
+                                    "
+                                >
                                     {employees.map(
                                         (
                                             employee,
@@ -208,6 +257,42 @@ export default function LeaveBalanceBody() {
                                     )}
                                 </div>
                             )}
+                        </div>
+
+                        {selectedEmployee && leaveBalanceData.length > 0 && (
+                            <button
+                                onClick={handleExportExcel}
+                                className="
+                                    h-11
+                                    px-5
+                                    rounded-lg
+                                    border
+                                    border-[#3984ff]
+                                    text-[#3984ff]
+                                    hover:bg-[#3984ff]
+                                    hover:text-white
+                                "
+                            >
+                                Export Excel
+                            </button>
+                        )}
+
+                        {selectedEmployee && (
+                            <button
+                                onClick={handleReset}
+                                className="
+                                    flex items-center gap-2
+                                    h-11 px-4
+                                    rounded-lg
+                                    border border-[#244061]
+                                    bg-[#0d2138]
+                                    text-[#8ca1bd]
+                                "
+                            >
+                                Reset Filter
+                                <X size={18} />
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -217,6 +302,7 @@ export default function LeaveBalanceBody() {
                             employee={
                                 selectedEmployee
                             }
+                            setLeaveBalanceData={setLeaveBalanceData}
                         />
                     ) : (
                         <div className="rounded-xl border border-[#183052] bg-[#071425] p-10 text-center">

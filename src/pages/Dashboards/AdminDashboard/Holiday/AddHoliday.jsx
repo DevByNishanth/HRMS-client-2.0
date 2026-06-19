@@ -47,6 +47,7 @@ export default function AddHoliday({
     }, [holidayData]);
 
     const employeeCategories = [
+        "All",
         "Teaching",
         "Non-Teaching",
         "Housekeeping",
@@ -332,16 +333,25 @@ export default function AddHoliday({
                                 placeholder="Select Categories"
                                 error={errors.applicableEmployeeCategories}
                                 onChange={(values) => {
-                                    setFormData((prev) => ({
-                                    ...prev,
-                                    applicableEmployeeCategories: values,
-                                    }));
+                                const actualCategories = [
+                                    "Teaching",
+                                    "Non-Teaching",
+                                    "Housekeeping",
+                                    "Driver",
+                                ];
 
-                                    setErrors((prev) => ({
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    applicableEmployeeCategories: values.includes("All")
+                                        ? actualCategories
+                                        : values,
+                                }));
+
+                                setErrors((prev) => ({
                                     ...prev,
                                     applicableEmployeeCategories: "",
-                                    }));
-                                }}
+                                }));
+                            }}
                             />
 
                             <ErrorMsg msg={errors.applicableEmployeeCategories}/>
