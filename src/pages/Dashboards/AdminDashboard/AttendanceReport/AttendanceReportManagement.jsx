@@ -245,7 +245,8 @@ function getCellClass(status, isWeekend, isAlternateRow = false) {
   if (normalizedStatus === "A") return `${baseClass} bg-[#ef4444]`;
   if (normalizedStatus === "P")
     return `${baseClass} bg-[#22c55e]`;
-  if (normalizedStatus === "OFF") return `${baseClass} bg-gray-300 text-white`;
+  if (normalizedStatus === "OFF")
+    return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":"))
     return `${baseClass} bg-[#3b82f6]`;
@@ -456,7 +457,23 @@ export default function AttendanceManagement() {
       return row;
     });
 
-    const worksheet = utils.aoa_to_sheet([headerRow, ...dataRows]);
+    const worksheet = utils.aoa_to_sheet([[monthTitle], headerRow, ...dataRows]);
+    worksheet.A1.s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center",
+      },
+      font: {
+        bold: true,
+      },
+    };
+    worksheet["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: headerRow.length - 1 },
+      },
+    ];
+
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, "Attendance Report");
 
