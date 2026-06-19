@@ -17,7 +17,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
         startTime: "",
         endTime: "",
         graceTime: "",
-        workingHours: "",
+        workingMinutes: "",
     });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 startTime: shiftData.startTime || "",
                 endTime: shiftData.endTime || "",
                 graceTime: shiftData.graceTime || "",
-                workingHours: shiftData.workingHours || "",
+                workingMinutes: shiftData.workingMinutes || "",
             });
         }
     }, [shiftData]);
@@ -40,7 +40,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
         startTime: "Start Time",
         endTime: "End Time",
         graceTime: "Grace Time",
-        workingHours: "Working Hours",
+        workingMinutes: "Working Hours",
     };
 
     const validate = () => {
@@ -66,16 +66,16 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
         const start = new Date(`1970-01-01T${startTime}:00`);
         let end = new Date(`1970-01-01T${endTime}:00`);
-
-        // Handle overnight shifts (e.g. 10 PM to 6 AM)
+    
+        // Handle overnight shifts
         if (end < start) {
             end.setDate(end.getDate() + 1);
         }
-
+    
         const diffMs = end - start;
-        const diffHours = diffMs / (1000 * 60 * 60);
-
-        return diffHours.toFixed(2);
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    
+        return diffMinutes;
     };
 
     const handleChange = (e) => {
@@ -92,7 +92,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 name === "startTime" ||
                 name === "endTime"
             ) {
-                updatedData.workingHours = calculateWorkingHours(
+                updatedData.workingMinutes = calculateWorkingHours(
                     updatedData.startTime,
                     updatedData.endTime
                 );
@@ -118,7 +118,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 startTime: formData.startTime,
                 endTime: formData.endTime,
                 graceTime: Number(formData.graceTime),
-                workingHours: Number(formData.workingHours),
+                workingMinutes: Number(formData.workingMinutes),
                 isActive: true,
             };
 
@@ -302,18 +302,18 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
                             <input
                                 type="number"
-                                name="workingHours"
-                                value={formData.workingHours}
+                                name="workingMinutes"
+                                value={formData.workingMinutes}
                                 readOnly
                                 placeholder="Enter Hours"
                                 className={`w-full bg-[#0D2138] border border-blue-900 rounded-lg p-3 text-white outline-none
                                 ${
-                                    errors.workingHours
+                                    errors.workingMinutes
                                     ? "border-red-500"
                                     : "border-blue-900"
                                 }`}
                             />
-                            <ErrorMsg msg={errors.workingHours} />
+                            <ErrorMsg msg={errors.workingMinutes} />
                         </div>
                     </div>
                 </div>
