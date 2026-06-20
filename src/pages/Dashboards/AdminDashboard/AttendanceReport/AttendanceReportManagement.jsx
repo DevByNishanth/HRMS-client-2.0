@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -25,9 +26,10 @@ const yearOptions = [2024, 2025, 2026, 2027, 2028];
 const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
-const filterInputBase =
-  "min-h-9 w-full appearance-none rounded-md border border-[rgba(255,255,255,0.18)] bg-[#071425] px-2.5 py-[7px] text-sm font-bold text-white outline-none";
-const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
+const toolbarInputBase =
+  "h-11 w-full appearance-none rounded-lg border border-[#24476d] bg-[#071425] px-3 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] hover:border-[#3b82f6]";
+ 
+  const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
 const fallbackEmployees = [
   {
@@ -393,13 +395,13 @@ function getAttendanceStatus(attendance, date) {
 }
 
 export default function AttendanceManagement() {
-  const [selectedMonth, setSelectedMonth] = useState(5);
+const [selectedMonth, setSelectedMonth] = useState(5);
   const [selectedYear, setSelectedYear] = useState(2026);
   const [employees, setEmployees] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("All");
+  const [selectedDepartment, setSelectedDepartment] = useState("Department");
   const dates = useMemo(
     () => getMonthDates(selectedYear, selectedMonth),
     [selectedMonth, selectedYear],
@@ -418,7 +420,7 @@ export default function AttendanceManagement() {
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b));
 
-    return ["All", ...new Set(types)];
+    return ["Department", ...new Set(types)];
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -435,7 +437,7 @@ export default function AttendanceManagement() {
 
       const departmentType = getEmployeeDepartmentType(employee);
       const matchesDepartment =
-        selectedDepartment === "All" || departmentType === selectedDepartment;
+        selectedDepartment === "Department" || departmentType === selectedDepartment;
 
       return matchesSearch && matchesDepartment;
     });
@@ -530,64 +532,60 @@ export default function AttendanceManagement() {
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
           <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3.5 bg-[#071425] px-4 py-3 max-md:grid-cols-1 max-md:items-start">
-              <div className="min-w-0">
-                <h1 className="m-0 text-2xl font-black text-white">
-                  Attendance Report Management
-                </h1>
-                <p className="mt-1 mb-0 text-base font-bold text-white">
-                  {monthTitle}
-                </p>
-              </div>
-              <div
-                className="justify-self-center inline-flex flex-none flex-wrap items-center gap-2 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-2.5 py-1.5 max-md:justify-self-start"
-                aria-label="Attendance status legend"
-              >
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e]" />{" "}
-                  Present
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ef4444]" />{" "}
-                  Absent
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />{" "}
-                  OFF
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />{" "}
-                  OD
-                </span>
-              </div>
-              <button
-                type="button"
-                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8]`}
-                onClick={exportToExcel}
-              >
-                Export Excel
-              </button>
-            </div>
+           <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
+  <div>
+    <h1 className="m-0 text-2xl font-black text-white">
+      Attendance Report Management
+    </h1>
+  </div>
+
+  <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
+      Present
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+      Absent
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />
+      OFF
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
+      OD
+    </span>
+  </div>
+</div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3.5 border-b border-b-[rgba(255,255,255,0.12)] bg-[#071425] px-4 py-3 max-md:items-stretch">
-              <div className="grid w-4/5 grid-cols-[260px_170px_150px_135px] items-end gap-5 max-md:w-full max-md:grid-cols-1">
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Search</span>
+              <div className="ml-68 grid w-full grid-cols-[240px_180px_150px_135px_150px] items-center gap-3.5 max-lg:grid-cols-2 max-md:grid-cols-1">
+                
+                <label className="relative grid text-xs font-extrabold text-white uppercase max-md:w-full">
+                  <span className="sr-only">Search</span>
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
+                    aria-hidden="true"
+                  />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Name /Employee ID "
-                    className={`${filterInputBase} border-r border-r-[rgba(255,255,255,0.18)] bg-none placeholder:text-[rgba(255,255,255,0.65)]`}
+                    placeholder="Search Faculty..."
+                    className={`${toolbarInputBase} pl-12`}
                   />
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Department</span>
+                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
+                  <span className="sr-only">Department</span>
                   <select
                     value={selectedDepartment}
                     onChange={(event) =>
                       setSelectedDepartment(event.target.value)
                     }
-                    className={filterInputBase}
+                    className={toolbarInputBase}
                   >
                     {departmentOptions.map((department) => (
                       <option
@@ -600,14 +598,14 @@ export default function AttendanceManagement() {
                     ))}
                   </select>
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Month</span>
+                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
+                  <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
                     onChange={(event) =>
                       setSelectedMonth(Number(event.target.value))
                     }
-                    className={filterInputBase}
+                    className={toolbarInputBase}
                   >
                     {monthOptions.map((month, index) => (
                       <option
@@ -620,14 +618,14 @@ export default function AttendanceManagement() {
                     ))}
                   </select>
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Year</span>
+                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
+                  <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
                     onChange={(event) =>
                       setSelectedYear(Number(event.target.value))
                     }
-                    className={filterInputBase}
+                    className={toolbarInputBase}
                   >
                     {yearOptions.map((year) => (
                       <option
@@ -640,6 +638,21 @@ export default function AttendanceManagement() {
                     ))}
                   </select>
                 </label>
+               <button
+  type="button"
+  className="
+    inline-flex h-11 w-full cursor-pointer items-center justify-center
+    rounded-lg border border-[#3b82f6]
+    bg-transparent
+    px-3 text-sm font-bold text-[#3b82f6]
+    transition-all duration-300
+    hover:bg-[#3b82f6]
+    hover:text-white
+  "
+  onClick={exportToExcel}
+>
+  Export Excel
+</button>
               </div>
             </div>
             {errorMessage && (
@@ -649,45 +662,38 @@ export default function AttendanceManagement() {
             )}
             <div className="min-h-0 flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
               <table className="w-max min-w-[1750px] border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
-                <thead>
-                  <tr>
-                    <th
-                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base max-md:w-[240px] max-md:min-w-[240px]`}
-                      rowSpan="2"
-                    >
-                      Employee
-                    </th>
-                    <th
-                      className={`${tableHeadCellBase} h-[42px] min-w-[1240px] border border-[rgba(255,255,255,0.12)] border-b-0 p-0`}
-                      colSpan={dates.length}
-                      aria-hidden="true"
-                    />
-                    {summaryColumns.map((column, index) => (
-                      <th
-                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
-                        rowSpan="2"
-                        key={column}
-                      >
-                        {column}
-                      </th>
-                    ))}
-                  </tr>
-                  <tr>
-                    {dates.map((date) => (
-                      <th
-                        className={`${tableCellBase} sticky top-[42px] z-[15] h-10 w-10 min-w-10 border-t border-t-[rgba(255,255,255,0.12)] bg-[#071425] font-bold text-white`}
-                        key={date.key}
-                      >
-                        <span className="block text-base leading-[1.3] text-white">
-                          {date.day}
-                        </span>
-                        <small className="block text-[13px] leading-[1.3] font-bold text-white">
-                          {date.weekday}
-                        </small>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+               <thead>
+  <tr>
+    <th
+      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
+    >
+      Employee
+    </th>
+
+    {dates.map((date) => (
+      <th
+        key={date.key}
+        className={`${tableCellBase} sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+      >
+        <span className="block text-base">
+          {date.day}
+        </span>
+        <small className="block text-[13px] font-bold">
+          {date.weekday}
+        </small>
+      </th>
+    ))}
+
+    {summaryColumns.map((column, index) => (
+      <th
+        key={column}
+        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
+      >
+        {column}
+      </th>
+    ))}
+  </tr>
+</thead>
                 <tbody>
                   {isLoading && (
                     <tr>
