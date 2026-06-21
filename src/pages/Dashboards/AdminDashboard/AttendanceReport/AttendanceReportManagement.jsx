@@ -27,7 +27,7 @@ const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
 const toolbarInputBase =
-  "h-11 w-full appearance-none rounded-lg border border-[#24476d] bg-[#071425] px-3 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] hover:border-[#3b82f6]";
+  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] hover:border-[#3b82f6]";
  
   const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
@@ -395,18 +395,29 @@ function getAttendanceStatus(attendance, date) {
 }
 
 export default function AttendanceManagement() {
-const [selectedMonth, setSelectedMonth] = useState(5);
-  const [selectedYear, setSelectedYear] = useState(2026);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [employees, setEmployees] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("Department");
-  const dates = useMemo(
-    () => getMonthDates(selectedYear, selectedMonth),
-    [selectedMonth, selectedYear],
+
+  const effectiveMonth = useMemo(
+    () => (selectedMonth === "" ? new Date().getMonth() : Number(selectedMonth)),
+    [selectedMonth],
   );
-  const monthTitle = new Date(selectedYear, selectedMonth).toLocaleDateString(
+
+  const effectiveYear = useMemo(
+    () => (selectedYear === "" ? new Date().getFullYear() : Number(selectedYear)),
+    [selectedYear],
+  );
+
+  const dates = useMemo(
+    () => getMonthDates(effectiveYear, effectiveMonth),
+    [effectiveMonth, effectiveYear],
+  );
+  const monthTitle = new Date(effectiveYear, effectiveMonth).toLocaleDateString(
     "en-US",
     {
       month: "long",
@@ -495,8 +506,11 @@ const [selectedMonth, setSelectedMonth] = useState(5);
       setErrorMessage("");
 
       try {
+        const month = effectiveMonth + 1;
+        const year = effectiveYear;
+
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${selectedMonth + 1}&year=${selectedYear}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${month}&year=${year}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
@@ -523,7 +537,7 @@ const [selectedMonth, setSelectedMonth] = useState(5);
     fetchAttendanceMuster();
 
     return () => controller.abort();
-  }, [selectedMonth, selectedYear]);
+  }, [effectiveMonth, effectiveYear]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -561,10 +575,9 @@ const [selectedMonth, setSelectedMonth] = useState(5);
     </span>
   </div>
 </div>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3.5 border-b border-b-[rgba(255,255,255,0.12)] bg-[#071425] px-4 py-3 max-md:items-stretch">
-              <div className="ml-68 grid w-full grid-cols-[240px_180px_150px_135px_150px] items-center gap-3.5 max-lg:grid-cols-2 max-md:grid-cols-1">
-                
-                <label className="relative grid text-xs font-extrabold text-white uppercase max-md:w-full">
+            <div className="mt-3 flex w-full flex-wrap items-center justify-between gap-3 rounded-3xl border border-[#1f3856] bg-[#0b1d33] px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.18)] max-md:items-stretch">
+              <div className="flex w-full flex-wrap items-center gap-3 md:grid md:w-full md:grid-cols-[1.5fr_1fr_1fr_1fr_200px] md:items-center">
+                <label className="relative w-full text-xs font-extrabold text-white uppercase">
                   <span className="sr-only">Search</span>
                   <Search
                     className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
@@ -574,17 +587,16 @@ const [selectedMonth, setSelectedMonth] = useState(5);
                     type="text"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Search Faculty..."
+                    placeholder="Search faculty..."
                     className={`${toolbarInputBase} pl-12`}
                   />
                 </label>
-                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span className="sr-only">Department</span>
+
+                <label className="w-full text-xs font-extrabold text-white uppercase">
+                  <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
-                    onChange={(event) =>
-                      setSelectedDepartment(event.target.value)
-                    }
+                    onChange={(event) => setSelectedDepartment(event.target.value)}
                     className={toolbarInputBase}
                   >
                     {departmentOptions.map((department) => (
@@ -598,15 +610,17 @@ const [selectedMonth, setSelectedMonth] = useState(5);
                     ))}
                   </select>
                 </label>
-                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
+
+                <label className="w-full text-xs font-extrabold text-white uppercase">
                   <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
-                    onChange={(event) =>
-                      setSelectedMonth(Number(event.target.value))
-                    }
+                    onChange={(event) => setSelectedMonth(event.target.value)}
                     className={toolbarInputBase}
                   >
+                    <option value="" className="bg-[#071425] text-white text-[#9ca3af]">
+                      Month
+                    </option>
                     {monthOptions.map((month, index) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -618,15 +632,17 @@ const [selectedMonth, setSelectedMonth] = useState(5);
                     ))}
                   </select>
                 </label>
-                <label className="grid text-xs font-extrabold text-white uppercase max-md:w-full">
+
+                <label className="w-full text-xs font-extrabold text-white uppercase">
                   <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
-                    onChange={(event) =>
-                      setSelectedYear(Number(event.target.value))
-                    }
+                    onChange={(event) => setSelectedYear(event.target.value)}
                     className={toolbarInputBase}
                   >
+                    <option value="" className="bg-[#071425] text-white text-[#9ca3af]">
+                      Year
+                    </option>
                     {yearOptions.map((year) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -638,21 +654,14 @@ const [selectedMonth, setSelectedMonth] = useState(5);
                     ))}
                   </select>
                 </label>
-               <button
-  type="button"
-  className="
-    inline-flex h-11 w-full cursor-pointer items-center justify-center
-    rounded-lg border border-[#3b82f6]
-    bg-transparent
-    px-3 text-sm font-bold text-[#3b82f6]
-    transition-all duration-300
-    hover:bg-[#3b82f6]
-    hover:text-white
-  "
-  onClick={exportToExcel}
->
-  Export Excel
-</button>
+
+                <button
+                  type="button"
+                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                  onClick={exportToExcel}
+                >
+                  Export Excel
+                </button>
               </div>
             </div>
             {errorMessage && (
