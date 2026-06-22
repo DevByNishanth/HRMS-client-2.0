@@ -47,7 +47,7 @@ const CustomDropdown = ({
         id={id}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between text-left
+        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between text-left cursor-pointer
           ${
             error
               ? "border-red-500"

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState,useEffect, useRef } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
 const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -36,6 +36,7 @@ const CustomDatePicker = ({
     popupAlign = "left",
     minDate = null,
 }) => {
+    const pickerRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     const [viewDate, setViewDate] = useState(value || new Date());
 
@@ -87,8 +88,31 @@ const CustomDatePicker = ({
         setIsOpen(false);
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                pickerRef.current &&
+                !pickerRef.current.contains(event.target)
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener(
+            "mousedown",
+            handleClickOutside
+        );
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+        };
+    }, []);
+
     return (
-        <div className="relative">
+        <div className="relative" ref={pickerRef}>
             {label && (
                 <label htmlFor={id} className="mb-2 block text-[16px] font-semibold text-white">
                     {label}
@@ -98,7 +122,7 @@ const CustomDatePicker = ({
                 id={id}
                 type="button"
                 onClick={() => setIsOpen((currentState) => !currentState)}
-                className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
             >
                 <span className={value ? "text-white" : "text-[#6f839f]"}>
                     {value ? formatDate(value) : placeholder}
@@ -115,7 +139,7 @@ const CustomDatePicker = ({
                         <button
                             type="button"
                             onClick={() => moveMonth(-1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
                             aria-label="Previous month"
                         >
                             <ChevronLeft size={16} />
@@ -126,7 +150,7 @@ const CustomDatePicker = ({
                         <button
                             type="button"
                             onClick={() => moveMonth(1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
                             aria-label="Next month"
                         >
                             <ChevronRight size={16} />
@@ -149,7 +173,7 @@ const CustomDatePicker = ({
                                     type="button"
                                     disabled={isDisabled}
                                     onClick={() => handleSelectDate(date)}
-                                    className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
+                                    className={`h-8 rounded-md text-[12px] font-semibold transition cursor-pointer ${isSelectedDate(date)
                                             ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
                                             : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
                                         } ${date && isDisabled ? "cursor-not-allowed text-[#4f5f7f] opacity-40" : ""} disabled:pointer-events-none ${!date ? "disabled:opacity-0" : ""}`}

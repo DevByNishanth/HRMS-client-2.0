@@ -30,7 +30,9 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 startTime: shiftData.startTime || "",
                 endTime: shiftData.endTime || "",
                 graceTime: shiftData.graceTime || "",
-                workingMinutes: shiftData.workingMinutes || "",
+                workingMinutes: shiftData.workingMinutes
+                    ? (shiftData.workingMinutes / 60).toFixed(2)
+                    : "",
             });
         }
     }, [shiftData]);
@@ -66,16 +68,16 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
         const start = new Date(`1970-01-01T${startTime}:00`);
         let end = new Date(`1970-01-01T${endTime}:00`);
-    
-        // Handle overnight shifts
+
         if (end < start) {
             end.setDate(end.getDate() + 1);
         }
-    
+
         const diffMs = end - start;
         const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    
-        return diffMinutes;
+
+        // Return hours for display
+        return (diffMinutes / 60).toFixed(2);
     };
 
     const handleChange = (e) => {
@@ -118,7 +120,9 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 startTime: formData.startTime,
                 endTime: formData.endTime,
                 graceTime: Number(formData.graceTime),
-                workingMinutes: Number(formData.workingMinutes),
+                workingMinutes: Math.round(
+                    Number(formData.workingMinutes) * 60
+                ),
                 isActive: true,
             };
 
@@ -182,7 +186,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white hover:bg-[#183a6b]"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white hover:bg-[#183a6b] cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -202,7 +206,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             value={formData.shiftName}
                             onChange={handleChange}
                             placeholder="Enter Shift Name"
-                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0D2138]
+                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0D2138] cursor-pointer
                             ${
                                 errors.shiftName
                                 ? "border-red-500"
@@ -323,7 +327,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Cancel
                     </button>
@@ -331,7 +335,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                     >
                         {loading ? (
                             <>
