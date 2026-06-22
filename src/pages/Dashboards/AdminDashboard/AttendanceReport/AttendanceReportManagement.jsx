@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -27,7 +27,7 @@ const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
 const toolbarInputBase =
-  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] hover:border-[#3b82f6]";
+  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
  
   const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
@@ -220,16 +220,19 @@ const fallbackEmployees = [
 
 function getMonthDates(year, monthIndex) {
   const dates = [];
-  const cursor = new Date(year, monthIndex, 1);
+  const startDate = new Date(year, monthIndex, 26);
+  const endDate = new Date(year, monthIndex + 1, 25);
+  const cursor = new Date(startDate);
 
-  while (cursor.getMonth() === monthIndex) {
+  while (cursor <= endDate) {
     const date = new Date(cursor);
+    const day = date.getDate();
     dates.push({
       date,
-      day: date.getDate(),
+      day,
       weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
       key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-        date.getDate(),
+        day,
       ).padStart(2, "0")}`,
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
     });
@@ -244,9 +247,9 @@ function getCellClass(status, isWeekend, isAlternateRow = false) {
   const baseClass = `${tableCellBase} font-medium text-white`;
   const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
 
-  if (normalizedStatus === "A") return `${baseClass} bg-[#ef4444]`;
+  if (normalizedStatus === "A") return `${baseClass} bg-[#85444C]`;
   if (normalizedStatus === "P")
-    return `${baseClass} bg-[#22c55e]`;
+    return `${baseClass} bg-[#0A5D4D]`;
   if (normalizedStatus === "OFF")
     return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
@@ -555,12 +558,12 @@ export default function AttendanceManagement() {
 
   <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
       Present
     </span>
 
     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
       Absent
     </span>
 
@@ -575,9 +578,9 @@ export default function AttendanceManagement() {
     </span>
   </div>
 </div>
-            <div className="mt-3 flex w-full flex-wrap items-center justify-between gap-3 rounded-3xl border border-[#1f3856] bg-[#0b1d33] px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.18)] max-md:items-stretch">
-              <div className="flex w-full flex-wrap items-center gap-3 md:grid md:w-full md:grid-cols-[1.5fr_1fr_1fr_1fr_200px] md:items-center">
-                <label className="relative w-full text-xs font-extrabold text-white uppercase">
+            <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+              <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-[1.3fr_0.8fr_0.8fr_0.8fr_136px]">
+                  <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Search</span>
                   <Search
                     className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
@@ -592,13 +595,21 @@ export default function AttendanceManagement() {
                   />
                 </label>
 
-                <label className="w-full text-xs font-extrabold text-white uppercase">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
                     onChange={(event) => setSelectedDepartment(event.target.value)}
-                    className={toolbarInputBase}
+                    className={`${toolbarInputBase} pr-10`}
                   >
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
+                      Department
+                    </option>
                     {departmentOptions.map((department) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -609,16 +620,22 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
 
-                <label className="w-full text-xs font-extrabold text-white uppercase">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
                     onChange={(event) => setSelectedMonth(event.target.value)}
-                    className={toolbarInputBase}
+                    className={`${toolbarInputBase} pr-10`}
                   >
-                    <option value="" className="bg-[#071425] text-white text-[#9ca3af]">
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
                       Month
                     </option>
                     {monthOptions.map((month, index) => (
@@ -631,16 +648,22 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
 
-                <label className="w-full text-xs font-extrabold text-white uppercase">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
                     onChange={(event) => setSelectedYear(event.target.value)}
-                    className={toolbarInputBase}
+                    className={`${toolbarInputBase} pr-10`}
                   >
-                    <option value="" className="bg-[#071425] text-white text-[#9ca3af]">
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
                       Year
                     </option>
                     {yearOptions.map((year) => (
@@ -653,6 +676,7 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
 
                 <button

@@ -219,7 +219,7 @@ const AttendanceTable = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedLog(record)}
-                      disabled={record.status?.toLowerCase() !== "present"}
+                      // disabled={record.status?.toLowerCase() !== "Present"}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
                         ${record.status?.toLowerCase() === "present"
                           ? "bg-[#102640] text-[#a9bddb] hover:bg-[#183052] hover:text-white"
