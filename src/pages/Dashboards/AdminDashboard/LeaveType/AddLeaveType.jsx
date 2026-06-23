@@ -74,7 +74,7 @@ export default function AddLeaveType({
         "Medical Leave",
         "Vacation Leave",
         "Marriage Leave",
-        "Compensation Leave",
+        "Comp Off",
         "Paternity Leave",
         "Maternity Leave",
         "LOP",
