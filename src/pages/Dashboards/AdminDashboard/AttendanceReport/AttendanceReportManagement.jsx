@@ -220,8 +220,9 @@ const fallbackEmployees = [
 
 function getMonthDates(year, monthIndex) {
   const dates = [];
-  const startDate = new Date(year, monthIndex, 26);
-  const endDate = new Date(year, monthIndex + 1, 25);
+  const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const startDate = new Date(year, monthIndex - 1, 26);
+  const endDate = new Date(year, monthIndex, 25);
   const cursor = new Date(startDate);
 
   while (cursor <= endDate) {
@@ -230,7 +231,7 @@ function getMonthDates(year, monthIndex) {
     dates.push({
       date,
       day,
-      weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
+      weekday: weekdayNames[date.getDay()],
       key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
         day,
       ).padStart(2, "0")}`,
@@ -242,6 +243,13 @@ function getMonthDates(year, monthIndex) {
   return dates;
 }
 
+// Debug: log computed dates so you can inspect in browser console
+// (temporary - remove once verified)
+// eslint-disable-next-line no-unused-vars
+function _logDatesForDebug(dates) {
+  if (typeof console !== "undefined") console.debug("Attendance window dates:", dates);
+}
+
 function getCellClass(status, isWeekend, isAlternateRow = false) {
   const normalizedStatus = String(status || "").trim();
   const baseClass = `${tableCellBase} font-medium text-white`;
@@ -251,7 +259,7 @@ function getCellClass(status, isWeekend, isAlternateRow = false) {
   if (normalizedStatus === "P")
     return `${baseClass} bg-[#0A5D4D]`;
   if (normalizedStatus === "OFF")
-    return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
+    return `${baseClass} bg-[#0f1e36]`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":"))
     return `${baseClass} bg-[#3b82f6]`;
@@ -325,14 +333,28 @@ function normalizeAttendanceMap(employee) {
       const status =
         item.status || item.attendance || item.value || item.mark || "-";
 
-      if (dateKey) {
-        const parsedDate = new Date(dateKey);
-        const normalizedKey = Number.isNaN(parsedDate.getTime())
-          ? dateKey
-          : `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, "0")}-${String(
-              parsedDate.getDate(),
-            ).padStart(2, "0")}`;
-        attendance[normalizedKey] = status;
+      if (dateKey !== undefined && dateKey !== null) {
+        const rawKey = String(dateKey).trim();
+        let normalizedKey = rawKey;
+
+        if (!/^\d{1,2}$/.test(rawKey)) {
+          const parsedDate = new Date(rawKey);
+          if (!Number.isNaN(parsedDate.getTime())) {
+            normalizedKey = `${parsedDate.getFullYear()}-${String(
+              parsedDate.getMonth() + 1,
+            ).padStart(2, "0")}-${String(parsedDate.getDate()).padStart(2, "0")}`;
+          }
+        }
+
+        if (normalizedKey) {
+          attendance[normalizedKey] = status;
+          if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedKey)) {
+            const dayOnly = String(Number(normalizedKey.split("-")[2]));
+            if (!(dayOnly in attendance)) {
+              attendance[dayOnly] = status;
+            }
+          }
+        }
       }
 
       return attendance;
@@ -388,13 +410,15 @@ function normalizeEmployees(payload) {
 }
 
 function getAttendanceStatus(attendance, date) {
-  return (
-    attendance[date.key] ||
-    attendance[String(date.day)] ||
-    attendance[date.day] ||
-    attendance[date.key.split("-").reverse().join("-")] ||
-    "-"
-  );
+  if (!attendance || typeof attendance !== "object") return "-";
+
+  const dayKey = String(date.day);
+  if (attendance[dayKey] !== undefined) return attendance[dayKey];
+
+  const isoKey = date.key;
+  if (attendance[isoKey] !== undefined) return attendance[isoKey];
+
+  return "-";
 }
 
 export default function AttendanceManagement() {
@@ -404,7 +428,7 @@ export default function AttendanceManagement() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("Department");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const effectiveMonth = useMemo(
     () => (selectedMonth === "" ? new Date().getMonth() : Number(selectedMonth)),
@@ -420,6 +444,15 @@ export default function AttendanceManagement() {
     () => getMonthDates(effectiveYear, effectiveMonth),
     [effectiveMonth, effectiveYear],
   );
+  // Log computed dates for debugging (temporary)
+  useEffect(() => {
+    try {
+      if (typeof console !== "undefined") {
+        console.debug("Attendance window effectiveMonth/effectiveYear:", effectiveMonth, effectiveYear);
+      }
+      _logDatesForDebug(dates.map(d => ({ key: d.key, day: d.day, weekday: d.weekday })));
+    } catch (e) {}
+  }, [dates, effectiveMonth, effectiveYear]);
   const monthTitle = new Date(effectiveYear, effectiveMonth).toLocaleDateString(
     "en-US",
     {
@@ -434,7 +467,7 @@ export default function AttendanceManagement() {
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b));
 
-    return ["Department", ...new Set(types)];
+    return Array.from(new Set(types));
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -451,7 +484,7 @@ export default function AttendanceManagement() {
 
       const departmentType = getEmployeeDepartmentType(employee);
       const matchesDepartment =
-        selectedDepartment === "Department" || departmentType === selectedDepartment;
+        !selectedDepartment || departmentType === selectedDepartment;
 
       return matchesSearch && matchesDepartment;
     });
@@ -473,22 +506,21 @@ export default function AttendanceManagement() {
       return row;
     });
 
+    // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([[monthTitle], headerRow, ...dataRows]);
-    worksheet.A1.s = {
-      alignment: {
-        horizontal: "center",
-        vertical: "center",
-      },
-      font: {
-        bold: true,
-      },
-    };
+    if (worksheet.A1) {
+      worksheet.A1.s = {
+        alignment: { horizontal: "center", vertical: "center" },
+        font: { bold: true, sz: 14 },
+      };
+    }
     worksheet["!merges"] = [
       {
         s: { r: 0, c: 0 },
         e: { r: 0, c: headerRow.length - 1 },
       },
     ];
+    worksheet["!rows"] = [{ hpx: 28 }];
 
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, "Attendance Report");
@@ -513,7 +545,7 @@ export default function AttendanceManagement() {
         const year = effectiveYear;
 
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${month}&year=${year}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster/v1?month=${month}&year=${year}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
@@ -568,7 +600,7 @@ export default function AttendanceManagement() {
     </span>
 
     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />
+      <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
       OFF
     </span>
 
@@ -579,7 +611,7 @@ export default function AttendanceManagement() {
   </div>
 </div>
             <div className="mt-3 flex w-full flex-wrap items-center gap-2">
-              <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-[1.3fr_0.8fr_0.8fr_0.8fr_136px]">
+              <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-5">
                   <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Search</span>
                   <Search
@@ -606,6 +638,7 @@ export default function AttendanceManagement() {
                       value=""
                       disabled
                       hidden
+                      style={{ display: "none" }}
                       className="bg-[#071425] text-white text-[#9ca3af]"
                     >
                       Department
