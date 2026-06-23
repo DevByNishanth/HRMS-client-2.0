@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     ChevronDown,
     Eye,
@@ -13,6 +13,7 @@ import CommonHeader from "../../../../components/CommonHeader";
 import AddFacultyForm from "./AddFacultyForm";
 import EditFacultyCanvas from "./EditFacultyCanvas";
 import userImg from "../../../../assets/userImg.svg";
+import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -92,6 +93,11 @@ const SelectFilter = ({ label, value, onChange, options }) => (
 );
 
 const FacultyManagementPage = () => {
+
+    // Auth 
+    const token = localStorage.getItem("hrms_token");
+    let decoded = jwtDecode(token)
+
     const navigate = useNavigate();
     const [isAddFacultyOpen, setIsAddFacultyOpen] = useState(false);
     const [editingFaculty, setEditingFaculty] = useState(null);
@@ -212,7 +218,7 @@ const FacultyManagementPage = () => {
             return;
         }
 
-        navigate(`/profile/${facultyId}`);
+        navigate(`/profile/${decoded?.facultyId}`);
     };
 
     const handleDeleteFaculty = async () => {

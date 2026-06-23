@@ -1,27 +1,90 @@
 import React from "react";
-import { BadgeIndianRupee, CreditCard, Download, Eye, EyeOff, Files } from "lucide-react";
+import { BadgeIndianRupee, CreditCard, Download, Eye, EyeOff, Files, Landmark } from "lucide-react";
 import ProfileCard from "./ProfileCard";
 
-const docs = [
-  {
-    label: "Aadhaar Number",
-    maskedValue: "**** **** 8824",
-    value: "4321 5678 8824",
-    icon: BadgeIndianRupee,
-    canReveal: true,
-  },
-  {
-    label: "PAN Card",
-    value: "BYPMPH4321L",
-    icon: CreditCard,
-  },
-];
+const maskValue = (value) => {
+  if (!value) return null;
+  if (value.length <= 4) return `**** ${value.slice(-4)}`;
+  return `**** ${value.slice(-4)}`;
+};
 
-const DocumentsCard = () => {
+const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
   const [showAadhaar, setShowAadhaar] = React.useState(false);
 
+  // Extract identity and bank details from faculty data
+  const aadhaarNumber = faculty?.identityDetails?.aadharNumber || faculty?.aadharNumber || "";
+  const panNumber = faculty?.identityDetails?.panNumber || faculty?.panNumber || "";
+  const bankName = faculty?.bankDetails?.bankName || faculty?.bankName || "";
+  const accountNumber = faculty?.bankDetails?.accountNumber || faculty?.accountNumber || "";
+  const ifscCode = faculty?.bankDetails?.ifscCode || faculty?.ifscCode || "";
+  const branch = faculty?.bankDetails?.branchLocation || faculty?.branch || "";
+
+  const docs = [];
+
+  if (aadhaarNumber) {
+    docs.push({
+      label: "Aadhaar Number",
+      maskedValue: maskValue(aadhaarNumber),
+      value: aadhaarNumber,
+      icon: BadgeIndianRupee,
+      canReveal: true,
+    });
+  }
+
+  if (panNumber) {
+    docs.push({
+      label: "PAN Card",
+      value: panNumber,
+      icon: CreditCard,
+      canReveal: false,
+    });
+  }
+
+  if (bankName || accountNumber) {
+    docs.push({
+      label: "Bank Name",
+      value: bankName || "N/A",
+      icon: Landmark,
+      canReveal: false,
+    });
+    docs.push({
+      label: "Account Number",
+      value: accountNumber || "N/A",
+      icon: CreditCard,
+      canReveal: false,
+    });
+  }
+
+  if (ifscCode) {
+    docs.push({
+      label: "IFSC Code",
+      value: ifscCode,
+      icon: BadgeIndianRupee,
+      canReveal: false,
+    });
+  }
+
+  // Fallback: if no backend data, show placeholder
+  if (docs.length === 0) {
+    docs.push(
+      {
+        label: "Aadhaar Number",
+        maskedValue: "**** **** 8824",
+        value: "4321 5678 8824",
+        icon: BadgeIndianRupee,
+        canReveal: true,
+      },
+      {
+        label: "PAN Card",
+        value: "BYPMPH4321L",
+        icon: CreditCard,
+        canReveal: false,
+      }
+    );
+  }
+
   return (
-    <ProfileCard title="Document & bank details" icon={Files}>
+    <ProfileCard title="Document & bank details" icon={Files} canEdit={canEdit} onEdit={onEdit}>
       <div className="space-y-3">
         {docs.map((doc) => {
           const Icon = doc.icon;

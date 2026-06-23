@@ -236,11 +236,12 @@ const OdApprovalsPage = () => {
         const dept = decodedData?.department || decodedData?.departmentName;
 
         const res = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/?department=${dept}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();
 
+        console.log(data.leaveApplications);
         if (res.ok && data?.leaveApplications) {
           const mapped = data.leaveApplications.map((app) => {
             const name = app.facultyId
@@ -249,33 +250,34 @@ const OdApprovalsPage = () => {
             const designation = app.facultyId?.designation || "";
             const department = app.facultyId?.department || "";
             const leaveType = app.leaveTypeId?.leaveName || app.leaveType || "Leave";
-
+            const leaveTypeCategory = app.leaveTypeId?.leaveCategory;
             return {
               _id: app._id,
               name,
               designation,
               department,
               leaveType,
+              leaveTypeCategory,
               date: app.fromDate
                 ? new Date(app.fromDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               fromDate: app.fromDate
                 ? new Date(app.fromDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               toDate: app.toDate
                 ? new Date(app.toDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               session: "Full Day",
               purpose: app.reason || leaveType,
@@ -283,11 +285,15 @@ const OdApprovalsPage = () => {
               status: app.status || "Pending",
             };
           });
-          setRequests(mapped);
+
+          let finalData = mapped.filter((item) => {
+            return item.leaveTypeCategory == "On Duty"
+          })
+          setRequests(finalData);
         }
       } catch (err) {
         console.error("Error fetching OD requests:", err);
-        toast.error("Failed to load requests");
+        // toast.error("Failed to load requests");
       } finally {
         setLoading(false);
       }
@@ -295,6 +301,9 @@ const OdApprovalsPage = () => {
 
     fetchRequests();
   }, []);
+
+  console.log("req : ", requests)
+
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
@@ -472,8 +481,8 @@ const OdApprovalsPage = () => {
                         key={status}
                         onClick={() => setStatusFilter(status)}
                         className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition ${statusFilter === status
-                            ? "bg-[#2563EB] text-white"
-                            : "text-[#8ca1bd] hover:text-white"
+                          ? "bg-[#2563EB] text-white"
+                          : "text-[#8ca1bd] hover:text-white"
                           }`}
                       >
                         {status}

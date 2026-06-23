@@ -82,6 +82,12 @@ const PermissionPage = () => {
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
   const [permissionStats, setPermissionStats] = useState(defaultPermissionStats);
   const [remainingPermission, setRemainingPermission] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handlePermissionSubmitted = () => {
+    fetchPermissionStats();
+    setRefreshKey((prev) => prev + 1);
+  };
 
   const fetchPermissionStats = async () => {
     try {
@@ -170,7 +176,7 @@ const PermissionPage = () => {
               ))}
             </div>
 
-            <PermissionTable />
+            <PermissionTable key={refreshKey} />
           </div>
         </main>
       </div>
@@ -179,7 +185,7 @@ const PermissionPage = () => {
         <ApplyPerimission
           onClose={() => setIsPermissionApplyModal(false)}
           remainingPermission={remainingPermission}
-          onPermissionSubmitted={fetchPermissionStats}
+          onPermissionSubmitted={handlePermissionSubmitted}
         />
       )}
     </div>
