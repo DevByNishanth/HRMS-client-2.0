@@ -132,6 +132,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
             if (res.ok && data?.success) {
                 toast.success("Regularization request submitted successfully!");
                 setReason("");
+                setAttachments([])
                 setFormError("");
                 setFieldErrors({});
                 setTimeout(() => onClose(), 2000);
@@ -196,7 +197,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
 
                     <button
                         type="button"
-                        onClick={() => { onClose(); setFormError(""); setReason("") }}
+                        onClick={() => { onClose(); setFormError(""); setReason(""); setAttachments([]) }}
                         className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
                         aria-label="Close regularization form"
                     >

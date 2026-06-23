@@ -29,6 +29,7 @@ const Sidebar = () => {
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
         { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
         ];
 
@@ -50,6 +51,7 @@ const Sidebar = () => {
         { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
         { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-principal/permissions' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard-principal/compOff' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard-principal/regularizationList' },
     ];
 
@@ -60,6 +62,8 @@ const Sidebar = () => {
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+
     ];
 
     // Navigation items for Dean (same as Faculty + OD Approvals)
@@ -70,6 +74,7 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-dean/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'OD Approvals', icon: CalendarPlus, path: '/dashboard-dean/od-approvals' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
     ];
 
     // Determine navigation items based on role
@@ -81,6 +86,9 @@ const Sidebar = () => {
         case 'hr':
             navItems = adminNavItems;
             break;
+        case 'admin':
+            navItems = adminNavItems;
+            break;
         case 'principal':
             navItems = principalNavItems;
             break;
@@ -88,6 +96,15 @@ const Sidebar = () => {
             navItems = nonTeachingNavItems;
             break;
         case 'dean':
+            navItems = deanNavItems;
+            break;
+        case 'dean-iqac':
+            navItems = deanNavItems;
+            break;
+        case 'dean-research':
+            navItems = deanNavItems;
+            break;
+        case 'dean-academics':
             navItems = deanNavItems;
             break;
         case 'coe':

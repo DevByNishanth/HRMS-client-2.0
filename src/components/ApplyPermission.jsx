@@ -286,15 +286,16 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                             />
                         </div>
 
-                        {error && (
-                            <div className="rounded-md border border-red-500 bg-[#631a1a] p-3 text-sm text-red-100">
-                                {error}
-                            </div>
-                        )}
+
                     </div>
                 </div>
 
-                <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+                <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4 ">
+                    {error && (
+                        <div className="rounded-md border border-red-500 bg-[#631a1a] p-3 text-sm text-red-100 mb-2">
+                            {error}
+                        </div>
+                    )}
                     <button
                         type="submit"
                         disabled={submitting}

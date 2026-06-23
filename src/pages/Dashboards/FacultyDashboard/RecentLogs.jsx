@@ -93,12 +93,12 @@ const RecentLogs = () => {
               if (isHoliday) {
                 return (
                   <tr key={record.attendanceId || record.date} className="">
-                    <td className="bg-orange-300/20 rounded-bl-lg"></td>
-                    <td className="bg-orange-300/20 "></td>
-                    <td className="bg-orange-300/20 "></td>
-                    <td className="py-2 bg-orange-300/20 pl-4"><h1 className="text-xl text-orange-300">{record?.holidayName}</h1></td>
-                    <td className="bg-orange-300/20 -b-lg"></td>
-                    <td className="bg-orange-300/20 rounded-br-lg"></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="py-2 bg-white/10 pl-4"><h1 className="text-xl text-white">{record?.holidayName}</h1></td>
+                    <td className="bg-white/10 -b-lg"></td>
+                    <td className="bg-white/10 "></td>
                   </tr>
                 );
               }

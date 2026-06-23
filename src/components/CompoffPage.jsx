@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import Sidebar from './Siedbar'
 import CommonHeader from './CommonHeader'
 import { Plus } from 'lucide-react'
 import FacultyCompOffTable from './FacultyCompOffTable'
+import HodCompOffTable from './HodCompOffTable'
 import ApplyCompOffForm from './ApplyCompOffForm'
 import { jwtDecode } from 'jwt-decode'
 
@@ -18,7 +19,16 @@ const CompoffPage = () => {
     // states 
     const [selectedTab, setSelectedTab] = useState("My Compoff")
     const [showCompOffForm, setShowCompOffForm] = useState(false)
+    const [refreshKey, setRefreshKey] = useState(0)
+    const [approvalCount, setApprovalCount] = useState(0)
 
+    const handleFormSuccess = useCallback(() => {
+        setRefreshKey((k) => k + 1)
+    }, [])
+
+    const handleApprovalCountChange = useCallback((count) => {
+        setApprovalCount(count)
+    }, [])
 
     return (
         <>
@@ -48,25 +58,41 @@ const CompoffPage = () => {
 
 
                         {/* main container  */}
-                        <div className="mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138]  py-2">
+                        <div className="mt-4 w-full ">
 
                             {/* tabs  */}
-                            {role == "hod" && <div className="flex items-center gap-2 mx-4 mt-2">
+                            {role == "hod" && <div className="flex items-center gap-2 mt-2  bg-[#0d2138] w-full py-2 px-4 rounded-lg border border-[#213857]">
                                 {tabs.map((tab) => {
+                                    const count = tab === "Approvals" ? approvalCount : null
                                     return <button
                                         type="button"
                                         onClick={() => setSelectedTab(tab)}
                                         key={tab}
-                                        className={`px-6 py-2 text-sm font-medium transition ${tab === selectedTab
+                                        className={`inline-flex items-center gap-2 px-6 py-2 text-sm font-medium transition ${tab === selectedTab
                                             ? "rounded-md bg-[#2563EB] text-white"
                                             : "rounded-md hover:bg-slate-600/20"
                                             }`}
-                                    >{tab}</button>
+                                    >
+                                        {tab}
+                                        {count !== null && (
+                                            <span className={`inline-flex items-center justify-center min-w-[20px] h-5 rounded-md px-1.5 text-[11px] font-semibold ${tab === selectedTab
+                                                ? "bg-white text-black"
+                                                : "bg-[#ffffff] text-[#000000]"
+                                                }`}>
+                                                {count}
+                                            </span>
+                                        )}
+                                    </button>
                                 })}
                             </div>}
 
-                            {/* main content  */}
-                            {selectedTab === "My Compoff" ? <FacultyCompOffTable /> : ""}
+                            {/* main content — always render both, hide inactive one */}
+                            <div className={selectedTab !== "My Compoff" ? "hidden" : ""}>
+                                <FacultyCompOffTable key={`faculty-${refreshKey}`} />
+                            </div>
+                            <div className={selectedTab !== "Approvals" ? "hidden" : ""}>
+                                <HodCompOffTable key={`hod-${refreshKey}`} onCountChange={handleApprovalCountChange} />
+                            </div>
 
 
                         </div>
@@ -78,7 +104,7 @@ const CompoffPage = () => {
 
             </div>
 
-            {showCompOffForm && <ApplyCompOffForm onClose={() => setShowCompOffForm(false)} />}
+            {showCompOffForm && <ApplyCompOffForm onClose={() => setShowCompOffForm(false)} onSuccess={handleFormSuccess} />}
 
         </>
     )

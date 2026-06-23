@@ -30,6 +30,11 @@ const PrincipalPermissionPage = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [filterDepartment, setFilterDepartment] = useState("All");
   const [isDeptOpen, setIsDeptOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handlePermissionSubmitted = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   const handleForMe = () => {
     setSelectedEmployee(null);
@@ -112,13 +117,13 @@ const PrincipalPermissionPage = () => {
               </div>
             </div>
 
-            <PrincipalPermissionTable filterDepartment={filterDepartment} />
+            <PrincipalPermissionTable key={refreshKey} filterDepartment={filterDepartment} />
           </div>
         </main>
       </div>
 
       {isPermissionApplyModal && (
-        <ApplyPermission onClose={handleCloseForm} employee={selectedEmployee} />
+        <ApplyPermission onClose={handleCloseForm} employee={selectedEmployee} onPermissionSubmitted={handlePermissionSubmitted} />
       )}
       {isFacultySearch && (
         <FacultySearchPopup onClose={() => setIsFacultySearch(false)} onSelect={handleFacultySelect} />
