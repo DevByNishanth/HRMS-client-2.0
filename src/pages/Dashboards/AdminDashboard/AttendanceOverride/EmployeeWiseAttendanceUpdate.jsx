@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
 import { updateAttendanceOverrideEmployeeBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideEmployeeBulk";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function EmployeeWiseAttendanceUpdate() {
 
@@ -27,6 +29,7 @@ export default function EmployeeWiseAttendanceUpdate() {
     const [editedRows, setEditedRows] = useState([]);
     // const [isBulkOverride, setIsBulkOverride] = useState(false);
     const [updateLoading, setUpdateLoading] = useState(false);
+    const [openPicker, setOpenPicker] = useState(null);
 
     const dropdownRef = useRef();
 
@@ -195,7 +198,9 @@ export default function EmployeeWiseAttendanceUpdate() {
         }
         // Single / Bulk Row Edit
         if (editedRows.length === 0) {
-            alert("Please modify at least one attendance record");
+            toast.warning(
+                "Please modify at least one attendance record"
+            );
             return;
         }
         setModalMode(
@@ -300,7 +305,16 @@ export default function EmployeeWiseAttendanceUpdate() {
                     ref={dropdownRef}
                 >
                     <div className="relative">
-
+                        <Search
+                            size={18}
+                            className="
+                                absolute
+                                left-4
+                                top-1/2
+                                -translate-y-1/2
+                                text-[#6f839f]
+                            "
+                        />
                         <input
                             type="text"
                             value={employeeSearch}
@@ -310,13 +324,24 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 )
                             }
                             placeholder="Search Employee"
-                            className="h-10 w-[300px] rounded-lg border border-[#244061] bg-[#0d2138] text-white px-4"
+                            className="h-10 pl-11 w-[300px] rounded-lg border border-[#244061] bg-[#0d2138] text-white px-4"
                         />
 
                         {showDropdown &&
                             employeeSuggestions.length > 0 && (
-                                <div className="absolute top-12 z-50 w-full rounded-lg border border-[#244061] bg-[#172c46] shadow-xl overflow-hidden">
-
+                                <div className="absolute
+                                    top-12
+                                    z-50
+                                    w-[300px]
+                                    max-h-[300px]
+                                    overflow-y-auto
+                                    custom-scrollbar
+                                    rounded-lg
+                                    border
+                                    border-[#244061]
+                                    bg-[#172c46]
+                                    shadow-xl"
+                                >
                                     {employeeSuggestions.map(
                                         (employee) => (
                                             <div
@@ -371,6 +396,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                             value={fromDate}
                             onChange={setFromDate}
                             placeholder="Date From"
+                            isOpen={openPicker === "from"}
+                            setIsOpen={(open) =>
+                                setOpenPicker(open ? "from" : null)
+                            }
                         />
                     </div>
 
@@ -383,6 +412,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                             value={toDate}
                             onChange={setToDate}
                             placeholder="Date To"
+                            isOpen={openPicker === "to"}
+                            setIsOpen={(open) =>
+                                setOpenPicker(open ? "to" : null)
+                            }
                         />
                     </div>
 
@@ -400,6 +433,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
+                                cursor-pointer
                             "
                         >
                             Export Excel
@@ -422,6 +456,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     bg-[#0d2138]
                                     text-[#8ca1bd]
                                     hover:bg-[#13263d]
+                                    cursor-pointer
                                 "
                             >
                                 Reset Filters 
@@ -586,7 +621,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 : "-"}
                                         </td>
 
-                                        <td className="px-3 py-3 text-center">
+                                        <td className="px-3 py-3 text-center cursor-pointer">
                                             <select
                                                 value={row.session1}
                                                 onChange={(e) =>
@@ -596,7 +631,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                         e.target.value
                                                     )
                                                 }
-                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white"
+                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white cursor-pointer"
                                             >
                                                 <option value="P">
                                                     P
@@ -610,7 +645,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                             </select>
                                         </td>
 
-                                        <td className="px-3 py-3 text-center">
+                                        <td className="px-3 py-3 text-center cursor-pointer">
                                             <select
                                                 value={row.session2}
                                                 onChange={(e) =>
@@ -620,7 +655,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                         e.target.value
                                                     )
                                                 }
-                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white"
+                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white cursor-pointer"
                                             >
                                                 <option value="P">
                                                     P
@@ -643,7 +678,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                 <div className="mt-5 flex justify-end">
                     <button
                         onClick={openOverrideModal}
-                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-white font-medium hover:bg-[#2d73e8]"
+                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-white font-medium hover:bg-[#2d73e8] cursor-pointer"
                     >
                         Override
                     </button>
@@ -680,6 +715,9 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     remarks: formData.remarks,
                                 }
                             );
+                            toast.success(
+                                "Attendance Updated Successfully"
+                            );
                         }
                         else if (modalMode === "bulk-row") {
                             const editedRecords = filteredAttendance.filter(
@@ -698,6 +736,9 @@ export default function EmployeeWiseAttendanceUpdate() {
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,
                                 payload
+                            );
+                            toast.success(
+                                "Attendance Updated Successfully"
                             );
                         }
                         else if (modalMode === "bulk-selected") {
@@ -718,6 +759,9 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 selectedEmployee.facultyId,
                                 payload
                             );
+                            toast.success(
+                                "Attendance Updated Successfully"
+                            );
                         }
                         setShowModal(false);
                         const refreshed =
@@ -736,7 +780,8 @@ export default function EmployeeWiseAttendanceUpdate() {
                         setEditedRows([]);
                     } catch (error) {
                         console.error(error);
-                        alert(
+                        toast.error(
+                            error?.response?.data?.message ||
                             "Failed To Update Attendance"
                         );
                     } finally {

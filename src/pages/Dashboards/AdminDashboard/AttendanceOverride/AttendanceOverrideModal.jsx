@@ -22,7 +22,9 @@ export default function AttendanceOverrideModal({
     const handleSubmit = () => {
         if (loading) return;
         if (!remarks.trim()) {
-            alert("Please enter remarks");
+            toast.warning(
+                "Please enter remarks"
+            );
             return;
         }
 
@@ -54,6 +56,7 @@ export default function AttendanceOverrideModal({
                             text-xl
                             text-[#8ca1bd]
                             hover:text-white
+                            cursor-pointer
                             ${loading ? "opacity-50 cursor-not-allowed" : ""}
                         `}
                     >
@@ -76,7 +79,7 @@ export default function AttendanceOverrideModal({
                                     onChange={(e) =>
                                         setSession1(e.target.value)
                                     }
-                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white"
+                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white cursor-pointer"
                                 >
                                     <option value="P">Present (P)</option>
                                     <option value="A">Absent (A)</option>
@@ -94,7 +97,7 @@ export default function AttendanceOverrideModal({
                                     onChange={(e) =>
                                         setSession2(e.target.value)
                                     }
-                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white"
+                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white cursor-pointer"
                                 >
                                     <option value="P">Present (P)</option>
                                     <option value="A">Absent (A)</option>
@@ -132,6 +135,7 @@ export default function AttendanceOverrideModal({
                             px-6
                             py-2
                             text-white
+                            cursor-pointer
                             ${loading ? "opacity-50 cursor-not-allowed" : ""}
                         `}
                     >
@@ -150,6 +154,7 @@ export default function AttendanceOverrideModal({
                             px-6
                             py-2
                             text-white
+                            cursor-pointer
                             ${loading ? "opacity-70 cursor-not-allowed" : ""}
                         `}
                     >

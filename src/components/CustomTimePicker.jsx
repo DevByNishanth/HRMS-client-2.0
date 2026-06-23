@@ -57,6 +57,7 @@ export default function CustomTimePicker({
             rounded-lg
             bg-[#0D2138]
             text-white
+            cursor-pointer
             border
             ${
                 error

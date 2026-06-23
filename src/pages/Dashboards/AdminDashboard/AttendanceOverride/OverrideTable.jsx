@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CustomDropdown from "../../../../components/CustomDropdown";
-import { X } from "lucide-react";
+import { X,Search } from "lucide-react";
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
@@ -11,7 +11,9 @@ import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(isBetween);
 
 export default function OverrideTable({ data = [] }) {  
-    const [attendanceDate, setAttendanceDate] = useState(null);
+    // const [attendanceDate, setAttendanceDate] = useState(null);
+    const [fromDate, setFromDate] = useState(null);
+    const [toDate, setToDate] = useState(null);
     const [overrideData, setOverrideData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [department, setDepartment] = useState("");
@@ -30,15 +32,16 @@ export default function OverrideTable({ data = [] }) {
     }, [overrideData]);
 
     const formatDate = (value) => {
-    if (!value) return "-";
-
-    return new Date(value).toLocaleDateString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-    });
-};
+        if (!value) return "-";
+        if (value.includes?.(" to ")) {
+            const [startDate, endDate] = value.split(" to ");
+            return `${formatDate(startDate.trim())} to ${formatDate(endDate.trim())}`;
+        }
+        // Parse date parts directly to avoid UTC timezone shift
+        const datePart = value.split("T")[0].trim(); // "2026-05-31"
+        const [year, month, day] = datePart.split("-");
+        return `${day}-${month}-${year}`;
+    };
 
     const formatTime = (value) => {
         if (!value) return "-";
@@ -78,32 +81,37 @@ export default function OverrideTable({ data = [] }) {
     // ];
 
     const hasActiveFilters =
-        attendanceDate ||
-        // dateRange ||
+        fromDate ||
+        toDate ||
         employeeSearch ||
         department ||
         employeeCategory;
 
     const filteredData = overrideData.filter((item) => {
         let dateMatch = true;
-        if (attendanceDate) {
-            const selectedDate = dayjs(attendanceDate);
-
+        if (fromDate || toDate) {
+            const filterFrom = fromDate
+                ? dayjs(fromDate).startOf("day")
+                : null;
+            const filterTo = toDate
+                ? dayjs(toDate).endOf("day")
+                : null;
             if (item.attendanceDate?.includes(" to ")) {
-                const [fromDate, toDate] =
+                const [startDate, endDate] =
                     item.attendanceDate.split(" to ");
-
-                dateMatch = selectedDate.isBetween(
-                    dayjs(fromDate),
-                    dayjs(toDate),
-                    "day",
-                    "[]"
-                );
+                const itemStart =
+                    dayjs(startDate).startOf("day");
+                const itemEnd =
+                    dayjs(endDate).endOf("day");
+                dateMatch =
+                    (!filterFrom || itemEnd.isSame(filterFrom) || itemEnd.isAfter(filterFrom)) &&
+                    (!filterTo || itemStart.isSame(filterTo) || itemStart.isBefore(filterTo));
             } else {
-                dateMatch = selectedDate.isSame(
-                    dayjs(item.attendanceDate),
-                    "day"
-                );
+                const itemDate =
+                    dayjs(item.attendanceDate);
+                dateMatch =
+                    (!filterFrom || itemDate.isSame(filterFrom) || itemDate.isAfter(filterFrom)) &&
+                    (!filterTo || itemDate.isSame(filterTo) || itemDate.isBefore(filterTo));
             }
         }
 
@@ -139,13 +147,34 @@ export default function OverrideTable({ data = [] }) {
 
             const response = await getAttendanceOverrideHistory();
 
-            console.log("API Response:", response);
-            console.log("API Data:", response.data);
+            // Fix attendanceDate using firstIn converted to IST
+            const fixedData = response.data.map((item) => {
+                if (item.firstIn) {
+                    const istDate = new Date(item.firstIn).toLocaleDateString("en-CA", {
+                        timeZone: "Asia/Kolkata", // en-CA gives "YYYY-MM-DD" format
+                    });
 
-            const sortedData = [...response.data].sort(
-                (a, b) =>
-                    new Date(b.overriddenOn) -
-                    new Date(a.overriddenOn)
+                    // If it's a range, fix only the start date, keep end date from lastOut
+                    if (item.attendanceDate?.includes(" to ")) {
+                        const endIstDate = new Date(item.lastOut).toLocaleDateString("en-CA", {
+                            timeZone: "Asia/Kolkata",
+                        });
+                        return {
+                            ...item,
+                            attendanceDate: `${istDate} to ${endIstDate}`,
+                        };
+                    }
+
+                    return {
+                        ...item,
+                        attendanceDate: istDate,
+                    };
+                }
+                return item;
+            });
+
+            const sortedData = [...fixedData].sort(
+                (a, b) => new Date(b.overriddenOn) - new Date(a.overriddenOn)
             );
 
             setOverrideData(sortedData);
@@ -210,7 +239,7 @@ export default function OverrideTable({ data = [] }) {
                 Department:
                     item.department,
                 Attendance_Date:
-                    item.attendanceDate,
+                    formatDate(item.attendanceDate),
                 First_In:
                     item.firstIn,
                 Last_Out:
@@ -289,21 +318,62 @@ export default function OverrideTable({ data = [] }) {
 
             <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap items-center justify-between gap-4">
                 <h1 className="text-[18px] font-semibold text-white">
-                    Override History
+                    Override History ({filteredData.length})
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-3">
-
-                    <div className="w-[270px]">
+                    <div className="w-[160px]">
                         <CustomDatePicker
-                            value={attendanceDate}
-                            onChange={setAttendanceDate}
-                            placeholder="Attendance Date"
-                            // options={dateOptions}
+                            value={fromDate}
+                            onChange={setFromDate}
+                            placeholder="Date From"
                         />
                     </div>
 
-                    <div className="w-[220px]">
+                    <span className="text-[#8ca1bd]">
+                        to
+                    </span>
+
+                    <div className="w-[160px]">
+                        <CustomDatePicker
+                            value={toDate}
+                            onChange={setToDate}
+                            placeholder="Date To"
+                        />
+                    </div>
+                    <div className="w-[250px] relative">
+                        <Search
+                            size={18}
+                            className="
+                                absolute
+                                left-4
+                                top-1/2
+                                -translate-y-1/2
+                                text-[#6f839f]
+                            "
+                        />
+                        <input
+                            type="text"
+                            value={employeeSearch}
+                            onChange={(e) => setEmployeeSearch(e.target.value)}
+                            placeholder="Search Employee"
+                            className="
+                                w-full
+                                h-11
+                                pl-11
+                                px-4
+                                rounded-lg
+                                border
+                                border-[#244061]
+                                bg-[#0d2138]
+                                text-white
+                                placeholder:text-[#8ca1bd]
+                                focus:outline-none
+                                focus:border-[#3984ff]
+                            "
+                        />
+                    </div>
+                    <div className="w-[150px]">
                         <CustomDropdown
                             value={department}
                             placeholder="Department"
@@ -318,44 +388,19 @@ export default function OverrideTable({ data = [] }) {
                             onChange={setDepartment}
                         />
                     </div>
-
-                    <div className="w-[250px]">
-                        <input
-                            type="text"
-                            value={employeeSearch}
-                            onChange={(e) => setEmployeeSearch(e.target.value)}
-                            placeholder="Search Employee"
-                            className="
-                                w-full
-                                h-11
-                                px-4
-                                rounded-lg
-                                border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                text-white
-                                placeholder:text-[#8ca1bd]
-                                focus:outline-none
-                                focus:border-[#3984ff]
-                            "
-                        />
-                    </div>
-
-                    <div className="w-[220px]">
+                    <div className="w-[200px]">
                         <CustomDropdown
                             value={employeeCategory}
                             placeholder="Employee Category"
                             options={[
-                                ...new Set(
-                                    overrideData
-                                        .map(item => item.employeeCategory)
-                                        .filter(Boolean)
-                                )
+                                "Teaching",
+                                "Non-Teaching",
+                                "HouseKeeping",
+                                "Driver",
                             ]}
                             onChange={setEmployeeCategory}
                         />
                     </div>
-
                     <button
                         onClick={exportSelectedEmployees}
                         className="
@@ -367,21 +412,22 @@ export default function OverrideTable({ data = [] }) {
                             text-[#3984ff]
                             hover:bg-[#3984ff]
                             hover:text-white
+                            cursor-pointer
                         "
                     >
                         Export Excel
                     </button>
-
                     {hasActiveFilters && (
                         <button
                             onClick={() => {
                                 // setDateRange("");
-                                setAttendanceDate(null);
+                                setFromDate(null);
+                                setToDate(null);
                                 setEmployeeSearch("");
                                 setDepartment("");
                                 setEmployeeCategory("");
                             }}
-                            className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd]"
+                            className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
                         >
                             Reset Filter
                             <X size={18} />
@@ -503,21 +549,9 @@ export default function OverrideTable({ data = [] }) {
                                         <td className="px-5 py-3">
                                             {item.attendanceDate?.includes(" to ") ? (
                                                 <div className="flex flex-col">
-                                                    <span>
-                                                        {formatDate(
-                                                            item.attendanceDate.split(" to ")[0]
-                                                        )}
-                                                    </span>
-
-                                                    <span className="text-xs text-[#8ca1bd]">
-                                                        to
-                                                    </span>
-
-                                                    <span>
-                                                        {formatDate(
-                                                            item.attendanceDate.split(" to ")[1]
-                                                        )}
-                                                    </span>
+                                                    <span>{formatDate(item.attendanceDate.split(" to ")[0])}</span>
+                                                    <span className="text-xs text-[#8ca1bd]">to</span>
+                                                    <span>{formatDate(item.attendanceDate.split(" to ")[1])}</span>
                                                 </div>
                                             ) : (
                                                 formatDate(item.attendanceDate)

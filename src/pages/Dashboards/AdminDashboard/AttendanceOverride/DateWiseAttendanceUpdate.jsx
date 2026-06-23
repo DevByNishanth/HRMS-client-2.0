@@ -5,10 +5,12 @@ import { getAttendanceByDate } from "../../../../services/attendanceOverride/get
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
 import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideBulk";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-import { X } from "lucide-react";
+import { X,Search } from "lucide-react";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function DateWiseAttendanceUpdate() {
 
@@ -168,11 +170,17 @@ export default function DateWiseAttendanceUpdate() {
                 payload
             );
 
+            toast.success("Attendance updated successfully!");
+
             setOverrideModal(false);
             setEditedRows({});
             fetchAttendance();
         } catch (error) {
             console.error(error);
+            toast.error(
+                error?.response?.data?.message ||
+                "Failed to update attendance"
+            );
         } finally {
             setLoading(false);
         }
@@ -222,7 +230,7 @@ export default function DateWiseAttendanceUpdate() {
             await updateAttendanceOverrideBulk(
                 payload
             );
-
+            toast.success("Attendance updated successfully!");
             setOverrideModal(false);
             setSelectedRows([]);
             setEditedRows({});
@@ -231,6 +239,10 @@ export default function DateWiseAttendanceUpdate() {
         } catch (error) {
             console.error(
                 error.response?.data || error
+            );
+            toast.error(
+                error?.response?.data?.message ||
+                "Failed to update attendance"
             );
         } finally {
             setLoading(false);
@@ -267,7 +279,7 @@ export default function DateWiseAttendanceUpdate() {
                 payload
             );
             console.log("Bulk Response:", response);
-
+            toast.success("Attendance updated successfully!");
             setOverrideModal(false);
             setSelectedRows([]);
             fetchAttendance();
@@ -276,6 +288,10 @@ export default function DateWiseAttendanceUpdate() {
             console.error(
                 "Bulk Selected Error:",
                 error.response?.data || error
+            );
+            toast.error(
+                error?.response?.data?.message ||
+                "Failed to update attendance"
             );
         } finally {
             setLoading(false);
@@ -357,22 +373,35 @@ export default function DateWiseAttendanceUpdate() {
                         />
                     </div>
 
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search Employee"
-                        className="
-                            h-11
-                            w-[250px]
-                            rounded-lg
-                            bg-[#13263d]
-                            border
-                            border-[#23476f]
-                            px-4
-                            text-white
-                        "
-                    />
+                    <div className="relative">
+                        <Search
+                            size={18}
+                            className="
+                                absolute
+                                left-4
+                                top-1/2
+                                -translate-y-1/2
+                                text-[#6f839f]
+                            "
+                        />
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search Employee"
+                            className="
+                                h-11
+                                pl-11
+                                w-[250px]
+                                rounded-lg
+                                bg-[#13263d]
+                                border
+                                border-[#23476f]
+                                px-4
+                                text-white
+                            "
+                        />
+                    </div>
 
                     <div className="w-[180px]">
                         <CustomDropdown
@@ -407,6 +436,7 @@ export default function DateWiseAttendanceUpdate() {
                             transition
                             hover:bg-[#3984ff]
                             hover:text-white
+                            cursor-pointer
                         "
                     >
                         Export Excel
@@ -426,6 +456,7 @@ export default function DateWiseAttendanceUpdate() {
                                 bg-[#0d2138]
                                 text-[#8ca1bd]
                                 hover:bg-[#13263d]
+                                cursor-pointer
                             "
                         >
                             Reset Filters
@@ -535,6 +566,7 @@ export default function DateWiseAttendanceUpdate() {
                                                     border
                                                     border-[#23476f]
                                                     rounded
+                                                    cursor-pointer
                                                     px-2
                                                     py-1
                                                     ${isBulkSelectionMode
@@ -566,6 +598,7 @@ export default function DateWiseAttendanceUpdate() {
                                                     border
                                                     border-[#23476f]
                                                     rounded
+                                                    cursor-pointer
                                                     px-2
                                                     py-1
                                                     ${isBulkSelectionMode
@@ -655,6 +688,17 @@ export default function DateWiseAttendanceUpdate() {
 
                     handleBulkEditedOverride(data);
                 }}
+            />
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
             />
         </>
     );

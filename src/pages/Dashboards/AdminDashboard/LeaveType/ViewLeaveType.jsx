@@ -35,7 +35,7 @@ export default function ViewLeaveType({
 
                     <button
                         onClick={onClose}
-                        className="text-[#8ca1bd] hover:text-white"
+                        className="text-[#8ca1bd] hover:text-white cursor-pointer"
                     >
                         <X className="h-5 w-5" />
                     </button>

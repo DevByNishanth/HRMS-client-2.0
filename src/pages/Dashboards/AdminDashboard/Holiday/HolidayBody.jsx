@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddHoliday from "./AddHoliday";
-import { Pencil, Trash2, X } from "lucide-react";
+import { Pencil, Trash2, X,Plus,Search } from "lucide-react";
 import { getHolidays } from "../../../../services/holiday/getHolidayService";
 import { deleteHoliday } from "../../../../services/holiday/deleteHolidayService";
 import CustomDropdown from "../../../../components/CustomDropdown";
@@ -182,8 +182,9 @@ export default function HolidayBody() {
 
                 <button
                     onClick={() => setShowDrawer(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2 cursor-pointer"
                 >
+                    <span><Plus className="w-4"/></span>
                     Add Holiday
                 </button>
             </div>
@@ -192,25 +193,38 @@ export default function HolidayBody() {
                 <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <h1 className="shrink-0 text-[18px] font-semibold text-white">
-                            Holiday List
+                            Holiday List ({filteredHolidays.length})
                         </h1>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) =>
-                                setSearchTerm(e.target.value)
-                            }
-                            className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                            placeholder="Search Holiday Name..."
-                        />
-                        <div className="w-[180px]">
+                        <div className="relative">
+                            <Search
+                                size={18}
+                                className="
+                                    absolute
+                                    left-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-[#6f839f]
+                                "
+                            />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) =>
+                                    setSearchTerm(e.target.value)
+                                }
+                                className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-11 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                placeholder="Search Holiday Name..."
+                            />
+                        </div>
+                        <div className="w-[180px] ">
                             <CustomDatePicker
                                 value={holidayDateFilter}
                                 onChange={setHolidayDateFilter}
                                 placeholder="Holiday Date"
+                                className="cursor-pointer"
                             />
                         </div>
 
@@ -246,6 +260,7 @@ export default function HolidayBody() {
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
+                                cursor-pointer
                             "
                         >
                             Export Excel
@@ -259,7 +274,7 @@ export default function HolidayBody() {
                                     setEmployeeCategoryFilter("");
                                     setHolidayTypeFilter("");
                                 }}
-                                className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                                className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff] cursor-pointer"
                             >
                                 Reset Filters <X className="w-5 h-5"/>
                             </button>
@@ -355,7 +370,7 @@ export default function HolidayBody() {
                                                                 true
                                                             );
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </button>
@@ -370,7 +385,7 @@ export default function HolidayBody() {
                                                                 ""
                                                             );
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
@@ -434,7 +449,7 @@ export default function HolidayBody() {
                                     setDeletingHoliday(null)
                                 }
                                 disabled={isDeletingHoliday}
-                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -443,7 +458,7 @@ export default function HolidayBody() {
                                 type="button"
                                 onClick={handleDelete}
                                 disabled={isDeletingHoliday}
-                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                             >
                                 {isDeletingHoliday
                                     ? "Deleting..."
