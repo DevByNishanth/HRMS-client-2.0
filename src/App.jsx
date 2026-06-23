@@ -16,6 +16,7 @@ import PrincipalPermissionPage from "./pages/Dashboards/PRINCIPAL-Dashboard/Prin
 import PrincipalFacultyListPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalFacultyListPage";
 import PrincipalAttendancePage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalAttendancePage";
 import PrincipalRegularizationListPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalRegularizationListPage";
+import PrincipalCompOffPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalCompOffPage";
 import FacultyManagementPage from "./pages/Dashboards/AdminDashboard/Faculty-Management/FacultyManagementPage";
 import DeanDashboard from "./pages/Dashboards/DEAN-Dashboard/DeanDashboard";
 import DeanLeavePage from "./pages/Dashboards/DEAN-Dashboard/LeavePage";
@@ -63,8 +64,8 @@ function App() {
   return (
     <>
 
-    {/* <DoumentUploadFormModal/> */}
-    
+      {/* <DoumentUploadFormModal/> */}
+
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -168,7 +169,7 @@ function App() {
         <Route
           path="/dashboard-dean"
           element={
-            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
+            <ProtectedRoute requiredRoles={["dean", "dean-academics", "dean-iqac", "dean-research", "coe", "iqac"]}>
               <DeanDashboard />
             </ProtectedRoute>
           }
@@ -176,7 +177,7 @@ function App() {
         <Route
           path="/dashboard-dean/leaves"
           element={
-            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
+            <ProtectedRoute requiredRoles={["dean", "dean-academics", "dean-iqac", "dean-research", "coe", "iqac"]}>
               <DeanLeavePage />
             </ProtectedRoute>
           }
@@ -184,7 +185,7 @@ function App() {
         <Route
           path="/dashboard-dean/attendance"
           element={
-            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
+            <ProtectedRoute requiredRoles={["dean", "dean-academics", "dean-iqac", "dean-research", "coe", "iqac"]}>
               <DeanAttendancePage />
             </ProtectedRoute>
           }
@@ -192,7 +193,7 @@ function App() {
         <Route
           path="/dashboard-dean/permissions"
           element={
-            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
+            <ProtectedRoute requiredRoles={["dean", "dean-academics", "dean-iqac", "dean-research", "coe", "iqac"]}>
               <DeanPermissionPage />
             </ProtectedRoute>
           }
@@ -200,7 +201,7 @@ function App() {
         <Route
           path="/dashboard-dean/od-approvals"
           element={
-            <ProtectedRoute requiredRoles={["dean", "coe", "iqac"]}>
+            <ProtectedRoute requiredRoles={["dean", "dean-academics", "dean-iqac", "dean-research", "coe", "iqac"]}>
               <OdApprovalsPage />
             </ProtectedRoute>
           }
@@ -238,6 +239,10 @@ function App() {
                 "admin",
                 "non-teaching",
                 "dean",
+                "dean-iqac",
+                "dean-research",
+                "dean-academics",
+                "hr"
               ]}
             >
               <ProfilePage />
@@ -255,6 +260,10 @@ function App() {
                 "admin",
                 "non-teaching",
                 "dean",
+                "dean-academics",
+                "dean-iqac",
+                "dean-research",
+                "hr"
               ]}
             >
               <ProfilePage />
@@ -267,7 +276,7 @@ function App() {
           path="/dashboard/regularizationList"
           element={
             <ProtectedRoute
-              requiredRoles={["faculty", "hod", "non-teaching", "dean"]}
+              requiredRoles={["faculty", "hod", "non-teaching", "dean", "dean-academics", "dean-iqac", "dean-research"]}
             >
               <RegularaizationListPage />
             </ProtectedRoute>
@@ -276,8 +285,16 @@ function App() {
         <Route
           path="/dashboard/compoff"
           element={
-            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean', 'principal']}>
+            <ProtectedRoute requiredRoles={['faculty', 'hod', 'non-teaching', 'dean', 'dean-academics', 'dean-iqac', 'dean-research']}>
               <CompoffPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-principal/compoff"
+          element={
+            <ProtectedRoute requiredRoles={["principal"]}>
+              <PrincipalCompOffPage />
             </ProtectedRoute>
           }
         />

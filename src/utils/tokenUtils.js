@@ -68,6 +68,8 @@ export const getRoleBasedRoute = () => {
   switch (role?.toLowerCase()) {
     case "hr":
       return "/dashboard-admin";
+    case "admin":
+      return "/dashboard-admin";
     case "faculty":
       return "/dashboard-faculty";
     case "hod":
@@ -81,6 +83,12 @@ export const getRoleBasedRoute = () => {
     case "coe":
       return "/dashboard-dean";
     case "iqac":
+      return "/dashboard-dean";
+    case "dean-iqac":
+      return "/dashboard-dean";
+    case "dean-academics":
+      return "/dashboard-dean";
+    case "dean-research":
       return "/dashboard-dean";
     default:
       return "/dashboard-faculty";

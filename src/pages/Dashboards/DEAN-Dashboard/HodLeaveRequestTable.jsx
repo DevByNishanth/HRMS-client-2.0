@@ -481,7 +481,8 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                                                         {history.remarks}
                                                     </p>
 
-                                                    <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                                                    {history.actionDate && (
+                                                      <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
                                                         <Clock size={11} />
                                                         {new Date(history.actionDate).toLocaleDateString("en-US", {
                                                             month: "short",
@@ -490,7 +491,8 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
                                                         })}
-                                                    </p>
+                                                      </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

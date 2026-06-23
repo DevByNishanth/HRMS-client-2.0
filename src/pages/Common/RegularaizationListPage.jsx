@@ -377,16 +377,18 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
                             {history.remarks}
                           </p>
 
-                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                            <Clock size={11} />
-                            {new Date(history.actionDate).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

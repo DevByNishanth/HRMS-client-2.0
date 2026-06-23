@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronDown, FileText, Send, X, Upload } from "lucide-react";
 import CustomDatePicker from "./CustomDatePicker";
 import { getTokenFromLocalStorage } from "../utils/tokenUtils";
+import { jwtDecode } from "jwt-decode";
 
 const dayOptions = ["Full Day", "First Half", "Second Half"];
 const requiresFileUpload = ["medical", "maternity", "paternity"];
@@ -62,6 +63,11 @@ const isFileUploadRequired = (leaveName = "") => {
 };
 
 const ApplyLeaveForm = ({ onClose, employee }) => {
+    // token 
+    const token = localStorage.getItem("hrms_token");
+    let decoded = jwtDecode(token)
+
+    // Auth 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
     const [fromDate, setFromDate] = useState(null);
@@ -210,7 +216,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 formData.append("files", uploadedFile);
             }
 
-            const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/`, {
+            const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/?facultyId=${decoded.facultyId}&role=${decoded.role}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
