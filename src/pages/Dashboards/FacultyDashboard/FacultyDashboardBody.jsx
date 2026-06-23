@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { ArrowRight, Clock, FileCheck2, FileText, Plus } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { ArrowRight, Clock, FileCheck2, FileText, Loader2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getRoleFromToken } from "../../../utils/tokenUtils";
+import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
 import ActiveDayCalendar from "./ActiveDayCalendar";
 import AttendanceGauge from "./AttendanceGauge";
 import LeaveOverview from "./LeaveOverview";
@@ -19,108 +19,107 @@ const requestTabs = [
   { label: "Regularization Requests", value: "regularization", icon: FileCheck2 },
 ];
 
-const requestLists = {
-  leave: [
-    {
-      name: "Surya Chandran",
-      designation: "Assistant Professor",
-      meta: "Casual Leave",
-      count: "2 Days",
-    },
-    {
-      name: "Nivetha Kumar",
-      designation: "Associate Professor",
-      meta: "Medical Leave",
-      count: "1 Day",
-    },
-    {
-      name: "Arjun Prakash",
-      designation: "Lab Instructor",
-      meta: "On-Duty",
-      count: "3 Days",
-    },
-    {
-      name: "Nivetha Kumar",
-      designation: "Associate Professor",
-      meta: "Medical Leave",
-      count: "1 Day",
-    },
-    {
-      name: "Arjun Prakash",
-      designation: "Lab Instructor",
-      meta: "On-Duty",
-      count: "3 Days",
-    },
-    {
-      name: "Nivetha Kumar",
-      designation: "Associate Professor",
-      meta: "Medical Leave",
-      count: "1 Day",
-    },
-    {
-      name: "Arjun Prakash",
-      designation: "Lab Instructor",
-      meta: "On-Duty",
-      count: "3 Days",
-    },
-    {
-      name: "Nivetha Kumar",
-      designation: "Associate Professor",
-      meta: "Medical Leave",
-      count: "1 Day",
-    },
-    {
-      name: "Arjun Prakash",
-      designation: "Lab Instructor",
-      meta: "On-Duty",
-      count: "3 Days",
-    },
-  ],
-  permission: [
-    {
-      name: "Maya Srinivasan",
-      designation: "Assistant Professor",
-      meta: "Personal Permission",
-      count: "1h",
-    },
-    {
-      name: "Karthik Raman",
-      designation: "Associate Professor",
-      meta: "Campus Visit",
-      count: "2h",
-    },
-    {
-      name: "Priya Menon",
-      designation: "Tutor",
-      meta: "Early Exit",
-      count: "1h",
-    },
-  ],
-  regularization: [
-    {
-      name: "Vikram Raj",
-      designation: "Assistant Professor",
-      meta: "Missed Check-In",
-    },
-    {
-      name: "Ananya Ravi",
-      designation: "Associate Professor",
-      meta: "Check-Out Correction",
-    },
-    {
-      name: "Deepak Kumar",
-      designation: "Lab Instructor",
-      meta: "Attendance Update",
-    },
-  ],
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+const getFacultyName = (faculty) => {
+  if (!faculty) return "Faculty";
+  const name = `${faculty?.firstName || ""} ${faculty?.lastName || ""}`.trim();
+  return name || faculty?.name || "Faculty";
+};
+
+const getRegularizationList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.requests)) return data.requests;
+  if (Array.isArray(data?.regularizationRequests)) return data.regularizationRequests;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
 };
 
 const FacultyRequestsPanel = () => {
   const navigate = useNavigate();
   const [selectedRequestType, setSelectedRequestType] = useState("leave");
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [permissionRequests, setPermissionRequests] = useState([]);
+  const [regularizationRequests, setRegularizationRequests] = useState([]);
+  const [loading, setLoading] = useState({ leave: false, permission: false, regularization: false });
+  const [error, setError] = useState({ leave: "", permission: "", regularization: "" });
 
   const activeTab = requestTabs.find((tab) => tab.value === selectedRequestType);
   const ActiveIcon = activeTab.icon;
+  const dept = decodeToken(getTokenFromLocalStorage())?.department;
+
+  const fetchLeaveRequests = useCallback(async () => {
+    if (!dept) return;
+    setLoading((prev) => ({ ...prev, leave: true }));
+    setError((prev) => ({ ...prev, leave: "" }));
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL}/api/leave-application/?department=${dept}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const applications = data?.leaveApplications || [];
+      setLeaveRequests(applications.slice(0, 10).map((app) => ({
+        name: getFacultyName(app?.facultyId),
+        meta: app?.leaveType || app?.leaveCategory || "Leave",
+        count: app?.totalDays ? `${app.totalDays} Day${app.totalDays > 1 ? "s" : ""}` : "",
+      })));
+    } catch (err) {
+      setError((prev) => ({ ...prev, leave: "Failed to load" }));
+    } finally {
+      setLoading((prev) => ({ ...prev, leave: false }));
+    }
+  }, [dept]);
+
+  const fetchPermissionRequests = useCallback(async () => {
+    setLoading((prev) => ({ ...prev, permission: true }));
+    setError((prev) => ({ ...prev, permission: "" }));
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL}/api/permissions/hod/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const items = data?.data || [];
+      setPermissionRequests(items.slice(0, 10).map((p) => ({
+        name: getFacultyName(p?.facultyId),
+        meta: p?.reason || p?.permissionType || "Permission",
+        count: p?.totalMinutes ? `${Math.round(p.totalMinutes / 60)}h` : "",
+      })));
+    } catch (err) {
+      setError((prev) => ({ ...prev, permission: "Failed to load" }));
+    } finally {
+      setLoading((prev) => ({ ...prev, permission: false }));
+    }
+  }, []);
+
+  const fetchRegularizationRequests = useCallback(async () => {
+    setLoading((prev) => ({ ...prev, regularization: true }));
+    setError((prev) => ({ ...prev, regularization: "" }));
+    try {
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(`${API_BASE_URL}/api/attendance-regularization/hod/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const items = getRegularizationList(data);
+      setRegularizationRequests(items.slice(0, 10).map((r) => ({
+        name: getFacultyName(r?.facultyId),
+        meta: r?.reason || r?.requestType || "Regularization",
+        count: "",
+      })));
+    } catch (err) {
+      setError((prev) => ({ ...prev, regularization: "Failed to load" }));
+    } finally {
+      setLoading((prev) => ({ ...prev, regularization: false }));
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLeaveRequests();
+    fetchPermissionRequests();
+    fetchRegularizationRequests();
+  }, [fetchLeaveRequests, fetchPermissionRequests, fetchRegularizationRequests]);
 
   const handleViewAll = () => {
     if (selectedRequestType === "leave") {
@@ -141,6 +140,16 @@ const FacultyRequestsPanel = () => {
       state: { hodSelectedTab: "Team Regularizations" },
     });
   };
+
+  const requestLists = {
+    leave: leaveRequests,
+    permission: permissionRequests,
+    regularization: regularizationRequests,
+  };
+
+  const isLoading = loading[selectedRequestType];
+  const hasError = error[selectedRequestType];
+  const currentList = requestLists[selectedRequestType];
 
   return (
     <section className="flex h-[410px] flex-col overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d]">
@@ -181,31 +190,40 @@ const FacultyRequestsPanel = () => {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 table-custom-scrollbar">
-        <div className="space-y-2">
-          {requestLists[selectedRequestType].map((request, index) => (
-            <div
-              key={`${selectedRequestType}-${request.name}-${request.meta}-${index}`}
-              className="flex items-center justify-between gap-3 rounded-lg bg-[#071425] px-3 py-2 border border-slate-800"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
-                  <img src={userImg} alt="" className="h-8 w-8 rounded-full object-cover" />
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-medium text-white">{request.name}</p>
-                  {/* <p className="truncate text-[11px] text-[#8ca1bd]">{request.designation}</p> */}
-                  <p className="mt-1 truncate text-[11px] font-medium text-[#3984ff]">{request.meta}</p>
+        {isLoading ? (
+          <div className="flex h-full items-center justify-center">
+            <Loader2 size={20} className="animate-spin text-[#3984ff]" />
+          </div>
+        ) : hasError ? (
+          <p className="mt-8 text-center text-[12px] text-[#f16868]">{hasError}</p>
+        ) : currentList.length === 0 ? (
+          <p className="mt-8 text-center text-[12px] text-[#8ca1bd]">No {selectedRequestType} requests found.</p>
+        ) : (
+          <div className="space-y-2">
+            {currentList.map((request, index) => (
+              <div
+                key={`${selectedRequestType}-${request.name}-${request.meta}-${index}`}
+                className="flex items-center justify-between gap-3 rounded-lg bg-[#071425] px-3 py-2 border border-slate-800"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
+                    <img src={userImg} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-[13px] font-medium text-white">{request.name}</p>
+                    <p className="mt-1 truncate text-[11px] font-medium text-[#3984ff]">{request.meta}</p>
+                  </div>
                 </div>
-              </div>
 
-              {request.count && (
-                <span className="shrink-0 rounded-md bg-[#18d3bf1f] px-2 py-1 text-[12px] font-bold text-[#18d3bf]">
-                  {request.count}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+                {request.count && (
+                  <span className="shrink-0 rounded-md bg-[#18d3bf1f] px-2 py-1 text-[12px] font-bold text-[#18d3bf]">
+                    {request.count}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
