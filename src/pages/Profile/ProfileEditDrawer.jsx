@@ -182,7 +182,13 @@ const buildInitialPersonal = (f) => ({
   gender: f?.gender || "",
   phone: f?.phone || "",
   email: f?.email || "",
-  permanentAddress: getAddressText(f?.address),
+  doorNo: f?.address?.doorNo || "",
+  street: f?.address?.street || "",
+  city: f?.address?.city || "",
+  district: f?.address?.district || "",
+  state: f?.address?.state || "",
+  pincode: f?.address?.pincode || "",
+  country: f?.address?.country || "India",
 });
 
 const buildInitialProfessional = (f) => ({
@@ -238,7 +244,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
 
   // Step 2 – Professional Info
   const [professional, setProfessional] = useState(() => buildInitialProfessional(faculty));
-
+ 
   // Step 3 – Educational Qualification
   const [qualifications, setQualifications] = useState(() => buildInitialQualifications(faculty));
 
@@ -332,8 +338,13 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
           branchLocation: documents.branch,
         },
         address: {
-          ...(faculty?.address || {}),
-          permanentAddress: personal.permanentAddress,
+          doorNo: personal.doorNo.trim() || undefined,
+          street: personal.street.trim() || undefined,
+          city: personal.city.trim() || undefined,
+          district: personal.district.trim() || undefined,
+          state: personal.state.trim() || undefined,
+          pincode: personal.pincode.trim() || undefined,
+          country: personal.country.trim() || "India",
         },
         organizationEmail: additional.organizationEmail || faculty?.organizationEmail,
         workType: additional.workType || faculty?.workType,
@@ -482,13 +493,54 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   onChange={updatePersonal}
                   placeholder="samuel@sece.ac.in"
                 />
-                <TextareaField
-                  label="Permanent Address"
-                  name="permanentAddress"
-                  value={personal.permanentAddress}
+                <Field
+                  label="Door No"
+                  name="doorNo"
+                  value={personal.doorNo}
                   onChange={updatePersonal}
-                  placeholder="42, Green Valley Enclave, Pollachi Main Road, Coimbatore - 641032"
-                  className="col-span-2"
+                  placeholder="42"
+                />
+                <Field
+                  label="Street"
+                  name="street"
+                  value={personal.street}
+                  onChange={updatePersonal}
+                  placeholder="Green Valley Enclave"
+                />
+                <Field
+                  label="City"
+                  name="city"
+                  value={personal.city}
+                  onChange={updatePersonal}
+                  placeholder="Coimbatore"
+                />
+                <Field
+                  label="District"
+                  name="district"
+                  value={personal.district}
+                  onChange={updatePersonal}
+                  placeholder="Coimbatore"
+                />
+                <Field
+                  label="State"
+                  name="state"
+                  value={personal.state}
+                  onChange={updatePersonal}
+                  placeholder="Tamil Nadu"
+                />
+                <Field
+                  label="Pincode"
+                  name="pincode"
+                  value={personal.pincode}
+                  onChange={updatePersonal}
+                  placeholder="641032"
+                />
+                <Field
+                  label="Country"
+                  name="country"
+                  value={personal.country}
+                  onChange={updatePersonal}
+                  placeholder="India"
                 />
               </div>
             </div>
