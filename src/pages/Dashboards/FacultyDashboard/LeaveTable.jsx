@@ -427,7 +427,18 @@ const LeaveTable = () => {
         },
       });
       const applications = response.data?.leaveApplications || [];
-      setTeamLeavesCount(applications.length);
+
+
+
+      let originalData = applications
+
+      let data = originalData.filter((item) => {
+        return item.facultyId._id !== decodedData.facultyId
+      })
+      console.log("hod data : ", data)
+      // setRequests(data);
+
+      setTeamLeavesCount(data.length);
     } catch (err) {
       console.error("Error fetching team leaves count:", err);
     }

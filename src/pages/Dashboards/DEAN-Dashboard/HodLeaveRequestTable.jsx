@@ -482,16 +482,16 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                                                     </p>
 
                                                     {history.actionDate && (
-                                                      <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                                                        <Clock size={11} />
-                                                        {new Date(history.actionDate).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "2-digit",
-                                                            year: "numeric",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        })}
-                                                      </p>
+                                                        <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                                                            <Clock size={11} />
+                                                            {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                                                month: "short",
+                                                                day: "2-digit",
+                                                                year: "numeric",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                            })}
+                                                        </p>
                                                     )}
                                                 </div>
                                             </div>
@@ -641,12 +641,31 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
     // Get unique leave types
     const leaveTypes = ["All", ...new Set(requests.map((request) => request?.leaveTypeId?.leaveName).filter(Boolean))];
+
+    // Role-filtered leave type options for dropdown
+    const roleFilteredLeaveTypes = useMemo(() => {
+        if (role === "dean-research") return ["All", "On Duty - Research"];
+        if (role === "dean-iqac") return ["All", "On Duty - Research", "On Duty - Exam"];
+        return leaveTypes;
+    }, [role, leaveTypes]);
+
     const statuses = ["All", "Approved", "Rejected", "Pending"];
 
-    // Filter requests based on selected filters
+    // Filter requests based on role and selected filters
     const filteredRequests = useMemo(() => {
         return requests.filter((request) => {
-            const leaveTypeMatch = filterLeaveType === "All" || request?.leaveTypeId?.leaveName === filterLeaveType;
+            const leaveName = request?.leaveTypeId?.leaveName;
+
+            // Role-based filtering
+            if (role === "dean-research" && leaveName !== "On Duty - Research") {
+                return false;
+            }
+            if (role === "dean-iqac" && leaveName !== "On Duty - Research" && leaveName !== "On Duty - Exam") {
+                return false;
+            }
+
+            // Existing filter logic
+            const leaveTypeMatch = filterLeaveType === "All" || leaveName === filterLeaveType;
             const statusMatch = filterStatus === "All" || request.status === filterStatus;
 
             // Parse request dates for comparison
@@ -657,7 +676,7 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
             return leaveTypeMatch && statusMatch && filterDateCheck;
         });
-    }, [filterLeaveType, filterStatus, filterDate, requests]);
+    }, [filterLeaveType, filterStatus, filterDate, requests, role]);
 
     const resetFilters = () => {
         setFilterLeaveType("All");
@@ -815,7 +834,7 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
                                     placeholder="Leave Type"
                                     value={filterLeaveType}
                                     onChange={setFilterLeaveType}
-                                    options={leaveTypes}
+                                    options={roleFilteredLeaveTypes}
                                 />
                             </div>
 
