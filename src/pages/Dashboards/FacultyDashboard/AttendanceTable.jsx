@@ -3,6 +3,7 @@ import { ArrowUp, ArrowUpRight, ChevronDown } from "lucide-react";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import ReqularizationCanvas from "./ReqularizationCanvas";
 import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../../../utils/tokenUtils";
+import { canApplyRegularization } from "../../../utils/regularizationUtils";
 
 const statusStyles = {
   Present: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -202,7 +203,7 @@ const AttendanceTable = () => {
                   <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
                   <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
                   <td
-                    className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"
+                    className={`px-4 py-4 font-semibold ${record.workingHours != null && Number(record.workingHours) < Number(record?.shift?.workingMinutes ?? 0) ? "text-red-500" : record.workingHours != null && record?.shift?.workingMinutes != null && Number(record.workingHours) > Number(record?.shift?.workingMinutes ?? 0) ? "text-green-500" : record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"
                       }`}
                   >
                     {formatMinutesToHours(record.workingHours)}
@@ -219,9 +220,10 @@ const AttendanceTable = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedLog(record)}
-                      disabled={record.status?.toLowerCase() !== "present"}
+                      disabled={!canApplyRegularization(record)}
+                      title={!canApplyRegularization(record) ? "Regularization is not available for this attendance status." : undefined}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
-                        ${record.status?.toLowerCase() === "present"
+                        ${canApplyRegularization(record)
                           ? "bg-[#102640] text-[#a9bddb] hover:bg-[#183052] hover:text-white"
                           : "bg-[#102640]/30 text-[#6f839f] cursor-not-allowed"
                         }`}

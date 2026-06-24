@@ -20,6 +20,7 @@ import { useState, useMemo, useEffect } from "react";
 import userImg from '../../../assets/userImg.svg';
 import { decodeToken, getTokenFromLocalStorage } from '../../../utils/tokenUtils';
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const statusStyles = {
     Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -284,7 +285,7 @@ const FilterDatePicker = ({
 const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
     if (!request) return null;
 
-    const canRevoke = request.status === "Approved" || request.status === "Rejected";
+    const canRevoke = (request.approvalStatus?.hodStatus || "Pending") === "Approved" || (request.approvalStatus?.hodStatus || "Pending") === "Rejected";
 
     // Get color based on action status
     const getActionColor = (action) => {
@@ -357,10 +358,10 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                             </div>
 
                             <span
-                                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${statusStyles[request.status]}`}
+                                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${statusStyles[request.approvalStatus?.hodStatus || "Pending"]}`}
                             >
                                 <span className="h-[5px] w-[5px] rounded-full bg-current" />
-                                {request.status}
+                                {request.approvalStatus?.hodStatus || "Pending"}
                             </span>
                         </div>
 
@@ -481,16 +482,16 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                                                     </p>
 
                                                     {history.actionDate && (
-                                                      <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                                                        <Clock size={11} />
-                                                        {new Date(history.actionDate).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "2-digit",
-                                                            year: "numeric",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        })}
-                                                      </p>
+                                                        <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                                                            <Clock size={11} />
+                                                            {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                                                month: "short",
+                                                                day: "2-digit",
+                                                                year: "numeric",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                            })}
+                                                        </p>
                                                     )}
                                                 </div>
                                             </div>
@@ -509,7 +510,7 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                             onClick={() => onRevoke(request)}
                             className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#f0a15f] text-[13px] font-semibold text-[#071425] shadow-[0_5px_20px_rgba(240,161,95,0.2)] transition hover:bg-[#ffbd7f]"
                         >
-                            Revoke {request.status}
+                            Revoke {request.approvalStatus?.hodStatus || "Pending"}
                             <RotateCcw size={14} />
                         </button>
                     ) : (
@@ -536,6 +537,7 @@ const ConfirmationPopup = ({
     onClose,
     onConfirm,
     revokeLoading,
+    revokeError,
 }) => {
     if (!action || !request) return null;
 
@@ -574,6 +576,13 @@ const ConfirmationPopup = ({
 
                 <div className="px-5 py-4">
                     {/* <p className="text-[13px] leading-5 text-[#cad7eb]">{message}</p> */}
+
+                    {isRevoke && revokeError && (
+                        <div className="mb-3 flex items-start gap-2 rounded-lg border border-[#f1686833] bg-[#f1686812] px-4 py-3">
+                            <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#f16868]" />
+                            <p className="text-[12px] leading-5 text-[#ffd1d1]">{revokeError}</p>
+                        </div>
+                    )}
 
                     {isReject && (
                         <div className="">
@@ -639,6 +648,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     const [rejectReason, setRejectReason] = useState("");
     const [approvingId, setApprovingId] = useState(null);
     const [revokeLoading, setRevokeLoading] = useState(false);
+    const [revokeError, setRevokeError] = useState(null);
 
     // Get unique leave types
     const leaveTypes = ["All", ...new Set(requests.map((request) => request?.leaveTypeId?.leaveName).filter(Boolean))];
@@ -648,7 +658,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     const filteredRequests = useMemo(() => {
         return requests.filter((request) => {
             const leaveTypeMatch = filterLeaveType === "All" || request?.leaveTypeId?.leaveName === filterLeaveType;
-            const statusMatch = filterStatus === "All" || request.status === filterStatus;
+            const statusMatch = filterStatus === "All" || (request.approvalStatus?.hodStatus || "Pending") === filterStatus;
 
             // Parse request dates for comparison
             const requestFromDate = request.fromDate || request.from || (request.date ? new Date(request.date.split(" - ")[0]) : null);
@@ -680,14 +690,24 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
 
 
     async function fetchLeaveRequests() {
-        console.log("fetching req")
+
+        const token = localStorage.getItem("hrms_token");
+        let decoded = jwtDecode(token)
+        let facultyId = decoded?.facultyId
+
+        console.log("hod fetching req ")
         const reponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`, {
             headers: {
                 Authorization: `Bearer ${getTokenFromLocalStorage()}`
             }
         });
-        console.log(reponse.data);
-        setRequests(reponse.data?.leaveApplications);
+        let originalData = reponse.data?.leaveApplications
+
+        let data = originalData.filter((item) => {
+            return item.facultyId._id !== facultyId
+        })
+        console.log("hod data : ", data)
+        setRequests(data);
     }
 
 
@@ -715,6 +735,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     };
 
     const handleRevoke = (request) => {
+        setRevokeError(null);
         setConfirmation({ action: "revoke", request });
     };
 
@@ -725,6 +746,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     const closeConfirmation = () => {
         setConfirmation(null);
         setRejectReason("");
+        setRevokeError(null);
     };
 
     const handleConfirmAction = async () => {
@@ -746,6 +768,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
             } else if (confirmation.action === "revoke") {
                 // Call API to revoke leave decision
                 setRevokeLoading(true);
+                setRevokeError(null);
                 const res = await axios.patch(
                     `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${confirmation.request?._id}/revoke-hod`,
                     {},
@@ -764,6 +787,8 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
             closeConfirmation();
         } catch (error) {
             console.error("Error confirming action:", error);
+            const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message || "Something went wrong. Please try again.";
+            setRevokeError(errorMsg);
             setRevokeLoading(false);
         }
     };
@@ -895,27 +920,33 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                                         </td>
                                         <td className="px-4 py-2">
                                             <span
-                                                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[request.status]
+                                                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[request.approvalStatus?.hodStatus || "Pending"]
                                                     }`}
                                             >
                                                 <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                                                {request.status}
+                                                {request.approvalStatus?.hodStatus || "Pending"}
                                             </span>
                                         </td>
 
                                         <td className="px-4 py-4">
                                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                                                {request.currentApprovalLevel === "hod" && request.status === "Pending" ? (
+                                                {request.currentApprovalLevel === "hod" &&
+                                                    (request.approvalStatus?.hodStatus || "Pending") === "Pending" ? (
                                                     <>
-                                                        {approvingId === request?._id ? <div className="loader"></div> : <button
-                                                            type="button"
-                                                            onClick={() => handleApprove(request)}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
-                                                            aria-label="Approve request"
-                                                            title="Approve"
-                                                        >
-                                                            <Check className="h-4 w-4" />
-                                                        </button>}
+                                                        {approvingId === request?._id ? (
+                                                            <div className="loader"></div>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleApprove(request)}
+                                                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                                                                aria-label="Approve request"
+                                                                title="Approve"
+                                                            >
+                                                                <Check className="h-4 w-4" />
+                                                            </button>
+                                                        )}
+
                                                         <button
                                                             type="button"
                                                             onClick={() => handleReject(request)}
@@ -927,16 +958,20 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                                                         </button>
                                                     </>
                                                 ) : (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRevoke(request)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                                                        aria-label="Revoke leave decision"
-                                                        title={`Revoke ${request.status}`}
-                                                    >
-                                                        <RotateCcw className="h-4 w-4" />
-                                                    </button>
+                                                    request.currentApprovalLevel !== "hod" &&
+                                                    (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRevoke(request)}
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                                                            aria-label="Revoke leave decision"
+                                                            title={`Revoke ${request.approvalStatus?.hodStatus}`}
+                                                        >
+                                                            <RotateCcw className="h-4 w-4" />
+                                                        </button>
+                                                    )
                                                 )}
+
                                                 <button
                                                     type="button"
                                                     onClick={() => handleView(request)}
@@ -974,6 +1009,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                 onClose={closeConfirmation}
                 onConfirm={handleConfirmAction}
                 revokeLoading={revokeLoading}
+                revokeError={revokeError}
             />
         </>
     );

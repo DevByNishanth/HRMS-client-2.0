@@ -51,6 +51,7 @@ const RecentRequestsCard = ({ className = "" }) => {
       });
       const data = await res.json();
       const applications = data?.leaveApplications || [];
+      console.log("princiapl reqs : ", applications);
       const filtered = applications.filter(
         (l) =>
           l.status === "Pending" &&

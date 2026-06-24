@@ -368,7 +368,7 @@ const OdApprovalsPage = () => {
                   className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                     ? "bg-[#2563EB] text-white"
                     : "text-[#cad7eb] hover:bg-[#132b49]"
-                  }`}
+                    }`}
                 >
                   {option}
                 </button>
@@ -379,6 +379,27 @@ const OdApprovalsPage = () => {
       </div>
     );
   };
+
+  // — Role-based filtering configuration (same pattern as HodLeaveRequestTable) —
+  const token = getTokenFromLocalStorage();
+  const decodedData = decodeToken(token);
+  const rawRole = decodedData?.role || null;
+  const normalizedRole = rawRole?.toLowerCase()?.trim() || null;
+
+  // Extract dean sub-type for filtering
+  const deanSubType =
+    normalizedRole?.startsWith("dean-")
+      ? normalizedRole.replace("dean-", "")
+      : normalizedRole === "iqac"
+        ? "iqac"
+        : null;
+
+  const DEAN_LEAVE_FILTER = {
+    research: ["On Duty - Research"],
+    iqac: ["On Duty - Research", "On Duty - Exam"],
+  };
+
+  const allowedLeaveTypes = DEAN_LEAVE_FILTER[deanSubType] || null;
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
@@ -442,6 +463,14 @@ const OdApprovalsPage = () => {
               reason: app.reason || "",
               status: app.status || "Pending",
               approvalHistory: app.approvalHistory || [],
+
+              // Dean-specific sub-status — uses normalizedRole to handle role casing/whitespace
+              approvalStatus:
+                normalizedRole === "dean-research"
+                  ? app?.approvalStatus?.researchStatus
+                  : normalizedRole === "dean-iqac"
+                    ? app?.approvalStatus?.iqacStatus
+                    : app?.status
             };
           });
 
@@ -466,16 +495,21 @@ const OdApprovalsPage = () => {
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
+      // Role-based filtering: restrict to allowed leave types for dean sub-roles
+      if (allowedLeaveTypes && !allowedLeaveTypes.includes(request.leaveType)) {
+        return false;
+      }
+
       const searchMatch =
         !searchTerm ||
         request.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.leaveType?.toLowerCase().includes(searchTerm.toLowerCase());
-      const statusMatch = statusFilter === "All" || request.status === statusFilter;
+      const statusMatch = statusFilter === "All" || (request.approvalStatus || request.status) === statusFilter;
       return searchMatch && statusMatch;
     });
-  }, [requests, searchTerm, statusFilter]);
+  }, [requests, searchTerm, statusFilter, allowedLeaveTypes]);
 
   const handleApprove = async (request) => {
     try {
@@ -498,7 +532,7 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === request._id ? { ...r, status: "Approved" } : r)),
+        prev.map((r) => (r._id === request._id ? { ...r, status: "Approved", approvalStatus: "Approved" } : r)),
       );
       toast.success("Request approved successfully");
     } catch (err) {
@@ -543,7 +577,7 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === rejectTarget._id ? { ...r, status: "Rejected" } : r)),
+        prev.map((r) => (r._id === rejectTarget._id ? { ...r, status: "Rejected", approvalStatus: "Rejected" } : r)),
       );
       toast.success("Request rejected");
       closeRejectPopup();
@@ -555,7 +589,7 @@ const OdApprovalsPage = () => {
     }
   };
 
-  const pendingCount = requests.filter((r) => r.status === "Pending").length;
+  const pendingCount = requests.filter((r) => (r.approvalStatus || r.status) === "Pending").length;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -604,7 +638,7 @@ const OdApprovalsPage = () => {
                 <div className="min-w-0">
                   <p className="text-[12px] uppercase tracking-wide text-[#8ca1bd]">Approved</p>
                   <p className="mt-1 text-[16px] font-medium text-[#ffffff]">
-                    {requests.filter((r) => r.status === "Approved").length}
+                    {requests.filter((r) => (r.approvalStatus || r.status) === "Approved").length}
                   </p>
                 </div>
               </div>
@@ -667,6 +701,7 @@ const OdApprovalsPage = () => {
                       </tr>
                     ) : filteredRequests.length > 0 ? (
                       filteredRequests.map((request, index) => (
+
                         <tr
                           key={request._id || `${request.name}-${request.date}-${index}`}
                           className="border-b border-[#132944] last:border-0"
@@ -690,15 +725,15 @@ const OdApprovalsPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[request.status]}`}
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[request.approvalStatus ? request.approvalStatus : request.status]}`}
                             >
                               <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                              {request.status}
+                              {request.approvalStatus || request.status}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                              {request.status === "Pending" && (
+                              {(request.approvalStatus || request.status) === "Pending" && (
                                 <>
                                   <button
                                     type="button"
