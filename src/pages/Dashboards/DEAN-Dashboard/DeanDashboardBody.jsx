@@ -172,7 +172,7 @@ const DeanDashboardBody = () => {
   const role = getRoleFromToken()?.toLowerCase();
   const [isLeaveApplyModal, setIsLeaveApplyModal] = useState(false);
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
-  const isHod = role === "hod" || role === "dean";
+  const isHod = role === "hod" || role === "dean" || role?.startsWith("dean-");
 
   // Decode token for greeting
   const token = localStorage.getItem("hrms_token");

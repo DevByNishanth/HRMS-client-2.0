@@ -311,7 +311,7 @@ const LeaveTable = () => {
   const [teamLeavesCount, setTeamLeavesCount] = useState(0);
 
   // tab data's
-  const isDeanOrIqac = role === "dean" || role === "iqac";
+  const isDeanOrIqac = role === "dean" || role === "iqac" || role?.startsWith("dean-");
   const deanTabs = ["My Leaves", "Leave Requests"];
   
   const activeTabs = isDeanOrIqac ? deanTabs : ["My Leaves"];
@@ -456,7 +456,7 @@ const LeaveTable = () => {
     <>
 
       {/* tab section for dean / iqac */}
-      {isDeanOrIqac && <div className="tab-container bg-[#0d2138] w-full py-2 mt-4 px-4 rounded-lg border border-[#213857] ">
+      {/* {isDeanOrIqac && <div className="tab-container bg-[#0d2138] w-full py-2 mt-4 px-4 rounded-lg border border-[#213857] ">
         <div className="flex items-center gap-2 ">
           {activeTabs.map((tab) => (
             <button
@@ -494,7 +494,7 @@ const LeaveTable = () => {
           ))}
         </div>
       </div>
-      }
+      } */}
 
       {/* my leave list table */}
       {selectedTab === "My Leaves" ? <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">

@@ -48,6 +48,8 @@ const mapApiRequest = (req) => {
     documentUrl: doc?.url || "",
     documentName: doc?.publicId?.split("/").pop() || "",
     status: req.status,
+    currentApprovalLevel: req.currentApprovalLevel,
+    approvalStatus: req.approvalStatus || {},
     rejectionReason: rejectionEntry?.remarks || null,
     approvalHistory: (req.approvalHistory || []).map((h) => ({
       role: h.role,
@@ -256,7 +258,7 @@ const FilterDatePicker = ({
 const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
   if (!request) return null;
 
-  const canRevoke = request.status === "Approved" || request.status === "Rejected";
+  const canRevoke = (request.approvalStatus?.hodStatus || "Pending") === "Approved" || (request.approvalStatus?.hodStatus || "Pending") === "Rejected";
 
   const getActionColor = (action) => {
     if (action?.toLowerCase() === "approved") {
@@ -327,10 +329,10 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
               </div>
 
               <span
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${statusStyles[request.status]}`}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${statusStyles[request.approvalStatus?.hodStatus || "Pending"]}`}
               >
                 <span className="h-[5px] w-[5px] rounded-full bg-current" />
-                {request.status}
+                {request.approvalStatus?.hodStatus || "Pending"}
               </span>
             </div>
 
@@ -643,7 +645,7 @@ const HodCompOffTable = ({ onCountChange }) => {
       }
       const queryParams = new URLSearchParams({
         department,
-    
+
       });
       const response = await fetch(
         `${API_BASE_URL.replace(/\/$/, "")}/api/comp-off/?${queryParams}`,
@@ -674,7 +676,7 @@ const HodCompOffTable = ({ onCountChange }) => {
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
-      const statusMatch = filterStatus === "All" || request.status === filterStatus;
+      const statusMatch = filterStatus === "All" || (request.approvalStatus?.hodStatus || "Pending") === filterStatus;
 
       const filterDateCheck =
         !filterDate ||
@@ -930,17 +932,17 @@ const HodCompOffTable = ({ onCountChange }) => {
                       </td>
                       <td className="px-4 py-2">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[request.status]
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[request.approvalStatus?.hodStatus || "Pending"]
                             }`}
                         >
                           <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                          {request.status}
+                          {request.approvalStatus?.hodStatus || "Pending"}
                         </span>
                       </td>
 
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                          {request.status === "Pending" ? (
+                          {request.currentApprovalLevel === "hod" && request.status === "Pending" ? (
                             <>
                               {approvingId === request.id ? (
                                 <Loader2 size={16} className="animate-spin text-[#18d3bf]" />
@@ -965,17 +967,17 @@ const HodCompOffTable = ({ onCountChange }) => {
                                 <X className="h-4 w-4" />
                               </button>
                             </>
-                          ) : (
+                          ) : request.currentApprovalLevel !== "hod" && request.status === "Pending" ? (
                             <button
                               type="button"
                               onClick={() => handleRevoke(request)}
                               className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
                               aria-label="Revoke comp-off decision"
-                              title={`Revoke ${request.status}`}
+                              title={`Revoke ${request.approvalStatus?.hodStatus || "Pending"}`}
                             >
                               <RotateCcw className="h-4 w-4" />
                             </button>
-                          )}
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => handleView(request)}

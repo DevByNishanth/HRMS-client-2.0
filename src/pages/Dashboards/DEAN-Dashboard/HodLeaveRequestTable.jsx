@@ -627,6 +627,30 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
     let dept = decodedData ? decodedData.department : null;
     let role = decodedData ? decodedData.role : null;
 
+    // — Role-based filtering configuration —
+    // Normalize role: lowercase + trim to handle whitespace/casing edge cases
+    const normalizedRole = role?.toLowerCase()?.trim() || null;
+
+    // Extract dean sub-type for filtering:
+    //   "dean-research" → "research"
+    //   "dean-iqac"     → "iqac"
+    //   "dean"          → null (no filter)
+    //   "iqac"          → "iqac" (backward compat)
+    const deanSubType =
+        normalizedRole?.startsWith("dean-")
+            ? normalizedRole.replace("dean-", "")
+            : normalizedRole === "iqac"
+                ? "iqac"
+                : null;
+
+    // Allowed leave types per dean sub-type
+    const DEAN_LEAVE_FILTER = {
+        research: ["On Duty - Research"],
+        iqac: ["On Duty - Research", "On Duty - Exam"],
+    };
+
+    const allowedLeaveTypes = DEAN_LEAVE_FILTER[deanSubType] || null;
+
     // States
     const [requests, setRequests] = useState([]);
     const [filterLeaveType, setFilterLeaveType] = useState("All");
@@ -644,10 +668,11 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
     // Role-filtered leave type options for dropdown
     const roleFilteredLeaveTypes = useMemo(() => {
-        if (role === "dean-research") return ["All", "On Duty - Research"];
-        if (role === "dean-iqac") return ["All", "On Duty - Research", "On Duty - Exam"];
+        if (allowedLeaveTypes) {
+            return ["All", ...allowedLeaveTypes];
+        }
         return leaveTypes;
-    }, [role, leaveTypes]);
+    }, [allowedLeaveTypes, leaveTypes]);
 
     const statuses = ["All", "Approved", "Rejected", "Pending"];
 
@@ -656,11 +681,8 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
         return requests.filter((request) => {
             const leaveName = request?.leaveTypeId?.leaveName;
 
-            // Role-based filtering
-            if (role === "dean-research" && leaveName !== "On Duty - Research") {
-                return false;
-            }
-            if (role === "dean-iqac" && leaveName !== "On Duty - Research" && leaveName !== "On Duty - Exam") {
+            // Role-based filtering: restrict to allowed leave types for dean sub-roles
+            if (allowedLeaveTypes && !allowedLeaveTypes.includes(leaveName)) {
                 return false;
             }
 
@@ -676,7 +698,7 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
             return leaveTypeMatch && statusMatch && filterDateCheck;
         });
-    }, [filterLeaveType, filterStatus, filterDate, requests, role]);
+    }, [filterLeaveType, filterStatus, filterDate, requests, /* re-filter when allowed list changes */ allowedLeaveTypes]);
 
     const resetFilters = () => {
         setFilterLeaveType("All");
