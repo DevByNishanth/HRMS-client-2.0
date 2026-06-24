@@ -2,6 +2,7 @@ import {
     Download,
     RotateCcw,
     Search,
+    X,
 } from "lucide-react";
 
 import {
@@ -30,6 +31,7 @@ export default function AttendanceTable() {
     const [employeeSuggestions, setEmployeeSuggestions] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [shift, setShift] = useState("");
 
     const dropdownRef = useRef();
 
@@ -40,9 +42,23 @@ export default function AttendanceTable() {
         department ||
         category ||
         fromDate ||
+        shift ||
         toDate;
 
-    const filteredData = attendanceData;
+    // const filteredData = attendanceData;
+    const filteredData = useMemo(() => {
+        let data = [...attendanceData];
+
+        if (shift) {
+            data = data.filter(
+                (item) =>
+                    item.shiftName?.toLowerCase() ===
+                    shift.toLowerCase()
+            );
+        }
+
+        return data;
+    }, [attendanceData, shift]);
 
     useEffect(() => {
         const closeDropdown = (e) => {
@@ -111,6 +127,7 @@ export default function AttendanceTable() {
         department,
         category,
         fromDate,
+        shift,
         toDate,
     ]);
 
@@ -149,6 +166,7 @@ export default function AttendanceTable() {
         setSelectedEmployee(null);
         setDepartment("");
         setCategory("");
+        setShift("");
         setFromDate(null);
         setToDate(null);
     };
@@ -273,10 +291,61 @@ console.log("fetchAttendanceData called");
         );
     };
 
-    return (
-        <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    const getStatusStyle = (status) => {
+        switch (status?.toLowerCase()) {
+            case "present":
+                return "bg-[#0B303E] text-[#14B299]";
 
-            <div className="p-4 border-b border-[#183052]">
+            case "absent":
+                return "bg-[#1A1F30] text-[#713C46]";
+
+            case "late":
+                return "bg-[#3A2D12] text-[#F5B041]";
+
+            case "half day":
+                return "bg-[#2B2140] text-[#B084F5]";
+
+            default:
+                return "bg-[#24364D] text-[#9EB0CC]";
+        }
+    };
+
+    const getWorkingHoursStyle = (
+        workingMinutes,
+        startTime,
+        endTime
+    ) => {
+        if (
+            workingMinutes == null ||
+            !startTime ||
+            !endTime
+        ) {
+            return "text-[#9eb0cc]";
+        }
+
+        const [startHour, startMinute] =
+            startTime.split(":").map(Number);
+
+        const [endHour, endMinute] =
+            endTime.split(":").map(Number);
+
+        const shiftMinutes =
+            (endHour * 60 + endMinute) -
+            (startHour * 60 + startMinute);
+
+        return workingMinutes >= shiftMinutes
+            ? "text-[#14B299]" // green
+            : "text-[#f16868]"; // red
+    };
+
+    return (
+        <section className="mt-4 mb-4 rounded-xl border border-[#183052] bg-[#0a1a2d] flex flex-col h-[400px] overflow-hidden">
+
+            <div className="p-4 border-b border-[#183052] flex flex-col gap-4 ">
+
+                <div>
+                    <h1>Employee ({filteredData.length})</h1>
+                </div>
 
                 <div className="flex flex-wrap gap-3">
 
@@ -305,7 +374,7 @@ console.log("fetchAttendanceData called");
                             }
                             placeholder="Search Employee Name / ID"
                             className="
-                                h-10
+                                h-12
                                 pl-11
                                 w-[300px]
                                 rounded-lg
@@ -400,6 +469,23 @@ console.log("fetchAttendanceData called");
                             )}
                     </div>
 
+                    <div className="flex flex-wrap items-center gap-3">
+                        <CustomDatePicker
+                            value={fromDate}
+                            onChange={setFromDate}
+                            placeholder="From Date"
+                        />
+                        <span className="text-[#8ca1bd]">
+                            to
+                        </span>
+                        <CustomDatePicker
+                            value={toDate}
+                            onChange={setToDate}
+                            placeholder="To Date"
+                            minDate={fromDate}
+                        />
+                    </div>
+
                     <CustomDropdown
                         value={department}
                         placeholder="Department"
@@ -430,24 +516,34 @@ console.log("fetchAttendanceData called");
                         onChange={setCategory}
                     />
 
-                    <CustomDatePicker
-                        value={fromDate}
-                        onChange={setFromDate}
-                        placeholder="From Date"
-                    />
-
-                    <CustomDatePicker
-                        value={toDate}
-                        onChange={setToDate}
-                        placeholder="To Date"
-                        minDate={fromDate}
+                    <CustomDropdown
+                        value={shift}
+                        placeholder="Shift"
+                        options={[
+                            "Morning Shift",
+                            "General Shift",
+                            "Evening Shift",
+                            "Night Shift"
+                        ]}
+                        onChange={setShift}
                     />
 
                     <button
                         onClick={exportExcel}
-                        className="h-10 px-4 rounded-lg bg-[#3984ff] flex items-center gap-2"
+                        className="h-12
+                                px-5
+                                rounded-lg
+                                border
+                                border-[#3984ff]
+                                text-[#3984ff]
+                                text-[14px]
+                                font-semibold
+                                transition
+                                hover:bg-[#3984ff]
+                                hover:text-white
+                                cursor-pointer"
                     >
-                        <Download size={16} />
+                        {/* <Download size={16} /> */}
                         Export Excel
                     </button>
 
@@ -456,22 +552,19 @@ console.log("fetchAttendanceData called");
                             onClick={
                                 resetFilters
                             }
-                            className="h-10 px-4 rounded-lg bg-[#f16868] flex items-center gap-2"
+                            className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff] cursor-pointer"
                         >
-                            <RotateCcw
-                                size={16}
-                            />
-                            Reset
+                            Reset Filter <X className="w-5 h-5"/>
                         </button>
                     )}
                 </div>
             </div>
 
-            <div className="overflow-auto table-custom-scrollbar">
+            <div className="flex-1 overflow-y-auto overflow-x-auto table-custom-scrollbar">
 
                 <table className="w-full min-w-[1200px]">
 
-                    <thead className="sticky top-0 bg-[#172c46] text-[#9eb0cc]">
+                    <thead className="sticky top-0 z-10 bg-[#172c46] text-[#9eb0cc]">
                         <tr>
                             <th className="px-4 py-3 text-left">
                                 Employee Details
@@ -487,6 +580,10 @@ console.log("fetchAttendanceData called");
 
                             <th className="px-4 py-3 text-left">
                                 Date
+                            </th>
+
+                            <th className="px-4 py-3 text-left">
+                                Shift
                             </th>
 
                             <th className="px-4 py-3 text-left">
@@ -552,6 +649,12 @@ console.log("fetchAttendanceData called");
                                     </td>
 
                                     <td className="px-4 py-3">
+                                        {
+                                            row.shiftName
+                                        }
+                                    </td>
+
+                                    <td className="px-4 py-3">
                                         {row.inTime
                                         ? new Date(
                                             row.inTime
@@ -581,16 +684,24 @@ console.log("fetchAttendanceData called");
                                         : "--"}
                                     </td>
 
-                                    <td className="px-4 py-3">
-                                        {
-                                            row.workingHours
-                                        }
+                                    <td
+                                        className={`px-4 py-3 font-medium ${getWorkingHoursStyle(
+                                            row.workingMinutes,
+                                            row.startTime,
+                                            row.endTime
+                                        )}`}
+                                    >
+                                        {row.workingHours}
                                     </td>
 
                                     <td className="px-4 py-3">
-                                        {
-                                            row.status
-                                        }
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                                                row.status
+                                            )}`}
+                                        >
+                                            {row.status}
+                                        </span>
                                     </td>
                                 </tr>
                             );

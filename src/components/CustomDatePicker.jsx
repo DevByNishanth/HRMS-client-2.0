@@ -122,7 +122,7 @@ const CustomDatePicker = ({
                 id={id}
                 type="button"
                 onClick={() => setIsOpen((currentState) => !currentState)}
-                className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
+                className="flex h-12 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
             >
                 <span className={value ? "text-white" : "text-[#6f839f]"}>
                     {value ? formatDate(value) : placeholder}

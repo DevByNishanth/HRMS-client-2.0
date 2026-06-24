@@ -359,7 +359,7 @@ export default function OverrideTable({ data = [] }) {
                             placeholder="Search Employee"
                             className="
                                 w-full
-                                h-11
+                                h-12
                                 pl-11
                                 px-4
                                 rounded-lg
@@ -404,7 +404,7 @@ export default function OverrideTable({ data = [] }) {
                     <button
                         onClick={exportSelectedEmployees}
                         className="
-                            h-11
+                            h-12
                             px-5
                             rounded-lg
                             border
@@ -427,7 +427,7 @@ export default function OverrideTable({ data = [] }) {
                                 setDepartment("");
                                 setEmployeeCategory("");
                             }}
-                            className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
+                            className="flex items-center gap-2 h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
                         >
                             Reset Filter
                             <X size={18} />
