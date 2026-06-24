@@ -11,7 +11,6 @@ import {
   CalendarDays,
   Clock3,
   SunMedium,
-  TimerReset,
   ShieldCheck,
   RotateCcw,
 } from "lucide-react";
@@ -76,6 +75,17 @@ const formatTime = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
   return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+};
+
+const calculateWorkingHours = (inTime, outTime) => {
+  if (!inTime || !outTime) return null;
+  const start = new Date(inTime);
+  const end = new Date(outTime);
+  const diffMs = end - start;
+  if (diffMs < 0) return null;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return { hours, minutes };
 };
 
 const RejectConfirmationPopup = ({
@@ -275,17 +285,23 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
               </div>
             </div>
 
-            {request.currentApprovalLevel && (
-              <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
-                    <TimerReset size={18} />
+{(() => {
+              const wh = calculateWorkingHours(request.requestedInTime, request.requestedOutTime);
+              if (!wh) return null;
+              return (
+                <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
+                      <Clock size={18} />
+                    </div>
+                    <p className="text-[13px] font-medium text-[#cad7eb]">Working Hours</p>
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Approval Level</p>
+                  <p className="text-[15px] font-semibold text-white">
+                    {wh.hours}h {wh.minutes}m
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">{request.currentApprovalLevel}</p>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Reason */}
