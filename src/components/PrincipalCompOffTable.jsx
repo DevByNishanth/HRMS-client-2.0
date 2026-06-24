@@ -1544,11 +1544,11 @@ const PrincipalCompOffTable = ({ filterDepartment }) => {
         throw new Error("Failed to fetch comp-off requests");
       }
       const result = await response.json();
-      let filtered = result.requests.filter((item, index) => {
+      let filtered = result.formattedRequests.filter((item, index) => {
         return item.currentApprovalLevel.toLowerCase() == "principal" || item.currentApprovalLevel.toLowerCase() == "completed";
       })
       console.log("result : ", filtered);
-      if (result.success && Array.isArray(result.requests)) {
+      if (result.success && Array.isArray(result.formattedRequests)) {
         setRequests(filtered.map(mapApiRequest));
       } else {
         setRequests([]);

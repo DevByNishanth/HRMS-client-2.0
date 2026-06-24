@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { Check, ChevronDown, Eye, X } from "lucide-react";
+import { Check, ChevronDown, Eye, RotateCcw, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import CustomDatePicker from "../../../components/CustomDatePicker";
@@ -55,8 +55,12 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   );
 };
 
-const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onConfirm, submitting }) => {
-  if (!request) return null;
+const ConfirmationPopup = ({ action, request, reason, onReasonChange, onClose, onConfirm, submitting }) => {
+  if (!action || !request) return null;
+
+  const isReject = action === "reject";
+  const isRevoke = action === "revoke";
+  const title = isReject ? "Reject Permission" : "Revoke Permission Decision";
 
   return (
     <section
@@ -72,41 +76,47 @@ const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onCon
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
-              Reject Permission
-            </h2>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">{title}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
-            aria-label="Close rejection confirmation"
+            aria-label="Close confirmation"
           >
             <X size={17} />
           </button>
         </div>
 
         <div className="px-5 py-4">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">
-            Reject {request.name}'s permission request for {request.date}?
-          </p>
-
-          <div className="mt-4">
-            <label
-              htmlFor="permission-reject-reason"
-              className="mb-2 block text-[13px] font-semibold text-white"
-            >
-              Reason for rejection
-            </label>
-            <textarea
-              id="permission-reject-reason"
-              value={reason}
-              onChange={(event) => onReasonChange(event.target.value)}
-              rows={4}
-              placeholder="Type the reason..."
-              className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-            />
-          </div>
+          {isReject && (
+            <>
+              <p className="text-[13px] leading-5 text-[#cad7eb]">
+                Reject {request.name}'s permission request for {request.date}?
+              </p>
+              <div className="mt-4">
+                <label
+                  htmlFor="permission-reject-reason"
+                  className="mb-2 block text-[13px] font-semibold text-white"
+                >
+                  Reason for rejection
+                </label>
+                <textarea
+                  id="permission-reject-reason"
+                  value={reason}
+                  onChange={(event) => onReasonChange(event.target.value)}
+                  rows={4}
+                  placeholder="Type the reason..."
+                  className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                />
+              </div>
+            </>
+          )}
+          {isRevoke && (
+            <p className="text-[13px] leading-5 text-[#cad7eb]">
+              Revoke the pending decision for {request.name}'s permission request for {request.date}?
+            </p>
+          )}
         </div>
 
         <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
@@ -120,10 +130,13 @@ const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onCon
           <button
             type="button"
             onClick={onConfirm}
-            disabled={!reason.trim() || submitting}
-            className="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-[#2563EB] px-4 text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={(isReject && !reason.trim()) || submitting}
+            className={`inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md px-4 text-[16px] font-semibold shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition disabled:cursor-not-allowed disabled:opacity-60 ${isRevoke
+              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+              : "bg-[#2563EB] text-white hover:bg-[#0d2b55]"
+              }`}
           >
-            {submitting ? "Rejecting..." : "Reject Request"}
+            {submitting ? <div className="loader"></div> : (isRevoke ? "Revoke Decision" : "Reject Request")}
           </button>
         </div>
       </div>
@@ -134,7 +147,6 @@ const RejectPermissionPopup = ({ request, reason, onReasonChange, onClose, onCon
 const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
   const [requests, setRequests] = useState([]);
   const [selectedPermission, setSelectedPermission] = useState(null);
-  const [rejectRequest, setRejectRequest] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [status, setStatus] = useState("All");
   const [session, setSession] = useState("All");
@@ -143,6 +155,8 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionInProgress, setActionInProgress] = useState(null);
+  const [confirmation, setConfirmation] = useState(null);
+  const [revokeLoading, setRevokeLoading] = useState(false);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
@@ -178,6 +192,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       duration: durationLabel,
       reason: p.reason || "",
       status: p.status || "",
+      currentApprovalLevel: p.currentApprovalLevel || "hod",
     };
   };
 
@@ -260,13 +275,10 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
         throw new Error(data?.message || "Unable to approve request.");
       }
 
-      setRequests((currentRequests) =>
-        currentRequests.map((item) =>
-          item.id === request.id ? { ...item, status: "Approved" } : item,
-        ),
-      );
-
       toast.success("Permission approved successfully");
+
+      // Re-fetch table data
+      await fetchTeamPermissions();
 
       if (typeof onRefresh === "function") {
         onRefresh();
@@ -282,56 +294,77 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
 
   const handleRejectClick = (request) => {
     setRejectReason("");
-    setRejectRequest(request);
+    setConfirmation({ action: "reject", request });
   };
 
-  const closeRejectPopup = () => {
-    setRejectRequest(null);
+  const handleRevokeClick = (request) => {
+    setConfirmation({ action: "revoke", request });
+  };
+
+  const closeConfirmationPopup = () => {
+    setConfirmation(null);
     setRejectReason("");
   };
 
   const confirmReject = async () => {
-    if (!rejectRequest || !rejectReason.trim()) return;
+    if (!confirmation || !confirmation.request) return;
+    if (confirmation.action === "reject" && !rejectReason.trim()) return;
 
-    const url = `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${rejectRequest.id}/reject`;
+    const requestId = confirmation.request.id;
+    const action = confirmation.action;
 
-    setActionInProgress(rejectRequest.id);
+    const url = action === "revoke"
+      ? `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/revoke-hod`
+      : `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/reject`;
+
+    if (action === "reject") {
+      setActionInProgress(requestId);
+    } else {
+      setRevokeLoading(true);
+    }
     setError(null);
 
     try {
       const token = getTokenFromLocalStorage();
+      const body = action === "reject"
+        ? JSON.stringify({ remarks: rejectReason.trim() })
+        : JSON.stringify({});
+
       const response = await fetch(url, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ remarks: rejectReason.trim() }),
+        body,
       });
       const data = await response.json();
 
       if (!response.ok || !data?.success) {
-        throw new Error(data?.message || "Unable to reject request.");
+        throw new Error(data?.message || "Unable to process request.");
       }
 
-      setRequests((currentRequests) =>
-        currentRequests.map((item) =>
-          item.id === rejectRequest.id ? { ...item, status: "Rejected" } : item,
-        ),
-      );
+      if (action === "reject") {
+        toast.success("Permission rejected successfully");
+      } else {
+        toast.success("Permission decision revoked successfully");
+      }
 
-      toast.success("Permission rejected successfully");
-      closeRejectPopup();
+      closeConfirmationPopup();
+
+      // Re-fetch table data
+      await fetchTeamPermissions();
 
       if (typeof onRefresh === "function") {
         onRefresh();
       }
     } catch (fetchError) {
-      console.error("Failed to reject permission:", fetchError);
-      toast.error(fetchError.message || "Failed to reject permission");
-      setError(fetchError.message || "Unable to reject request.");
+      console.error(`Failed to ${action} permission:`, fetchError);
+      toast.error(fetchError.message || `Failed to ${action} permission`);
+      setError(fetchError.message || `Unable to ${action} request.`);
     } finally {
       setActionInProgress(null);
+      setRevokeLoading(false);
     }
   };
 
@@ -451,18 +484,21 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                        {permission.status === "Pending" && (
+                        {permission.currentApprovalLevel === "hod" && permission.status === "Pending" ? (
                           <>
-                            <button
-                              type="button"
-                              onClick={() => handleApprove(permission)}
-                              disabled={actionInProgress === permission.id}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                              aria-label="Approve permission request"
-                              title="Approve"
-                            >
-                              <Check className="h-4 w-4" />
-                            </button>
+                            {actionInProgress === permission.id ? (
+                              <div className="loader"></div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleApprove(permission)}
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                                aria-label="Approve permission request"
+                                title="Approve"
+                              >
+                                <Check className="h-4 w-4" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => handleRejectClick(permission)}
@@ -474,7 +510,17 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                               <X className="h-4 w-4" />
                             </button>
                           </>
-                        )}
+                        ) : permission.currentApprovalLevel !== "hod" && permission.status === "Pending" ? (
+                          <button
+                            type="button"
+                            onClick={() => handleRevokeClick(permission)}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                            aria-label="Revoke permission decision"
+                            title="Revoke"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           onClick={() => setSelectedPermission(permissionWithColor)}
@@ -505,13 +551,14 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
         onClose={() => setSelectedPermission(null)}
       />
 
-      <RejectPermissionPopup
-        request={rejectRequest}
+      <ConfirmationPopup
+        action={confirmation?.action}
+        request={confirmation?.request}
         reason={rejectReason}
         onReasonChange={setRejectReason}
-        onClose={closeRejectPopup}
+        onClose={closeConfirmationPopup}
         onConfirm={confirmReject}
-        submitting={actionInProgress === rejectRequest?.id}
+        submitting={confirmation?.action === "revoke" ? revokeLoading : actionInProgress === confirmation?.request?.id}
       />
     </section>
   );

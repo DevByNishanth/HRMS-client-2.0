@@ -71,10 +71,10 @@ const DeanRequestsPanel = () => {
                 purpose: app.leaveTypeId?.leaveName || app.leaveType || "Leave",
                 date: app.fromDate
                   ? new Date(app.fromDate).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                    })
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  })
                   : "",
                 status: app.status || "Pending",
               };
@@ -102,8 +102,8 @@ const DeanRequestsPanel = () => {
           <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#2563eb24] text-[#3984ff]">
             <CalendarCheck size={16} />
           </span>
-          <h2 className="truncate text-[18px] font-semibold text-white">
-            OD Requests
+          <h2 className="truncate text-[16px] font-semibold text-white">
+            Upcoming OD Requests
           </h2>
         </div>
 

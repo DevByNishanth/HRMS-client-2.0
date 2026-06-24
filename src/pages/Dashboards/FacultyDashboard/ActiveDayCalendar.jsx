@@ -10,7 +10,7 @@ const MONTHS = [
 ];
 
 const statusColors = {
-  P: "bg-teal-500 text-black",
+  P: "bg-teal-500 text-white",
   A: "bg-[#e0474f] text-white",
   OFF: "bg-[#1d74d8] text-white",
   "-": "bg-[#173252] text-[#8ca1bd]",
@@ -171,7 +171,7 @@ const ActiveDayCalendar = () => {
                   background: "linear-gradient(to left, #14b8a6 50%, #f87171 50%)"
                 }}
               >
-                <span className="relative z-10 text-[12px] font-bold text-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                <span className="relative z-10 text-[12px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                   {item.day}
                 </span>
               </div>
@@ -187,7 +187,7 @@ const ActiveDayCalendar = () => {
                   background: "linear-gradient(to left, #14b8a6 50%, #f87171 50%)"
                 }}
               >
-                <span className="relative z-10 text-[12px] font-bold text-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                <span className="relative z-10 text-[12px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                   {item.day}
                 </span>
               </div>

@@ -319,13 +319,23 @@ const LeaveTable = () => {
   const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
 
   // Get unique leave types
-  const leaveTypes = ["All", ...new Set(leaves.map((leave) => leave.type))];
+  const leaveTypes = [
+    "All",
+    "Casual Leave",
+    "On-Duty",
+    "Marriage Leave",
+    "Compensation Leave",
+    "Medical Leave",
+    "Vacation Leave",
+    "Paternity Leave",
+    "Maternity Leave",
+  ];
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
   // Filter leaves based on selected filters
   const filteredLeaves = useMemo(() => {
     return leaves.filter((leave) => {
-      const leaveTypeMatch = filterLeaveType === "All" || leave.type === filterLeaveType;
+      const leaveTypeMatch = filterLeaveType === "All" || leave?.leaveTypeId?.leaveName === filterLeaveType;
       const statusMatch = filterStatus === "All" || leave.status === filterStatus;
 
       // Normalize dates to midnight UTC for fair comparison

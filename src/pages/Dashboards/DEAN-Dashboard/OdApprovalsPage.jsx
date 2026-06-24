@@ -1,4 +1,4 @@
-import { Check, Clock, Eye, FileText, Search, X } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, ChevronDown, Clock, Eye, FileText, Search, ShieldCheck, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import CommonHeader from "../../../components/CommonHeader";
@@ -14,6 +14,30 @@ const statusStyles = {
 
 const OdDetailsPopup = ({ request, onClose }) => {
   if (!request) return null;
+
+  const getActionColor = (action) => {
+    if (action?.toLowerCase() === "approved") {
+      return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+    } else if (action?.toLowerCase() === "rejected") {
+      return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+    }
+    return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+  };
+
+  const getActionIcon = (action) => {
+    switch (action?.toLowerCase()) {
+      case "approved":
+        return <CheckCircle2 size={18} />;
+      case "rejected":
+        return <AlertCircle size={18} />;
+      case "submitted":
+        return <Clock size={18} />;
+      default:
+        return <Clock size={18} />;
+    }
+  };
+
+  const approvalHistory = request.approvalHistory || [];
 
   return (
     <section
@@ -117,9 +141,99 @@ const OdDetailsPopup = ({ request, onClose }) => {
               </>
             )}
           </div>
+
+          {/* Approval Workflow */}
+          {approvalHistory.length > 0 && (
+            <div className="mt-4 border-t border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+                <ShieldCheck size={15} className="text-[#3984ff]" />
+                Approval Workflow
+              </p>
+
+              <div className="space-y-0">
+                {approvalHistory.map((history, index) => {
+                  const actionColor = getActionColor(history.action);
+                  const isLast = index === approvalHistory.length - 1;
+                  const isApproved = history.action?.toLowerCase() === "approved";
+                  const isRejected = history.action?.toLowerCase() === "rejected";
+
+                  return (
+                    <div key={history._id || index} className="relative">
+                      {/* Connector line */}
+                      {!isLast && (
+                        <div
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
+                            ? "bg-[#10b981]"
+                            : isRejected
+                              ? "bg-[#ef4444]"
+                              : "bg-[#444c63]"
+                            }`}
+                        />
+                      )}
+
+                      {/* Step content */}
+                      <div className="relative flex gap-3 pb-4">
+                        {/* Step circle */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                              ? `${actionColor.bg} border-emerald-200/20`
+                              : isRejected
+                                ? `${actionColor.bg} border-[#ef4444]`
+                                : `${actionColor.light} border-[#444c63]`
+                              } text-white`}
+                          >
+                            {getActionIcon(history.action)}
+                          </div>
+                        </div>
+
+                        {/* Step details */}
+                        <div className="flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                {history.role}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                ? "bg-[#10b98120] text-[#10b981]"
+                                : isRejected
+                                  ? "bg-[#ef444420] text-[#ef4444]"
+                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                }`}
+                            >
+                              {history.action}
+                            </span>
+                          </div>
+
+                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                            {history.remarks}
+                          </p>
+
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        {/* <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
@@ -128,7 +242,7 @@ const OdDetailsPopup = ({ request, onClose }) => {
             Close Details
             <X size={14} />
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -222,6 +336,50 @@ const OdApprovalsPage = () => {
 
   const statuses = ["All", "Pending", "Approved", "Rejected"];
 
+  // Custom Dropdown Component
+  const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        >
+          <span className={value ? "text-white" : "text-[#6f839f]"}>
+            {value || placeholder}
+          </span>
+          <ChevronDown
+            size={16}
+            className={`text-[#3984ff] transition ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+            <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    onChange(option);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
+                    ? "bg-[#2563EB] text-white"
+                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
   // Fetch requests
@@ -283,6 +441,7 @@ const OdApprovalsPage = () => {
               purpose: app.reason || leaveType,
               reason: app.reason || "",
               status: app.status || "Pending",
+              approvalHistory: app.approvalHistory || [],
             };
           });
 
@@ -475,19 +634,13 @@ const OdApprovalsPage = () => {
                   </div>
 
                   {/* Status Filter */}
-                  <div className="flex gap-1 rounded-lg border border-[#244061] bg-[#0d2138] p-1">
-                    {statuses.map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => setStatusFilter(status)}
-                        className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition ${statusFilter === status
-                          ? "bg-[#2563EB] text-white"
-                          : "text-[#8ca1bd] hover:text-white"
-                          }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                  <div className="flex-shrink-0">
+                    <CustomDropdown
+                      placeholder="Status"
+                      value={statusFilter}
+                      onChange={setStatusFilter}
+                      options={statuses}
+                    />
                   </div>
                 </div>
               </div>

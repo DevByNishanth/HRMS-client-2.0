@@ -72,7 +72,7 @@ const LeaveOverview = () => {
         icon: FileText,
         code: "LV",
       };
-      
+
       return {
         title: item.leaveType,
         code: config.code,

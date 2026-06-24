@@ -212,13 +212,14 @@ const FacultyManagementPage = () => {
     };
 
     const handleViewFaculty = (faculty) => {
+        console.log("faculty id : ", faculty);
         const facultyId = getFacultyId(faculty);
         if (!facultyId) {
             setFacultyError("Faculty ID is missing. Unable to open profile.");
             return;
         }
 
-        navigate(`/profile/${decoded?.facultyId}`);
+        navigate(`/profile/${faculty._id}`);
     };
 
     const handleDeleteFaculty = async () => {

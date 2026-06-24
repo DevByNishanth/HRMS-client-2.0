@@ -1,7 +1,7 @@
-import { Eye, Search, CalendarDays, X,AlertCircle , ChevronDown, ChevronLeft, ChevronRight, FileText, TimerReset, Send, Layers, File, ShieldCheck, CheckCircle2, Clock, AlertTriangle, RotateCcw } from "lucide-react";
+import { Eye, Search, CalendarDays, X, AlertCircle, ChevronDown, ChevronLeft, ChevronRight, FileText, TimerReset, Send, Layers, File, ShieldCheck, CheckCircle2, Clock, AlertTriangle, RotateCcw } from "lucide-react";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../utils/tokenUtils";
+import { getTokenFromLocalStorage } from "../utils/tokenUtils";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -213,9 +213,6 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
             </div>
           )}
         </div>
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
-          <button type="button" onClick={onClose} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]">Close Details <Send size={14} /></button>
-        </div>
       </div>
     </section>
   );
@@ -257,6 +254,7 @@ const FacultyCompOffTable = () => {
   const statuses = ["All", "Approved", "Rejected", "Pending", "Revoked"];
 
   const fetchCompOffs = useCallback(async () => {
+    console.log("fetching")
     setLoading(true);
     setError("");
     try {
@@ -266,20 +264,16 @@ const FacultyCompOffTable = () => {
         setLoading(false);
         return;
       }
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/comp-off/`, {
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/comp-off/me`, {
         headers: { "Authorization": `Bearer ${token}` },
       });
       if (!response.ok) {
         throw new Error("Failed to fetch comp-off requests");
       }
       const result = await response.json();
+      console.log("result : ", result)
       if (result.success && Array.isArray(result.requests)) {
-        const facultyId = getFacultyIdFromToken();
-        const myRequests = result.requests.filter((req) => {
-          const reqFacultyId = req.facultyId?._id || req.facultyId?.id || req.facultyId?.toString();
-          return reqFacultyId === facultyId;
-        });
-        setData(myRequests.map(mapApiRequest));
+        setData(result.requests.map(mapApiRequest));
       } else {
         setData([]);
       }
@@ -373,7 +367,7 @@ const FacultyCompOffTable = () => {
                 </tr>
               </thead>
               <tbody className="text-[12px] text-[#cad7eb]">
-           
+
                 {filteredData.length > 0 ? filteredData.map((item, i) => {
                   const iwc = { ...item, statusColor: statusStyles[item.status] };
                   return (

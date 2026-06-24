@@ -179,8 +179,8 @@ const TimeTracker = () => {
                     setIsOpen(false);
                   }}
                   className={`w-full px-3 py-2 text-left text-[13px] transition ${selectedDay === day
-                      ? "bg-[#2563EB] text-white font-semibold"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                    ? "bg-[#2563EB] text-white font-semibold"
+                    : "text-[#cad7eb] hover:bg-[#132b49]"
                     }`}
                 >
                   {day}

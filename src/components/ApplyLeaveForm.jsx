@@ -5,7 +5,6 @@ import { getTokenFromLocalStorage } from "../utils/tokenUtils";
 import { jwtDecode } from "jwt-decode";
 
 const dayOptions = ["Full Day", "First Half", "Second Half"];
-const requiresFileUpload = ["medical", "maternity", "paternity"];
 const backdateGraceDays = 2;
 
 const getCurrentAcademicYear = () => {
@@ -55,11 +54,8 @@ const isCasualLeave = (leaveName = "") => leaveName.toLowerCase() === "casual le
 
 const isFileUploadRequired = (leaveName = "") => {
     const normalizedLeaveName = leaveName.toLowerCase();
-
-    return (
-        normalizedLeaveName.startsWith("onduty")
-        || requiresFileUpload.includes(normalizedLeaveName)
-    );
+    const fileRequiredKeywords = ["medical", "on duty", "on-duty", "onduty", "maternity", "paternity"];
+    return fileRequiredKeywords.some(keyword => normalizedLeaveName.includes(keyword));
 };
 
 const ApplyLeaveForm = ({ onClose, employee }) => {
@@ -172,10 +168,33 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
 
     const handleFileUpload = (event) => {
         const file = event.target.files?.[0];
-        if (file) {
-            setUploadedFile(file);
-            setValidationErrors(prev => ({ ...prev, file: "" }));
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+        const allowedExtensions = [".pdf", ".doc", ".docx"];
+        const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+
+        if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+            setValidationErrors(prev => ({
+                ...prev,
+                file: "Only PDF and DOC files are allowed"
+            }));
+            return;
         }
+
+        // Validate file size (max 2MB)
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            setValidationErrors(prev => ({
+                ...prev,
+                file: "File size must be less than 2MB"
+            }));
+            return;
+        }
+
+        setUploadedFile(file);
+        setValidationErrors(prev => ({ ...prev, file: "" }));
     };
 
     const formatDateToString = (date) => {
@@ -521,7 +540,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                         <p className="text-[12px] text-[#cad7eb]">
                                             {uploadedFile ? uploadedFile.name : "Click to upload or drag and drop"}
                                         </p>
-                                        <p className="text-[11px] text-[#6f839f]">PDF, DOC, DOCX (Max 5MB)</p>
+                                        <p className="text-[11px] text-[#6f839f]">PDF, DOC (Max 2MB)</p>
                                     </div>
                                 </div>
                                 {validationErrors.file && (

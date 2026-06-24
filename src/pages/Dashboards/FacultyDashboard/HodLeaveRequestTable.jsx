@@ -641,13 +641,13 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     const [revokeLoading, setRevokeLoading] = useState(false);
 
     // Get unique leave types
-    const leaveTypes = ["All", ...new Set(requests.map((request) => request.type))];
+    const leaveTypes = ["All", ...new Set(requests.map((request) => request?.leaveTypeId?.leaveName).filter(Boolean))];
     const statuses = ["All", "Approved", "Rejected", "Pending"];
 
     // Filter requests based on selected filters
     const filteredRequests = useMemo(() => {
         return requests.filter((request) => {
-            const leaveTypeMatch = filterLeaveType === "All" || request.type === filterLeaveType;
+            const leaveTypeMatch = filterLeaveType === "All" || request?.leaveTypeId?.leaveName === filterLeaveType;
             const statusMatch = filterStatus === "All" || request.status === filterStatus;
 
             // Parse request dates for comparison

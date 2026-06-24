@@ -9,15 +9,15 @@ const LeaveSummaryCard = ({ icon: Icon, title, code, used, total, color }) => {
         className="mb-5 flex h-8 w-8  items-center justify-center rounded-md"
         style={{ backgroundColor: `${color}22`, color }}
       >
-        <Icon size={15} />
+        <Icon size={16} />
       </div>
 
-      <h3 className="text-[12px] -mt-2.5 font-semibold uppercase tracking-wide text-white">
+      <h3 className="text-[13px] -mt-2.5 font-semibold uppercase tracking-wide text-white">
         {title} ({code})
       </h3>
 
       <div className="mt-1 flex items-center justify-between text-[12px] font-semibold">
-        <span className="text-white">{used} / {total} Days</span>
+        <span className="text-white/40"> <span className="text-white">{used}</span> / {total} Days</span>
       </div>
 
       <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-[#1c2d45]">
