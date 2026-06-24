@@ -1,14 +1,17 @@
-import React from "react";
-import { Edit3 } from "lucide-react";
+import React, { useState } from "react";
+import { Edit3, X } from "lucide-react";
 import userImg from "../../assets/userImg.svg";
 
-
 const ProfileHero = ({ canEdit, onEdit, faculty }) => {
-  const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
+  const fullName =
+    [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
   const isActive = faculty?.employmentStatus === true;
   const designation = faculty?.designation || "";
   const department = faculty?.department || "";
   const empId = faculty?.empId || "";
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
     <>
@@ -25,31 +28,148 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
               <h1 className="text-xl font-semibold leading-tight text-white">
                 {fullName}
               </h1>
-              <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${isActive
-                ? "bg-[#0f7e59]/25 text-[#26d39a]"
-                : "bg-[#f168681f] text-[#f16868]"
+              <span
+                className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${
+                  isActive
+                    ? "bg-[#0f7e59]/25 text-[#26d39a]"
+                    : "bg-[#f168681f] text-[#f16868]"
                 }`}
               >
                 {isActive ? "Active" : "Inactive"}
               </span>
             </div>
             <p className="mt-1 text-[15px] font-medium text-[#c9d7f2]">
-              {designation}{designation && department ? " • " : ""}{department}
+              {designation}
+              {designation && department ? " • " : ""}
+              {department}
             </p>
             <p className="mt-2 text-[12px] text-[#8092b1]">{empId}</p>
           </div>
         </div>
 
-        {canEdit && <button
+        {canEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+          >
+            <Edit3 size={13} />
+            Edit Profile
+          </button>
+        )}
+
+        <button
           type="button"
-          onClick={onEdit}
+          onClick={() => setIsPasswordModalOpen(true)}
           className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
         >
-          <Edit3 size={13} />
-          Edit Profile
-        </button>}
-
+          Change password
+        </button>
       </section>
+
+      {isPasswordModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+          onClick={() => setIsPasswordModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-[#31415d] bg-[#071425] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-white">Change Password</h2>
+                <p className="mt-1 text-sm text-[#8fa3bf]">
+                  Set a new password for your account.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPasswordModalOpen(false)}
+                className="rounded-full p-2 text-[#8fa3bf] transition hover:bg-[#0f1b2e] hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#c9d7f2]">
+                  Enter a New Password
+                </label>
+                <div className="relative">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-[#8b9bb8]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.5 10.5V7.875a4.125 4.125 0 10-8.25 0V10.5m-.75 0h9.75A2.25 2.25 0 0119.5 12.75v5.625A2.25 2.25 0 0117.25 20.625H6.75A2.25 2.25 0 014.5 18.375V12.75A2.25 2.25 0 016.75 10.5z"
+                    />
+                  </svg>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="h-11 w-full rounded-xl border border-[#31415d] bg-[#0f1b2e] py-2 pl-10 pr-4 text-sm text-white outline-none placeholder:text-[#64748b] focus:border-[#2563EB]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#c9d7f2]">
+                  Re-Enter New Password
+                </label>
+                <div className="relative">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-[#8b9bb8]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.5 10.5V7.875a4.125 4.125 0 10-8.25 0V10.5m-.75 0h9.75A2.25 2.25 0 0119.5 12.75v5.625A2.25 2.25 0 0117.25 20.625H6.75A2.25 2.25 0 014.5 18.375V12.75A2.25 2.25 0 016.75 10.5z"
+                    />
+                  </svg>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter new password"
+                    className="h-11 w-full rounded-xl border border-[#31415d] bg-[#0f1b2e] py-2 pl-10 pr-4 text-sm text-white outline-none placeholder:text-[#64748b] focus:border-[#2563EB]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsPasswordModalOpen(false)}
+                className="rounded-xl border border-[#31415d] px-4 py-2 text-sm font-semibold text-[#c9d7f2] transition hover:bg-[#0f1b2e]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="rounded-xl bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0d2b55]"
+              >
+                Update Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
