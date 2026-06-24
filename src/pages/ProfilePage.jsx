@@ -28,12 +28,13 @@ const ProfilePage = () => {
 
     return (
         <>
-            <div className='flex h-screen overflow-hidden bg-[#020618]'>
+            <div className='flex h-screen overflow-hidden bg-[#071425]'>
                 <Sidebar />
                 {/* right container  */}
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <CommonHeader />
+                   
                     <ProfileBody userId={userId} canEditOwnProfile={canEditOwnProfile} />
                 </div>
             </div>

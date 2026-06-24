@@ -39,7 +39,7 @@ const CommonHeader = () => {
           <button className="text-[#d7e3ff] hover:text-white transition">
             <Settings size={14} />
           </button>
-          <Link
+          {decoded.role == "admin" || decoded.role == "principal" ? "" : <Link
             to={`/profile/${decoded?.facultyId}`}
             className="text-[#d7e3ff] hover:text-white transition"
           >
@@ -47,7 +47,7 @@ const CommonHeader = () => {
               size={14}
               className="text-[#d7e3ff] hover:text-white transition"
             />
-          </Link>
+          </Link>}
         </div>
 
         {/* Profile */}

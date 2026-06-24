@@ -7,24 +7,24 @@ import { getRoleBasedRoute } from "../utils/tokenUtils";
 
 const slides = [
   {
-    title: "A Unified Hub for Smarter Financial Decision-Making",
+    title: "A Unified Hub for Workforce Management",
     description:
-      "Kezak empowers you with a unified financial command center, delivering deep insights and a 360° view of your entire economic world.",
+      "Manage employees, attendance, leave, payroll, and performance from a single HRMS platform designed for modern organizations.",
   },
   {
-    title: "Track Your Financial Growth Seamlessly",
+    title: "Simplify Attendance & Leave Tracking",
     description:
-      "Monitor expenses, revenue, investments, and savings in one intelligent dashboard built for clarity and control.",
+      "Track employee attendance, shifts, holidays, and leave requests effortlessly with automated workflows and real-time visibility.",
   },
   {
-    title: "Powerful Analytics for Better Decisions",
+    title: "Streamline Payroll & Employee Records",
     description:
-      "Transform raw numbers into meaningful insights with real-time analytics and performance tracking tools.",
+      "Process payroll accurately, maintain employee information securely, and ensure compliance with integrated HR operations.",
   },
   {
-    title: "Secure & Modern Financial Experience",
+    title: "Empower Your People with Smart HR Tools",
     description:
-      "Experience enterprise-grade security and a beautifully crafted interface designed for modern businesses.",
+      "Enhance employee engagement, performance management, and self-service experiences through an intuitive and secure HRMS solution.",
   },
 ];
 
@@ -139,7 +139,7 @@ const LoginPage = () => {
             </p>
 
             <div className="mt-6">
-              <label className="mb-2 block text-sm text-[#8b9bb8]">
+              <label className="mb-2 block text-md text-[#8b9bb8]">
                 Email Address <span className="text-blue-500">*</span>
               </label>
 
@@ -175,7 +175,7 @@ const LoginPage = () => {
             </div>
 
             <div className="mt-6">
-              <label className="mb-2 block text-sm text-[#8b9bb8]">
+              <label className="mb-2 block text-md text-[#8b9bb8]">
                 Password <span className="text-blue-500">*</span>
               </label>
 
@@ -271,21 +271,11 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <footer className="mx-5 shrink-0 border-t border-[#1b2942] px-0 py-4 text-sm text-[#94A3B8] sm:mx-10">
-          <div className="mx-auto flex max-w-xl flex-col items-center justify-between gap-3 text-center md:flex-row md:text-left">
-            <p>Copyright : QuantumPulse Technologies, All Right Reserved</p>
+        <footer className="mx-5 shrink-0 border-t border-[#1b2942] px-0 py-4 text-sm text-[#94A3B8] ">
+          <div className="mx-auto flex max-w-xl flex-col items-center justify-between gap-3 text-center ">
+            <p className="">Copyright : QuantumPulse Technologies, All Right Reserved</p>
 
-            <div className="flex items-center gap-5">
-              <button className="transition hover:text-white">
-                Term & Condition
-              </button>
 
-              <div className="h-5 w-px bg-[#2a3a56]" />
-
-              <button className="transition hover:text-white">
-                Privacy & Policy
-              </button>
-            </div>
           </div>
         </footer>
       </section>

@@ -50,16 +50,16 @@ const PermissionStatCard = ({
         >
           <Icon size={15} />
         </div>
-        <p className="bg-white/6 py-1 px-2 rounded-full w-fit text-[11px] text-white/40">
+        <p className="bg-white/6 py-1 px-2 rounded-full w-fit text-[11px] text-white/90">
           This month
         </p> 
       </div>
 
-      <h3 className="text-[12px]  uppercase tracking-wide text-white">
+      <h3 className="text-[12px]  uppercase tracking-wide font-medium text-white">
         {title} ({code})
       </h3>
 
-      <p className="mt-1 text-[12px] font-semibold text-white">
+      <p className="mt-1 text-[12px] font-semibold text-white/60">
         {total} Hours
       </p>
 

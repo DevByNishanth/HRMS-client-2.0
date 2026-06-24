@@ -479,7 +479,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
           )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        {/* <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           {canRevoke ? (
             <button
               type="button"
@@ -499,7 +499,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
               <Send size={14} />
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -655,8 +655,8 @@ const HodCompOffTable = ({ onCountChange }) => {
         throw new Error("Failed to fetch comp-off requests");
       }
       const result = await response.json();
-      if (result.success && Array.isArray(result.requests)) {
-        setRequests(result.requests.map(mapApiRequest));
+      if (result.success && Array.isArray(result.formattedRequests)) {
+        setRequests(result.formattedRequests.map(mapApiRequest));
       } else {
         setRequests([]);
       }

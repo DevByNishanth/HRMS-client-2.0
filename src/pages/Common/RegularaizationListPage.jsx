@@ -78,15 +78,6 @@ const formatTime = (dateStr) => {
   return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 };
 
-const isSameDay = (dateA, dateB) => {
-  if (!dateA || !dateB) return false;
-  return (
-    dateA.getFullYear() === dateB.getFullYear() &&
-    dateA.getMonth() === dateB.getMonth() &&
-    dateA.getDate() === dateB.getDate()
-  );
-};
-
 const RejectConfirmationPopup = ({
   request,
   reason,
@@ -483,7 +474,8 @@ const CancelConfirmationPopup = ({ request, onClose, onConfirm, submitting }) =>
 const MyRegularizationTable = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [filterFromDate, setFilterFromDate] = useState(null);
+  const [filterToDate, setFilterToDate] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [cancelRequest, setCancelRequest] = useState(null);
@@ -491,13 +483,22 @@ const MyRegularizationTable = () => {
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
-      const matchesDate =
-        !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
+      const normalizeDate = (date) => {
+        if (!date) return null;
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      };
+
+      const reqDate = normalizeDate(new Date(request.attendanceDate));
+      const fromDate = normalizeDate(filterFromDate);
+      const toDate = normalizeDate(filterToDate);
+
+      const matchesFromDate = !fromDate || reqDate >= fromDate;
+      const matchesToDate = !toDate || reqDate <= toDate;
       const matchesStatus = selectedStatus === "All" || request.status === selectedStatus;
 
-      return matchesDate && matchesStatus;
+      return matchesFromDate && matchesToDate && matchesStatus;
     });
-  }, [requests, selectedDate, selectedStatus]);
+  }, [requests, filterFromDate, filterToDate, selectedStatus]);
 
   const fetchMyRegularizations = useCallback(async () => {
     try {
@@ -573,23 +574,35 @@ const MyRegularizationTable = () => {
         </h2>
 
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-[160px]">
               <CustomDatePicker
-                id="my-regularization-date-filter"
-                value={selectedDate}
-                onChange={setSelectedDate}
-                placeholder="Filter by date"
+                id="my-regularization-from-date"
+                value={filterFromDate}
+                onChange={setFilterFromDate}
+                placeholder="From Date"
                 popupAlign="right"
               />
             </div>
-            {selectedDate && (
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="my-regularization-to-date"
+                value={filterToDate}
+                onChange={setFilterToDate}
+                placeholder="To Date"
+                popupAlign="right"
+              />
+            </div>
+            {(filterFromDate || filterToDate) && (
               <button
                 type="button"
-                onClick={() => setSelectedDate(null)}
+                onClick={() => {
+                  setFilterFromDate(null);
+                  setFilterToDate(null);
+                }}
                 className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
-                aria-label="Clear date filter"
-                title="Clear date filter"
+                aria-label="Clear date filters"
+                title="Clear date filters"
               >
                 <X size={14} />
               </button>
@@ -696,14 +709,27 @@ const HodRegularizationTable = ({ onCountChange }) => {
   const [processingId, setProcessingId] = useState(null);
   const [rejectRequest, setRejectRequest] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [filterFromDate, setFilterFromDate] = useState(null);
+  const [filterToDate, setFilterToDate] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
-      return !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
+      const normalizeDate = (date) => {
+        if (!date) return null;
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      };
+
+      const reqDate = normalizeDate(new Date(request.attendanceDate));
+      const fromDate = normalizeDate(filterFromDate);
+      const toDate = normalizeDate(filterToDate);
+
+      const matchesFromDate = !fromDate || reqDate >= fromDate;
+      const matchesToDate = !toDate || reqDate <= toDate;
+
+      return matchesFromDate && matchesToDate;
     });
-  }, [requests, selectedDate]);
+  }, [requests, filterFromDate, filterToDate]);
 
   const fetchHodRegularizations = useCallback(async () => {
     try {
@@ -824,23 +850,35 @@ const HodRegularizationTable = ({ onCountChange }) => {
             Team regularization requests <span>({filteredRequests.length})</span>
           </h2>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-[160px]">
               <CustomDatePicker
-                id="hod-regularization-date-filter"
-                value={selectedDate}
-                onChange={setSelectedDate}
-                placeholder="Filter by date"
+                id="hod-regularization-from-date"
+                value={filterFromDate}
+                onChange={setFilterFromDate}
+                placeholder="From Date"
                 popupAlign="right"
               />
             </div>
-            {selectedDate && (
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="hod-regularization-to-date"
+                value={filterToDate}
+                onChange={setFilterToDate}
+                placeholder="To Date"
+                popupAlign="right"
+              />
+            </div>
+            {(filterFromDate || filterToDate) && (
               <button
                 type="button"
-                onClick={() => setSelectedDate(null)}
+                onClick={() => {
+                  setFilterFromDate(null);
+                  setFilterToDate(null);
+                }}
                 className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
-                aria-label="Clear date filter"
-                title="Clear date filter"
+                aria-label="Clear date filters"
+                title="Clear date filters"
               >
                 <X size={14} />
               </button>

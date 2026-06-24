@@ -225,7 +225,7 @@ const AttendanceGauge = () => {
       {/* Gauge */}
       <div className="flex flex-1 items-center justify-center">
         <div className="relative ">
-          <svg width="200" height="210" viewBox="0 0 200 110">
+          <svg width="300" height="210" viewBox="0 0 200 110">
             {/* Background Arc */}
             <path
               d="M 30 90 A 70 70 0 0 1 170 90"

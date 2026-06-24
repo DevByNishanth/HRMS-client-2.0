@@ -93,12 +93,12 @@ const RecentLogs = () => {
               if (isHoliday) {
                 return (
                   <tr key={record.attendanceId || record.date}>
-                    <td className="bg-orange-300/20 rounded-bl-lg"></td>
-                    <td className="bg-orange-300/20"></td>
-                    <td className="bg-orange-300/20"></td>
-                    <td className="py-2 bg-orange-300/20 pl-4"><h1 className="text-xl text-orange-300">{record?.holidayName}</h1></td>
-                    <td className="bg-orange-300/20"></td>
-                    <td className="bg-orange-300/20 rounded-br-lg"></td>
+                    <td className="bg-gray-400/30 "></td>
+                    <td className="bg-gray-400/30"></td>
+                    <td className="bg-gray-400/30"></td>
+                    <td className="py-2 bg-gray-400/30 pl-4"><h1 className="text-xl text-white">{record?.holidayName}</h1></td>
+                    <td className="bg-gray-400/30"></td>
+                    <td className="bg-gray-400/30 "></td>
                   </tr>
                 );
               }
@@ -112,7 +112,7 @@ const RecentLogs = () => {
                     {formatMinutesToHours(record.workingHours)}
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}>
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}>
                       <span className="h-[4px] w-[4px] rounded-full bg-current" />
                       {record.status}
                     </span>
