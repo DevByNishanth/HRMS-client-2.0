@@ -1,10 +1,13 @@
-import { AlertCircle, Check, CheckCircle2, ChevronDown, Clock, Eye, FileText, Search, ShieldCheck, X } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, ChevronDown, Clock, Download, Eye, FileText, Search, ShieldCheck, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import { decodeToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import userImg from "../../../assets/userImg.svg";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -333,6 +336,27 @@ const OdApprovalsPage = () => {
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Name": r.name || "",
+      "Department": r.department || "",
+      "Leave Type": r.leaveType || "",
+      "Date": r.date || "",
+      "Purpose": r.purpose || "",
+      "Status": r.approvalStatus || r.status || "Pending",
+    }));
+    exportToExcel(rows, "OD-Approvals.xlsx");
+  };
 
   const statuses = ["All", "Pending", "Approved", "Rejected"];
 
@@ -676,8 +700,25 @@ const OdApprovalsPage = () => {
                       options={statuses}
                     />
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredRequests.length === 0}
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
                 </div>
               </div>
+
+              <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                loading={exportLoading}
+                error={exportError}
+              />
 
               <div className="relative z-0 h-[calc(100vh-380px)] overflow-auto table-custom-scrollbar">
                 <table className="w-full min-w-[980px] border-collapse text-left">

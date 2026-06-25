@@ -1,7 +1,10 @@
-import { Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
+import { Download, Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 import LeaveDetailsPopup from "./LeaveDetailsPopup";
 import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
@@ -308,6 +311,26 @@ const LeaveTable = () => {
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
 
   const [leaves, setLeaves] = useState([]);
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredLeaves.map((leave) => ({
+      "Leave Type": leave?.leaveTypeId?.leaveName || "",
+      "From Date": formatDate(leave.fromDate),
+      "To Date": formatDate(leave.toDate),
+      "Duration": `${leave.totalDays || 0} ${daysLable(leave.totalDays)}`,
+      "Status": leave.status || "",
+    }));
+    exportToExcel(rows, "My-Leaves.xlsx");
+  };
   const [teamLeavesCount, setTeamLeavesCount] = useState(0);
 
   // tab data's
@@ -554,6 +577,17 @@ const LeaveTable = () => {
                 />
               </div>
 
+              {/* Export Button */}
+              <button
+                type="button"
+                onClick={handleExportClick}
+                disabled={filteredLeaves.length === 0}
+                className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Download size={16} />
+                Export
+              </button>
+
               {/* Reset Button */}
               {hasActiveFilters && (
                 <button
@@ -566,6 +600,15 @@ const LeaveTable = () => {
             </div>
           </div>
         </div>
+
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
+
         <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[760px] border-collapse text-left">
             <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">

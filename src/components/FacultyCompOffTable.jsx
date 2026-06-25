@@ -1,7 +1,10 @@
-import { Eye, Search, CalendarDays, X, AlertCircle, ChevronDown, ChevronLeft, ChevronRight, FileText, TimerReset, Send, Layers, File, ShieldCheck, CheckCircle2, Clock, AlertTriangle, RotateCcw } from "lucide-react";
+import { Download, Eye, Search, CalendarDays, X, AlertCircle, ChevronDown, ChevronLeft, ChevronRight, FileText, TimerReset, Send, Layers, File, ShieldCheck, CheckCircle2, Clock, AlertTriangle, RotateCcw } from "lucide-react";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { getTokenFromLocalStorage } from "../utils/tokenUtils";
+import ExportPasswordModal from "./ExportPasswordModal";
+import { exportToExcel } from "../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -253,6 +256,26 @@ const FacultyCompOffTable = () => {
   const [revokeReason, setRevokeReason] = useState("");
   const statuses = ["All", "Approved", "Rejected", "Pending", "Revoked"];
 
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredData.map((item) => ({
+      "Worked From": item.fromDate ? new Date(item.fromDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "",
+      "Worked To": item.toDate ? new Date(item.toDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "",
+      "No. of Days": item.noOfDays || 0,
+      "Reason": item.Reason || item.reason || "",
+      "Status": item.status || "",
+    }));
+    exportToExcel(rows, "My-CompOff.xlsx");
+  };
+
   const fetchCompOffs = useCallback(async () => {
     console.log("fetching")
     setLoading(true);
@@ -346,8 +369,24 @@ const FacultyCompOffTable = () => {
             <div className="flex-shrink-0 min-w-[160px]"><FilterDatePicker id="compoff-filter-from" value={filterFromDate} onChange={setFilterFromDate} placeholder="From Date" isOpen={openDateFilter === "from"} onOpen={() => setOpenDateFilter("from")} onClose={() => setOpenDateFilter(null)} /></div>
             <div className="flex-shrink-0 min-w-[160px]"><FilterDatePicker id="compoff-filter-to" value={filterToDate} onChange={setFilterToDate} placeholder="To Date" popupAlign="right" isOpen={openDateFilter === "to"} onOpen={() => setOpenDateFilter("to")} onClose={() => setOpenDateFilter(null)} /></div>
             {hasFilters && <button type="button" onClick={resetFilters} className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white">Reset Filters</button>}
+          <button
+            type="button"
+            onClick={handleExportClick}
+            disabled={filteredData.length === 0}
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export
+          </button>
           </div>
         </div>
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
         <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
           {loading ? (
             <div className="flex items-center justify-center py-12 text-[#9eb0cc]">Loading...</div>
