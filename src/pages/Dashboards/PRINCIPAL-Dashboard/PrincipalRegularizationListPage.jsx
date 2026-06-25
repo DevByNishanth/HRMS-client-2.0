@@ -17,6 +17,7 @@ import {
   Send,
   AlertCircle,
   SunMedium,
+  Download,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import Sidebar from "../../../components/Siedbar";
@@ -27,6 +28,9 @@ import {
   getTokenFromLocalStorage,
 } from "../../../utils/tokenUtils";
 import axios from "axios";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -36,23 +40,6 @@ const statusStyles = {
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
-
-const departments = [
-  "All",
-  "Computer Science",
-  "Electronics & Communication",
-  "Electrical & Electronics",
-  "Mechanical",
-  "Civil",
-  "Information Technology",
-  "Artificial Intelligence & Data Science",
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "English",
-  "Management Studies",
-  "MBA",
-];
 
 // ---------- Detail Slide Panel ----------
 const formatDateDisplay = (dateString) => {
@@ -541,6 +528,37 @@ const PrincipalRegularizationListPage = () => {
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Faculty Name": `${r.facultyId?.firstName || ""} ${r.facultyId?.lastName || ""}`.trim(),
+      "Date": formatDate(r.date || r.fromDate || r.attendanceDate),
+      "Session": r.session || r.leaveSession || "Full Day",
+      "Duration": calculateDuration(r),
+      "Reason": r.reason || r.regularizationReason || "",
+      "Status": r.status || "",
+    }));
+    exportToExcel(rows, "Regularization-Requests.xlsx");
+  };
+
+  const departmentOptions = useMemo(
+    () => [
+      "All",
+      ...Array.from(
+        new Set(requests.map((r) => r.facultyId?.department).filter(Boolean)),
+      ),
+    ],
+    [requests],
+  );
+
   // ---------- API Fetch ----------
   async function fetchRegularizationRequests() {
     try {
@@ -776,7 +794,7 @@ const PrincipalRegularizationListPage = () => {
                 {isDeptOpen && (
                   <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                     <div className="max-h-[220px] overflow-y-auto table-custom-scrollbar">
-                      {departments.map((dept) => (
+                      {departmentOptions.map((dept) => (
                         <button
                           key={dept}
                           type="button"
@@ -850,6 +868,17 @@ const PrincipalRegularizationListPage = () => {
                     />
                   </label>
 
+                  {/* Export */}
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredRequests.length === 0}
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
+
                   {/* Reset */}
                   {hasFilters && (
                     <button
@@ -862,6 +891,14 @@ const PrincipalRegularizationListPage = () => {
                   )}
                 </div>
               </div>
+
+              <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                loading={exportLoading}
+                error={exportError}
+              />
 
               <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
                 <table className="w-full min-w-[900px] border-collapse text-left">

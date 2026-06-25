@@ -17,12 +17,16 @@ import {
   AlertCircle,
   Search,
   Loader2,
+  Download,
 } from "lucide-react";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import userImg from '../assets/userImg.svg';
 import { getTokenFromLocalStorage } from "../utils/tokenUtils";
+import ExportPasswordModal from "./ExportPasswordModal";
+import { exportToExcel } from "../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -618,6 +622,28 @@ const HodCompOffTable = ({ onCountChange }) => {
   const [revokeLoading, setRevokeLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Name": r.name || "",
+      "Designation": r.designation || "",
+      "Worked From": r.fromDate ? new Date(r.fromDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "",
+      "Worked To": r.toDate ? new Date(r.toDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "",
+      "No. of Days": r.noOfDays || 0,
+      "Reason": r.reason || "",
+      "Status": r.approvalStatus?.hodStatus || r.status || "Pending",
+    }));
+    exportToExcel(rows, "CompOff-Approvals.xlsx");
+  };
+
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
   const getDepartmentFromToken = () => {
@@ -884,9 +910,26 @@ const HodCompOffTable = ({ onCountChange }) => {
                   Reset Filters
                 </button>
               )}
+              <button
+                type="button"
+                onClick={handleExportClick}
+                disabled={filteredRequests.length === 0}
+                className="flex-shrink-0 inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Download size={16} />
+                Export
+              </button>
             </div>
           </div>
         </div>
+
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
 
         <div className="relative z-0 h-[calc(100vh-310px)] overflow-auto table-custom-scrollbar">
           {loading ? (

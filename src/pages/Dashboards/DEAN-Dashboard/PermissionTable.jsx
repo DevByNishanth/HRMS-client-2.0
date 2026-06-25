@@ -1,7 +1,10 @@
 import { useMemo, useState, useEffect } from "react";
-import { ChevronDown, Eye, RotateCcw } from "lucide-react";
+import { ChevronDown, Download, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { getRoleFromToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
@@ -69,6 +72,26 @@ const PermissionTable = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [teamPermissionCount, setTeamPermissionCount] = useState(0);
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredPermissions.map((p) => ({
+      "Date": p.date || "",
+      "Session": p.session || "",
+      "Duration": p.duration || "",
+      "Reason": p.reason || "",
+      "Status": p.status || "",
+    }));
+    exportToExcel(rows, "My-Permissions.xlsx");
+  };
 
   // Tabs for dean/iqac
   const deanTabs = ["My Permissions"];
@@ -213,8 +236,25 @@ const PermissionTable = () => {
               Reset Filters
             </button>
           )}
+          <button
+            type="button"
+            onClick={handleExportClick}
+            disabled={filteredPermissions.length === 0}
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export
+          </button>
         </div>
       </div>
+
+      <ExportPasswordModal
+        isOpen={isExportModalOpen}
+        onClose={closeExportModal}
+        onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+        loading={exportLoading}
+        error={exportError}
+      />
 
       <div className="relative z-0 h-[calc(100vh-380px)]  overflow-auto table-custom-scrollbar">
         <table className="w-full min-w-[820px] border-collapse text-left">
