@@ -80,7 +80,7 @@ function App() {
   return (
     <>
       
-        <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />
+        {/* <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />+ */}
       
 
       <ToastContainer

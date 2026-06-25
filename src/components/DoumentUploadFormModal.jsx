@@ -174,94 +174,41 @@ const UploadTile = ({
   uploadedDocumentMeta,
   handleDeleteProfileImage,
   handleDeleteDocument,
+  uploading,
 }) => {
   const Icon = field.required ? BadgeCheck : FileText;
+  const fieldDocs = uploadedDocumentMeta[field.id];
+  const isFieldDocsArray = Array.isArray(fieldDocs);
 
   return (
-    // <label className="group relative block cursor-pointer rounded-xl border border-[#20385a] bg-[#0b1c31] p-4 transition hover:border-[#3984ff] hover:bg-[#102640]">
     <div className="group relative rounded-xl border border-[#20385a] bg-[#0b1c31] p-4">
-      <label
-        className="
-                    flex
-                    cursor-pointer
-                    items-center
-                    justify-center
-                    rounded-lg
-                    border
-                    border-dashed
-                    border-[#294565]
-                    p-3
-                "
-      >
+      <label className="flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-[#294565] p-3">
         <input
           type="file"
+          accept=".png,.jpg,.jpeg,.webp,.pdf"
           multiple={field.multiple}
+          disabled={uploading}
           onChange={(event) =>
             onChange(field.id, Array.from(event.target.files || []))
           }
           className="hidden"
         />
 
-        <UploadCloud size={18} />
-        <span className="ml-2 text-sm">Choose File</span>
+        <UploadCloud size={18} className="text-white" />
+        <span className="ml-2 text-sm text-white">Choose File</span>
       </label>
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 mt-4">
         <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#28466f] bg-[#071425] text-[#5d9bff] transition group-hover:border-[#3984ff] group-hover:text-white">
           <UploadCloud size={21} />
         </span>
-
-        {field.id === "profileImage" && profileImageData?.url && (
-          <div className="mb-4">
-            <a
-              href={profileImageData.url}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              <img
-                src={profileImageData.url}
-                alt="profile"
-                className="
-                                        h-40
-                                        w-40
-                                        rounded-lg
-                                        object-cover
-                                        border
-                                        border-[#294565]
-                                        cursor-pointer
-                                    "
-              />
-            </a>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteProfileImage();
-              }}
-              className="
-                                    mt-2
-                                    rounded-md
-                                    bg-red-500
-                                    px-3
-                                    py-1
-                                    text-xs
-                                    text-white
-                                "
-            >
-              Delete Image
-            </button>
-          </div>
-        )}
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
             <p className="truncate text-[14px] font-semibold text-white">
               {field.label}
             </p>
+
             <span
               className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold ${
                 field.required
@@ -275,24 +222,70 @@ const UploadTile = ({
           </div>
 
           <p className="mt-1 text-[12px] text-[#8ca1bd]">{field.hint}</p>
+
           <div className="mt-3 rounded-lg border border-dashed border-[#294565] bg-[#071425] px-3 py-2">
-            <p
-              className={`truncate text-[12px] ${
-                files?.length ? "text-[#d7e3f5]" : "text-[#6f839f]"
-              }`}
-            >
-              {getFileLabel(files, field.multiple)}
-            </p>
-            <p className="mt-0.5 text-[10px] text-[#5f748f]">
-              PDF, JPG, PNG, DOC, or DOCX
-            </p>
+            {uploading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#3984ff] border-t-transparent"></div>
+                <span className="text-xs text-[#74aaff]">
+                  Uploading document...
+                </span>
+              </div>
+            ) : (
+              <>
+                <p
+                  className={`truncate text-[12px] ${
+                    files?.length ? "text-[#d7e3f5]" : "text-[#6f839f]"
+                  }`}
+                >
+                  {getFileLabel(files, field.multiple)}
+                </p>
+
+                <p className="mt-0.5 text-[10px] text-[#5f748f]">
+                  PDF, JPG, JPEG, PNG or WEBP
+                </p>
+              </>
+            )}
           </div>
-          {Array.isArray(uploadedDocumentMeta[field.id])
-            ? uploadedDocumentMeta[field.id].map((doc) => (
+
+          {field.id === "profileImage" && profileImageData?.url && (
+            <div className="mt-3 rounded-lg border border-[#294565] pl-3 pb-4">
+              {/* <img
+                src={profileImageData.url}
+                alt="Profile"
+                className="h-40 w-40 rounded-lg border border-[#294565] object-cover"
+              /> */}
+              <div className="mt-3 flex items-center gap-3">
+                <a
+                  href={profileImageData.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[#74aaff] text-xs underline"
+                >
+                  Preview Image
+                </a>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteProfileImage();
+                  }}
+                  className="rounded-md bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isFieldDocsArray
+            ? fieldDocs.map((doc, index) => (
                 <div
                   key={doc.publicId}
                   className="mt-3 rounded-lg border border-[#294565] p-3"
                 >
+                  <p className="mb-2 text-xs text-white">Document {index + 1}</p>
                   <a
                     href={doc.url}
                     target="_blank"
@@ -301,56 +294,35 @@ const UploadTile = ({
                   >
                     Preview Document
                   </a>
-
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-
                       handleDeleteDocument(field.id, doc.publicId);
                     }}
-                    className="
-                                            ml-3
-                                            rounded-md
-                                            bg-red-500
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            text-white
-                                            hover:bg-red-600
-                                        "
+                    className="ml-3 rounded-md bg-red-500 px-3 py-1 text-xs text-white"
                   >
                     Delete
                   </button>
                 </div>
               ))
-            : uploadedDocumentMeta[field.id]?.url && (
+            : fieldDocs?.url && (
                 <div className="mt-3 rounded-lg border border-[#294565] p-3">
                   <a
-                    href={uploadedDocumentMeta[field.id].url}
+                    href={fieldDocs.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#74aaff] text-xs underline"
                   >
                     Preview Document
                   </a>
-
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteDocument(field.id);
                     }}
-                    className="
-                                            ml-3
-                                            rounded-md
-                                            bg-red-500
-                                            px-3
-                                            py-1
-                                            text-xs
-                                            text-white
-                                            hover:bg-red-600
-                                        "
+                    className="ml-3 rounded-md bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
                   >
                     Delete
                   </button>
@@ -359,7 +331,6 @@ const UploadTile = ({
         </div>
       </div>
     </div>
-    // </label>
   );
 };
 
@@ -380,7 +351,9 @@ const token = localStorage.getItem("hrms_token")
   const facultyId = decoded?.facultyId
   const [uploadedDocumentMeta, setUploadedDocumentMeta] = useState({});
   const [profileImageData, setProfileImageData] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingField, setUploadingField] = useState(null);
+  console.log('docs',uploadedDocumentMeta);
+  
 
   // const selectedFileCount = useMemo(
   //     () => Object.values(uploadedFiles).reduce((count, files) => count + (files?.length || 0), 0),
@@ -390,13 +363,40 @@ const token = localStorage.getItem("hrms_token")
   const handleFileChange = async (fieldId, files) => {
     if (!files?.length) return;
 
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/webp",
+      "application/pdf",
+    ];
+
+    const invalidFile = files.find(
+      (file) => !allowedTypes.includes(file.type)
+    );
+
+    if (invalidFile) {
+      alert(
+        "Only PNG, JPG, JPEG, WEBP and PDF files are allowed."
+      );
+      return;
+    }
+
+    const multiFileFields = [
+      "experienceCertificates",
+      "relievingLetter",
+      "otherDocuments",
+    ];
+
     setUploadedFiles((prev) => ({
       ...prev,
-      [fieldId]: files,
+      [fieldId]: multiFileFields.includes(fieldId)
+        ? [...(prev[fieldId] || []), ...files]
+        : files,
     }));
 
     try {
-      setUploading(true);
+      setUploadingField(fieldId);
 
       // const file = files[0];
 
@@ -409,6 +409,7 @@ const token = localStorage.getItem("hrms_token")
       }
 
       const backendField = documentTypeMap[fieldId];
+      // console.log("API Response:", response.documents[backendField]);
 
       let uploadedDocs = [];
 
@@ -418,7 +419,7 @@ const token = localStorage.getItem("hrms_token")
           backendField,
           file,
         );
-
+        console.log("API Response:", response);
         const uploadedDoc = response.documents[backendField];
 
         if (Array.isArray(uploadedDoc)) {
@@ -428,14 +429,33 @@ const token = localStorage.getItem("hrms_token")
         }
       }
 
-      setUploadedDocumentMeta((prev) => ({
-        ...prev,
-        [fieldId]: files.length > 1 ? uploadedDocs : uploadedDocs[0],
-      }));
+      const isMultiFileField = [
+        "experienceCertificates",
+        "relievingLetter",
+        "otherDocuments",
+      ].includes(fieldId);
+
+      setUploadedDocumentMeta((prev) => {
+        const existingDocs = Array.isArray(prev[fieldId])
+          ? prev[fieldId]
+          : prev[fieldId]
+            ? [prev[fieldId]]
+            : [];
+
+        return {
+          ...prev,
+          [fieldId]: isMultiFileField
+            ? uploadedDocs
+            : uploadedDocs[0],
+        };
+      });
+      console.log("fieldId =", fieldId);
+        console.log("uploadedDocs =", uploadedDocs);
+        console.log("previous =", uploadedDocumentMeta[fieldId]);
     } catch (error) {
       console.error(error);
     } finally {
-      setUploading(false);
+      setUploadingField(null);
     }
   };
 
@@ -454,6 +474,7 @@ const token = localStorage.getItem("hrms_token")
     experienceCertificates: "experienceCertificates",
 
     relievingLetter: "relievingLetters",
+    otherDocuments: "otherDocuments",
 
     aadhaarDocument: "aadharCard",
 
@@ -479,39 +500,41 @@ const token = localStorage.getItem("hrms_token")
     try {
       const backendField = documentTypeMap[fieldId];
 
-      // Multi-file documents
       if (
         backendField === "experienceCertificates" ||
         backendField === "relievingLetters" ||
         backendField === "otherDocuments"
       ) {
-        await deleteFacultyDocument(facultyId, backendField, publicId);
+        await deleteFacultyDocument(
+          facultyId,
+          backendField,
+          publicId
+        );
 
         setUploadedDocumentMeta((prev) => ({
           ...prev,
-          [fieldId]: prev[fieldId].filter((doc) => doc.publicId !== publicId),
+          [fieldId]: (prev[fieldId] || []).filter(
+            (doc) => doc.publicId !== publicId
+          ),
         }));
+
+        return;
       }
 
-      // Single-file documents
-      else {
-        const document = uploadedDocumentMeta[fieldId];
+      const document = uploadedDocumentMeta[fieldId];
 
-        await deleteFacultyDocument(facultyId, backendField, document.publicId);
+      await deleteFacultyDocument(
+        facultyId,
+        backendField,
+        document.publicId
+      );
 
-        setUploadedDocumentMeta((prev) => {
-          const copy = { ...prev };
+      setUploadedDocumentMeta((prev) => {
+        const copy = { ...prev };
+        delete copy[fieldId];
+        return copy;
+      });
 
-          delete copy[fieldId];
-
-          return copy;
-        });
-      }
-
-      setUploadedFiles((prev) => ({
-        ...prev,
-        [fieldId]: [],
-      }));
     } catch (error) {
       console.error(error);
     }
@@ -519,17 +542,31 @@ const token = localStorage.getItem("hrms_token")
 
   const handleFinishUpload = async () => {
     try {
-      await firstLoginComplete();
+      const response = await firstLoginComplete();
+      console.log("API Response:", response);
 
-      alert("Documents uploaded successfully");
+      // Save the NEW token returned from backend
+      if (response.token) {
+        localStorage.setItem("hrms_token", response.token);
+        const decoded = jwtDecode(response.token);
+        console.log("Decoded New Token:", decoded);
+      }
 
-      const route = getRoleBasedRoute();
+      alert(
+      "Documents uploaded successfully. Please login again."
+    );
 
-      window.location.href = route;
+    // Same logic as Sidebar logout
+    localStorage.removeItem("hrms_token");
+
+    window.location.href = "/";
     } catch (error) {
       console.error(error);
 
-      alert(error?.response?.data?.message || "Failed to complete first login");
+      alert(
+        error?.response?.data?.message ||
+        "Failed to complete first login"
+      );
     }
   };
 
@@ -640,6 +677,7 @@ const token = localStorage.getItem("hrms_token")
                   uploadedDocumentMeta={uploadedDocumentMeta}
                   handleDeleteProfileImage={handleDeleteProfileImage}
                   handleDeleteDocument={handleDeleteDocument}
+                  uploading={uploadingField === field.id}
                 />
               ))}
             </div>
