@@ -22,7 +22,10 @@ import { useState, useMemo, useEffect } from "react";
 import Sidebar from "../../../components/Siedbar";
 import CommonHeader from "../../../components/CommonHeader";
 import userImg from "../../../assets/userImg.svg";
-import { decodeToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
+import {
+  decodeToken,
+  getTokenFromLocalStorage,
+} from "../../../utils/tokenUtils";
 import axios from "axios";
 
 const API_BASE_URL =
@@ -83,11 +86,19 @@ const calculateDuration = (request) => {
   return `${diffHrs}h ${diffMins}m`;
 };
 
-const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onRevoke, approvingId }) => {
+const RegularizationDetailsPanel = ({
+  request,
+  onClose,
+  onApprove,
+  onReject,
+  onRevoke,
+  approvingId,
+}) => {
   if (!request) return null;
 
   const canApprove = request.status === "Pending";
-  const canRevoke = request.status === "Approved" || request.status === "Rejected";
+  const canRevoke =
+    request.status === "Approved" || request.status === "Rejected";
 
   return (
     <section
@@ -122,7 +133,11 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
           <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <img src={userImg} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                <img
+                  src={userImg}
+                  alt=""
+                  className="h-11 w-11 shrink-0 rounded-full object-cover"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-[16px] font-semibold text-white">
                     {request.facultyId?.firstName} {request.facultyId?.lastName}
@@ -149,7 +164,13 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
                 Date
               </div>
               <p className="mt-1 text-[16px] font-semibold text-white">
-                {request.date || formatDateDisplay(request.fromDate || request.regularizationDate)}
+                {console.log("principal regularization : ", request)}
+                {request.date ||
+                  formatDateDisplay(
+                    request.fromDate ||
+                      request.regularizationDate ||
+                      request.attendanceDate,
+                  )}
               </p>
             </div>
 
@@ -181,9 +202,13 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <TimerReset size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Approval Level</p>
+                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                    Approval Level
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">{request.currentApprovalLevel}</p>
+                <p className="text-[15px] font-semibold text-white capitalize">
+                  {request.currentApprovalLevel}
+                </p>
               </div>
             )}
           </div>
@@ -194,7 +219,9 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
               Reason
             </p>
             <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
-              {request.reason || request.regularizationReason || "No reason provided"}
+              {request.reason ||
+                request.regularizationReason ||
+                "No reason provided"}
             </div>
           </div>
 
@@ -220,31 +247,35 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
               <div className="space-y-0">
                 {request.approvalHistory.map((history, index) => {
                   const isLast = index === request.approvalHistory.length - 1;
-                  const isApproved = history.action?.toLowerCase() === "approved";
-                  const isRejected = history.action?.toLowerCase() === "rejected";
+                  const isApproved =
+                    history.action?.toLowerCase() === "approved";
+                  const isRejected =
+                    history.action?.toLowerCase() === "rejected";
 
                   return (
                     <div key={history._id || index} className="relative">
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
-                            ? "bg-[#10b981]"
-                            : isRejected
-                              ? "bg-[#ef4444]"
-                              : "bg-[#444c63]"
-                            }`}
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                            isApproved
+                              ? "bg-[#10b981]"
+                              : isRejected
+                                ? "bg-[#ef4444]"
+                                : "bg-[#444c63]"
+                          }`}
                         />
                       )}
 
                       <div className="relative flex gap-3 pb-4">
                         <div className="flex-shrink-0">
                           <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
-                              ? "bg-emerald-800 border-emerald-200/20"
-                              : isRejected
-                                ? "bg-[#ef4444] border-[#ef4444]"
-                                : "bg-[#f59e0b15] border-[#444c63]"
-                              } text-white`}
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                              isApproved
+                                ? "bg-emerald-800 border-emerald-200/20"
+                                : isRejected
+                                  ? "bg-[#ef4444] border-[#ef4444]"
+                                  : "bg-[#f59e0b15] border-[#444c63]"
+                            } text-white`}
                           >
                             {isApproved ? (
                               <CheckCircle2 size={18} />
@@ -264,29 +295,35 @@ const RegularizationDetailsPanel = ({ request, onClose, onApprove, onReject, onR
                               </p>
                             </div>
                             <span
-                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
-                                ? "bg-[#10b98120] text-[#10b981]"
-                                : isRejected
-                                  ? "bg-[#ef444420] text-[#ef4444]"
-                                  : "bg-[#f59e0b20] text-[#f59e0b]"
-                                }`}
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${
+                                isApproved
+                                  ? "bg-[#10b98120] text-[#10b981]"
+                                  : isRejected
+                                    ? "bg-[#ef444420] text-[#ef4444]"
+                                    : "bg-[#f59e0b20] text-[#f59e0b]"
+                              }`}
                             >
                               {history.action}
                             </span>
                           </div>
 
-                          <p className="text-[12px] text-[#cad7eb]">{history.remarks}</p>
+                          <p className="text-[12px] text-[#cad7eb]">
+                            {history.remarks}
+                          </p>
 
                           {history.actionDate && (
                             <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
                               <Clock size={11} />
-                              {new Date(history.actionDate).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {new Date(history.actionDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
                             </p>
                           )}
                         </div>
@@ -361,12 +398,15 @@ const ConfirmationPopup = ({
   onClose,
   onConfirm,
   revokeLoading,
+  rejectLoading,
 }) => {
   if (!action || !request) return null;
 
   const isReject = action === "reject";
   const isRevoke = action === "revoke";
-  const title = isReject ? "Reject Regularization Request" : "Revoke Regularization Decision";
+  const title = isReject
+    ? "Reject Regularization Request"
+    : "Revoke Regularization Decision";
   const message = isReject
     ? `Reject ${request.facultyId?.firstName}'s regularization request?`
     : `Revoke the ${request.status.toLowerCase()} decision for ${request.facultyId?.firstName}?`;
@@ -385,7 +425,9 @@ const ConfirmationPopup = ({
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">{title}</h2>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              {title}
+            </h2>
           </div>
           <button
             type="button"
@@ -431,16 +473,25 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={(isReject && !reason.trim()) || (isRevoke && revokeLoading)}
-            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
-              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-              : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
-              }`}
+            disabled={
+              (isReject && (!reason.trim() || rejectLoading)) ||
+              (isRevoke && revokeLoading)
+            }
+            className={`inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
+              isRevoke
+                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+                : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+            }`}
           >
             {isRevoke && revokeLoading ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
             ) : isRevoke ? (
               "Revoke Decision"
+            ) : isReject && rejectLoading ? (
+              <>
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Rejecting...
+              </>
             ) : (
               "Reject Request"
             )}
@@ -463,7 +514,9 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
       </div>
       <div>
         <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-white">{value}</p>
+        <p className="text-[16px] font-semibold leading-none text-white">
+          {value}
+        </p>
       </div>
     </div>
   </div>
@@ -484,6 +537,7 @@ const PrincipalRegularizationListPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
@@ -494,7 +548,7 @@ const PrincipalRegularizationListPage = () => {
         `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/principal/list`,
         {
           headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
-        }
+        },
       );
       setRequests(response.data?.requests || []);
     } catch (error) {
@@ -521,7 +575,12 @@ const PrincipalRegularizationListPage = () => {
 
     return [
       { label: "Total Requests", value: total, icon: Users, color: "#3984ff" },
-      { label: "Approved", value: approved, icon: CheckCircle2, color: "#18d3bf" },
+      {
+        label: "Approved",
+        value: approved,
+        icon: CheckCircle2,
+        color: "#18d3bf",
+      },
       { label: "Rejected", value: rejected, icon: XCircle, color: "#f16868" },
       { label: "Pending", value: pending, icon: Clock, color: "#f0a15f" },
     ];
@@ -532,7 +591,8 @@ const PrincipalRegularizationListPage = () => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
 
     return requests.filter((req) => {
-      const name = `${req.facultyId?.firstName || ""} ${req.facultyId?.lastName || ""}`.trim();
+      const name =
+        `${req.facultyId?.firstName || ""} ${req.facultyId?.lastName || ""}`.trim();
       const matchesSearch =
         !normalizedSearch ||
         [name, req.facultyId?.empId, req.reason, req.regularizationReason]
@@ -541,13 +601,18 @@ const PrincipalRegularizationListPage = () => {
           .includes(normalizedSearch);
 
       const statusMatch = filterStatus === "All" || req.status === filterStatus;
-      const deptMatch = filterDepartment === "All" || req.facultyId?.department === filterDepartment;
+      const deptMatch =
+        filterDepartment === "All" ||
+        req.facultyId?.department === filterDepartment;
 
       return matchesSearch && statusMatch && deptMatch;
     });
   }, [filterDepartment, filterStatus, requests, searchQuery]);
 
-  const hasFilters = filterStatus !== "All" || filterDepartment !== "All" || searchQuery.trim() !== "";
+  const hasFilters =
+    filterStatus !== "All" ||
+    filterDepartment !== "All" ||
+    searchQuery.trim() !== "";
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -571,12 +636,15 @@ const PrincipalRegularizationListPage = () => {
       await axios.patch(
         `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${requestId}/approve`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       await fetchRegularizationRequests();
       setSelectedRequest(null);
     } catch (error) {
-      console.error("Error approving regularization:", error?.response?.data || error.message);
+      console.error(
+        "Error approving regularization:",
+        error?.response?.data || error.message,
+      );
     } finally {
       setApprovingId(null);
     }
@@ -611,26 +679,32 @@ const PrincipalRegularizationListPage = () => {
 
     try {
       if (confirmation.action === "reject") {
+        setRejectLoading(true);
         await axios.patch(
           `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${confirmation.request?._id}/reject`,
           { approvalRemarks: rejectReason.trim() },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
       } else if (confirmation.action === "revoke") {
         setRevokeLoading(true);
         await axios.patch(
           `${API_BASE_URL.replace(/\/$/, "")}/api/regularization-application/${confirmation.request?._id}/revoke-principal`,
           {},
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
-        setRevokeLoading(false);
       }
 
+      setRejectLoading(false);
+      setRevokeLoading(false);
       await fetchRegularizationRequests();
       closeConfirmation();
       setSelectedRequest(null);
     } catch (error) {
-      console.error("Error confirming action:", error?.response?.data || error.message);
+      console.error(
+        "Error confirming action:",
+        error?.response?.data || error.message,
+      );
+      setRejectLoading(false);
       setRevokeLoading(false);
     }
   };
@@ -670,7 +744,8 @@ const PrincipalRegularizationListPage = () => {
                   Regularization Requests
                 </h1>
                 <p className="mt-1 text-[16px] text-[#9eb0cc]">
-                  Review and manage attendance regularization requests from faculty.
+                  Review and manage attendance regularization requests from
+                  faculty.
                 </p>
               </div>
 
@@ -681,8 +756,16 @@ const PrincipalRegularizationListPage = () => {
                   onClick={() => setIsDeptOpen(!isDeptOpen)}
                   className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 >
-                  <span className={filterDepartment !== "All" ? "text-white" : "text-[#6f839f]"}>
-                    {filterDepartment !== "All" ? filterDepartment : "Department"}
+                  <span
+                    className={
+                      filterDepartment !== "All"
+                        ? "text-white"
+                        : "text-[#6f839f]"
+                    }
+                  >
+                    {filterDepartment !== "All"
+                      ? filterDepartment
+                      : "Department"}
                   </span>
                   <ChevronDown
                     size={16}
@@ -701,10 +784,11 @@ const PrincipalRegularizationListPage = () => {
                             setFilterDepartment(dept);
                             setIsDeptOpen(false);
                           }}
-                          className={`w-full px-3 py-2.5 text-left text-[12px] transition ${filterDepartment === dept
-                            ? "bg-[#2563EB] text-white"
-                            : "text-[#cad7eb] hover:bg-[#132b49]"
-                            }`}
+                          className={`w-full px-3 py-2.5 text-left text-[12px] transition ${
+                            filterDepartment === dept
+                              ? "bg-[#2563EB] text-white"
+                              : "text-[#cad7eb] hover:bg-[#132b49]"
+                          }`}
                         >
                           {dept}
                         </button>
@@ -726,7 +810,8 @@ const PrincipalRegularizationListPage = () => {
             <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
               <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-3">
                 <h2 className="shrink-0 text-[18px] font-semibold text-white">
-                  Regularization Requests <span>({filteredRequests.length})</span>
+                  Regularization Requests{" "}
+                  <span>({filteredRequests.length})</span>
                 </h2>
 
                 <div className="flex items-center gap-4">
@@ -788,7 +873,9 @@ const PrincipalRegularizationListPage = () => {
                       <th className="px-4 py-3 font-semibold">Duration</th>
                       <th className="px-4 py-3 font-semibold">Reason</th>
                       <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 text-right font-semibold">Action</th>
+                      <th className="px-4 py-3 text-right font-semibold">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-[12px] text-[#cad7eb]">
@@ -817,15 +904,26 @@ const PrincipalRegularizationListPage = () => {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            {formatDate(request.date || request.fromDate || request.attendanceDate)}
+                            {formatDate(
+                              request.date ||
+                                request.fromDate ||
+                                request.attendanceDate,
+                            )}
                           </td>
                           <td className="px-4 py-3">
-                            {request.session || request.leaveSession || "Full Day"}
+                            {request.session ||
+                              request.leaveSession ||
+                              "Full Day"}
                           </td>
                           <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                             {calculateDuration(request)}
                           </td>
-                          <td className="max-w-[200px] truncate px-4 py-3" title={request.reason || request.regularizationReason}>
+                          <td
+                            className="max-w-[200px] truncate px-4 py-3"
+                            title={
+                              request.reason || request.regularizationReason
+                            }
+                          >
                             {request.reason || request.regularizationReason}
                           </td>
                           <td className="px-4 py-3">
@@ -884,8 +982,12 @@ const PrincipalRegularizationListPage = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
-                          No regularization requests found matching your filters.
+                        <td
+                          colSpan="7"
+                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                        >
+                          No regularization requests found matching your
+                          filters.
                         </td>
                       </tr>
                     )}
@@ -916,6 +1018,7 @@ const PrincipalRegularizationListPage = () => {
         onClose={closeConfirmation}
         onConfirm={handleConfirmAction}
         revokeLoading={revokeLoading}
+        rejectLoading={rejectLoading}
       />
     </div>
   );

@@ -296,8 +296,8 @@ const FacultyManagementPage = () => {
                                     Faculty List <span>({filteredFaculty.length})</span>
                                 </h2>
 
-                                <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_190px_220px_190px] 2xl:max-w-[840px]">
-                                    <div className="relative min-w-0">
+                                <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_190px_220px_190px] ">
+                                    <div className="relative min-w-0 ">
                                         <Search
                                             size={16}
                                             className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"

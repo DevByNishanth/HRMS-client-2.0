@@ -1,90 +1,33 @@
 import {
-  Baby,
   BriefcaseBusiness,
-  CalendarCheck,
   CalendarMinus,
-  Heart,
-  Plane,
+  ClipboardCheck,
+  GraduationCap,
   Plus,
   Stethoscope,
-  Users,
+  Building,
 } from "lucide-react";
 import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import LeaveTable from "./LeaveTable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 
-const leaveStats = [
-  {
-    title: "Casual Leave",
-    code: "CL",
-    used: 8,
-    total: 12,
-    color: "#f05aa6",
-    icon: BriefcaseBusiness,
-  },
-  {
-    title: "Medical Leave",
-    code: "ML",
-    used: 4,
-    total: 10,
-    color: "#18d3bf",
-    icon: Stethoscope,
-  },
-  {
-    title: "Maternity Leave",
-    code: "MTL",
-    used: 0,
-    total: 90,
-    color: "#8b7cff",
-    icon: Baby,
-  },
-  {
-    title: "Paternity Leave",
-    code: "PTL",
-    used: 0,
-    total: 15,
-    color: "#2f80ff",
-    icon: Users,
-  },
-  {
-    title: "Vacation Leave",
-    code: "VL",
-    used: 6,
-    total: 15,
-    color: "#f59d62",
-    icon: Plane,
-  },
-  {
-    title: "Marriage Leave",
-    code: "MRL",
-    used: 0,
-    total: 7,
-    color: "#ffcf5a",
-    icon: Heart,
-  },
-  {
-    title: "Compensation Leave",
-    code: "CPL",
-    used: 2,
-    total: 5,
-    color: "#f16868",
-    icon: CalendarMinus,
-  },
-  {
-    title: "On-Duty",
-    code: "OD",
-    used: 5,
-    total: 12,
-    color: "#18d3bf",
-    icon: CalendarCheck,
-  },
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+const LEAVE_TYPE_DISPLAY = [
+  { title: "Casual Leave", code: "CL", color: "#f05aa6", icon: BriefcaseBusiness },
+  { title: "Medical Leave", code: "ML", color: "#18d3bf", icon: Stethoscope },
+  { title: "Comp Off", code: "CO", color: "#f16868", icon: CalendarMinus },
+  { title: "On Duty - Research", code: "OD-R", color: "#8b7cff", icon: GraduationCap },
+  { title: "On Duty - Exam", code: "OD-E", color: "#2f80ff", icon: ClipboardCheck },
+  { title: "On Duty - Official", code: "OD-O", color: "#f59d62", icon: Building },
 ];
 
 const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
-  const percentage = Math.min((used / total) * 100, 100);
-  const progressDegree = (percentage / 100) * 360;
+  const usedPercentage = total > 0 ? Math.min(Math.round((used / total) * 100), 100) : 0;
+  const progressDegree = (usedPercentage / 100) * 360;
 
   return (
     <div className="flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-[#183052] bg-[#0d2138] px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
@@ -114,10 +57,10 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
         }}
       >
         <div
-          className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#0d2138]"
+          className="flex h-[39px] w-[39px] items-center justify-center rounded-full bg-[#0d2138]"
           style={{ color }}
         >
-          <span className="text-[14px] font-bold leading-none">5%</span>
+          <span className="text-[12px] font-bold leading-none">{usedPercentage}%</span>
         </div>
       </div>
     </div>
@@ -125,25 +68,48 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
 };
 
 const LeavePage = () => {
-
-  // states 
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [leaveBalances, setLeaveBalances] = useState([]);
+  const [isLoadingBalances, setIsLoadingBalances] = useState(true);
+  const [balanceError, setBalanceError] = useState(null);
 
+  useEffect(() => {
+    const fetchLeaveBalances = async () => {
+      setIsLoadingBalances(true);
+      setBalanceError(null);
+      try {
+        const token = localStorage.getItem("hrms_token");
+        const response = await fetch(`${API_BASE_URL}/api/leave-balance/dashboard/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch leave balances");
+        const data = await response.json();
+        setLeaveBalances(data.leaveBalances || []);
+      } catch (err) {
+        setBalanceError(err.message || "Something went wrong");
+      } finally {
+        setIsLoadingBalances(false);
+      }
+    };
+    fetchLeaveBalances();
+  }, []);
 
-  const leaveStatGroups = [
-    {
-      title: "General Leaves",
-      items: ["Casual Leave", "On-Duty", "Medical Leave", "Vacation Leave"],
-    },
-    {
-      title: "Special Leaves",
-      items: ["Marriage Leave", "Compensation Leave", "Paternity Leave", "Maternity Leave"],
-    },
-  ].map((group) => ({
-    ...group,
-    items: group.items.map((title) => leaveStats.find((item) => item.title === title)),
-  }));
+  // Build lookup map from API response
+  const leaveBalanceMap = Object.fromEntries(
+    leaveBalances.map((item) => [item.leaveType, item])
+  );
+
+  // Map display config with API data
+  const cards = LEAVE_TYPE_DISPLAY.map((config) => {
+    const balance = leaveBalanceMap[config.title] || {};
+    const available = Number(balance.available ?? 0);
+    const used = Number(balance.used ?? 0);
+    const total = available + used;
+    return { ...config, available, used, total };
+  });
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -152,7 +118,8 @@ const LeavePage = () => {
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
         <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#071425] pb-2 px-4 mt-2">
-          <div> <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
+          <div>
+            <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
             <p className="mt-1 text-[16px] text-[#9eb0cc]">
               Review leave balances and track every leave request.
             </p>
@@ -164,29 +131,45 @@ const LeavePage = () => {
           >
             <Plus size={14} />
             Apply for Leave
-
           </button>
         </div>
         <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
-          <div className="mx-auto space-y-2 ">
-            <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-              {leaveStatGroups.map((group) => (
-                <div key={group.title} className="rounded-lg border border-[#213857] bg-[#071a2d] p-3">
-                  <h3 className="mb-3 text-[14px] font-semibold text-[#ffffff]">{group.title}</h3>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {group.items.map((item) => (
-                      <LeaveStatCard key={item.title} {...item} />
-                    ))}
-                  </div>
+          <div className="mx-auto space-y-2">
+            {/* Leave Balance Cards */}
+            <div className="">
+              {/* <h3 className="mb-3 text-[14px] font-semibold text-[#ffffff]">General Leaves</h3> */}
+
+              {isLoadingBalances && (
+                <div className="flex items-center justify-center py-6 text-sm text-[#8ca1bd]">
+                  Loading leave balances...
                 </div>
-              ))}
+              )}
+
+              {balanceError && (
+                <div className="flex items-center justify-center py-6 text-sm text-red-400">
+                  Error: {balanceError}
+                </div>
+              )}
+
+              {!isLoadingBalances && !balanceError && (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {cards.map((card) => (
+                    <LeaveStatCard key={card.title} {...card} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           <LeaveTable key={refreshKey} />
-          {isLeaveApplyForm && <ApplyLeaveForm onClose={() => { setIsLeaveApplyForm(false); setRefreshKey(prev => prev + 1); }} />}
-
-
+          {isLeaveApplyForm && (
+            <ApplyLeaveForm
+              onClose={() => {
+                setIsLeaveApplyForm(false);
+                setRefreshKey((prev) => prev + 1);
+              }}
+            />
+          )}
         </main>
       </div>
     </div>

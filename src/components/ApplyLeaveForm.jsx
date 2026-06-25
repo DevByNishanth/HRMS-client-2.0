@@ -144,7 +144,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
         }
 
         if (!leaveTypeId) errors.leaveType = "Leave type is required";
-        if (!dayType) errors.dayType = "Day type is required";
+        if (!isMultiDay && !dayType) errors.dayType = "Day type is required";
         if (!reason.trim()) errors.reason = "Reason is required";
 
         // Check if file upload is required
@@ -275,6 +275,15 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
     const totalLeaveDays = calculateTotalLeaveDays(fromDate, toDate, dayType);
     const showFileUpload = selectedLeaveType && isFileUploadRequired(selectedLeaveName);
     const showCasualLeaveLimitMessage = isCasualLeave(selectedLeaveName) && totalLeaveDays > 3;
+
+    // When from and to dates span more than one day, force Full Day and hide the day type selector
+    const isMultiDay = fromDate && toDate && getDateOnly(fromDate).getTime() !== getDateOnly(toDate).getTime();
+
+    useEffect(() => {
+        if (isMultiDay) {
+            setDayType("Full Day");
+        }
+    }, [isMultiDay]);
 
     if (loading) {
         return (
@@ -465,32 +474,34 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                             )}
                         </div>
 
-                        <div>
-                            <p className={`mb-2 text-[13px] font-semibold ${validationErrors.dayType ? "text-[#f16868]" : "text-white"}`}>
-                                Day Type {validationErrors.dayType && <span>*</span>}
-                            </p>
-                            <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
-                                {dayOptions.map((option) => (
-                                    <button
-                                        key={option}
-                                        type="button"
-                                        onClick={() => {
-                                            setDayType(option);
-                                            setValidationErrors(prev => ({ ...prev, dayType: "" }));
-                                        }}
-                                        className={`h-9 rounded-md text-[12px] font-semibold transition ${dayType === option
-                                            ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                            : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
-                                            }`}
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
+                        {!isMultiDay && (
+                            <div>
+                                <p className={`mb-2 text-[13px] font-semibold ${validationErrors.dayType ? "text-[#f16868]" : "text-white"}`}>
+                                    Day Type {validationErrors.dayType && <span>*</span>}
+                                </p>
+                                <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
+                                    {dayOptions.map((option) => (
+                                        <button
+                                            key={option}
+                                            type="button"
+                                            onClick={() => {
+                                                setDayType(option);
+                                                setValidationErrors(prev => ({ ...prev, dayType: "" }));
+                                            }}
+                                            className={`h-9 rounded-md text-[12px] font-semibold transition ${dayType === option
+                                                ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                                }`}
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                                {validationErrors.dayType && (
+                                    <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.dayType}</p>
+                                )}
                             </div>
-                            {validationErrors.dayType && (
-                                <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.dayType}</p>
-                            )}
-                        </div>
+                        )}
 
                         <div>
                             <label

@@ -34,6 +34,7 @@ import FacultyCalendar from "./pages/Common/Calendar";
 // import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
 import DoumentUploadFormModal from './components/DoumentUploadFormModal'
 import CompoffPage from "./components/CompoffPage";
+import Attendance from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceManagement"
 
 function App() {
   // Role-based default route redirect
@@ -345,6 +346,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AttendanceOverrideManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance"
+          element={
+            <ProtectedRoute>
+              <Attendance />
             </ProtectedRoute>
           }
         />
