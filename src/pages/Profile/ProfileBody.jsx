@@ -12,8 +12,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_ser
 // ? tab data ================== 
 const tabData = [
   { label: "Personal details", icon: User },
-  { label: "Attendance", icon: CalendarCheck },
-  { label: "Leaves", icon: CalendarDays },
+  // { label: "Attendance", icon: CalendarCheck },
+  // { label: "Leaves", icon: CalendarDays },
 ]
 
 

@@ -20,7 +20,6 @@ import RecentLogs from "./RecentLogs";
 import TimeTracker from "./TimeTracker";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import ApplyPermission from "../../../components/ApplyPermission";
-import userImg from "../../../assets/userImg.svg";
 
 const statusStyles = {
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
@@ -130,12 +129,8 @@ const DeanRequestsPanel = () => {
                 className="flex items-center justify-between gap-3 rounded-lg bg-[#071425] px-3 py-2 border border-slate-800"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
-                    <img
-                      src={userImg}
-                      alt=""
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-semibold text-white">
+                    {request.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-[13px] font-medium text-white">
