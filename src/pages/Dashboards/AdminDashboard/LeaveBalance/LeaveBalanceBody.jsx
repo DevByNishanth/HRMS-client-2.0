@@ -4,6 +4,8 @@ import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNa
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { X, Search } from "lucide-react";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function LeaveBalanceBody() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +14,15 @@ export default function LeaveBalanceBody() {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [leaveBalanceData, setLeaveBalanceData] = useState([]);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -274,7 +285,7 @@ export default function LeaveBalanceBody() {
 
                         {selectedEmployee && leaveBalanceData.length > 0 && (
                             <button
-                                onClick={handleExportExcel}
+                                onClick={handleExportClick}
                                 className="
                                     h-11
                                     px-5
@@ -284,7 +295,7 @@ export default function LeaveBalanceBody() {
                                     text-[#3984ff]
                                     hover:bg-[#3984ff]
                                     hover:text-white
-                                    cursor-pointer
+                                    cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                                 "
                             >
                                 Export Excel
@@ -309,6 +320,14 @@ export default function LeaveBalanceBody() {
                             </button>
                         )}
                     </div>
+
+                    <ExportPasswordModal
+                        isOpen={isExportModalOpen}
+                        onClose={closeExportModal}
+                        onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                        loading={exportLoading}
+                        error={exportError}
+                    />
                 </div>
 
                 <div className="px-4 pb-4">

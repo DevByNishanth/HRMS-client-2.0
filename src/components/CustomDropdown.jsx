@@ -9,6 +9,7 @@ const CustomDropdown = ({
   placeholder = "Select Option",
   onChange,
   error,
+  className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -33,7 +34,7 @@ const CustomDropdown = ({
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className={`relative ${className}`} ref={dropdownRef}>
       {label && (
         <label
           htmlFor={id}
@@ -71,7 +72,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-[9999] mt-2 w-full overflow-hidden rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg">
+        <div className="absolute z-[9999] mt-2 w-full max-h-60 overflow-y-auto rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg table-custom-scrollbar">
           {options.map((option) => (
             <button
               key={option}
