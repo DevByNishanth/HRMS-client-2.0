@@ -8,10 +8,14 @@ import {
   GraduationCap,
   BookOpen,
   Briefcase,
+  Download,
 } from "lucide-react";
 import Sidebar from "../../../components/Siedbar";
 import CommonHeader from "../../../components/CommonHeader";
 import userImg from "../../../assets/userImg.svg";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -90,6 +94,25 @@ const PrincipalFacultyListPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("All");
   const [designationFilter, setDesignationFilter] = useState("All");
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredFaculty.map((f) => ({
+      "Faculty Name": getFacultyName(f),
+      "Emp ID": f.empId || "-",
+      "Department": f.department || "-",
+      "Designation": f.designation || "-",
+    }));
+    exportToExcel(rows, "Faculty-List.xlsx");
+  };
 
   const fetchFaculties = useCallback(async () => {
     const token = localStorage.getItem("hrms_token");
@@ -273,8 +296,25 @@ const PrincipalFacultyListPage = () => {
                     options={departmentOptions}
                     className="w-full"
                   />
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredFaculty.length === 0}
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
                 </div>
               </div>
+
+              <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                loading={exportLoading}
+                error={exportError}
+              />
 
               <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
                 {facultyError && (

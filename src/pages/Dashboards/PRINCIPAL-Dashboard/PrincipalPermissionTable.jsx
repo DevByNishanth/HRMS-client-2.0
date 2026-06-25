@@ -17,6 +17,7 @@ import {
   AlertCircle,
   SunMedium,
   ShieldCheck,
+  Download,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import userImg from "../../../assets/userImg.svg";
@@ -25,6 +26,9 @@ import {
   getTokenFromLocalStorage,
 } from "../../../utils/tokenUtils";
 import axios from "axios";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -570,7 +574,27 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
 );
 
 // ---------- Main Component ----------
-const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
+const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOptionsChange }) => {
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredPermissions.map((p) => ({
+      "Faculty Name": `${p.facultyId?.firstName || ""} ${p.facultyId?.lastName || ""}`.trim(),
+      "Date": formatDate(p.fromDate || p.date || p.permissionDate),
+      "Session": getSessionLabel(p),
+      "Duration": p.duration || `${p.totalHours || 0}`,
+      "Reason": p.reason || "",
+      "Status": p.status || "",
+    }));
+    exportToExcel(rows, "Permission-Requests.xlsx");
+  };
   const token = getTokenFromLocalStorage();
   let decodedData = decodeToken(token);
 
@@ -606,6 +630,22 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
   useEffect(() => {
     fetchPermissions();
   }, []);
+
+  const departmentOptions = useMemo(
+    () => [
+      "All",
+      ...Array.from(
+        new Set(permissions.map((p) => p.facultyId?.department).filter(Boolean)),
+      ),
+    ],
+    [permissions],
+  );
+
+  useEffect(() => {
+    if (onDepartmentOptionsChange) {
+      onDepartmentOptionsChange(departmentOptions);
+    }
+  }, [departmentOptions, onDepartmentOptionsChange]);
 
   // ---------- Stat Cards (filtered by department) ----------
   const deptPermissions = useMemo(() => {
@@ -835,8 +875,25 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                 Reset Filters
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleExportClick}
+              disabled={filteredPermissions.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
           </div>
         </div>
+
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
 
         <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[900px] border-collapse text-left">
