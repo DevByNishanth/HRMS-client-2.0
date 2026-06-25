@@ -235,7 +235,7 @@ export default function AddHoliday({
 
                 <button
                     onClick={onClose}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
                 >
                     <X size={20} />
                 </button>
@@ -245,7 +245,7 @@ export default function AddHoliday({
                     <button
                         type="button"
                         onClick={() => setActiveTab("form")}
-                        className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all ${
+                        className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "form"
                                 ? "bg-[#2563EB] text-white"
                                 : "text-[#9eb0cc]"
@@ -257,7 +257,7 @@ export default function AddHoliday({
                     <button
                         type="button"
                         onClick={() => setActiveTab("bulk")}
-                        className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all ${
+                        className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "bulk"
                                 ? "bg-[#2563EB] text-white"
                                 : "text-[#9eb0cc]"
@@ -476,7 +476,7 @@ export default function AddHoliday({
                 <button
                     onClick={onClose}
                     disabled={loading}
-                    className="px-5 py-2 rounded-lg border border-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2 rounded-lg border border-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     Cancel
                 </button>

@@ -17,6 +17,7 @@ import {
   AlertCircle,
   SunMedium,
   ShieldCheck,
+  Download,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import userImg from "../../../assets/userImg.svg";
@@ -25,6 +26,9 @@ import {
   getTokenFromLocalStorage,
 } from "../../../utils/tokenUtils";
 import axios from "axios";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -33,6 +37,16 @@ const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
+};
+
+// Derive session label from fromTime, matching faculty module logic
+const getSessionLabel = (permission) => {
+  const fromTime = permission?.fromTime;
+  if (fromTime) {
+    const hour = parseInt(fromTime.split(":")[0], 10);
+    return hour >= 12 ? "Afternoon" : "Forenoon";
+  }
+  return permission?.session || permission?.leaveSession || "Full Day";
 };
 
 function formatDate(dateString) {
@@ -88,11 +102,10 @@ const CustomDropdown = ({
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className={`w-full px-3 py-2 text-left text-[12px] transition ${
-                  value === option
-                    ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
-                }`}
+                className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
+                  ? "bg-[#2563EB] text-white"
+                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  }`}
               >
                 {option}
               </button>
@@ -233,7 +246,7 @@ const PermissionDetailsPanel = ({
                   Session
                 </div>
                 <p className="mt-1 text-[15px] font-medium text-white">
-                  {request.session || request.leaveSession || "Full Day"}
+                  {getSessionLabel(request)}
                 </p>
               </div>
 
@@ -308,13 +321,12 @@ const PermissionDetailsPanel = ({
                       {/* Connector line */}
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
-                            isApproved
-                              ? "bg-[#10b981]"
-                              : isRejected
-                                ? "bg-[#ef4444]"
-                                : "bg-[#444c63]"
-                          }`}
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
+                            ? "bg-[#10b981]"
+                            : isRejected
+                              ? "bg-[#ef4444]"
+                              : "bg-[#444c63]"
+                            }`}
                         />
                       )}
 
@@ -323,13 +335,12 @@ const PermissionDetailsPanel = ({
                         {/* Step circle */}
                         <div className="flex-shrink-0">
                           <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                              isApproved
-                                ? `${actionColor.bg} border-emerald-200/20`
-                                : isRejected
-                                  ? `${actionColor.bg} border-[#ef4444]`
-                                  : `${actionColor.light} border-[#444c63]`
-                            } text-white`}
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                              ? `${actionColor.bg} border-emerald-200/20`
+                              : isRejected
+                                ? `${actionColor.bg} border-[#ef4444]`
+                                : `${actionColor.light} border-[#444c63]`
+                              } text-white`}
                           >
                             {getActionIcon(history.action)}
                           </div>
@@ -344,13 +355,12 @@ const PermissionDetailsPanel = ({
                               </p>
                             </div>
                             <span
-                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${
-                                isApproved
-                                  ? "bg-[#10b98120] text-[#10b981]"
-                                  : isRejected
-                                    ? "bg-[#ef444420] text-[#ef4444]"
-                                    : "bg-[#f59e0b20] text-[#f59e0b]"
-                              }`}
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                ? "bg-[#10b98120] text-[#10b981]"
+                                : isRejected
+                                  ? "bg-[#ef444420] text-[#ef4444]"
+                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                }`}
                             >
                               {history.action}
                             </span>
@@ -360,19 +370,21 @@ const PermissionDetailsPanel = ({
                             {history.remarks}
                           </p>
 
-                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                            <Clock size={11} />
-                            {new Date(history.actionDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              },
-                            )}
-                          </p>
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -522,11 +534,10 @@ const ConfirmationPopup = ({
             disabled={
               (isReject && !reason.trim()) || (isRevoke && revokeLoading)
             }
-            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
-              isRevoke
-                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-                : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
-            }`}
+            className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
+              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+              : "bg-[#c44848] text-white hover:bg-[#d94f4f]"
+              }`}
           >
             {isRevoke && revokeLoading ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
@@ -563,7 +574,27 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
 );
 
 // ---------- Main Component ----------
-const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
+const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOptionsChange }) => {
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredPermissions.map((p) => ({
+      "Faculty Name": `${p.facultyId?.firstName || ""} ${p.facultyId?.lastName || ""}`.trim(),
+      "Date": formatDate(p.fromDate || p.date || p.permissionDate),
+      "Session": getSessionLabel(p),
+      "Duration": p.duration || `${p.totalHours || 0}`,
+      "Reason": p.reason || "",
+      "Status": p.status || "",
+    }));
+    exportToExcel(rows, "Permission-Requests.xlsx");
+  };
   const token = getTokenFromLocalStorage();
   let decodedData = decodeToken(token);
 
@@ -599,6 +630,22 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
   useEffect(() => {
     fetchPermissions();
   }, []);
+
+  const departmentOptions = useMemo(
+    () => [
+      "All",
+      ...Array.from(
+        new Set(permissions.map((p) => p.facultyId?.department).filter(Boolean)),
+      ),
+    ],
+    [permissions],
+  );
+
+  useEffect(() => {
+    if (onDepartmentOptionsChange) {
+      onDepartmentOptionsChange(departmentOptions);
+    }
+  }, [departmentOptions, onDepartmentOptionsChange]);
 
   // ---------- Stat Cards (filtered by department) ----------
   const deptPermissions = useMemo(() => {
@@ -828,8 +875,25 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                 Reset Filters
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleExportClick}
+              disabled={filteredPermissions.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
           </div>
         </div>
+
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
 
         <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[900px] border-collapse text-left">
@@ -872,18 +936,16 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                     <td className="px-4 py-3">
                       {formatDate(
                         permission.fromDate ||
-                          permission.date ||
-                          permission.permissionDate,
+                        permission.date ||
+                        permission.permissionDate,
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {permission.session ||
-                        permission.leaveSession ||
-                        "Full Day"}
+                      {getSessionLabel(permission)}
                     </td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration ||
-                        `${permission.totalHours || 0} Hours`}
+                        `${permission.totalHours || 0}`}
                     </td>
                     <td
                       className="max-w-[200px] truncate px-4 py-3"
@@ -929,17 +991,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All" }) => {
                               <X className="h-4 w-4" />
                             </button>
                           </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleRevoke(permission)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
-                            aria-label="Revoke permission decision"
-                            title={`Revoke ${permission.status}`}
-                          >
-                            <RotateCcw className="h-4 w-4" />
-                          </button>
-                        )}
+                        ) : ""}
                         <button
                           type="button"
                           onClick={() => handleView(permission)}

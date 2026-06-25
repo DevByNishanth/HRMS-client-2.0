@@ -3,6 +3,7 @@ import { ArrowRight, MoveUpRight } from "lucide-react";
 import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../../../utils/tokenUtils";
 import ReqularizationCanvas from "./ReqularizationCanvas";
 import { Link } from "react-router-dom";
+import { canApplyRegularization } from "../../../utils/regularizationUtils";
 
 const statusStyles = {
   Present: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -93,12 +94,12 @@ const RecentLogs = () => {
               if (isHoliday) {
                 return (
                   <tr key={record.attendanceId || record.date} className="">
-                    <td className="bg-orange-300/20 rounded-bl-lg"></td>
-                    <td className="bg-orange-300/20 "></td>
-                    <td className="bg-orange-300/20 "></td>
-                    <td className="py-2 bg-orange-300/20 pl-4"><h1 className="text-xl text-orange-300">{record?.holidayName}</h1></td>
-                    <td className="bg-orange-300/20 -b-lg"></td>
-                    <td className="bg-orange-300/20 rounded-br-lg"></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="bg-white/10 "></td>
+                    <td className="py-2 bg-white/10 pl-4"><h1 className="text-xl text-white">{record?.holidayName}</h1></td>
+                    <td className="bg-white/10 -b-lg"></td>
+                    <td className="bg-white/10 "></td>
                   </tr>
                 );
               }
@@ -108,7 +109,7 @@ const RecentLogs = () => {
                   <td className="px-4 py-4">{formatDateFromISO(record?.date)}</td>
                   <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
                   <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
-                  <td className={`px-4 py-4 font-semibold ${record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
+                  <td className={`px-4 py-4 font-semibold ${record.workingHours != null && Number(record.workingHours) < Number(record?.shift?.workingMinutes ?? 0) ? "text-red-500" : record.workingHours != null && record?.shift?.workingMinutes != null && Number(record.workingHours) > Number(record?.shift?.workingMinutes ?? 0) ? "text-green-400" : record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
                     {formatMinutesToHours(record.workingHours)}
                   </td>
                   <td className="px-4 py-4">
@@ -118,7 +119,7 @@ const RecentLogs = () => {
                     </span>
                   </td>
                   <td className="px-4 py-4 text-center text-[#8ca1bd]">
-                    {record.status.toLowerCase() == "present" ? (
+                    {canApplyRegularization(record) ? (
                       <button
                         type="button"
                         onClick={() => setSelectedLog(record)}
@@ -130,8 +131,10 @@ const RecentLogs = () => {
                     ) : (
                       <button
                         type="button"
+                        disabled
+                        title="Regularization is not available for this attendance status."
                         className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010]/30 transition ml-8 cursor-not-allowed"
-                        aria-label={`Open regularization form for ${formatDateFromISO(record.date)}`}
+                        aria-label={`Regularization disabled for ${formatDateFromISO(record.date)}`}
                       >
                         <MoveUpRight className="h-4 w-4 text-white/10" />
                       </button>

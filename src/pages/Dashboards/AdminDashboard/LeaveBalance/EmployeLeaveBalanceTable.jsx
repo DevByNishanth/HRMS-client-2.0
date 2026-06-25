@@ -147,7 +147,7 @@ export default function EmployeLeaveBalanceTable({
                                                     onClick={() =>
                                                         handleEdit(leave)
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </button>

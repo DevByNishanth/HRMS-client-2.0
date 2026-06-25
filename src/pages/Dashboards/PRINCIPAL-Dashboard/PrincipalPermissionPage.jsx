@@ -7,29 +7,18 @@ import ApplyPermission from "../../../components/ApplyPermission";
 import FacultySearchPopup from "../../../components/FacultySearchPopup";
 import ApplyDropdown from "../../../components/ApplyDropdown";
 
-const departments = [
-  "All",
-  "Computer Science",
-  "Electronics & Communication",
-  "Electrical & Electronics",
-  "Mechanical",
-  "Civil",
-  "Information Technology",
-  "Artificial Intelligence & Data Science",
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "English",
-  "Management Studies",
-  "MBA",
-];
-
 const PrincipalPermissionPage = () => {
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
   const [isFacultySearch, setIsFacultySearch] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [filterDepartment, setFilterDepartment] = useState("All");
   const [isDeptOpen, setIsDeptOpen] = useState(false);
+  const [departmentOptions, setDepartmentOptions] = useState(["All"]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handlePermissionSubmitted = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   const handleForMe = () => {
     setSelectedEmployee(null);
@@ -86,7 +75,7 @@ const PrincipalPermissionPage = () => {
                   {isDeptOpen && (
                     <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                       <div className="max-h-[220px] overflow-y-auto table-custom-scrollbar">
-                        {departments.map((dept) => (
+                        {departmentOptions.map((dept) => (
                           <button
                             key={dept}
                             type="button"
@@ -112,13 +101,13 @@ const PrincipalPermissionPage = () => {
               </div>
             </div>
 
-            <PrincipalPermissionTable filterDepartment={filterDepartment} />
+            <PrincipalPermissionTable key={refreshKey} filterDepartment={filterDepartment} onDepartmentOptionsChange={setDepartmentOptions} />
           </div>
         </main>
       </div>
 
       {isPermissionApplyModal && (
-        <ApplyPermission onClose={handleCloseForm} employee={selectedEmployee} />
+        <ApplyPermission onClose={handleCloseForm} employee={selectedEmployee} onPermissionSubmitted={handlePermissionSubmitted} />
       )}
       {isFacultySearch && (
         <FacultySearchPopup onClose={() => setIsFacultySearch(false)} onSelect={handleFacultySelect} />

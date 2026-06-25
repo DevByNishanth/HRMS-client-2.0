@@ -97,7 +97,7 @@ export default function UpdateEmployeeLeaveBalance({
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -207,7 +207,7 @@ export default function UpdateEmployeeLeaveBalance({
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-white cursor-pointer"
                     >
                         Cancel
                     </button>
@@ -215,7 +215,7 @@ export default function UpdateEmployeeLeaveBalance({
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white hover:bg-[#1049c4]"
+                        className="px-5 py-2 rounded-md bg-[#2563EB] text-white hover:bg-[#1049c4] cursor-pointer"
                     >
                         {loading
                             ? "Updating..."

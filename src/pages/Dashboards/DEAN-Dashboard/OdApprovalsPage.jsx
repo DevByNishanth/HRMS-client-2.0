@@ -1,10 +1,13 @@
-import { Check, Clock, Eye, FileText, Search, X } from "lucide-react";
+import { AlertCircle, Check, CheckCircle2, ChevronDown, Clock, Download, Eye, FileText, Search, ShieldCheck, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import { decodeToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 import userImg from "../../../assets/userImg.svg";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -14,6 +17,30 @@ const statusStyles = {
 
 const OdDetailsPopup = ({ request, onClose }) => {
   if (!request) return null;
+
+  const getActionColor = (action) => {
+    if (action?.toLowerCase() === "approved") {
+      return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+    } else if (action?.toLowerCase() === "rejected") {
+      return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+    }
+    return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+  };
+
+  const getActionIcon = (action) => {
+    switch (action?.toLowerCase()) {
+      case "approved":
+        return <CheckCircle2 size={18} />;
+      case "rejected":
+        return <AlertCircle size={18} />;
+      case "submitted":
+        return <Clock size={18} />;
+      default:
+        return <Clock size={18} />;
+    }
+  };
+
+  const approvalHistory = request.approvalHistory || [];
 
   return (
     <section
@@ -117,9 +144,99 @@ const OdDetailsPopup = ({ request, onClose }) => {
               </>
             )}
           </div>
+
+          {/* Approval Workflow */}
+          {approvalHistory.length > 0 && (
+            <div className="mt-4 border-t border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+                <ShieldCheck size={15} className="text-[#3984ff]" />
+                Approval Workflow
+              </p>
+
+              <div className="space-y-0">
+                {approvalHistory.map((history, index) => {
+                  const actionColor = getActionColor(history.action);
+                  const isLast = index === approvalHistory.length - 1;
+                  const isApproved = history.action?.toLowerCase() === "approved";
+                  const isRejected = history.action?.toLowerCase() === "rejected";
+
+                  return (
+                    <div key={history._id || index} className="relative">
+                      {/* Connector line */}
+                      {!isLast && (
+                        <div
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
+                            ? "bg-[#10b981]"
+                            : isRejected
+                              ? "bg-[#ef4444]"
+                              : "bg-[#444c63]"
+                            }`}
+                        />
+                      )}
+
+                      {/* Step content */}
+                      <div className="relative flex gap-3 pb-4">
+                        {/* Step circle */}
+                        <div className="flex-shrink-0">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
+                              ? `${actionColor.bg} border-emerald-200/20`
+                              : isRejected
+                                ? `${actionColor.bg} border-[#ef4444]`
+                                : `${actionColor.light} border-[#444c63]`
+                              } text-white`}
+                          >
+                            {getActionIcon(history.action)}
+                          </div>
+                        </div>
+
+                        {/* Step details */}
+                        <div className="flex-1 pt-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                                {history.role}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
+                                ? "bg-[#10b98120] text-[#10b981]"
+                                : isRejected
+                                  ? "bg-[#ef444420] text-[#ef4444]"
+                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                }`}
+                            >
+                              {history.action}
+                            </span>
+                          </div>
+
+                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                            {history.remarks}
+                          </p>
+
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        {/* <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
@@ -128,7 +245,7 @@ const OdDetailsPopup = ({ request, onClose }) => {
             Close Details
             <X size={14} />
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   );
@@ -220,7 +337,93 @@ const OdApprovalsPage = () => {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
 
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Name": r.name || "",
+      "Department": r.department || "",
+      "Leave Type": r.leaveType || "",
+      "Date": r.date || "",
+      "Purpose": r.purpose || "",
+      "Status": r.approvalStatus || r.status || "Pending",
+    }));
+    exportToExcel(rows, "OD-Approvals.xlsx");
+  };
+
   const statuses = ["All", "Pending", "Approved", "Rejected"];
+
+  // Custom Dropdown Component
+  const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        >
+          <span className={value ? "text-white" : "text-[#6f839f]"}>
+            {value || placeholder}
+          </span>
+          <ChevronDown
+            size={16}
+            className={`text-[#3984ff] transition ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+            <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    onChange(option);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
+                    ? "bg-[#2563EB] text-white"
+                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // — Role-based filtering configuration (same pattern as HodLeaveRequestTable) —
+  const token = getTokenFromLocalStorage();
+  const decodedData = decodeToken(token);
+  const rawRole = decodedData?.role || null;
+  const normalizedRole = rawRole?.toLowerCase()?.trim() || null;
+
+  // Extract dean sub-type for filtering
+  const deanSubType =
+    normalizedRole?.startsWith("dean-")
+      ? normalizedRole.replace("dean-", "")
+      : normalizedRole === "iqac"
+        ? "iqac"
+        : null;
+
+  const DEAN_LEAVE_FILTER = {
+    research: ["On Duty - Research"],
+    iqac: ["On Duty - Research", "On Duty - Exam"],
+  };
+
+  const allowedLeaveTypes = DEAN_LEAVE_FILTER[deanSubType] || null;
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
@@ -236,11 +439,12 @@ const OdApprovalsPage = () => {
         const dept = decodedData?.department || decodedData?.departmentName;
 
         const res = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/?department=${dept}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();
 
+        console.log(data.leaveApplications);
         if (res.ok && data?.leaveApplications) {
           const mapped = data.leaveApplications.map((app) => {
             const name = app.facultyId
@@ -249,45 +453,59 @@ const OdApprovalsPage = () => {
             const designation = app.facultyId?.designation || "";
             const department = app.facultyId?.department || "";
             const leaveType = app.leaveTypeId?.leaveName || app.leaveType || "Leave";
-
+            const leaveTypeCategory = app.leaveTypeId?.leaveCategory;
             return {
               _id: app._id,
               name,
               designation,
               department,
               leaveType,
+              leaveTypeCategory,
               date: app.fromDate
                 ? new Date(app.fromDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               fromDate: app.fromDate
                 ? new Date(app.fromDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               toDate: app.toDate
                 ? new Date(app.toDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                })
                 : "",
               session: "Full Day",
               purpose: app.reason || leaveType,
               reason: app.reason || "",
               status: app.status || "Pending",
+              approvalHistory: app.approvalHistory || [],
+
+              // Dean-specific sub-status — uses normalizedRole to handle role casing/whitespace
+              approvalStatus:
+                normalizedRole === "dean-research"
+                  ? app?.approvalStatus?.researchStatus
+                  : normalizedRole === "dean-iqac"
+                    ? app?.approvalStatus?.iqacStatus
+                    : app?.status
             };
           });
-          setRequests(mapped);
+
+          let finalData = mapped.filter((item) => {
+            return item.leaveTypeCategory == "On Duty"
+          })
+          setRequests(finalData);
         }
       } catch (err) {
         console.error("Error fetching OD requests:", err);
-        toast.error("Failed to load requests");
+        // toast.error("Failed to load requests");
       } finally {
         setLoading(false);
       }
@@ -296,18 +514,26 @@ const OdApprovalsPage = () => {
     fetchRequests();
   }, []);
 
+  console.log("req : ", requests)
+
+
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
+      // Role-based filtering: restrict to allowed leave types for dean sub-roles
+      if (allowedLeaveTypes && !allowedLeaveTypes.includes(request.leaveType)) {
+        return false;
+      }
+
       const searchMatch =
         !searchTerm ||
         request.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.leaveType?.toLowerCase().includes(searchTerm.toLowerCase());
-      const statusMatch = statusFilter === "All" || request.status === statusFilter;
+      const statusMatch = statusFilter === "All" || (request.approvalStatus || request.status) === statusFilter;
       return searchMatch && statusMatch;
     });
-  }, [requests, searchTerm, statusFilter]);
+  }, [requests, searchTerm, statusFilter, allowedLeaveTypes]);
 
   const handleApprove = async (request) => {
     try {
@@ -330,7 +556,7 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === request._id ? { ...r, status: "Approved" } : r)),
+        prev.map((r) => (r._id === request._id ? { ...r, status: "Approved", approvalStatus: "Approved" } : r)),
       );
       toast.success("Request approved successfully");
     } catch (err) {
@@ -375,7 +601,7 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === rejectTarget._id ? { ...r, status: "Rejected" } : r)),
+        prev.map((r) => (r._id === rejectTarget._id ? { ...r, status: "Rejected", approvalStatus: "Rejected" } : r)),
       );
       toast.success("Request rejected");
       closeRejectPopup();
@@ -387,7 +613,7 @@ const OdApprovalsPage = () => {
     }
   };
 
-  const pendingCount = requests.filter((r) => r.status === "Pending").length;
+  const pendingCount = requests.filter((r) => (r.approvalStatus || r.status) === "Pending").length;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -436,7 +662,7 @@ const OdApprovalsPage = () => {
                 <div className="min-w-0">
                   <p className="text-[12px] uppercase tracking-wide text-[#8ca1bd]">Approved</p>
                   <p className="mt-1 text-[16px] font-medium text-[#ffffff]">
-                    {requests.filter((r) => r.status === "Approved").length}
+                    {requests.filter((r) => (r.approvalStatus || r.status) === "Approved").length}
                   </p>
                 </div>
               </div>
@@ -466,22 +692,33 @@ const OdApprovalsPage = () => {
                   </div>
 
                   {/* Status Filter */}
-                  <div className="flex gap-1 rounded-lg border border-[#244061] bg-[#0d2138] p-1">
-                    {statuses.map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => setStatusFilter(status)}
-                        className={`px-3 py-1.5 rounded-md text-[12px] font-semibold transition ${statusFilter === status
-                            ? "bg-[#2563EB] text-white"
-                            : "text-[#8ca1bd] hover:text-white"
-                          }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                  <div className="flex-shrink-0">
+                    <CustomDropdown
+                      placeholder="Status"
+                      value={statusFilter}
+                      onChange={setStatusFilter}
+                      options={statuses}
+                    />
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredRequests.length === 0}
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
                 </div>
               </div>
+
+              <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                loading={exportLoading}
+                error={exportError}
+              />
 
               <div className="relative z-0 h-[calc(100vh-380px)] overflow-auto table-custom-scrollbar">
                 <table className="w-full min-w-[980px] border-collapse text-left">
@@ -505,6 +742,7 @@ const OdApprovalsPage = () => {
                       </tr>
                     ) : filteredRequests.length > 0 ? (
                       filteredRequests.map((request, index) => (
+
                         <tr
                           key={request._id || `${request.name}-${request.date}-${index}`}
                           className="border-b border-[#132944] last:border-0"
@@ -528,15 +766,15 @@ const OdApprovalsPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[request.status]}`}
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[request.approvalStatus ? request.approvalStatus : request.status]}`}
                             >
                               <span className="h-[4px] w-[4px] rounded-full bg-current" />
-                              {request.status}
+                              {request.approvalStatus || request.status}
                             </span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                              {request.status === "Pending" && (
+                              {(request.approvalStatus || request.status) === "Pending" && (
                                 <>
                                   <button
                                     type="button"

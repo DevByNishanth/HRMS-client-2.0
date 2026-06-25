@@ -2,7 +2,7 @@
 // import logo from '../assets/logo.svg'
 import logo from '../assets/college_logo.png'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen,UserCheck } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
@@ -29,6 +29,7 @@ const Sidebar = () => {
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
         { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
         ];
 
@@ -41,6 +42,7 @@ const Sidebar = () => {
         { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
         { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
         { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
+        { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
     ];
 
     // Navigation items for Principal
@@ -50,6 +52,7 @@ const Sidebar = () => {
         { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
         { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-principal/permissions' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard-principal/compOff' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard-principal/regularizationList' },
     ];
 
@@ -60,6 +63,8 @@ const Sidebar = () => {
         { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+
     ];
 
     // Navigation items for Dean (same as Faculty + OD Approvals)
@@ -70,6 +75,7 @@ const Sidebar = () => {
         { label: 'Permission', icon: FileText, path: '/dashboard-dean/permissions' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'OD Approvals', icon: CalendarPlus, path: '/dashboard-dean/od-approvals' },
+        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
     ];
 
     // Determine navigation items based on role
@@ -81,6 +87,9 @@ const Sidebar = () => {
         case 'hr':
             navItems = adminNavItems;
             break;
+        case 'admin':
+            navItems = adminNavItems;
+            break;
         case 'principal':
             navItems = principalNavItems;
             break;
@@ -88,6 +97,15 @@ const Sidebar = () => {
             navItems = nonTeachingNavItems;
             break;
         case 'dean':
+            navItems = deanNavItems;
+            break;
+        case 'dean-iqac':
+            navItems = deanNavItems;
+            break;
+        case 'dean-research':
+            navItems = deanNavItems;
+            break;
+        case 'dean-academics':
             navItems = deanNavItems;
             break;
         case 'coe':

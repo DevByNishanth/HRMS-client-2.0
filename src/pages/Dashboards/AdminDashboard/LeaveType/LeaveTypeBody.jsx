@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import AddLeaveType from "./AddLeaveType";
-import { Pencil, Trash2, X, Eye  } from "lucide-react";
+import { Pencil, Trash2, X, Eye,Plus,Search  } from "lucide-react";
 import { getLeaveTypes } from "../../../../services/leaveType/getLeaveTypeService";
 import { deleteLeaveType } from "../../../../services/leaveType/deleteLeaveTypeService";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import ViewLeaveType from "./ViewLeaveType";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function LeaveTypeBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -22,6 +24,15 @@ export default function LeaveTypeBody() {
     const [resetFrequencyFilter, setResetFrequencyFilter] = useState("");
     const [showViewDrawer, setShowViewDrawer] = useState(false);
     const [viewLeaveType, setViewLeaveType] = useState(null);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     const LEAVE_CATEGORIES = [
         "Regular",
@@ -193,8 +204,9 @@ export default function LeaveTypeBody() {
 
                 <button
                     onClick={() => setShowDrawer(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                >
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2 cursor-pointer"
+                >   
+                    <span><Plus className="w-4"/></span>
                     Add Leave Type
                 </button>
             </div>
@@ -204,19 +216,31 @@ export default function LeaveTypeBody() {
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
                 <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap  items-center justify-between">
                     <h1 className="shrink-0 text-[18px] font-semibold text-white">
-                        Leave Type List
+                        Leave Type List ({filteredLeaveTypes.length})
                     </h1>
 
                     <div className="flex flex-wrap items-center gap-2">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) =>
-                                setSearchTerm(e.target.value)
-                            }
-                            className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                            placeholder="Search Leave Name..."
-                        />
+                        <div className="relative">
+                            <Search
+                                size={18}
+                                className="
+                                    absolute
+                                    left-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-[#6f839f]
+                                "
+                            />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) =>
+                                    setSearchTerm(e.target.value)
+                                }
+                                className="h-11 w-[230px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-11 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                placeholder="Search Leave Name..."
+                            />
+                        </div>
 
                         <div className="w-[180px]">
                             <CustomDropdown
@@ -246,7 +270,8 @@ export default function LeaveTypeBody() {
                         </div>
 
                         <button
-                            onClick={handleExportExcel}
+                            onClick={handleExportClick}
+                            disabled={filteredLeaveTypes.length === 0}
                             className="
                                 h-12
                                 px-5
@@ -259,6 +284,7 @@ export default function LeaveTypeBody() {
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
                             Export Excel
@@ -272,7 +298,7 @@ export default function LeaveTypeBody() {
                                     setEmployeeCategoryFilter("");
                                     setResetFrequencyFilter("");
                                 }}
-                                className="flex flex-row items-center gap-2 h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                                className="flex flex-row items-center gap-2 h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff] cursor-pointer"
                             >
                                 Reset Filters
                                 <X className="w-5 h-5" />
@@ -404,7 +430,7 @@ export default function LeaveTypeBody() {
                                                                 setViewLeaveType(leave);
                                                                 setShowViewDrawer(true);
                                                             }}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-blue-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-blue-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                         </button>
@@ -415,7 +441,7 @@ export default function LeaveTypeBody() {
                                                                 setSelectedLeaveType(leave);
                                                                 setShowDrawer(true);
                                                             }}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                         >
                                                             <Pencil className="h-4 w-4" />
                                                         </button>
@@ -426,7 +452,7 @@ export default function LeaveTypeBody() {
                                                                 setDeletingLeaveType(leave);
                                                                 setDeleteError("");
                                                             }}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white"
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
@@ -469,6 +495,14 @@ export default function LeaveTypeBody() {
                     </div>
                 </div>
             </div>
+
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
 
             {/* Delete Modal */}
 
@@ -514,7 +548,7 @@ export default function LeaveTypeBody() {
                                 disabled={
                                     isDeletingLeaveType
                                 }
-                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb]"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -524,7 +558,7 @@ export default function LeaveTypeBody() {
                                 disabled={
                                     isDeletingLeaveType
                                 }
-                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white"
+                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white cursor-pointer"
                             >
                                 {isDeletingLeaveType
                                     ? "Deleting..."

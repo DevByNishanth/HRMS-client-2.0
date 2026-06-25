@@ -32,20 +32,20 @@ export default function TimeWheelPicker({
         setPeriod(p);
     }, [value]);
 
-    const handleApply = () => {
-        let hr24 = parseInt(hour, 10);
+    // const handleApply = () => {
+    //     let hr24 = parseInt(hour, 10);
 
-        if (period === "AM") {
-        if (hr24 === 12) hr24 = 0;
-        } else {
-        if (hr24 !== 12) hr24 += 12;
-        }
+    //     if (period === "AM") {
+    //     if (hr24 === 12) hr24 = 0;
+    //     } else {
+    //     if (hr24 !== 12) hr24 += 12;
+    //     }
 
-        const formattedTime =
-        `${String(hr24).padStart(2, "0")}:${minute}`;
+    //     const formattedTime =
+    //     `${String(hr24).padStart(2, "0")}:${minute}`;
 
-        onApply(formattedTime);
-    };
+    //     onApply(formattedTime);
+    // };
 
     const hours = Array.from(
         { length: 12 },
@@ -85,10 +85,10 @@ export default function TimeWheelPicker({
                     text-white
                     rounded-lg
                     p-2
-                    text-left
+                    cursor-pointer
                     flex
                     items-center
-                    justify-between
+                    justify-center
                     "
                 >
                     {hour}
@@ -144,8 +144,8 @@ export default function TimeWheelPicker({
                     bg-[#132A47]
                     text-white
                     rounded-lg
+                    cursor-pointer
                     p-2
-                    text-left
                     "
                 >
                     {minute}
@@ -206,10 +206,10 @@ export default function TimeWheelPicker({
                     text-white
                     rounded-lg
                     p-2
-                    text-left
+                    cursor-pointer
                     flex
                     items-center
-                    justify-between
+                    justify-center
                     "
                 >
                     {period}
@@ -236,6 +236,19 @@ export default function TimeWheelPicker({
                         onClick={() => {
                             setPeriod(p);
                             setPeriodOpen(false);
+
+                            let hr24 = parseInt(hour, 10);
+
+                            if (p === "AM") {
+                                if (hr24 === 12) hr24 = 0;
+                            } else {
+                                if (hr24 !== 12) hr24 += 12;
+                            }
+
+                            const formattedTime =
+                                `${String(hr24).padStart(2, "0")}:${minute}`;
+
+                            onApply(formattedTime);
                         }}
                         className="
                             px-3
@@ -253,7 +266,7 @@ export default function TimeWheelPicker({
                 </div>
         </div>
 
-        <button
+        {/* <button
             type="button"
             onClick={handleApply}
             className="
@@ -267,7 +280,7 @@ export default function TimeWheelPicker({
             "
         >
             Apply
-        </button>
+        </button> */}
         </div>
     );
 }

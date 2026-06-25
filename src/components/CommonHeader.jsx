@@ -1,6 +1,12 @@
+import { jwtDecode } from "jwt-decode";
 import { Search, Bell, Settings, UserRound, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 const CommonHeader = () => {
+
+
+  const token = localStorage.getItem("hrms_token");
+  let decoded = jwtDecode(token);
+  console.log(decoded);
 
   return (
     <>
@@ -23,7 +29,7 @@ const CommonHeader = () => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-3">
-        <button className="text-[#d7e3ff] hover:text-white transition">
+          <button className="text-[#d7e3ff] hover:text-white transition">
             <Calendar size={14} />
           </button>
           <button className="text-[#d7e3ff] hover:text-white transition">
@@ -33,15 +39,15 @@ const CommonHeader = () => {
           <button className="text-[#d7e3ff] hover:text-white transition">
             <Settings size={14} />
           </button>
-          <Link
-            to="/profile/EMP001"
+          {decoded.role == "admin" || decoded.role == "principal" ? "" : <Link
+            to={`/profile/${decoded?.facultyId}`}
             className="text-[#d7e3ff] hover:text-white transition"
           >
             <UserRound
               size={14}
               className="text-[#d7e3ff] hover:text-white transition"
             />
-          </Link>
+          </Link>}
         </div>
 
         {/* Profile */}

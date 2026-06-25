@@ -2,19 +2,46 @@ import React from "react";
 import { UserRound } from "lucide-react";
 import ProfileCard from "./ProfileCard";
 
-const details = [
-  { label: "Full Name", value: "Rajesh Kumar Subramanian" },
-  { label: "Date of Birth", value: "14 May 1978" },
-  { label: "Gender", value: "Male" },
-  {
-    label: "Permanent Address",
-    value: "42, Green Valley Enclave, Pollachi Main Road, Coimbatore - 641032",
-  },
-];
+const formatDate = (dateStr) => {
+  if (!dateStr) return "N/A";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+};
 
-const PersonalDetails = () => {
+const getAddressText = (address) => {
+  if (!address || typeof address !== "object") return address || "N/A";
+  const parts = [address.doorNo, address.street, address.city, address.district, address.state, address.pincode, address.country]
+    .filter(Boolean);
+  return parts.length ? parts.join(", ") : "N/A";
+};
+
+const PersonalDetails = ({ canEdit, onEdit, faculty }) => {
+  console.log("faculty : ", faculty)
+  const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "N/A";
+  const dob = formatDate(faculty?.dob);
+  const gender = faculty?.gender || "N/A";
+  const email = faculty?.email || "N/A";
+  const phone = faculty?.phone || "N/A";
+  const address = getAddressText(faculty?.address);
+
+  const details = [
+    { label: "Full Name", value: fullName },
+    { label: "Date of Birth", value: dob },
+    { label: "Gender", value: gender },
+    { label: "Email", value: email },
+    { label: "Phone", value: phone },
+    { label: "Permanent Address", value: address },
+  ];
+
   return (
-    <ProfileCard title="Personal Details" icon={UserRound}>
+    <ProfileCard title="Personal Details" icon={UserRound} canEdit={canEdit} onEdit={onEdit}>
       <div className="space-y-4">
         {details.map((item) => (
           <div key={item.label} className="border-b border-[#26344f] pb-3 last:border-0 last:pb-0">

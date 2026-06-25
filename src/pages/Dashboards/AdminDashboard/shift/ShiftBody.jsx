@@ -1,10 +1,12 @@
 import React,{useState,useEffect} from 'react'
 import AddShiftForm from './AddShiftForm';
-import { Pencil,Trash2, X } from 'lucide-react';
+import { Pencil,Trash2, X,Plus,Search } from 'lucide-react';
 import {getShifts} from '../../../../services/shift/getShiftService'
 import {deleteShift} from '../../../../services/shift/deleteShiftService'
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function ShiftBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -15,6 +17,15 @@ export default function ShiftBody() {
     const [isDeletingShift, setIsDeletingShift] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     useEffect(()=>{
         fetchShifts();
@@ -106,24 +117,38 @@ export default function ShiftBody() {
 
                 <button
                     onClick={() => setShowDrawer(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2 cursor pointer"
                 >
+                <span><Plus className='w-4'/></span>
                 Add Shift
                 </button>
             </div>
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
                 <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex items-center justify-between gap-4">
-                    <h1 className="shrink-0 text-[18px] font-semibold text-white">Shift List</h1>
+                    <h1 className="shrink-0 text-[18px] font-semibold text-white">Shift List ({shifts.length})</h1>
                     <div className="flex items-center gap-3">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-5 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                            placeholder="Search Shift Name"
-                        />
+                        <div className="relative">
+                            <Search
+                                size={18}
+                                className="
+                                    absolute
+                                    left-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-[#6f839f]
+                                "
+                            />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-11 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                placeholder="Search Shift Name"
+                            />
+                        </div>
                         <button
-                            onClick={handleExportExcel}
+                            onClick={handleExportClick}
+                            disabled={filteredShifts.length === 0}
                             className="
                                 h-11
                                 px-5
@@ -133,6 +158,7 @@ export default function ShiftBody() {
                                 text-[#3984ff]
                                 hover:bg-[#3984ff]
                                 hover:text-white
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
                             Export Excel
@@ -140,7 +166,7 @@ export default function ShiftBody() {
                         {searchTerm.trim() !== "" && (
                             <button
                                 onClick={handleResetFilter}
-                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd]"
+                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
                             >
                                 Reset Filter
                                 <X size={18} />
@@ -191,7 +217,10 @@ export default function ShiftBody() {
                                             <td className="px-5 py-3">{shift.startTime}</td>
                                             <td className="px-5 py-3">{shift.endTime}</td>
                                             <td className="px-5 py-3">{shift.graceTime} minutes</td>
-                                            <td className="px-5 py-3">{shift.workingHours} hours</td>
+                                            <td className="px-5 py-3">
+                                                {(shift.workingHours ??
+                                                    (shift.workingMinutes / 60).toFixed(2))} hours
+                                            </td>
                                             <td className="px-5 py-3 text-[#8ca1bd]">
                                                 <div className="flex items-center justify-center gap-3">
                                                     <button
@@ -200,7 +229,7 @@ export default function ShiftBody() {
                                                             setSelectedShift(shift);
                                                             setShowDrawer(true);
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </button>
@@ -210,7 +239,7 @@ export default function ShiftBody() {
                                                             setDeletingShift(shift);
                                                             setDeleteError("");
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white "
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white cursor-pointer"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
@@ -235,6 +264,13 @@ export default function ShiftBody() {
                     </div>
                 </div>
             </div>
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
             {deletingShift && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
                     <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
@@ -268,7 +304,7 @@ export default function ShiftBody() {
                                 type="button"
                                 onClick={() => setDeletingShift(null)}
                                 disabled={isDeletingShift}
-                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -277,7 +313,7 @@ export default function ShiftBody() {
                                 type="button"
                                 onClick={handleDelete}
                                 disabled={isDeletingShift}
-                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-sm font-medium text-white transition hover:bg-[#bd3434] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                             >
                                 {isDeletingShift ? "Deleting..." : "Delete"}
                             </button>

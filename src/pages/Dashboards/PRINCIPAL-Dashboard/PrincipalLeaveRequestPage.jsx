@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Send,
   AlertCircle,
+  Download,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import Sidebar from "../../../components/Siedbar";
@@ -27,6 +28,9 @@ import {
   getTokenFromLocalStorage,
 } from "../../../utils/tokenUtils";
 import axios from "axios";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -377,19 +381,21 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                             {history.remarks}
                           </p>
 
-                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                            <Clock size={11} />
-                            {new Date(history.actionDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              },
-                            )}
-                          </p>
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -546,6 +552,27 @@ const PrincipalLeaveRequestPage = () => {
   const [revokeLoading, setRevokeLoading] = useState(false);
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Faculty Name": `${r.facultyId?.firstName || ""} ${r.facultyId?.lastName || ""}`.trim(),
+      "Leave Type": r.leaveTypeId?.leaveName || "",
+      "From": formatDate(r.fromDate),
+      "To": formatDate(r.toDate),
+      "Duration": `${r.totalDays || 0} Day${r.totalDays !== 1 ? "s" : ""}`,
+      "Status": r.status || "",
+    }));
+    exportToExcel(rows, "Leave-Requests.xlsx");
+  };
 
   const departmentOptions = useMemo(
     () => [
@@ -819,8 +846,26 @@ const PrincipalLeaveRequestPage = () => {
                     onChange={setFilterStatus}
                     options={statuses}
                   />
+
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredRequests.length === 0}
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
                 </div>
               </div>
+
+              <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                loading={exportLoading}
+                error={exportError}
+              />
 
               <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
                 <table className="w-full min-w-[900px] border-collapse text-left">

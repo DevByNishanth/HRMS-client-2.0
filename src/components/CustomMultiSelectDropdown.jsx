@@ -58,7 +58,7 @@ export default function CustomMultiSelectDropdown({
         id={id}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between
+        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between cursor-pointer
           ${
             error
               ? "border-red-500"
@@ -98,7 +98,7 @@ export default function CustomMultiSelectDropdown({
                 onClick={() =>
                   handleSelect(option)
                 }
-                className={`w-full flex items-center justify-between px-4 py-3 text-left transition
+                className={`w-full flex items-center justify-between px-4 py-3 text-left transition cursor-pointer
                   ${
                     selected
                       ? "bg-[#2563EB]/20 text-white"

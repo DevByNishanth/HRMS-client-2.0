@@ -1,4 +1,5 @@
 import {
+    Download,
     Eye,
     Check,
     X,
@@ -21,6 +22,9 @@ import userImg from '../../../assets/userImg.svg';
 import { decodeToken, getTokenFromLocalStorage } from '../../../utils/tokenUtils';
 import axios from "axios";
 import { toast } from "react-toastify";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
     Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -481,16 +485,18 @@ const HodLeaveDetailsCanvas = ({ request, onClose, onRevoke }) => {
                                                         {history.remarks}
                                                     </p>
 
-                                                    <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                                                        <Clock size={11} />
-                                                        {new Date(history.actionDate).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "2-digit",
-                                                            year: "numeric",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        })}
-                                                    </p>
+                                                    {history.actionDate && (
+                                                        <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                                                            <Clock size={11} />
+                                                            {new Date(history.actionDate).toLocaleDateString("en-US", {
+                                                                month: "short",
+                                                                day: "2-digit",
+                                                                year: "numeric",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                            })}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -625,6 +631,51 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
     let dept = decodedData ? decodedData.department : null;
     let role = decodedData ? decodedData.role : null;
 
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
+
+    const exportCurrentFilteredRows = () => {
+        const rows = filteredRequests.map((req) => ({
+            "Name": `${req.facultyId?.firstName || ""} ${req.facultyId?.lastName || ""}`.trim(),
+            "Leave Type": req.leaveTypeId?.leaveName || "",
+            "From Date": formatDate(req.fromDate || req.from || req.date),
+            "To Date": formatDate(req.toDate || req.to || req.date),
+            "Reason": req.reason || "",
+            "Status": req.status || "Pending",
+        }));
+        exportToExcel(rows, "Leave-Requests.xlsx");
+    };
+
+    // — Role-based filtering configuration —
+    // Normalize role: lowercase + trim to handle whitespace/casing edge cases
+    const normalizedRole = role?.toLowerCase()?.trim() || null;
+
+    // Extract dean sub-type for filtering:
+    //   "dean-research" → "research"
+    //   "dean-iqac"     → "iqac"
+    //   "dean"          → null (no filter)
+    //   "iqac"          → "iqac" (backward compat)
+    const deanSubType =
+        normalizedRole?.startsWith("dean-")
+            ? normalizedRole.replace("dean-", "")
+            : normalizedRole === "iqac"
+                ? "iqac"
+                : null;
+
+    // Allowed leave types per dean sub-type
+    const DEAN_LEAVE_FILTER = {
+        research: ["On Duty - Research"],
+        iqac: ["On Duty - Research", "On Duty - Exam"],
+    };
+
+    const allowedLeaveTypes = DEAN_LEAVE_FILTER[deanSubType] || null;
+
     // States
     const [requests, setRequests] = useState([]);
     const [filterLeaveType, setFilterLeaveType] = useState("All");
@@ -638,13 +689,30 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
     const [revokeLoading, setRevokeLoading] = useState(false);
 
     // Get unique leave types
-    const leaveTypes = ["All", ...new Set(requests.map((request) => request.type))];
+    const leaveTypes = ["All", ...new Set(requests.map((request) => request?.leaveTypeId?.leaveName).filter(Boolean))];
+
+    // Role-filtered leave type options for dropdown
+    const roleFilteredLeaveTypes = useMemo(() => {
+        if (allowedLeaveTypes) {
+            return ["All", ...allowedLeaveTypes];
+        }
+        return leaveTypes;
+    }, [allowedLeaveTypes, leaveTypes]);
+
     const statuses = ["All", "Approved", "Rejected", "Pending"];
 
-    // Filter requests based on selected filters
+    // Filter requests based on role and selected filters
     const filteredRequests = useMemo(() => {
         return requests.filter((request) => {
-            const leaveTypeMatch = filterLeaveType === "All" || request.type === filterLeaveType;
+            const leaveName = request?.leaveTypeId?.leaveName;
+
+            // Role-based filtering: restrict to allowed leave types for dean sub-roles
+            if (allowedLeaveTypes && !allowedLeaveTypes.includes(leaveName)) {
+                return false;
+            }
+
+            // Existing filter logic
+            const leaveTypeMatch = filterLeaveType === "All" || leaveName === filterLeaveType;
             const statusMatch = filterStatus === "All" || request.status === filterStatus;
 
             // Parse request dates for comparison
@@ -655,7 +723,7 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
             return leaveTypeMatch && statusMatch && filterDateCheck;
         });
-    }, [filterLeaveType, filterStatus, filterDate, requests]);
+    }, [filterLeaveType, filterStatus, filterDate, requests, /* re-filter when allowed list changes */ allowedLeaveTypes]);
 
     const resetFilters = () => {
         setFilterLeaveType("All");
@@ -807,7 +875,15 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
 
                     <div className="filter-container">
                         <div className="flex flex-wrap items-center gap-3">
-                          
+                            {/* Leave Type Filter */}
+                            <div className="flex-shrink-0">
+                                <CustomDropdown
+                                    placeholder="Leave Type"
+                                    value={filterLeaveType}
+                                    onChange={setFilterLeaveType}
+                                    options={roleFilteredLeaveTypes}
+                                />
+                            </div>
 
                             {/* Status Filter */}
                             <div className="flex-shrink-0">
@@ -832,6 +908,17 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
                                 />
                             </div>
 
+                            {/* Export Button */}
+                            <button
+                                type="button"
+                                onClick={handleExportClick}
+                                disabled={filteredRequests.length === 0}
+                                className="flex-shrink-0 h-11 inline-flex items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <Download size={16} />
+                                Export
+                            </button>
+
                             {/* Reset Button */}
                             {hasActiveFilters && (
                                 <button
@@ -844,6 +931,14 @@ const HodLeaveRequestTable = ({ onCountChange, fetchByApprovalLevel }) => {
                         </div>
                     </div>
                 </div>
+
+                <ExportPasswordModal
+                    isOpen={isExportModalOpen}
+                    onClose={closeExportModal}
+                    onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                    loading={exportLoading}
+                    error={exportError}
+                />
 
                 <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
                     <table className="w-full min-w-[900px] border-collapse text-left">

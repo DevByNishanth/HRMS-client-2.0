@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import {
   Check,
   X,
@@ -11,15 +12,22 @@ import {
   CalendarDays,
   Clock3,
   SunMedium,
-  TimerReset,
   ShieldCheck,
   RotateCcw,
+  Loader2,
+  Download,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken, getTokenFromLocalStorage } from "../../utils/tokenUtils";
+import {
+  getRoleFromToken,
+  getTokenFromLocalStorage,
+} from "../../utils/tokenUtils";
 import Sidebar from "../../components/Siedbar";
 import CommonHeader from "../../components/CommonHeader";
 import CustomDatePicker from "../../components/CustomDatePicker";
+import ExportPasswordModal from "../../components/ExportPasswordModal";
+import { exportToExcel } from "../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../hooks/usePasswordProtectedExport";
 import userImg from "../../assets/userImg.svg";
 import noDataFoundImg from "../../assets/no-data-found.svg";
 
@@ -34,8 +42,9 @@ const statusStyles = {
 
 const StatusBadge = ({ status }) => (
   <span
-    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${statusStyles[status] || statusStyles.Pending
-      }`}
+    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[13px] font-semibold ${
+      statusStyles[status] || statusStyles.Pending
+    }`}
   >
     <span className="h-[4px] w-[4px] rounded-full bg-current" />
     {status || "Pending"}
@@ -46,8 +55,14 @@ const EmptyTableRow = ({ colSpan }) => (
   <tr>
     <td colSpan={colSpan} className="px-4 py-10">
       <div className="flex flex-col items-center justify-center">
-        <img src={noDataFoundImg} alt="No data found" className="h-32 w-auto opacity-95" />
-        <p className="mt-2 text-[14px] font-semibold text-[#cad7eb]">No data found</p>
+        <img
+          src={noDataFoundImg}
+          alt="No data found"
+          className="h-32 w-auto opacity-95"
+        />
+        <p className="mt-2 text-[14px] font-semibold text-[#cad7eb]">
+          No data found
+        </p>
       </div>
     </td>
   </tr>
@@ -56,35 +71,47 @@ const EmptyTableRow = ({ colSpan }) => (
 const getRegularizationList = (data) => {
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.requests)) return data.requests;
-  if (Array.isArray(data?.regularizationRequests)) return data.regularizationRequests;
+  if (Array.isArray(data?.regularizationRequests))
+    return data.regularizationRequests;
   if (Array.isArray(data?.data)) return data.data;
   return [];
 };
 
 const getFacultyName = (request) => {
-  const fullName = `${request?.facultyId?.firstName || ""} ${request?.facultyId?.lastName || ""}`.trim();
+  const fullName =
+    `${request?.facultyId?.firstName || ""} ${request?.facultyId?.lastName || ""}`.trim();
   return fullName || request?.name || "Faculty";
 };
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
 };
 
 const formatTime = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 };
 
-const isSameDay = (dateA, dateB) => {
-  if (!dateA || !dateB) return false;
-  return (
-    dateA.getFullYear() === dateB.getFullYear() &&
-    dateA.getMonth() === dateB.getMonth() &&
-    dateA.getDate() === dateB.getDate()
-  );
+const calculateWorkingHours = (inTime, outTime) => {
+  if (!inTime || !outTime) return null;
+  const start = new Date(inTime);
+  const end = new Date(outTime);
+  const diffMs = end - start;
+  if (diffMs < 0) return null;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return { hours, minutes };
 };
 
 const RejectConfirmationPopup = ({
@@ -176,13 +203,29 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
 
   const getActionColor = (action) => {
     if (action?.toLowerCase() === "approved") {
-      return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+      return {
+        bg: "bg-emerald-800",
+        text: "text-[#10b981]",
+        light: "bg-[#10b98115]",
+      };
     } else if (action?.toLowerCase() === "rejected") {
-      return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+      return {
+        bg: "bg-[#ef4444]",
+        text: "text-[#ef4444]",
+        light: "bg-[#ef444415]",
+      };
     } else if (action?.toLowerCase() === "cancelled") {
-      return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+      return {
+        bg: "bg-[#f59e0b]",
+        text: "text-[#f59e0b]",
+        light: "bg-[#f59e0b15]",
+      };
     }
-    return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+    return {
+      bg: "bg-[#f59e0b]",
+      text: "text-[#f59e0b]",
+      light: "bg-[#f59e0b15]",
+    };
   };
 
   const getActionIcon = (action) => {
@@ -233,13 +276,19 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
           <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <img src={userImg} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                <img
+                  src={userImg}
+                  alt=""
+                  className="h-11 w-11 shrink-0 rounded-full object-cover"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-[16px] font-semibold text-white">
                     {getFacultyName(request)}
                   </p>
                   <p className="mt-1 truncate text-[12px] text-[#8ca1bd]">
-                    {request.facultyId?.empId || request.facultyId?.department || "--"}
+                    {request.facultyId?.empId ||
+                      request.facultyId?.department ||
+                      "--"}
                   </p>
                 </div>
               </div>
@@ -284,17 +333,28 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
               </div>
             </div>
 
-            {request.currentApprovalLevel && (
-              <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
-                    <TimerReset size={18} />
+            {(() => {
+              const wh = calculateWorkingHours(
+                request.requestedInTime,
+                request.requestedOutTime,
+              );
+              if (!wh) return null;
+              return (
+                <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
+                      <Clock size={18} />
+                    </div>
+                    <p className="text-[13px] font-medium text-[#cad7eb]">
+                      Working Hours
+                    </p>
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">Approval Level</p>
+                  <p className="text-[15px] font-semibold text-white">
+                    {wh.hours}h {wh.minutes}m
+                  </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">{request.currentApprovalLevel}</p>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Reason */}
@@ -320,20 +380,23 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
                 {approvalHistory.map((history, index) => {
                   const actionColor = getActionColor(history.action);
                   const isLast = index === approvalHistory.length - 1;
-                  const isApproved = history.action?.toLowerCase() === "approved";
-                  const isRejected = history.action?.toLowerCase() === "rejected";
+                  const isApproved =
+                    history.action?.toLowerCase() === "approved";
+                  const isRejected =
+                    history.action?.toLowerCase() === "rejected";
 
                   return (
                     <div key={history._id || index} className="relative">
                       {/* Connector line */}
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
-                            ? "bg-[#10b981]"
-                            : isRejected
-                              ? "bg-[#ef4444]"
-                              : "bg-[#444c63]"
-                            }`}
+                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                            isApproved
+                              ? "bg-[#10b981]"
+                              : isRejected
+                                ? "bg-[#ef4444]"
+                                : "bg-[#444c63]"
+                          }`}
                         />
                       )}
 
@@ -342,12 +405,13 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
                         {/* Step circle */}
                         <div className="flex-shrink-0">
                           <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${isApproved
-                              ? `${actionColor.bg} border-emerald-200/20`
-                              : isRejected
-                                ? `${actionColor.bg} border-[#ef4444]`
-                                : `${actionColor.light} border-[#444c63]`
-                              } text-white`}
+                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
+                              isApproved
+                                ? `${actionColor.bg} border-emerald-200/20`
+                                : isRejected
+                                  ? `${actionColor.bg} border-[#ef4444]`
+                                  : `${actionColor.light} border-[#444c63]`
+                            } text-white`}
                           >
                             {getActionIcon(history.action)}
                           </div>
@@ -362,12 +426,13 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
                               </p>
                             </div>
                             <span
-                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
-                                ? "bg-[#10b98120] text-[#10b981]"
-                                : isRejected
-                                  ? "bg-[#ef444420] text-[#ef4444]"
-                                  : "bg-[#f59e0b20] text-[#f59e0b]"
-                                }`}
+                              className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${
+                                isApproved
+                                  ? "bg-[#10b98120] text-[#10b981]"
+                                  : isRejected
+                                    ? "bg-[#ef444420] text-[#ef4444]"
+                                    : "bg-[#f59e0b20] text-[#f59e0b]"
+                              }`}
                             >
                               {history.action}
                             </span>
@@ -377,16 +442,21 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
                             {history.remarks}
                           </p>
 
-                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
-                            <Clock size={11} />
-                            {new Date(history.actionDate).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
+                          {history.actionDate && (
+                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                              <Clock size={11} />
+                              {new Date(history.actionDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -412,7 +482,12 @@ const RegularizationDetailsPanel = ({ request, onClose }) => {
   );
 };
 
-const CancelConfirmationPopup = ({ request, onClose, onConfirm, submitting }) => {
+const CancelConfirmationPopup = ({
+  request,
+  onClose,
+  onConfirm,
+  submitting,
+}) => {
   if (!request) return null;
 
   return (
@@ -445,9 +520,11 @@ const CancelConfirmationPopup = ({ request, onClose, onConfirm, submitting }) =>
 
         <div className="px-5 py-4">
           <p className="text-[13px] leading-5 text-[#cad7eb]">
-            Are you sure you want to cancel your regularization request for{' '}
-            <span className="font-semibold text-white">{formatDate(request.attendanceDate)}</span>?
-            This action cannot be undone.
+            Are you sure you want to cancel your regularization request for{" "}
+            <span className="font-semibold text-white">
+              {formatDate(request.attendanceDate)}
+            </span>
+            ? This action cannot be undone.
           </p>
         </div>
 
@@ -478,37 +555,147 @@ const CancelConfirmationPopup = ({ request, onClose, onConfirm, submitting }) =>
   );
 };
 
+const RevokeConfirmationPopup = ({
+  request,
+  onClose,
+  onConfirm,
+  submitting,
+}) => {
+  if (!request) return null;
+
+  return (
+    <section
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/50 px-4 backdrop-blur-[2px]"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
+              Confirmation
+            </p>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              Revoke Decision
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            aria-label="Close revoke confirmation"
+          >
+            <X size={17} />
+          </button>
+        </div>
+
+        <div className="px-5 py-4">
+          <p className="text-[13px] leading-5 text-[#cad7eb]">
+            Are you sure you want to revoke your decision for{" "}
+            <span className="font-semibold text-white">
+              {getFacultyName(request)}&apos;s regularization request
+            </span>{" "}
+            for {formatDate(request.attendanceDate)}?
+          </p>
+        </div>
+
+        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={submitting}
+            className="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-[#f0a15f] px-4 text-[13px] font-semibold text-[#071425] shadow-[0_2px_10px_rgba(240,161,95,0.2)] transition hover:bg-[#ffbd7f] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
+            ) : (
+              <RotateCcw size={14} />
+            )}
+            {submitting ? "Revoking..." : "Yes, Revoke Decision"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const MyRegularizationTable = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [filterFromDate, setFilterFromDate] = useState(null);
+  const [filterToDate, setFilterToDate] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [cancelRequest, setCancelRequest] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
 
+  const {
+    isExportModalOpen: isMyExportOpen,
+    exportLoading: myExportLoading,
+    exportError: myExportError,
+    handleExportClick: handleMyExportClick,
+    closeExportModal: closeMyExport,
+    handleConfirmExport: handleMyConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportMyFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Date": formatDate(r.attendanceDate),
+      "In Time": formatTime(r.requestedInTime),
+      "Out Time": formatTime(r.requestedOutTime),
+      "Reason": r.reason || "",
+      "Status": r.status || "",
+    }));
+    exportToExcel(rows, "My-Regularizations.xlsx");
+  };
+
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
-      const matchesDate =
-        !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
-      const matchesStatus = selectedStatus === "All" || request.status === selectedStatus;
+      const normalizeDate = (date) => {
+        if (!date) return null;
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      };
 
-      return matchesDate && matchesStatus;
+      const reqDate = normalizeDate(new Date(request.attendanceDate));
+      const fromDate = normalizeDate(filterFromDate);
+      const toDate = normalizeDate(filterToDate);
+
+      const matchesFromDate = !fromDate || reqDate >= fromDate;
+      const matchesToDate = !toDate || reqDate <= toDate;
+      const matchesStatus =
+        selectedStatus === "All" || request.status === selectedStatus;
+
+      return matchesFromDate && matchesToDate && matchesStatus;
     });
-  }, [requests, selectedDate, selectedStatus]);
+  }, [requests, filterFromDate, filterToDate, selectedStatus]);
 
   const fetchMyRegularizations = useCallback(async () => {
     try {
       const token = getTokenFromLocalStorage();
-      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/my`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/my`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
       const data = await res.json();
 
       if (res.ok && data?.success !== false) {
         setRequests(getRegularizationList(data));
       } else {
-        console.error("Failed to fetch regularizations:", data?.message || data);
+        console.error(
+          "Failed to fetch regularizations:",
+          data?.message || data,
+        );
         setRequests([]);
       }
     } catch (err) {
@@ -554,7 +741,10 @@ const MyRegularizationTable = () => {
         setCancelRequest(null);
         await fetchMyRegularizations();
       } else {
-        console.error("Failed to cancel regularization:", data?.message || data);
+        console.error(
+          "Failed to cancel regularization:",
+          data?.message || data,
+        );
       }
     } catch (err) {
       console.error("Error cancelling regularization:", err);
@@ -571,27 +761,48 @@ const MyRegularizationTable = () => {
         </h2>
 
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-[160px]">
               <CustomDatePicker
-                id="my-regularization-date-filter"
-                value={selectedDate}
-                onChange={setSelectedDate}
-                placeholder="Filter by date"
+                id="my-regularization-from-date"
+                value={filterFromDate}
+                onChange={setFilterFromDate}
+                placeholder="From Date"
                 popupAlign="right"
               />
             </div>
-            {selectedDate && (
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="my-regularization-to-date"
+                value={filterToDate}
+                onChange={setFilterToDate}
+                placeholder="To Date"
+                popupAlign="right"
+              />
+            </div>
+            {(filterFromDate || filterToDate) && (
               <button
                 type="button"
-                onClick={() => setSelectedDate(null)}
+                onClick={() => {
+                  setFilterFromDate(null);
+                  setFilterToDate(null);
+                }}
                 className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
-                aria-label="Clear date filter"
-                title="Clear date filter"
+                aria-label="Clear date filters"
+                title="Clear date filters"
               >
                 <X size={14} />
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleMyExportClick}
+              disabled={filteredRequests.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
           </div>
           <select
             value={selectedStatus}
@@ -623,7 +834,10 @@ const MyRegularizationTable = () => {
           <tbody className="text-[14px] text-[#cad7eb]">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-[#9eb0cc]">
+                <td
+                  colSpan={6}
+                  className="px-4 py-8 text-center text-[#9eb0cc]"
+                >
                   Loading regularization requests...
                 </td>
               </tr>
@@ -631,11 +845,23 @@ const MyRegularizationTable = () => {
               <EmptyTableRow colSpan={6} />
             ) : (
               filteredRequests.map((item) => (
-                <tr key={item._id} className="border-b border-[#132944] last:border-0">
-                  <td className="px-4 py-3 font-semibold text-white">{formatDate(item.attendanceDate)}</td>
-                  <td className="px-4 py-3 font-semibold text-white">{formatTime(item.requestedInTime)}</td>
-                  <td className="px-4 py-3 font-semibold text-white">{formatTime(item.requestedOutTime)}</td>
-                  <td className="max-w-[260px] truncate px-4 py-3 text-white" title={item.reason}>
+                <tr
+                  key={item._id}
+                  className="border-b border-[#132944] last:border-0"
+                >
+                  <td className="px-4 py-3 font-semibold text-white">
+                    {formatDate(item.attendanceDate)}
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-white">
+                    {formatTime(item.requestedInTime)}
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-white">
+                    {formatTime(item.requestedOutTime)}
+                  </td>
+                  <td
+                    className="max-w-[260px] truncate px-4 py-3 text-white"
+                    title={item.reason}
+                  >
                     {item.reason}
                   </td>
                   <td className="px-4 py-3">
@@ -643,18 +869,19 @@ const MyRegularizationTable = () => {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      {item.status === "Pending" && (item.currentApprovalLevel == "hod") && (
-                        <button
-                          type="button"
-                          onClick={() => handleCancelClick(item)}
-                          disabled={cancellingId === item._id}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                          aria-label="Cancel regularization request"
-                          title="Cancel Request"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                        </button>
-                      )}
+                      {item.status === "Pending" &&
+                        item.currentApprovalLevel == "hod" && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancelClick(item)}
+                            disabled={cancellingId === item._id}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label="Cancel regularization request"
+                            title="Cancel Request"
+                          >
+                            <RotateCcw className="h-4 w-4" />
+                          </button>
+                        )}
                       <button
                         type="button"
                         onClick={() => setSelectedRequest(item)}
@@ -678,6 +905,14 @@ const MyRegularizationTable = () => {
         onClose={() => setSelectedRequest(null)}
       />
 
+      <ExportPasswordModal
+        isOpen={isMyExportOpen}
+        onClose={closeMyExport}
+        onConfirm={(password) => handleMyConfirmExport(password, exportMyFilteredRows)}
+        loading={myExportLoading}
+        error={myExportError}
+      />
+
       <CancelConfirmationPopup
         request={cancelRequest}
         onClose={() => setCancelRequest(null)}
@@ -688,54 +923,115 @@ const MyRegularizationTable = () => {
   );
 };
 
-const HodRegularizationTable = ({ onCountChange }) => {
+const HodRegularizationTable = ({
+  requests: externalRequests,
+  loading: externalLoading,
+  onRefresh,
+  onCountChange,
+}) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [rejectRequest, setRejectRequest] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [filterFromDate, setFilterFromDate] = useState(null);
+  const [filterToDate, setFilterToDate] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [revokeRequest, setRevokeRequest] = useState(null);
+  const [revokeSubmitting, setRevokeSubmitting] = useState(false);
+
+  const {
+    isExportModalOpen: isHodExportOpen,
+    exportLoading: hodExportLoading,
+    exportError: hodExportError,
+    handleExportClick: handleHodExportClick,
+    closeExportModal: closeHodExport,
+    handleConfirmExport: handleHodConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportHodFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Name": getFacultyName(r),
+      "Date": formatDate(r.attendanceDate),
+      "In Time": formatTime(r.requestedInTime),
+      "Out Time": formatTime(r.requestedOutTime),
+      "Reason": r.reason || "",
+      "Status": r.approvalStatus?.hod || r.status || "Pending",
+    }));
+    exportToExcel(rows, "Team-Regularizations.xlsx");
+  };
+
+  // Use externally provided data when available (parent-fetched), else fall back to internal state
+  const effectiveRequests = externalRequests || requests;
+  const effectiveLoading =
+    externalLoading !== undefined ? externalLoading : loading;
 
   const filteredRequests = useMemo(() => {
-    return requests.filter((request) => {
-      return !selectedDate || isSameDay(new Date(request.attendanceDate), selectedDate);
+    return effectiveRequests.filter((request) => {
+      const normalizeDate = (date) => {
+        if (!date) return null;
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      };
+
+      const reqDate = normalizeDate(new Date(request.attendanceDate));
+      const fromDate = normalizeDate(filterFromDate);
+      const toDate = normalizeDate(filterToDate);
+
+      const matchesFromDate = !fromDate || reqDate >= fromDate;
+      const matchesToDate = !toDate || reqDate <= toDate;
+      const hodStatus = request.approvalStatus?.hod || "Pending";
+      const matchesStatus =
+        selectedStatus === "All" || hodStatus === selectedStatus;
+
+      return matchesFromDate && matchesToDate && matchesStatus;
     });
-  }, [requests, selectedDate]);
+  }, [effectiveRequests, filterFromDate, filterToDate, selectedStatus]);
 
   const fetchHodRegularizations = useCallback(async () => {
     try {
       const token = getTokenFromLocalStorage();
-      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/list`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/list`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
       const data = await res.json();
 
       if (res.ok && data?.success !== false) {
         setRequests(getRegularizationList(data));
+        return getRegularizationList(data);
       } else {
-        console.error("Failed to fetch HOD regularizations:", data?.message || data);
+        console.error(
+          "Failed to fetch HOD regularizations:",
+          data?.message || data,
+        );
         setRequests([]);
+        return [];
       }
     } catch (err) {
       console.error("Error fetching HOD regularizations:", err);
       setRequests([]);
+      return [];
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Fallback: if no external data, fetch internally
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      fetchHodRegularizations();
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [fetchHodRegularizations]);
+    if (!externalRequests) {
+      const timer = window.setTimeout(() => {
+        fetchHodRegularizations();
+      }, 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, [fetchHodRegularizations, externalRequests]);
 
   useEffect(() => {
-    onCountChange?.(requests.length);
-  }, [onCountChange, requests.length]);
+    onCountChange?.(effectiveRequests.length);
+  }, [onCountChange, effectiveRequests.length]);
 
   const handleApprove = async (request) => {
     const token = getTokenFromLocalStorage();
@@ -759,8 +1055,12 @@ const HodRegularizationTable = ({ onCountChange }) => {
 
       if (res.ok && data?.success !== false) {
         await fetchHodRegularizations();
+        onRefresh?.();
       } else {
-        console.error("Failed to approve regularization:", data?.message || data);
+        console.error(
+          "Failed to approve regularization:",
+          data?.message || data,
+        );
       }
     } catch (err) {
       console.error("Error approving regularization:", err);
@@ -801,14 +1101,61 @@ const HodRegularizationTable = ({ onCountChange }) => {
 
       if (res.ok && data?.success !== false) {
         await fetchHodRegularizations();
+        onRefresh?.();
         closeRejectPopup();
       } else {
-        console.error("Failed to reject regularization:", data?.message || data);
+        console.error(
+          "Failed to reject regularization:",
+          data?.message || data,
+        );
       }
     } catch (err) {
       console.error("Error rejecting regularization:", err);
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleRevokeClick = (request) => {
+    setRevokeRequest(request);
+  };
+
+  const closeRevokePopup = () => {
+    setRevokeRequest(null);
+  };
+
+  const confirmRevoke = async () => {
+    const token = getTokenFromLocalStorage();
+    const requestId = revokeRequest?._id;
+    if (!token || !requestId) return;
+
+    try {
+      setRevokeSubmitting(true);
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/${requestId}/revoke`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        },
+      );
+      const data = await res.json();
+
+      if (res.ok && data?.success !== false) {
+        toast.success("Regularization decision revoked successfully");
+        await fetchHodRegularizations();
+        onRefresh?.();
+        closeRevokePopup();
+      } else {
+        toast.error(data?.message || "Failed to revoke regularization");
+      }
+    } catch (err) {
+      toast.error(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setRevokeSubmitting(false);
     }
   };
 
@@ -819,30 +1166,63 @@ const HodRegularizationTable = ({ onCountChange }) => {
       <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
         <div className="relative z-20 flex items-center justify-between px-4 py-3">
           <h2 className="text-[18px] font-semibold text-white">
-            Team regularization requests <span>({filteredRequests.length})</span>
+            Team regularization requests{" "}
+            <span>({filteredRequests.length})</span>
           </h2>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-[160px]">
               <CustomDatePicker
-                id="hod-regularization-date-filter"
-                value={selectedDate}
-                onChange={setSelectedDate}
-                placeholder="Filter by date"
+                id="hod-regularization-from-date"
+                value={filterFromDate}
+                onChange={setFilterFromDate}
+                placeholder="From Date"
                 popupAlign="right"
               />
             </div>
-            {selectedDate && (
+            <div className="w-[160px]">
+              <CustomDatePicker
+                id="hod-regularization-to-date"
+                value={filterToDate}
+                onChange={setFilterToDate}
+                placeholder="To Date"
+                popupAlign="right"
+              />
+            </div>
+            {(filterFromDate || filterToDate) && (
               <button
                 type="button"
-                onClick={() => setSelectedDate(null)}
+                onClick={() => {
+                  setFilterFromDate(null);
+                  setFilterToDate(null);
+                }}
                 className="inline-flex h-11 w-9 items-center justify-center rounded-md border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#f16868] hover:text-[#f16868]"
-                aria-label="Clear date filter"
-                title="Clear date filter"
+                aria-label="Clear date filters"
+                title="Clear date filters"
               >
                 <X size={14} />
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleHodExportClick}
+              disabled={filteredRequests.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
+            <select
+              value={selectedStatus}
+              onChange={(event) => setSelectedStatus(event.target.value)}
+              className="h-11 rounded-md border border-[#244061] bg-[#0d2138] px-3 text-[13px] font-medium text-[#cad7eb] outline-none transition focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+              aria-label="Filter team regularizations by status"
+            >
+              <option value="All">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
           </div>
         </div>
 
@@ -855,18 +1235,22 @@ const HodRegularizationTable = ({ onCountChange }) => {
                 <th className="px-4 py-3 font-semibold">In Time</th>
                 <th className="px-4 py-3 font-semibold">Out Time</th>
                 <th className="px-4 py-3 font-semibold">Reason</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 text-right font-semibold">Action</th>
               </tr>
             </thead>
             <tbody className="text-[14px] text-[#cad7eb]">
-              {loading ? (
+              {effectiveLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-[#9eb0cc]">
+                  <td
+                    colSpan={7}
+                    className="px-4 py-8 text-center text-[#9eb0cc]"
+                  >
                     Loading regularization requests...
                   </td>
                 </tr>
               ) : filteredRequests.length === 0 ? (
-                <EmptyTableRow colSpan={6} />
+                <EmptyTableRow colSpan={7} />
               ) : (
                 filteredRequests.map((request) => (
                   <tr
@@ -875,24 +1259,43 @@ const HodRegularizationTable = ({ onCountChange }) => {
                   >
                     <td className="px-4 py-3 font-semibold text-white">
                       <div className="flex items-center gap-2">
-                        <img src={userImg} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        <img
+                          src={userImg}
+                          alt=""
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
                         <div className="min-w-0">
                           <p className="truncate">{getFacultyName(request)}</p>
                           <p className="truncate text-[12px] font-normal text-[#8ca1bd]">
-                            {request.facultyId?.empId || request.facultyId?.department || "--"}
+                            {request.facultyId?.empId ||
+                              request.facultyId?.department ||
+                              "--"}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-white">{formatDate(request.attendanceDate)}</td>
-                    <td className="px-4 py-3 font-semibold text-white">{formatTime(request.requestedInTime)}</td>
-                    <td className="px-4 py-3 font-semibold text-white">{formatTime(request.requestedOutTime)}</td>
-                    <td className="max-w-[260px] truncate px-4 py-3" title={request.reason}>
+                    <td className="px-4 py-3 font-semibold text-white">
+                      {formatDate(request.attendanceDate)}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-white">
+                      {formatTime(request.requestedInTime)}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-white">
+                      {formatTime(request.requestedOutTime)}
+                    </td>
+                    <td
+                      className="max-w-[260px] truncate px-4 py-3"
+                      title={request.reason}
+                    >
                       {request.reason}
+                    </td>
+                    <td className="">
+                      <StatusBadge status={request.approvalStatus?.hod || "Pending"} />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
-                        {request.status === "Pending" ? (
+                        {request.approvalStatus?.hod === "Pending" &&
+                        request.currentApprovalLevel === "hod" ? (
                           <>
                             <button
                               type="button"
@@ -915,8 +1318,25 @@ const HodRegularizationTable = ({ onCountChange }) => {
                               <X className="h-4 w-4" />
                             </button>
                           </>
+                        ) : request.currentApprovalLevel !== "hod" &&
+                          request.currentApprovalLevel !== "completed" ? (
+                          <button
+                            type="button"
+                            onClick={() => handleRevokeClick(request)}
+                            disabled={revokeSubmitting}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label="Revoke regularization decision"
+                            title="Revoke Decision"
+                          >
+                            {revokeSubmitting ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RotateCcw className="h-4 w-4" />
+                            )}
+                          </button>
                         ) : (
-                          <StatusBadge status={request.status} />
+                          // <StatusBadge status={request.approvalStatus?.hod || "Pending"} /> 
+                          ""
                         )}
                         <button
                           type="button"
@@ -950,6 +1370,21 @@ const HodRegularizationTable = ({ onCountChange }) => {
         onConfirm={confirmReject}
         submitting={processingId === rejectRequest?._id}
       />
+
+      <ExportPasswordModal
+        isOpen={isHodExportOpen}
+        onClose={closeHodExport}
+        onConfirm={(password) => handleHodConfirmExport(password, exportHodFilteredRows)}
+        loading={hodExportLoading}
+        error={hodExportError}
+      />
+
+      <RevokeConfirmationPopup
+        request={revokeRequest}
+        onClose={closeRevokePopup}
+        onConfirm={confirmRevoke}
+        submitting={revokeSubmitting}
+      />
     </>
   );
 };
@@ -963,13 +1398,57 @@ const RegularaizationListPage = () => {
     : "My Regularizations";
   const [hodSelectedTab, setHodSelectedTab] = useState(initialHodSelectedTab);
   const [hodRegularizationCount, setHodRegularizationCount] = useState(0);
+  const [hodRequests, setHodRequests] = useState(null);
+  const [hodLoading, setHodLoading] = useState(false);
 
-  const content = hodSelectedTab === "My Regularizations"
-    ? <MyRegularizationTable />
-    : <HodRegularizationTable onCountChange={setHodRegularizationCount} />;
+  // Prefetch team regularization data when parent mounts so count is available immediately
+  const prefetchHodRegularizations = useCallback(async () => {
+    if (role !== "hod") return;
+    try {
+      setHodLoading(true);
+      const token = getTokenFromLocalStorage();
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/list`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
+      const data = await res.json();
+      if (res.ok && data?.success !== false) {
+        const list = getRegularizationList(data);
+        setHodRequests(list);
+        setHodRegularizationCount(list.length);
+      } else {
+        setHodRequests([]);
+        setHodRegularizationCount(0);
+      }
+    } catch (err) {
+      console.error("Error prefetching HOD regularizations:", err);
+      setHodRequests([]);
+      setHodRegularizationCount(0);
+    } finally {
+      setHodLoading(false);
+    }
+  }, [role]);
+
+  useEffect(() => {
+    prefetchHodRegularizations();
+  }, [prefetchHodRegularizations]);
+
+  const content =
+    hodSelectedTab === "My Regularizations" ? (
+      <MyRegularizationTable />
+    ) : (
+      <HodRegularizationTable
+        requests={hodRequests}
+        loading={hodLoading}
+        onRefresh={prefetchHodRegularizations}
+        onCountChange={setHodRegularizationCount}
+      />
+    );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]"> 
+    <div className="flex h-screen overflow-hidden bg-[#051424]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -993,18 +1472,20 @@ const RegularaizationListPage = () => {
                     type="button"
                     onClick={() => setHodSelectedTab(tab)}
                     key={tab}
-                    className={`px-6 py-2 text-sm font-medium transition ${tab === hodSelectedTab
-                      ? "rounded-md bg-[#2563EB] text-white"
-                      : "rounded-md hover:bg-slate-600/20"
-                      }`}
+                    className={`px-6 py-2 text-sm font-medium transition ${
+                      tab === hodSelectedTab
+                        ? "rounded-md bg-[#2563EB] text-white"
+                        : "rounded-md hover:bg-slate-600/20"
+                    }`}
                   >
                     {tab}
                     {tab === "Team Regularizations" && (
                       <span
-                        className={`ml-1 rounded px-2 py-[2px] text-xs ${tab === hodSelectedTab
-                          ? "bg-white font-semibold text-blue-700"
-                          : "bg-slate-700 text-white"
-                          }`}
+                        className={`ml-1 rounded px-2 py-[2px] text-xs ${
+                          tab === hodSelectedTab
+                            ? "bg-white font-semibold text-blue-700"
+                            : "bg-slate-700 text-white"
+                        }`}
                       >
                         {hodRegularizationCount}
                       </span>

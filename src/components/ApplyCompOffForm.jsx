@@ -16,7 +16,7 @@ const calculateNoOfDays = (fromDate, toDate) => {
     return Math.floor((endDate - startDate) / oneDayInMs) + 1;
 };
 
-const ApplyCompOffForm = ({ onClose }) => {
+const ApplyCompOffForm = ({ onClose, onSuccess }) => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
     const [fromDate, setFromDate] = useState(null);
@@ -99,10 +99,10 @@ const ApplyCompOffForm = ({ onClose }) => {
             }
 
             const formData = new FormData();
-            formData.append("fromDate", formatDateToString(fromDate));
-            formData.append("toDate", formatDateToString(toDate));
+            formData.append("workedFromDate", formatDateToString(fromDate));
+            formData.append("workedToDate", formatDateToString(toDate));
             formData.append("reason", reason);
-            formData.append("noOfDays", noOfDays);
+            formData.append("compOffDays", noOfDays);
 
             if (uploadedFile) {
                 formData.append("files", uploadedFile);
@@ -132,6 +132,7 @@ const ApplyCompOffForm = ({ onClose }) => {
             // Close the form after a short delay
             setTimeout(() => {
                 onClose();
+                if (typeof onSuccess === "function") onSuccess();
             }, 500);
         } catch (err) {
             setError(err.message || "An error occurred while submitting the form");

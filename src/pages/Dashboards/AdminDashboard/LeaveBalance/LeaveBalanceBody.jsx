@@ -3,7 +3,9 @@ import EmployeLeaveBalanceTable from "./EmployeLeaveBalanceTable";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function LeaveBalanceBody() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +14,15 @@ export default function LeaveBalanceBody() {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [leaveBalanceData, setLeaveBalanceData] = useState([]);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -147,40 +158,53 @@ export default function LeaveBalanceBody() {
             <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
                 <div className="mb-4 flex flex-wrap items-center justify-between px-7 pt-7 pb-3">
                     <h1 className="text-[18px] font-semibold text-white">
-                        Employee Leave Balance
+                        Employee Leave Balance ({leaveBalanceData.length})
                     </h1>
 
                     <div className="flex items-center gap-3">
                         <div className="relative z-50">
-                            <input
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="
-                                    h-11
-                                    w-[350px]
-                                    rounded-lg
-                                    border
-                                    border-[#244061]
-                                    bg-[#0d2138]
-                                    pl-5
-                                    text-[14px]
-                                    text-white
-                                    outline-none
-                                    transition
-                                    placeholder:text-[#6f839f]
-                                    hover:border-[#3984ff]
-                                    focus:border-[#3984ff]
-                                    focus:ring-2
-                                    focus:ring-[#3984ff33]
-                                "
-                                placeholder="Search Employee Name or Employee ID..."
-                            />
+                            <div className="relative">
+                                <Search
+                                    size={18}
+                                    className="
+                                        absolute
+                                        left-4
+                                        top-1/2
+                                        -translate-y-1/2
+                                        text-[#6f839f]
+                                    "
+                                />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    className="
+                                        h-11
+                                        w-[350px]
+                                        rounded-lg
+                                        border
+                                        border-[#244061]
+                                        bg-[#0d2138]
+                                        pl-11
+                                        text-[14px]
+                                        text-white
+                                        outline-none
+                                        transition
+                                        placeholder:text-[#6f839f]
+                                        hover:border-[#3984ff]
+                                        focus:border-[#3984ff]
+                                        focus:ring-2
+                                        focus:ring-[#3984ff33]
+                                    "
+                                    placeholder="Search Employee Name or Employee ID..."
+                                />
+                            </div>
 
                             {showDropdown && employees.length > 0 && (
                                 <div
                                     className="
+                                        custom-scrollbar
                                         absolute z-50 mt-1 w-[350px]
                                         h-[300px]
                                         overflow-y-auto
@@ -261,7 +285,7 @@ export default function LeaveBalanceBody() {
 
                         {selectedEmployee && leaveBalanceData.length > 0 && (
                             <button
-                                onClick={handleExportExcel}
+                                onClick={handleExportClick}
                                 className="
                                     h-11
                                     px-5
@@ -271,6 +295,7 @@ export default function LeaveBalanceBody() {
                                     text-[#3984ff]
                                     hover:bg-[#3984ff]
                                     hover:text-white
+                                    cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                                 "
                             >
                                 Export Excel
@@ -287,6 +312,7 @@ export default function LeaveBalanceBody() {
                                     border border-[#244061]
                                     bg-[#0d2138]
                                     text-[#8ca1bd]
+                                    cursor-pointer
                                 "
                             >
                                 Reset Filter
@@ -294,6 +320,14 @@ export default function LeaveBalanceBody() {
                             </button>
                         )}
                     </div>
+
+                    <ExportPasswordModal
+                        isOpen={isExportModalOpen}
+                        onClose={closeExportModal}
+                        onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                        loading={exportLoading}
+                        error={exportError}
+                    />
                 </div>
 
                 <div className="px-4 pb-4">

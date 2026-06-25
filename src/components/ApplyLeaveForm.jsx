@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { ChevronDown, FileText, Send, X, Upload } from "lucide-react";
 import CustomDatePicker from "./CustomDatePicker";
 import { getTokenFromLocalStorage } from "../utils/tokenUtils";
+import { jwtDecode } from "jwt-decode";
 
 const dayOptions = ["Full Day", "First Half", "Second Half"];
-const requiresFileUpload = ["medical", "maternity", "paternity"];
 const backdateGraceDays = 2;
 
 const getCurrentAcademicYear = () => {
@@ -54,14 +54,16 @@ const isCasualLeave = (leaveName = "") => leaveName.toLowerCase() === "casual le
 
 const isFileUploadRequired = (leaveName = "") => {
     const normalizedLeaveName = leaveName.toLowerCase();
-
-    return (
-        normalizedLeaveName.startsWith("onduty")
-        || requiresFileUpload.includes(normalizedLeaveName)
-    );
+    const fileRequiredKeywords = ["medical", "on duty", "on-duty", "onduty", "maternity", "paternity"];
+    return fileRequiredKeywords.some(keyword => normalizedLeaveName.includes(keyword));
 };
 
 const ApplyLeaveForm = ({ onClose, employee }) => {
+    // token 
+    const token = localStorage.getItem("hrms_token");
+    let decoded = jwtDecode(token)
+
+    // Auth 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
     const [fromDate, setFromDate] = useState(null);
@@ -142,7 +144,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
         }
 
         if (!leaveTypeId) errors.leaveType = "Leave type is required";
-        if (!dayType) errors.dayType = "Day type is required";
+        if (!isMultiDay && !dayType) errors.dayType = "Day type is required";
         if (!reason.trim()) errors.reason = "Reason is required";
 
         // Check if file upload is required
@@ -166,10 +168,33 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
 
     const handleFileUpload = (event) => {
         const file = event.target.files?.[0];
-        if (file) {
-            setUploadedFile(file);
-            setValidationErrors(prev => ({ ...prev, file: "" }));
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+        const allowedExtensions = [".pdf", ".doc", ".docx"];
+        const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+
+        if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+            setValidationErrors(prev => ({
+                ...prev,
+                file: "Only PDF and DOC files are allowed"
+            }));
+            return;
         }
+
+        // Validate file size (max 2MB)
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+            setValidationErrors(prev => ({
+                ...prev,
+                file: "File size must be less than 2MB"
+            }));
+            return;
+        }
+
+        setUploadedFile(file);
+        setValidationErrors(prev => ({ ...prev, file: "" }));
     };
 
     const formatDateToString = (date) => {
@@ -210,7 +235,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 formData.append("files", uploadedFile);
             }
 
-            const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/`, {
+            const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/?facultyId=${decoded.facultyId}&role=${decoded.role}`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -250,6 +275,15 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
     const totalLeaveDays = calculateTotalLeaveDays(fromDate, toDate, dayType);
     const showFileUpload = selectedLeaveType && isFileUploadRequired(selectedLeaveName);
     const showCasualLeaveLimitMessage = isCasualLeave(selectedLeaveName) && totalLeaveDays > 3;
+
+    // When from and to dates span more than one day, force Full Day and hide the day type selector
+    const isMultiDay = fromDate && toDate && getDateOnly(fromDate).getTime() !== getDateOnly(toDate).getTime();
+
+    useEffect(() => {
+        if (isMultiDay) {
+            setDayType("Full Day");
+        }
+    }, [isMultiDay]);
 
     if (loading) {
         return (
@@ -440,32 +474,34 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                             )}
                         </div>
 
-                        <div>
-                            <p className={`mb-2 text-[13px] font-semibold ${validationErrors.dayType ? "text-[#f16868]" : "text-white"}`}>
-                                Day Type {validationErrors.dayType && <span>*</span>}
-                            </p>
-                            <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
-                                {dayOptions.map((option) => (
-                                    <button
-                                        key={option}
-                                        type="button"
-                                        onClick={() => {
-                                            setDayType(option);
-                                            setValidationErrors(prev => ({ ...prev, dayType: "" }));
-                                        }}
-                                        className={`h-9 rounded-md text-[12px] font-semibold transition ${dayType === option
-                                            ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                            : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
-                                            }`}
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
+                        {!isMultiDay && (
+                            <div>
+                                <p className={`mb-2 text-[13px] font-semibold ${validationErrors.dayType ? "text-[#f16868]" : "text-white"}`}>
+                                    Day Type {validationErrors.dayType && <span>*</span>}
+                                </p>
+                                <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
+                                    {dayOptions.map((option) => (
+                                        <button
+                                            key={option}
+                                            type="button"
+                                            onClick={() => {
+                                                setDayType(option);
+                                                setValidationErrors(prev => ({ ...prev, dayType: "" }));
+                                            }}
+                                            className={`h-9 rounded-md text-[12px] font-semibold transition ${dayType === option
+                                                ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
+                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                                }`}
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                                {validationErrors.dayType && (
+                                    <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.dayType}</p>
+                                )}
                             </div>
-                            {validationErrors.dayType && (
-                                <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.dayType}</p>
-                            )}
-                        </div>
+                        )}
 
                         <div>
                             <label
@@ -515,7 +551,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                         <p className="text-[12px] text-[#cad7eb]">
                                             {uploadedFile ? uploadedFile.name : "Click to upload or drag and drop"}
                                         </p>
-                                        <p className="text-[11px] text-[#6f839f]">PDF, DOC, DOCX (Max 5MB)</p>
+                                        <p className="text-[11px] text-[#6f839f]">PDF, DOC (Max 2MB)</p>
                                     </div>
                                 </div>
                                 {validationErrors.file && (

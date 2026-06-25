@@ -1,6 +1,9 @@
-import { Eye } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { useState, useMemo } from "react";
 import LeaveDetailsPopup from "../FacultyDashboard/LeaveDetailsPopup";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -25,6 +28,28 @@ const tabs = ["All Leaves", "Pending", "Approved", "Rejected"];
 const PrincipalLeaveTable = () => {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [activeTab, setActiveTab] = useState("All Leaves");
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredLeaves.map((leave) => ({
+      "Employee": leave.employee || "",
+      "Emp ID": leave.empid || "",
+      "Leave Type": leave.type || "",
+      "From": leave.from || "",
+      "To": leave.to || "",
+      "Duration": leave.duration || "",
+      "Status": leave.status || "",
+    }));
+    exportToExcel(rows, "All-Leaves.xlsx");
+  };
 
   const filteredLeaves = useMemo(() => {
     if (activeTab === "All Leaves") return allLeaves;
@@ -60,11 +85,28 @@ const PrincipalLeaveTable = () => {
       </div>
 
       <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
-        <div className="px-4 py-3">
+        <div className="relative z-20 flex items-center justify-between px-4 py-3">
           <h2 className="text-[18px] font-semibold text-white">
             All  Leave Requests <span>({filteredLeaves.length})</span>
           </h2>
+          <button
+            type="button"
+            onClick={handleExportClick}
+            disabled={filteredLeaves.length === 0}
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export
+          </button>
         </div>
+
+        <ExportPasswordModal
+          isOpen={isExportModalOpen}
+          onClose={closeExportModal}
+          onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+          loading={exportLoading}
+          error={exportError}
+        />
 
         <div className="relative z-0 max-h-[calc(100vh-450px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[900px] border-collapse text-left">
