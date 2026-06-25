@@ -323,7 +323,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       setRevokeLoading(true);
     }
     setError(null);
-
+console.log("")
     try {
       const token = getTokenFromLocalStorage();
       const body = action === "reject"
