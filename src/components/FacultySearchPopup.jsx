@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Search, X, UserRound } from "lucide-react";
-import userImg from "../assets/userImg.svg";
 
 const facultyData = [
   { empid: "EMP001", name: "Surya Chandran", role: "Assistant Professor", type: "Teaching" },
@@ -82,12 +81,8 @@ const FacultySearchPopup = ({ onClose, onSelect }) => {
                   onClick={() => onSelect(faculty)}
                   className="flex w-full items-center gap-3 rounded-lg border border-[#1e3450] bg-[#0a1a2d] px-3 py-3 text-left transition hover:border-[#3984ff] hover:bg-[#102640]"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46]">
-                    <img
-                      src={userImg}
-                      alt=""
-                      className="h-9 w-9 rounded-full object-cover"
-                    />
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
+                    {faculty.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[14px] font-semibold text-white">

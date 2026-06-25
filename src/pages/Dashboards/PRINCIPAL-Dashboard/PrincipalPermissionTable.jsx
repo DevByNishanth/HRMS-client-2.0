@@ -457,6 +457,7 @@ const ConfirmationPopup = ({
   onClose,
   onConfirm,
   revokeLoading,
+  rejectLoading,
 }) => {
   if (!action || !request) return null;
 
@@ -532,7 +533,7 @@ const ConfirmationPopup = ({
             type="button"
             onClick={onConfirm}
             disabled={
-              (isReject && !reason.trim()) || (isRevoke && revokeLoading)
+              (isReject && (!reason.trim() || rejectLoading)) || (isRevoke && revokeLoading)
             }
             className={`h-10 rounded-md px-4 text-[16px] font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${isRevoke
               ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
@@ -541,6 +542,8 @@ const ConfirmationPopup = ({
           >
             {isRevoke && revokeLoading ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#071425] border-t-transparent" />
+            ) : isReject && rejectLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : isRevoke ? (
               "Revoke Decision"
             ) : (
@@ -607,6 +610,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
   const [rejectReason, setRejectReason] = useState("");
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
   const sessions = ["All", "Forenoon", "Afternoon"];
@@ -786,11 +790,13 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
 
     try {
       if (confirmation.action === "reject") {
+        setRejectLoading(true);
         await axios.patch(
           `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${confirmation.request?._id}/reject`,
           { remarks: rejectReason.trim() },
           { headers: { Authorization: `Bearer ${token}` } },
         );
+        setRejectLoading(false);
       } else if (confirmation.action === "revoke") {
         setRevokeLoading(true);
         await axios.patch(
@@ -809,6 +815,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
         "Error confirming action:",
         error?.response?.data || error.message,
       );
+      setRejectLoading(false);
       setRevokeLoading(false);
     }
   };
@@ -917,11 +924,9 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
                   >
                     <td className="px-4 py-3 font-semibold text-white">
                       <div className="flex items-center gap-2">
-                        <img
-                          src={userImg}
-                          alt=""
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
+                          {permission.facultyId?.firstName?.charAt(0)?.toUpperCase() || "U"}
+                        </span>
                         <div className="flex flex-col">
                           <span className="truncate">
                             {permission.facultyId?.firstName}{" "}
@@ -1039,6 +1044,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
         onClose={closeConfirmation}
         onConfirm={handleConfirmAction}
         revokeLoading={revokeLoading}
+        rejectLoading={rejectLoading}
       />
     </>
   );

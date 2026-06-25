@@ -5,8 +5,7 @@ import PrincipalDashboardHeader from "./PrincipalDashboardHeader";
 import PendingApprovalsCard from "./PendingApprovalsCard";
 import RecentRequestsCard from "./RecentRequestsCard";
 import StaffDistributionChart from "./StaffDistributionChart";
-import WeeklyAvailabilityChart from "./WeeklyAvailabilityChart";
-import { attendanceSummary } from "./principalDashboardData";
+import RecentFacultyListTable from "./RecentFacultyListTable";
 import { getTokenFromLocalStorage } from "../../../utils/tokenUtils";
 
 const API_BASE_URL =
@@ -33,11 +32,14 @@ const PrincipalDashboardBody = () => {
       const baseUrl = API_BASE_URL.replace(/\/$/, "");
 
       // Fetch all 3 APIs in parallel
-      const [leaveRes, permissionRes, regularizationRes] = await Promise.allSettled([
-        axios.get(`${baseUrl}/api/leave-application`, { headers }),
-        axios.get(`${baseUrl}/api/permissions/principal/list`, { headers }),
-        axios.get(`${baseUrl}/api/attendance-regularization/principal/list`, { headers }),
-      ]);
+      const [leaveRes, permissionRes, regularizationRes] =
+        await Promise.allSettled([
+          axios.get(`${baseUrl}/api/leave-application`, { headers }),
+          axios.get(`${baseUrl}/api/permissions/principal/list`, { headers }),
+          axios.get(`${baseUrl}/api/attendance-regularization/principal/list`, {
+            headers,
+          }),
+        ]);
 
       // Leave: count Pending items at principal level
       let leaveCount = 0;
@@ -55,14 +57,18 @@ const PrincipalDashboardBody = () => {
       let permissionCount = 0;
       if (permissionRes.status === "fulfilled") {
         const permissions = permissionRes.value.data?.data || [];
-        permissionCount = permissions.filter((p) => p.status === "Pending").length;
+        permissionCount = permissions.filter(
+          (p) => p.status === "Pending",
+        ).length;
       }
 
       // Regularization: count Pending items
       let regularizeCount = 0;
       if (regularizationRes.status === "fulfilled") {
         const regularizations = regularizationRes.value.data?.requests || [];
-        regularizeCount = regularizations.filter((r) => r.status === "Pending").length;
+        regularizeCount = regularizations.filter(
+          (r) => r.status === "Pending",
+        ).length;
       }
 
       setPendingCounts({
@@ -81,8 +87,8 @@ const PrincipalDashboardBody = () => {
     fetchPendingCounts();
   }, [fetchPendingCounts]);
 
-  const totalAttendance = attendanceSummary.reduce((sum, item) => sum + item.value, 0);
-  const totalPending = pendingCounts.leave + pendingCounts.permission + pendingCounts.regularize;
+  const totalPending =
+    pendingCounts.leave + pendingCounts.permission + pendingCounts.regularize;
 
   const pendingRequests = [
     { name: "Leave", value: pendingCounts.leave, color: "#1666ba" },
@@ -93,22 +99,18 @@ const PrincipalDashboardBody = () => {
   return (
     <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
       <div className="mx-auto max-w-[1440px] space-y-5">
-
         {/* // ? ===============================  this is the header ================================  */}
         <PrincipalDashboardHeader totalPending={totalPending} />
 
         {/*// ?   ============================== first container / section ============================= */}
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
-          <WeeklyAvailabilityChart className="min-h-[300px] xl:col-span-3" />
+          <RecentFacultyListTable className="min-h-[300px] xl:col-span-3" />
           <StaffDistributionChart className="min-h-[300px] xl:col-span-2" />
         </div>
 
         {/*// ?   ============================== second container / section ============================= */}
         <div className="grid grid-cols-12  gap-4">
-          <AttendancePieCard
-            totalAttendance={totalAttendance}
-            className="min-h-[330px] xl:col-span-4"
-          />
+          <AttendancePieCard className="min-h-[330px] xl:col-span-4" />
           <RecentRequestsCard className="max-h-[330px] overflow-auto xl:col-span-4" />
           <PendingApprovalsCard
             pendingRequests={pendingRequests}
@@ -116,7 +118,6 @@ const PrincipalDashboardBody = () => {
           />
         </div>
       </div>
-
     </main>
   );
 };

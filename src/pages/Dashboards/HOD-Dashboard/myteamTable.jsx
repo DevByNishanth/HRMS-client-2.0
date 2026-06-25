@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, Eye, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import userImg from "../../../assets/userImg.svg";
 import { teamMembers } from "./myTeamData";
 
 const presenceStyles = {
@@ -206,11 +205,9 @@ const MyTeamTable = () => {
                 >
                   <td className="px-4 py-3 font-semibold text-white">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={userImg}
-                        alt=""
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
+                        {member.name?.charAt(0)?.toUpperCase() || "U"}
+                      </span>
                       <div className="min-w-0">
                         <p className="truncate">{member.name}</p>
                         <p className="mt-0.5 text-[12px] font-normal text-[#8ca1bd]">

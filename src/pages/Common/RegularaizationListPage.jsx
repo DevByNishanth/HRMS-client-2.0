@@ -1259,11 +1259,9 @@ const HodRegularizationTable = ({
                   >
                     <td className="px-4 py-3 font-semibold text-white">
                       <div className="flex items-center gap-2">
-                        <img
-                          src={userImg}
-                          alt=""
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
+                          {getFacultyName(request)?.charAt(0)?.toUpperCase() || "U"}
+                        </span>
                         <div className="min-w-0">
                           <p className="truncate">{getFacultyName(request)}</p>
                           <p className="truncate text-[12px] font-normal text-[#8ca1bd]">

@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Sidebar from "../../../components/Siedbar";
 import CommonHeader from "../../../components/CommonHeader";
-import userImg from "../../../assets/userImg.svg";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
@@ -350,11 +349,9 @@ const PrincipalFacultyListPage = () => {
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <img
-                                  src={userImg}
-                                  alt={name}
-                                  className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-                                />
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
+                                  {name?.charAt(0)?.toUpperCase() || "U"}
+                                </span>
                                 <span className="block truncate font-semibold text-white">
                                   {name}
                                 </span>

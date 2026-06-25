@@ -1,7 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowRight, Clock, FileCheck2, FileText, Loader2, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  FileCheck2,
+  FileText,
+  Loader2,
+  Plus,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
+import {
+  getRoleFromToken,
+  getTokenFromLocalStorage,
+  decodeToken,
+} from "../../../utils/tokenUtils";
 import ActiveDayCalendar from "./ActiveDayCalendar";
 import AttendanceGauge from "./AttendanceGauge";
 import LeaveOverview from "./LeaveOverview";
@@ -9,17 +20,20 @@ import RecentLogs from "./RecentLogs";
 import TimeTracker from "./TimeTracker";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import ApplyPermission from "../../../components/ApplyPermission";
-import userImg from "../../../assets/userImg.svg";
 import { jwtDecode } from "jwt-decode";
-
 
 const requestTabs = [
   { label: "Leave Requests", value: "leave", icon: FileText },
   { label: "Permission Requests", value: "permission", icon: Clock },
-  { label: "Regularization Requests", value: "regularization", icon: FileCheck2 },
+  {
+    label: "Regularization Requests",
+    value: "regularization",
+    icon: FileCheck2,
+  },
 ];
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
 const getFacultyName = (faculty) => {
   if (!faculty) return "Faculty";
@@ -30,7 +44,8 @@ const getFacultyName = (faculty) => {
 const getRegularizationList = (data) => {
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.requests)) return data.requests;
-  if (Array.isArray(data?.regularizationRequests)) return data.regularizationRequests;
+  if (Array.isArray(data?.regularizationRequests))
+    return data.regularizationRequests;
   if (Array.isArray(data?.data)) return data.data;
   return [];
 };
@@ -41,10 +56,20 @@ const FacultyRequestsPanel = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [permissionRequests, setPermissionRequests] = useState([]);
   const [regularizationRequests, setRegularizationRequests] = useState([]);
-  const [loading, setLoading] = useState({ leave: false, permission: false, regularization: false });
-  const [error, setError] = useState({ leave: "", permission: "", regularization: "" });
+  const [loading, setLoading] = useState({
+    leave: false,
+    permission: false,
+    regularization: false,
+  });
+  const [error, setError] = useState({
+    leave: "",
+    permission: "",
+    regularization: "",
+  });
 
-  const activeTab = requestTabs.find((tab) => tab.value === selectedRequestType);
+  const activeTab = requestTabs.find(
+    (tab) => tab.value === selectedRequestType,
+  );
   const ActiveIcon = activeTab.icon;
   const dept = decodeToken(getTokenFromLocalStorage())?.department;
 
@@ -54,16 +79,23 @@ const FacultyRequestsPanel = () => {
     setError((prev) => ({ ...prev, leave: "" }));
     try {
       const token = getTokenFromLocalStorage();
-      const res = await fetch(`${API_BASE_URL}/api/leave-application/?department=${dept}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE_URL}/api/leave-application/?department=${dept}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await res.json();
       const applications = data?.leaveApplications || [];
-      setLeaveRequests(applications.slice(0, 10).map((app) => ({
-        name: getFacultyName(app?.facultyId),
-        meta: app?.leaveType || app?.leaveCategory || "Leave",
-        count: app?.totalDays ? `${app.totalDays} Day${app.totalDays > 1 ? "s" : ""}` : "",
-      })));
+      setLeaveRequests(
+        applications.slice(0, 10).map((app) => ({
+          name: getFacultyName(app?.facultyId),
+          meta: app?.leaveType || app?.leaveCategory || "Leave",
+          count: app?.totalDays
+            ? `${app.totalDays} Day${app.totalDays > 1 ? "s" : ""}`
+            : "",
+        })),
+      );
     } catch (err) {
       setError((prev) => ({ ...prev, leave: "Failed to load" }));
     } finally {
@@ -81,11 +113,13 @@ const FacultyRequestsPanel = () => {
       });
       const data = await res.json();
       const items = data?.data || [];
-      setPermissionRequests(items.slice(0, 10).map((p) => ({
-        name: getFacultyName(p?.facultyId),
-        meta: p?.reason || p?.permissionType || "Permission",
-        count: p?.totalMinutes ? `${Math.round(p.totalMinutes / 60)}h` : "",
-      })));
+      setPermissionRequests(
+        items.slice(0, 10).map((p) => ({
+          name: getFacultyName(p?.facultyId),
+          meta: p?.reason || p?.permissionType || "Permission",
+          count: p?.totalMinutes ? `${Math.round(p.totalMinutes / 60)}h` : "",
+        })),
+      );
     } catch (err) {
       setError((prev) => ({ ...prev, permission: "Failed to load" }));
     } finally {
@@ -98,16 +132,21 @@ const FacultyRequestsPanel = () => {
     setError((prev) => ({ ...prev, regularization: "" }));
     try {
       const token = getTokenFromLocalStorage();
-      const res = await fetch(`${API_BASE_URL}/api/attendance-regularization/hod/list`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${API_BASE_URL}/api/attendance-regularization/hod/list`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await res.json();
       const items = getRegularizationList(data);
-      setRegularizationRequests(items.slice(0, 10).map((r) => ({
-        name: getFacultyName(r?.facultyId),
-        meta: r?.reason || r?.requestType || "Regularization",
-        count: "",
-      })));
+      setRegularizationRequests(
+        items.slice(0, 10).map((r) => ({
+          name: getFacultyName(r?.facultyId),
+          meta: r?.reason || r?.requestType || "Regularization",
+          count: "",
+        })),
+      );
     } catch (err) {
       setError((prev) => ({ ...prev, regularization: "Failed to load" }));
     } finally {
@@ -119,7 +158,11 @@ const FacultyRequestsPanel = () => {
     fetchLeaveRequests();
     fetchPermissionRequests();
     fetchRegularizationRequests();
-  }, [fetchLeaveRequests, fetchPermissionRequests, fetchRegularizationRequests]);
+  }, [
+    fetchLeaveRequests,
+    fetchPermissionRequests,
+    fetchRegularizationRequests,
+  ]);
 
   const handleViewAll = () => {
     if (selectedRequestType === "leave") {
@@ -158,7 +201,9 @@ const FacultyRequestsPanel = () => {
           <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#2563eb24] text-[#3984ff]">
             <ActiveIcon size={16} />
           </span>
-          <h2 className="truncate text-[18px] font-semibold text-white">{activeTab.label}</h2>
+          <h2 className="truncate text-[18px] font-semibold text-white">
+            {activeTab.label}
+          </h2>
         </div>
 
         <button
@@ -177,14 +222,17 @@ const FacultyRequestsPanel = () => {
             key={value}
             type="button"
             onClick={() => setSelectedRequestType(value)}
-            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
-              ? "bg-[#2563EB] text-white"
-              : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
-              }`}
+            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${
+              selectedRequestType === value
+                ? "bg-[#2563EB] text-white"
+                : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
+            }`}
             title={label}
           >
             <Icon size={13} />
-            <span className="hidden min-w-0 truncate xl:inline">{label.split(" ")[0]}</span>
+            <span className="hidden min-w-0 truncate xl:inline">
+              {label.split(" ")[0]}
+            </span>
           </button>
         ))}
       </div>
@@ -195,9 +243,13 @@ const FacultyRequestsPanel = () => {
             <Loader2 size={20} className="animate-spin text-[#3984ff]" />
           </div>
         ) : hasError ? (
-          <p className="mt-8 text-center text-[12px] text-[#f16868]">{hasError}</p>
+          <p className="mt-8 text-center text-[12px] text-[#f16868]">
+            {hasError}
+          </p>
         ) : currentList.length === 0 ? (
-          <p className="mt-8 text-center text-[12px] text-[#8ca1bd]">No {selectedRequestType} requests found.</p>
+          <p className="mt-8 text-center text-[12px] text-[#8ca1bd]">
+            No {selectedRequestType} requests found.
+          </p>
         ) : (
           <div className="space-y-2">
             {currentList.map((request, index) => (
@@ -206,12 +258,16 @@ const FacultyRequestsPanel = () => {
                 className="flex items-center justify-between gap-3 rounded-lg bg-[#071425] px-3 py-2 border border-slate-800"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
-                    <img src={userImg} alt="" className="h-8 w-8 rounded-full object-cover" />
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-semibold text-white">
+                    {request.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium text-white">{request.name}</p>
-                    <p className="mt-1 truncate text-[11px] font-medium text-[#3984ff]">{request.meta}</p>
+                    <p className="truncate text-[13px] font-medium text-white">
+                      {request.name}
+                    </p>
+                    <p className="mt-1 truncate text-[11px] font-medium text-[#3984ff]">
+                      {request.meta}
+                    </p>
                   </div>
                 </div>
 
@@ -235,29 +291,36 @@ const FacultyDashboardBody = () => {
   const [isPermissionApplyModal, setIsPermissionApplyModal] = useState(false);
   const isHod = role === "hod";
 
-
-  // decoding token 
+  // decoding token
   let token = localStorage.getItem("hrms_token");
   const decodedToken = jwtDecode(token);
-  console.log("decoded", decodedToken)
+  console.log("decoded", decodedToken);
 
   return (
     <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
       <div className="mx-auto">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-xl font-semibold leading-tight text-white">Hello, {decodedToken?.firstName} {decodedToken?.lastName} !</h1>
+            <h1 className="text-xl font-semibold leading-tight text-white">
+              Hello, {decodedToken?.firstName} {decodedToken?.lastName} !
+            </h1>
             <p className="mt-1 text-[13px] text-[#9eb0cc]">
               Here's your weekly leave and attendance overview
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <button onClick={() => setIsLeaveApplyModal(true)} className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]">
+            <button
+              onClick={() => setIsLeaveApplyModal(true)}
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            >
               <Plus size={14} />
               Apply Leave
             </button>
-            <button onClick={() => setIsPermissionApplyModal(true)} className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]">
+            <button
+              onClick={() => setIsPermissionApplyModal(true)}
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            >
               <Plus size={14} />
               Apply Permission
             </button>
@@ -273,8 +336,20 @@ const FacultyDashboardBody = () => {
             <AttendanceGauge />
           </div>
 
-          <div className={isHod ? "recent-logs-section grid grid-cols-12 gap-2" : "recent-logs-section"}>
-            <div className={isHod ? "table-container col-span-12 xl:col-span-8" : "table-container"}>
+          <div
+            className={
+              isHod
+                ? "recent-logs-section grid grid-cols-12 gap-2"
+                : "recent-logs-section"
+            }
+          >
+            <div
+              className={
+                isHod
+                  ? "table-container col-span-12 xl:col-span-8"
+                  : "table-container"
+              }
+            >
               <RecentLogs />
             </div>
             {isHod && (
@@ -283,12 +358,15 @@ const FacultyDashboardBody = () => {
               </div>
             )}
           </div>
-
         </div>
       </div>
 
-      {isLeaveApplyModal && <ApplyLeaveForm onClose={() => setIsLeaveApplyModal(false)} />}
-      {isPermissionApplyModal && <ApplyPermission onClose={() => setIsPermissionApplyModal(false)} />}
+      {isLeaveApplyModal && (
+        <ApplyLeaveForm onClose={() => setIsLeaveApplyModal(false)} />
+      )}
+      {isPermissionApplyModal && (
+        <ApplyPermission onClose={() => setIsPermissionApplyModal(false)} />
+      )}
     </main>
   );
 };
