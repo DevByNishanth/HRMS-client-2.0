@@ -81,16 +81,29 @@ const ExportPasswordModal = ({
 
           <div className="mt-4">
             <label
-              htmlFor="export-password"
+              htmlFor="export-verification-secret"
               className="mb-2 block text-[13px] font-semibold text-white"
             >
               Password
             </label>
             <div className="relative">
               <input
+                type="text"
+                name="export-auth-username"
+                autoComplete="username"
+                tabIndex={-1}
+                aria-hidden="true"
+                readOnly
+                className="pointer-events-none absolute h-px w-px opacity-0"
+              />
+              <input
                 ref={inputRef}
-                id="export-password"
+                id="export-verification-secret"
+                name="export-verification-secret"
                 type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                data-lpignore="true"
+                data-1p-ignore="true"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 onKeyDown={handleKeyDown}
