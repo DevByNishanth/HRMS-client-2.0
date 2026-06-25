@@ -85,17 +85,10 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/auth/login/v1`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim().toLowerCase(),
-            password,
-          }),
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/auth/login/v1`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
       );
 

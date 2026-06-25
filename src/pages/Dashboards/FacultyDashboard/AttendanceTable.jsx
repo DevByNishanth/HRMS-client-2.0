@@ -263,6 +263,7 @@ const AttendanceTable = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedLog(record)}
+                      // disabled={record.status?.toLowerCase() !== "Present"}
                       disabled={!canApplyRegularization(record)}
                       title={!canApplyRegularization(record) ? "Regularization is not available for this attendance status." : undefined}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
