@@ -191,7 +191,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       session: sessionLabel,
       duration: durationLabel,
       reason: p.reason || "",
-      status: p.status || "",
+      status: p.approvalStatus?.hod || "Pending",
       currentApprovalLevel: p.currentApprovalLevel || "hod",
     };
   };
@@ -314,7 +314,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
     const action = confirmation.action;
 
     const url = action === "revoke"
-      ? `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/revoke-hod`
+      ? `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/revoke`
       : `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/reject`;
 
     if (action === "reject") {
@@ -323,7 +323,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       setRevokeLoading(true);
     }
     setError(null);
-
+console.log("")
     try {
       const token = getTokenFromLocalStorage();
       const body = action === "reject"
@@ -331,7 +331,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
         : JSON.stringify({});
 
       const response = await fetch(url, {
-        method: "PATCH",
+        method: action === "revoke" ? "PUT" : "PATCH",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -510,7 +510,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                               <X className="h-4 w-4" />
                             </button>
                           </>
-                        ) : permission.currentApprovalLevel !== "hod" && permission.status === "Pending" ? (
+                        ) : permission.currentApprovalLevel !== "hod" ? (
                           <button
                             type="button"
                             onClick={() => handleRevokeClick(permission)}
