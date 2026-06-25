@@ -12,18 +12,12 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
-import { Edit3, Eye, EyeOff, X } from "lucide-react";
-import { toast } from "react-toastify";
-import userImg from "../../assets/userImg.svg";
-import { getTokenFromLocalStorage } from "../../utils/tokenUtils";
-import { jwtDecode } from "jwt-decode";
+
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
 
-const ProfileHero = ({ canEdit, onEdit, faculty }) => {
-  const fullName =
-    [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
+
   const isActive = faculty?.employmentStatus === true;
   const designation = faculty?.designation || "";
   const department = faculty?.department || "";
@@ -198,7 +192,6 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
         </div>
 
         {canEdit && (
-          <button
           <div className="flex flex-wrap items-center gap-3">
             <button
             type="button"
@@ -208,6 +201,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
             <Edit3 size={13} />
             Edit Profile
           </button>
+          </div>
         )}
       </section>
 
@@ -248,47 +242,16 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                 Are you sure you want to delete your profile photo? This action cannot be undone.
               </p>
             </div>
-            <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(false)}
-                className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
-
-
+            
           
-          
-           <button
-          type="button"
-          
-          onClick={openPasswordModal}
-          
-          className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
-       
-       
-       
-       >
-         <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={1.8}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.5 10.5V7.875a4.125 4.125 0 10-8.25 0V10.5m-.75 0h9.75A2.25 2.25 0 0119.5 12.75v5.625A2.25 2.25 0 0117.25 20.625H6.75A2.25 2.25 0 014.5 18.375V12.75A2.25 2.25 0 016.75 10.5z"
-                    />
-                  </svg>
-          
-          Change password
-        </button>
+           
+         
           </div>
+      </section>
+
         )}
 
        
-      </section>
 
       {isPasswordModalOpen && (
         <div
@@ -431,15 +394,6 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                     Delete
                   </>
                 )}
-              </button>
-            </div>
-          </div>
-        </section>
-                onClick={handleChangePassword}
-                disabled={isSubmitting}
-                className="rounded-xl bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isSubmitting ? "Updating..." : "Update Password"}
               </button>
             </div>
           </div>

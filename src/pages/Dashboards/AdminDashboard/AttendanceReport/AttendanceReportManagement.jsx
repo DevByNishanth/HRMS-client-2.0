@@ -3,8 +3,6 @@ import { Search, ChevronDown } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
-import ExportPasswordModal from "../../../../components/ExportPasswordModal";
-import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
@@ -430,16 +428,18 @@ export default function AttendanceManagement() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("All");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
-  const {
-    isExportModalOpen,
-    exportLoading,
-    exportError,
-    handleExportClick,
-    closeExportModal,
-    handleConfirmExport,
-  } = usePasswordProtectedExport();
+  const effectiveMonth = useMemo(
+    () => (selectedMonth === "" ? new Date().getMonth() : Number(selectedMonth)),
+    [selectedMonth],
+  );
+
+  const effectiveYear = useMemo(
+    () => (selectedYear === "" ? new Date().getFullYear() : Number(selectedYear)),
+    [selectedYear],
+  );
+
   const dates = useMemo(
     () => getMonthDates(effectiveYear, effectiveMonth),
     [effectiveMonth, effectiveYear],
@@ -581,49 +581,43 @@ export default function AttendanceManagement() {
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
           <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3.5 bg-[#071425] px-4 py-3 max-md:grid-cols-1 max-md:items-start">
-              <div className="min-w-0">
-                <h1 className="m-0 text-2xl font-black text-white">
-                  Attendance Report Management
-                </h1>
-                <p className="mt-1 mb-0 text-base font-bold text-white">
-                  {monthTitle}
-                </p>
-              </div>
-              <div
-                className="justify-self-center inline-flex flex-none flex-wrap items-center gap-2 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-2.5 py-1.5 max-md:justify-self-start"
-                aria-label="Attendance status legend"
-              >
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#22c55e]" />{" "}
-                  Present
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#ef4444]" />{" "}
-                  Absent
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-300" />{" "}
-                  OFF
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />{" "}
-                  OD
-                </span>
-              </div>
-              <button
-                type="button"
-                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8] disabled:!bg-[#1a3a6a] disabled:cursor-not-allowed disabled:opacity-50`}
-                onClick={handleExportClick}
-                disabled={visibleEmployees.length === 0}
-              >
-                Export Excel
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3.5 border-b border-b-[rgba(255,255,255,0.12)] bg-[#071425] px-4 py-3 max-md:items-stretch">
-              <div className="grid w-4/5 grid-cols-[260px_170px_150px_135px] items-end gap-5 max-md:w-full max-md:grid-cols-1">
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Search</span>
+           <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
+  <div>
+    <h1 className="m-0 text-2xl font-black text-white">
+      Attendance Report Management
+    </h1>
+  </div>
+
+  <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
+      Present
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
+      Absent
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
+      OFF
+    </span>
+
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
+      OD
+    </span>
+  </div>
+</div>
+            <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+              <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-5">
+                  <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
+                  <span className="sr-only">Search</span>
+                  <Search
+                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
+                    aria-hidden="true"
+                  />
                   <input
                     type="text"
                     value={searchTerm}
@@ -842,14 +836,6 @@ export default function AttendanceManagement() {
               </table>
             </div>
           </section>
-
-          <ExportPasswordModal
-            isOpen={isExportModalOpen}
-            onClose={closeExportModal}
-            onConfirm={(password) => handleConfirmExport(password, exportToExcel)}
-            loading={exportLoading}
-            error={exportError}
-          />
         </main>
       </div>
     </div>
