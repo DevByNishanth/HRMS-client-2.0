@@ -5,6 +5,8 @@ import {getShifts} from '../../../../services/shift/getShiftService'
 import {deleteShift} from '../../../../services/shift/deleteShiftService'
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function ShiftBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -15,6 +17,15 @@ export default function ShiftBody() {
     const [isDeletingShift, setIsDeletingShift] = useState(false);
     const [deleteError, setDeleteError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     useEffect(()=>{
         fetchShifts();
@@ -136,7 +147,8 @@ export default function ShiftBody() {
                             />
                         </div>
                         <button
-                            onClick={handleExportExcel}
+                            onClick={handleExportClick}
+                            disabled={filteredShifts.length === 0}
                             className="
                                 h-11
                                 px-5
@@ -146,7 +158,7 @@ export default function ShiftBody() {
                                 text-[#3984ff]
                                 hover:bg-[#3984ff]
                                 hover:text-white
-                                cursor-pointer
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
                             Export Excel
@@ -252,6 +264,13 @@ export default function ShiftBody() {
                     </div>
                 </div>
             </div>
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
             {deletingShift && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
                     <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">

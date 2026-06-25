@@ -38,8 +38,11 @@ const LoginPage = () => {
   const [apiError, setApiError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [openDocumentUploadModal, setOpenDocumentUploadModal] = useState(false);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://sece_hrms_server.onrender.com";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,16 +90,13 @@ const LoginPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password,
-        }),
-      });
+      );
 
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        const errorMessage = data?.message || data?.error || "Login failed. Please try again.";
+        const errorMessage =
+          data?.message || data?.error || "Login failed. Please try again.";
         setApiError(errorMessage);
         setIsLoading(false);
         return;
@@ -110,12 +110,18 @@ const LoginPage = () => {
       // Show success message
       setSuccessMessage("Login successful! Redirecting...");
 
+      // set open document modal 
+
+      // setOpenDocumentUploadModal(true)
+
       // Redirect to role-based dashboard after a short delay
       setTimeout(() => {
         navigate(getRoleBasedRoute());
       }, 1500);
     } catch (error) {
-      setApiError(error.message || "An error occurred during login. Please try again.");
+      setApiError(
+        error.message || "An error occurred during login. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +129,10 @@ const LoginPage = () => {
 
   return (
     <main className="grid min-h-screen overflow-x-hidden bg-[#0F172A] lg:h-screen lg:grid-cols-2 lg:overflow-hidden">
+      {/* document uploading modal  */}
+      {/* {openDocumentUploadModal && (
+        <DoumentUploadFormModal onClose={() => setOpenDocumentUploadModal(false)} />
+      )} */}
       <section className="flex min-h-screen flex-col bg-[#020817] lg:min-h-0">
         <div className="flex min-h-0 flex-1 items-center justify-center px-5 py-8 sm:px-8 lg:py-6">
           <div className="w-full max-w-[448px]">
@@ -143,7 +153,11 @@ const LoginPage = () => {
                 Email Address <span className="text-blue-500">*</span>
               </label>
 
-              <div className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${errors.email ? "border-[#f16868]" : "border-[#1b2942]"}`}>
+              <div
+                className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${
+                  errors.email ? "border-[#f16868]" : "border-[#1b2942]"
+                }`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 shrink-0 text-[#8b9bb8]"
@@ -171,7 +185,9 @@ const LoginPage = () => {
                   className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-xs text-[#f16868]">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs text-[#f16868]">{errors.email}</p>
+              )}
             </div>
 
             <div className="mt-6">
@@ -179,7 +195,11 @@ const LoginPage = () => {
                 Password <span className="text-blue-500">*</span>
               </label>
 
-              <div className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${errors.password ? "border-[#f16868]" : "border-[#1b2942]"}`}>
+              <div
+                className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${
+                  errors.password ? "border-[#f16868]" : "border-[#1b2942]"
+                }`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 shrink-0 text-[#8b9bb8]"
@@ -246,7 +266,9 @@ const LoginPage = () => {
                   </svg>
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-[#f16868]">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-[#f16868]">{errors.password}</p>
+              )}
             </div>
 
             {apiError && (
@@ -273,9 +295,9 @@ const LoginPage = () => {
 
         <footer className="mx-5 shrink-0 border-t border-[#1b2942] px-0 py-4 text-sm text-[#94A3B8] ">
           <div className="mx-auto flex max-w-xl flex-col items-center justify-between gap-3 text-center ">
-            <p className="">Copyright : QuantumPulse Technologies, All Right Reserved</p>
-
-
+            <p className="">
+              Copyright : QuantumPulse Technologies, All Right Reserved
+            </p>
           </div>
         </footer>
       </section>
@@ -314,10 +336,11 @@ const LoginPage = () => {
                   type="button"
                   aria-label={`Show slide ${index + 1}`}
                   onClick={() => setActiveIndex(index)}
-                  className={`h-1 rounded-full transition-all ${activeIndex === index
-                    ? "w-10 bg-white"
-                    : "w-9 bg-[#334155] hover:bg-[#64748B]"
-                    }`}
+                  className={`h-1 rounded-full transition-all ${
+                    activeIndex === index
+                      ? "w-10 bg-white"
+                      : "w-9 bg-[#334155] hover:bg-[#64748B]"
+                  }`}
                 />
               ))}
             </div>

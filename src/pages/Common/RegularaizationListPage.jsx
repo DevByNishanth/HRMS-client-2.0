@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   RotateCcw,
   Loader2,
+  Download,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
@@ -24,6 +25,9 @@ import {
 import Sidebar from "../../components/Siedbar";
 import CommonHeader from "../../components/CommonHeader";
 import CustomDatePicker from "../../components/CustomDatePicker";
+import ExportPasswordModal from "../../components/ExportPasswordModal";
+import { exportToExcel } from "../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../hooks/usePasswordProtectedExport";
 import userImg from "../../assets/userImg.svg";
 import noDataFoundImg from "../../assets/no-data-found.svg";
 
@@ -634,6 +638,26 @@ const MyRegularizationTable = () => {
   const [cancelRequest, setCancelRequest] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
 
+  const {
+    isExportModalOpen: isMyExportOpen,
+    exportLoading: myExportLoading,
+    exportError: myExportError,
+    handleExportClick: handleMyExportClick,
+    closeExportModal: closeMyExport,
+    handleConfirmExport: handleMyConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportMyFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Date": formatDate(r.attendanceDate),
+      "In Time": formatTime(r.requestedInTime),
+      "Out Time": formatTime(r.requestedOutTime),
+      "Reason": r.reason || "",
+      "Status": r.status || "",
+    }));
+    exportToExcel(rows, "My-Regularizations.xlsx");
+  };
+
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
       const normalizeDate = (date) => {
@@ -770,6 +794,15 @@ const MyRegularizationTable = () => {
                 <X size={14} />
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleMyExportClick}
+              disabled={filteredRequests.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
           </div>
           <select
             value={selectedStatus}
@@ -872,6 +905,14 @@ const MyRegularizationTable = () => {
         onClose={() => setSelectedRequest(null)}
       />
 
+      <ExportPasswordModal
+        isOpen={isMyExportOpen}
+        onClose={closeMyExport}
+        onConfirm={(password) => handleMyConfirmExport(password, exportMyFilteredRows)}
+        loading={myExportLoading}
+        error={myExportError}
+      />
+
       <CancelConfirmationPopup
         request={cancelRequest}
         onClose={() => setCancelRequest(null)}
@@ -899,6 +940,27 @@ const HodRegularizationTable = ({
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [revokeRequest, setRevokeRequest] = useState(null);
   const [revokeSubmitting, setRevokeSubmitting] = useState(false);
+
+  const {
+    isExportModalOpen: isHodExportOpen,
+    exportLoading: hodExportLoading,
+    exportError: hodExportError,
+    handleExportClick: handleHodExportClick,
+    closeExportModal: closeHodExport,
+    handleConfirmExport: handleHodConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportHodFilteredRows = () => {
+    const rows = filteredRequests.map((r) => ({
+      "Name": getFacultyName(r),
+      "Date": formatDate(r.attendanceDate),
+      "In Time": formatTime(r.requestedInTime),
+      "Out Time": formatTime(r.requestedOutTime),
+      "Reason": r.reason || "",
+      "Status": r.approvalStatus?.hod || r.status || "Pending",
+    }));
+    exportToExcel(rows, "Team-Regularizations.xlsx");
+  };
 
   // Use externally provided data when available (parent-fetched), else fall back to internal state
   const effectiveRequests = externalRequests || requests;
@@ -1141,6 +1203,15 @@ const HodRegularizationTable = ({
                 <X size={14} />
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleHodExportClick}
+              disabled={filteredRequests.length === 0}
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export
+            </button>
             <select
               value={selectedStatus}
               onChange={(event) => setSelectedStatus(event.target.value)}
@@ -1298,6 +1369,14 @@ const HodRegularizationTable = ({
         onClose={closeRejectPopup}
         onConfirm={confirmReject}
         submitting={processingId === rejectRequest?._id}
+      />
+
+      <ExportPasswordModal
+        isOpen={isHodExportOpen}
+        onClose={closeHodExport}
+        onConfirm={(password) => handleHodConfirmExport(password, exportHodFilteredRows)}
+        loading={hodExportLoading}
+        error={hodExportError}
       />
 
       <RevokeConfirmationPopup

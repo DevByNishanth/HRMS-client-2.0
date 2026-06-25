@@ -4,10 +4,9 @@ import CommonHeader from "../../../components/CommonHeader";
 import Sidebar from "../../../components/Siedbar";
 import PrincipalCompOffTable from "../../../components/PrincipalCompOffTable";
 
-const departments = ["All", "Computer Science", "Electronics", "Mechanical", "Civil"];
-
 const PrincipalCompOffPage = () => {
   const [filterDepartment, setFilterDepartment] = useState("All");
+  const [departmentOptions, setDepartmentOptions] = useState(["All"]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
@@ -42,7 +41,7 @@ const PrincipalCompOffPage = () => {
               {dropdownOpen && (
                 <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                   <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
-                    {departments.map((dept) => (
+                    {departmentOptions.map((dept) => (
                       <button
                         key={dept}
                         onClick={() => {
@@ -62,7 +61,7 @@ const PrincipalCompOffPage = () => {
               )}
             </div>
           </div>
-          <PrincipalCompOffTable filterDepartment={filterDepartment} />
+          <PrincipalCompOffTable filterDepartment={filterDepartment} onDepartmentOptionsChange={setDepartmentOptions} />
         </main>
       </div>
     </div>

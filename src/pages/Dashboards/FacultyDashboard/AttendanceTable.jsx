@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUp, ArrowUpRight, ChevronDown } from "lucide-react";
+import { ArrowUp, ArrowUpRight, ChevronDown, Download } from "lucide-react";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import ReqularizationCanvas from "./ReqularizationCanvas";
 import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../../../utils/tokenUtils";
@@ -79,6 +79,10 @@ const StatusFilter = ({ value, onChange }) => {
   );
 };
 
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+
 const AttendanceTable = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +90,26 @@ const AttendanceTable = () => {
   const [toDate, setToDate] = useState(null);
   const [status, setStatus] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
+
+  const exportCurrentFilteredRows = () => {
+    const rows = filteredLogs.map((r) => ({
+      "Date": formatDateFromISO(r.date),
+      "Check-In": formatTime(r.checkIn),
+      "Check-Out": r.checkIn === r.checkOut ? "--" : formatTime(r.checkOut),
+      "Working Hours": formatMinutesToHours(r.workingHours),
+      "Status": r.status || "",
+    }));
+    exportToExcel(rows, "Attendance-Logs.xlsx");
+  };
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -167,6 +191,17 @@ const AttendanceTable = () => {
             />
           </div>
           <StatusFilter value={status} onChange={setStatus} />
+          {/* Export Button */}
+          <button
+            type="button"
+            onClick={handleExportClick}
+            disabled={filteredLogs.length === 0}
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export
+          </button>
+
           {hasFilters && (
             <button
               type="button"
@@ -178,6 +213,14 @@ const AttendanceTable = () => {
           )}
         </div>
       </div>
+
+      <ExportPasswordModal
+        isOpen={isExportModalOpen}
+        onClose={closeExportModal}
+        onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+        loading={exportLoading}
+        error={exportError}
+      />
 
       <div className="relative z-0 max-h-[38vh] min-h-[240px] overflow-auto table-custom-scrollbar">
         {loading ? (
@@ -220,6 +263,7 @@ const AttendanceTable = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedLog(record)}
+                      // disabled={record.status?.toLowerCase() !== "Present"}
                       disabled={!canApplyRegularization(record)}
                       title={!canApplyRegularization(record) ? "Regularization is not available for this attendance status." : undefined}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
