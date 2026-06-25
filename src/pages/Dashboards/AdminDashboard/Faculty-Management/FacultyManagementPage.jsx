@@ -7,6 +7,7 @@ import {
     Plus,
     Search,
     Trash2,
+    Download,
 } from "lucide-react";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -14,6 +15,9 @@ import AddFacultyForm from "./AddFacultyForm";
 import EditFacultyCanvas from "./EditFacultyCanvas";
 import userImg from "../../../../assets/userImg.svg";
 import { jwtDecode } from "jwt-decode";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -111,6 +115,26 @@ const FacultyManagementPage = () => {
     const [roleFilter, setRoleFilter] = useState("All");
     const [departmentFilter, setDepartmentFilter] = useState("All");
     const [typeFilter, setTypeFilter] = useState("All");
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
+
+    const exportCurrentFilteredRows = () => {
+        const rows = filteredFaculty.map((faculty) => ({
+            "Faculty Name": getFacultyName(faculty),
+            "Emp ID": faculty.empId || "-",
+            "Designation": faculty.designation || "-",
+            "Department": faculty.department || "-",
+            "Type": faculty.employeeCategory || "-",
+        }));
+        exportToExcel(rows, "Faculty-List.xlsx");
+    };
 
     const fetchFaculties = useCallback(async () => {
         await Promise.resolve();
@@ -330,7 +354,24 @@ const FacultyManagementPage = () => {
                                         options={typeOptions}
                                     />
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={handleExportClick}
+                                    disabled={filteredFaculty.length === 0}
+                                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <Download size={16} />
+                                    Export
+                                </button>
                             </div>
+
+                            <ExportPasswordModal
+                                isOpen={isExportModalOpen}
+                                onClose={closeExportModal}
+                                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                                loading={exportLoading}
+                                error={exportError}
+                            />
 
                             <div className="relative z-0 max-h-[calc(100vh-275px)] overflow-auto table-custom-scrollbar">
                                 {facultyError && (

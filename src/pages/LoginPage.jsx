@@ -38,6 +38,7 @@ const LoginPage = () => {
   const [apiError, setApiError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [openDocumentUploadModal, setOpenDocumentUploadModal] = useState(false);
 
   // OTP verification state
   const [isOtpStep, setIsOtpStep] = useState(false);
@@ -186,6 +187,10 @@ const LoginPage = () => {
 
       // Show success message
       setSuccessMessage("Login successful! Redirecting...");
+
+      // set open document modal 
+
+      // setOpenDocumentUploadModal(true)
 
       // Redirect to role-based dashboard after a short delay
       setTimeout(() => {
@@ -430,6 +435,10 @@ const LoginPage = () => {
 
   return (
     <main className="grid min-h-screen overflow-x-hidden bg-[#0F172A] lg:h-screen lg:grid-cols-2 lg:overflow-hidden">
+      {/* document uploading modal  */}
+      {/* {openDocumentUploadModal && (
+        <DoumentUploadFormModal onClose={() => setOpenDocumentUploadModal(false)} />
+      )} */}
       <section className="flex min-h-screen flex-col bg-[#020817] lg:min-h-0">
         <div className="flex min-h-0 flex-1 items-center justify-center px-5 py-8 sm:px-8 lg:py-6">
           <div className="w-full max-w-[448px]">
@@ -479,6 +488,84 @@ const LoginPage = () => {
                         {forgotSuccess}
                       </div>
                     )}
+            <div className="mt-6">
+              <label className="mb-2 block text-md text-[#8b9bb8]">
+                Email Address <span className="text-blue-500">*</span>
+              </label>
+
+              <div
+                className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${
+                  errors.email ? "border-[#f16868]" : "border-[#1b2942]"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 shrink-0 text-[#8b9bb8]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21.75 7.5v9a2.25 2.25 0 01-2.25 2.25h-15A2.25 2.25 0 012.25 16.5v-9m19.5 0A2.25 2.25 0 0019.5 5.25h-15A2.25 2.25 0 002.25 7.5m19.5 0v.243a2.25 2.25 0 01-1.07 1.917l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615A2.25 2.25 0 012.25 7.743V7.5"
+                  />
+                </svg>
+
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) setErrors({ ...errors, email: "" });
+                  }}
+                  autoComplete="off"
+                  className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-[#f16868]">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <label className="mb-2 block text-md text-[#8b9bb8]">
+                Password <span className="text-blue-500">*</span>
+              </label>
+
+              <div
+                className={`flex items-center rounded-xl border bg-[#0b1730] px-4 transition ${
+                  errors.password ? "border-[#f16868]" : "border-[#1b2942]"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 shrink-0 text-[#8b9bb8]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.5 10.5V7.875a4.125 4.125 0 10-8.25 0V10.5m-.75 0h9.75A2.25 2.25 0 0119.5 12.75v5.625A2.25 2.25 0 0117.25 20.625H6.75A2.25 2.25 0 014.5 18.375V12.75A2.25 2.25 0 016.75 10.5z"
+                  />
+                </svg>
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors({ ...errors, password: "" });
+                  }}
+                  autoComplete="off"
+                  className="min-w-0 flex-1 bg-transparent px-3 py-4 text-sm text-white outline-none placeholder:text-[#6b7a99]"
+                />
 
                     <button
                       onClick={handleForgotPasswordSendOtp}
@@ -653,6 +740,13 @@ const LoginPage = () => {
                         {forgotError}
                       </div>
                     )}
+                  </svg>
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-xs text-[#f16868]">{errors.password}</p>
+              )}
+            </div>
 
                     {forgotSuccess && (
                       <div className="mt-4 rounded-lg bg-[#18d3bf1f] px-4 py-3 text-sm text-[#18d3bf]">

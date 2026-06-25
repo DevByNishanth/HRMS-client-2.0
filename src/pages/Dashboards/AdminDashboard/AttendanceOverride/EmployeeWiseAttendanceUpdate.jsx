@@ -10,6 +10,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function EmployeeWiseAttendanceUpdate() {
 
@@ -30,6 +32,15 @@ export default function EmployeeWiseAttendanceUpdate() {
     // const [isBulkOverride, setIsBulkOverride] = useState(false);
     const [updateLoading, setUpdateLoading] = useState(false);
     const [openPicker, setOpenPicker] = useState(null);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     const dropdownRef = useRef();
 
@@ -421,7 +432,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                     {filteredAttendance.length > 0 && (
                         <button
-                            onClick={handleExportExcel}
+                            onClick={handleExportClick}
                             className="
                                 h-11
                                 px-5
@@ -433,7 +444,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
-                                cursor-pointer
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
                             Export Excel
@@ -685,6 +696,13 @@ export default function EmployeeWiseAttendanceUpdate() {
                 </div>
             </div>
 
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
             <AttendanceOverrideModal
                 isOpen={showModal}
                 mode={modalMode}

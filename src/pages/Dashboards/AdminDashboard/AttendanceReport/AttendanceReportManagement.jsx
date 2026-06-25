@@ -1,7 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, ChevronDown } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
@@ -25,9 +28,10 @@ const yearOptions = [2024, 2025, 2026, 2027, 2028];
 const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
-const filterInputBase =
-  "min-h-9 w-full appearance-none rounded-md border border-[rgba(255,255,255,0.18)] bg-[#071425] px-2.5 py-[7px] text-sm font-bold text-white outline-none";
-const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
+const toolbarInputBase =
+  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
+ 
+  const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
 const fallbackEmployees = [
   {
@@ -218,16 +222,20 @@ const fallbackEmployees = [
 
 function getMonthDates(year, monthIndex) {
   const dates = [];
-  const cursor = new Date(year, monthIndex, 1);
+  const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const startDate = new Date(year, monthIndex - 1, 26);
+  const endDate = new Date(year, monthIndex, 25);
+  const cursor = new Date(startDate);
 
-  while (cursor.getMonth() === monthIndex) {
+  while (cursor <= endDate) {
     const date = new Date(cursor);
+    const day = date.getDate();
     dates.push({
       date,
-      day: date.getDate(),
-      weekday: date.toLocaleDateString("en-US", { weekday: "short" }),
+      day,
+      weekday: weekdayNames[date.getDay()],
       key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-        date.getDate(),
+        day,
       ).padStart(2, "0")}`,
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
     });
@@ -237,16 +245,23 @@ function getMonthDates(year, monthIndex) {
   return dates;
 }
 
+// Debug: log computed dates so you can inspect in browser console
+// (temporary - remove once verified)
+// eslint-disable-next-line no-unused-vars
+function _logDatesForDebug(dates) {
+  if (typeof console !== "undefined") console.debug("Attendance window dates:", dates);
+}
+
 function getCellClass(status, isWeekend, isAlternateRow = false) {
   const normalizedStatus = String(status || "").trim();
   const baseClass = `${tableCellBase} font-medium text-white`;
   const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
 
-  if (normalizedStatus === "A") return `${baseClass} bg-[#ef4444]`;
+  if (normalizedStatus === "A") return `${baseClass} bg-[#85444C]`;
   if (normalizedStatus === "P")
-    return `${baseClass} bg-[#22c55e]`;
+    return `${baseClass} bg-[#0A5D4D]`;
   if (normalizedStatus === "OFF")
-    return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
+    return `${baseClass} bg-[#0f1e36]`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":"))
     return `${baseClass} bg-[#3b82f6]`;
@@ -320,14 +335,28 @@ function normalizeAttendanceMap(employee) {
       const status =
         item.status || item.attendance || item.value || item.mark || "-";
 
-      if (dateKey) {
-        const parsedDate = new Date(dateKey);
-        const normalizedKey = Number.isNaN(parsedDate.getTime())
-          ? dateKey
-          : `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, "0")}-${String(
-              parsedDate.getDate(),
-            ).padStart(2, "0")}`;
-        attendance[normalizedKey] = status;
+      if (dateKey !== undefined && dateKey !== null) {
+        const rawKey = String(dateKey).trim();
+        let normalizedKey = rawKey;
+
+        if (!/^\d{1,2}$/.test(rawKey)) {
+          const parsedDate = new Date(rawKey);
+          if (!Number.isNaN(parsedDate.getTime())) {
+            normalizedKey = `${parsedDate.getFullYear()}-${String(
+              parsedDate.getMonth() + 1,
+            ).padStart(2, "0")}-${String(parsedDate.getDate()).padStart(2, "0")}`;
+          }
+        }
+
+        if (normalizedKey) {
+          attendance[normalizedKey] = status;
+          if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedKey)) {
+            const dayOnly = String(Number(normalizedKey.split("-")[2]));
+            if (!(dayOnly in attendance)) {
+              attendance[dayOnly] = status;
+            }
+          }
+        }
       }
 
       return attendance;
@@ -383,28 +412,48 @@ function normalizeEmployees(payload) {
 }
 
 function getAttendanceStatus(attendance, date) {
-  return (
-    attendance[date.key] ||
-    attendance[String(date.day)] ||
-    attendance[date.day] ||
-    attendance[date.key.split("-").reverse().join("-")] ||
-    "-"
-  );
+  if (!attendance || typeof attendance !== "object") return "-";
+
+  const dayKey = String(date.day);
+  if (attendance[dayKey] !== undefined) return attendance[dayKey];
+
+  const isoKey = date.key;
+  if (attendance[isoKey] !== undefined) return attendance[isoKey];
+
+  return "-";
 }
 
 export default function AttendanceManagement() {
-  const [selectedMonth, setSelectedMonth] = useState(5);
-  const [selectedYear, setSelectedYear] = useState(2026);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
   const [employees, setEmployees] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("All");
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
   const dates = useMemo(
-    () => getMonthDates(selectedYear, selectedMonth),
-    [selectedMonth, selectedYear],
+    () => getMonthDates(effectiveYear, effectiveMonth),
+    [effectiveMonth, effectiveYear],
   );
-  const monthTitle = new Date(selectedYear, selectedMonth).toLocaleDateString(
+  // Log computed dates for debugging (temporary)
+  useEffect(() => {
+    try {
+      if (typeof console !== "undefined") {
+        console.debug("Attendance window effectiveMonth/effectiveYear:", effectiveMonth, effectiveYear);
+      }
+      _logDatesForDebug(dates.map(d => ({ key: d.key, day: d.day, weekday: d.weekday })));
+    } catch (e) {}
+  }, [dates, effectiveMonth, effectiveYear]);
+  const monthTitle = new Date(effectiveYear, effectiveMonth).toLocaleDateString(
     "en-US",
     {
       month: "long",
@@ -418,7 +467,7 @@ export default function AttendanceManagement() {
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b));
 
-    return ["All", ...new Set(types)];
+    return Array.from(new Set(types));
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -435,7 +484,7 @@ export default function AttendanceManagement() {
 
       const departmentType = getEmployeeDepartmentType(employee);
       const matchesDepartment =
-        selectedDepartment === "All" || departmentType === selectedDepartment;
+        !selectedDepartment || departmentType === selectedDepartment;
 
       return matchesSearch && matchesDepartment;
     });
@@ -457,22 +506,21 @@ export default function AttendanceManagement() {
       return row;
     });
 
+    // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([[monthTitle], headerRow, ...dataRows]);
-    worksheet.A1.s = {
-      alignment: {
-        horizontal: "center",
-        vertical: "center",
-      },
-      font: {
-        bold: true,
-      },
-    };
+    if (worksheet.A1) {
+      worksheet.A1.s = {
+        alignment: { horizontal: "center", vertical: "center" },
+        font: { bold: true, sz: 14 },
+      };
+    }
     worksheet["!merges"] = [
       {
         s: { r: 0, c: 0 },
         e: { r: 0, c: headerRow.length - 1 },
       },
     ];
+    worksheet["!rows"] = [{ hpx: 28 }];
 
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, "Attendance Report");
@@ -493,8 +541,11 @@ export default function AttendanceManagement() {
       setErrorMessage("");
 
       try {
+        const month = effectiveMonth + 1;
+        const year = effectiveYear;
+
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${selectedMonth + 1}&year=${selectedYear}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster/v1?month=${month}&year=${year}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
@@ -521,7 +572,7 @@ export default function AttendanceManagement() {
     fetchAttendanceMuster();
 
     return () => controller.abort();
-  }, [selectedMonth, selectedYear]);
+  }, [effectiveMonth, effectiveYear]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -562,8 +613,9 @@ export default function AttendanceManagement() {
               </div>
               <button
                 type="button"
-                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8]`}
-                onClick={exportToExcel}
+                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8] disabled:!bg-[#1a3a6a] disabled:cursor-not-allowed disabled:opacity-50`}
+                onClick={handleExportClick}
+                disabled={visibleEmployees.length === 0}
               >
                 Export Excel
               </button>
@@ -576,19 +628,27 @@ export default function AttendanceManagement() {
                     type="text"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Name /Employee ID "
-                    className={`${filterInputBase} border-r border-r-[rgba(255,255,255,0.18)] bg-none placeholder:text-[rgba(255,255,255,0.65)]`}
+                    placeholder="Search faculty..."
+                    className={`${toolbarInputBase} pl-12`}
                   />
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Department</span>
+
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                  <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
-                    onChange={(event) =>
-                      setSelectedDepartment(event.target.value)
-                    }
-                    className={filterInputBase}
+                    onChange={(event) => setSelectedDepartment(event.target.value)}
+                    className={`${toolbarInputBase} pr-10`}
                   >
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      style={{ display: "none" }}
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
+                      Department
+                    </option>
                     {departmentOptions.map((department) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -599,16 +659,24 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Month</span>
+
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                  <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
-                    onChange={(event) =>
-                      setSelectedMonth(Number(event.target.value))
-                    }
-                    className={filterInputBase}
+                    onChange={(event) => setSelectedMonth(event.target.value)}
+                    className={`${toolbarInputBase} pr-10`}
                   >
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
+                      Month
+                    </option>
                     {monthOptions.map((month, index) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -619,16 +687,24 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
-                <label className="grid gap-[5px] text-xs font-extrabold text-white uppercase max-md:w-full">
-                  <span>Year</span>
+
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                  <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
-                    onChange={(event) =>
-                      setSelectedYear(Number(event.target.value))
-                    }
-                    className={filterInputBase}
+                    onChange={(event) => setSelectedYear(event.target.value)}
+                    className={`${toolbarInputBase} pr-10`}
                   >
+                    <option
+                      value=""
+                      disabled
+                      hidden
+                      className="bg-[#071425] text-white text-[#9ca3af]"
+                    >
+                      Year
+                    </option>
                     {yearOptions.map((year) => (
                       <option
                         className="bg-[#071425] text-white"
@@ -639,7 +715,16 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
+
+                <button
+                  type="button"
+                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                  onClick={exportToExcel}
+                >
+                  Export Excel
+                </button>
               </div>
             </div>
             {errorMessage && (
@@ -649,45 +734,38 @@ export default function AttendanceManagement() {
             )}
             <div className="min-h-0 flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
               <table className="w-max min-w-[1750px] border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
-                <thead>
-                  <tr>
-                    <th
-                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base max-md:w-[240px] max-md:min-w-[240px]`}
-                      rowSpan="2"
-                    >
-                      Employee
-                    </th>
-                    <th
-                      className={`${tableHeadCellBase} h-[42px] min-w-[1240px] border border-[rgba(255,255,255,0.12)] border-b-0 p-0`}
-                      colSpan={dates.length}
-                      aria-hidden="true"
-                    />
-                    {summaryColumns.map((column, index) => (
-                      <th
-                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
-                        rowSpan="2"
-                        key={column}
-                      >
-                        {column}
-                      </th>
-                    ))}
-                  </tr>
-                  <tr>
-                    {dates.map((date) => (
-                      <th
-                        className={`${tableCellBase} sticky top-[42px] z-[15] h-10 w-10 min-w-10 border-t border-t-[rgba(255,255,255,0.12)] bg-[#071425] font-bold text-white`}
-                        key={date.key}
-                      >
-                        <span className="block text-base leading-[1.3] text-white">
-                          {date.day}
-                        </span>
-                        <small className="block text-[13px] leading-[1.3] font-bold text-white">
-                          {date.weekday}
-                        </small>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+               <thead>
+  <tr>
+    <th
+      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
+    >
+      Employee
+    </th>
+
+    {dates.map((date) => (
+      <th
+        key={date.key}
+        className={`${tableCellBase} sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+      >
+        <span className="block text-base">
+          {date.day}
+        </span>
+        <small className="block text-[13px] font-bold">
+          {date.weekday}
+        </small>
+      </th>
+    ))}
+
+    {summaryColumns.map((column, index) => (
+      <th
+        key={column}
+        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
+      >
+        {column}
+      </th>
+    ))}
+  </tr>
+</thead>
                 <tbody>
                   {isLoading && (
                     <tr>
@@ -764,6 +842,14 @@ export default function AttendanceManagement() {
               </table>
             </div>
           </section>
+
+          <ExportPasswordModal
+            isOpen={isExportModalOpen}
+            onClose={closeExportModal}
+            onConfirm={(password) => handleConfirmExport(password, exportToExcel)}
+            loading={exportLoading}
+            error={exportError}
+          />
         </main>
       </div>
     </div>

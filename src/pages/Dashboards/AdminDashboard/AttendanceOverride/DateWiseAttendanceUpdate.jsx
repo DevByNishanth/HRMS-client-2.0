@@ -11,6 +11,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function DateWiseAttendanceUpdate() {
 
@@ -23,6 +25,15 @@ export default function DateWiseAttendanceUpdate() {
     const [editedRows, setEditedRows] = useState({});
     const [overrideModal, setOverrideModal] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     const departmentOptions = [
         "AIDS","AIML","CYS","CSBS","VLSI","CCE","CSE","ECE","EEE","MECH","IT","ADMIN",
@@ -423,7 +434,7 @@ export default function DateWiseAttendanceUpdate() {
                         />
                     </div>
                     <button
-                        onClick={exportToExcel}
+                        onClick={handleExportClick}
                         disabled={filteredData.length === 0}
                         className="
                             h-11
@@ -436,7 +447,7 @@ export default function DateWiseAttendanceUpdate() {
                             transition
                             hover:bg-[#3984ff]
                             hover:text-white
-                            cursor-pointer
+                            cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
                         Export Excel
@@ -688,6 +699,13 @@ export default function DateWiseAttendanceUpdate() {
 
                     handleBulkEditedOverride(data);
                 }}
+            />
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportToExcel)}
+                loading={exportLoading}
+                error={exportError}
             />
             <ToastContainer
                 position="top-right"
