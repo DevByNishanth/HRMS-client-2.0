@@ -7,6 +7,8 @@ import CustomDropdown from "../../../../components/CustomDropdown";
 import ViewLeaveType from "./ViewLeaveType";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function LeaveTypeBody() {
     const [showDrawer, setShowDrawer] = useState(false);
@@ -22,6 +24,15 @@ export default function LeaveTypeBody() {
     const [resetFrequencyFilter, setResetFrequencyFilter] = useState("");
     const [showViewDrawer, setShowViewDrawer] = useState(false);
     const [viewLeaveType, setViewLeaveType] = useState(null);
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     const LEAVE_CATEGORIES = [
         "Regular",
@@ -259,7 +270,8 @@ export default function LeaveTypeBody() {
                         </div>
 
                         <button
-                            onClick={handleExportExcel}
+                            onClick={handleExportClick}
+                            disabled={filteredLeaveTypes.length === 0}
                             className="
                                 h-12
                                 px-5
@@ -272,7 +284,7 @@ export default function LeaveTypeBody() {
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
-                                cursor-pointer
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
                             Export Excel
@@ -483,6 +495,14 @@ export default function LeaveTypeBody() {
                     </div>
                 </div>
             </div>
+
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, handleExportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
 
             {/* Delete Modal */}
 

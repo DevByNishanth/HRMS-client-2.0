@@ -5,6 +5,8 @@ import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import { getAttendanceOverrideHistory } from "../../../../services/AttendanceOverride/GetAttendanceOverrideHistory";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 import CustomDatePicker from '../../../../components/CustomDatePicker';
 import isBetween from "dayjs/plugin/isBetween";
 
@@ -20,6 +22,15 @@ export default function OverrideTable({ data = [] }) {
     const [selectedRows, setSelectedRows] = useState([]);
     const [employeeSearch, setEmployeeSearch] = useState("");
     const [employeeCategory, setEmployeeCategory] = useState("");
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     useEffect(() => {
         console.log("overrideData:", overrideData);
@@ -402,7 +413,7 @@ export default function OverrideTable({ data = [] }) {
                         />
                     </div>
                     <button
-                        onClick={exportSelectedEmployees}
+                        onClick={handleExportClick}
                         className="
                             h-12
                             px-5
@@ -412,7 +423,7 @@ export default function OverrideTable({ data = [] }) {
                             text-[#3984ff]
                             hover:bg-[#3984ff]
                             hover:text-white
-                            cursor-pointer
+                            cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
                         Export Excel
@@ -435,6 +446,14 @@ export default function OverrideTable({ data = [] }) {
                     )}
                 </div>
             </div>
+
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportSelectedEmployees)}
+                loading={exportLoading}
+                error={exportError}
+            />
 
             {/* Table */}
 

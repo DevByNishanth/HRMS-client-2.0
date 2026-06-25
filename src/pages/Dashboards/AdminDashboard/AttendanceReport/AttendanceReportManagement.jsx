@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
@@ -400,6 +402,15 @@ export default function AttendanceManagement() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("All");
+
+  const {
+    isExportModalOpen,
+    exportLoading,
+    exportError,
+    handleExportClick,
+    closeExportModal,
+    handleConfirmExport,
+  } = usePasswordProtectedExport();
   const dates = useMemo(
     () => getMonthDates(selectedYear, selectedMonth),
     [selectedMonth, selectedYear],
@@ -562,8 +573,9 @@ export default function AttendanceManagement() {
               </div>
               <button
                 type="button"
-                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8]`}
-                onClick={exportToExcel}
+                className={`${filterInputBase} ml-auto inline-flex !w-auto cursor-pointer items-center justify-center whitespace-nowrap !bg-[#2563eb] transition-colors hover:!bg-[#1d4ed8] disabled:!bg-[#1a3a6a] disabled:cursor-not-allowed disabled:opacity-50`}
+                onClick={handleExportClick}
+                disabled={visibleEmployees.length === 0}
               >
                 Export Excel
               </button>
@@ -764,6 +776,14 @@ export default function AttendanceManagement() {
               </table>
             </div>
           </section>
+
+          <ExportPasswordModal
+            isOpen={isExportModalOpen}
+            onClose={closeExportModal}
+            onConfirm={(password) => handleConfirmExport(password, exportToExcel)}
+            loading={exportLoading}
+            error={exportError}
+          />
         </main>
       </div>
     </div>

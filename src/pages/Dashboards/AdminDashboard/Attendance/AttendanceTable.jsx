@@ -18,6 +18,8 @@ import CustomDatePicker  from '../../../../components/CustomDatePicker';
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ExportPasswordModal from "../../../../components/ExportPasswordModal";
+import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
 
 export default function AttendanceTable() {
     const [department, setDepartment] = useState("");
@@ -36,6 +38,15 @@ export default function AttendanceTable() {
     const dropdownRef = useRef();
 
     const observerRef = useRef();
+
+    const {
+        isExportModalOpen,
+        exportLoading,
+        exportError,
+        handleExportClick,
+        closeExportModal,
+        handleConfirmExport,
+    } = usePasswordProtectedExport();
 
     const hasFilters =
         employeeSearch ||
@@ -505,6 +516,7 @@ console.log("fetchAttendanceData called");
                     />
 
                     <CustomDropdown
+                        className="w-[150px]"
                         value={category}
                         placeholder="Category"
                         options={[
@@ -517,6 +529,7 @@ console.log("fetchAttendanceData called");
                     />
 
                     <CustomDropdown
+                        className="w-[150px]"
                         value={shift}
                         placeholder="Shift"
                         options={[
@@ -529,7 +542,8 @@ console.log("fetchAttendanceData called");
                     />
 
                     <button
-                        onClick={exportExcel}
+                        onClick={handleExportClick}
+                        disabled={attendanceData.length === 0}
                         className="h-12
                                 px-5
                                 rounded-lg
@@ -541,7 +555,7 @@ console.log("fetchAttendanceData called");
                                 transition
                                 hover:bg-[#3984ff]
                                 hover:text-white
-                                cursor-pointer"
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {/* <Download size={16} /> */}
                         Export Excel
@@ -714,6 +728,14 @@ console.log("fetchAttendanceData called");
                     className="h-5"
                 />
             </div>
+
+            <ExportPasswordModal
+                isOpen={isExportModalOpen}
+                onClose={closeExportModal}
+                onConfirm={(password) => handleConfirmExport(password, exportExcel)}
+                loading={exportLoading}
+                error={exportError}
+            />
         </section>
     );
 }
