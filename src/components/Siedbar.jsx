@@ -50,7 +50,7 @@ const Sidebar = () => {
         { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
         { label: 'Faculty List', icon: Users, path: '/dashboard-principal/faculty-list' },
         { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
-        { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
+        // { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
         { label: 'Permission', icon: FileText, path: '/dashboard-principal/permissions' },
         { label: 'Comp off', icon: CalendarPlus, path: '/dashboard-principal/compOff' },
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard-principal/regularizationList' },
