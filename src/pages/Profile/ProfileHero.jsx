@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Camera, Edit3, Loader2, Trash2, X } from "lucide-react";
+import { Camera, Edit3, Eye, EyeOff, Loader2, Trash2, X } from "lucide-react";
+import { toast } from "react-toastify";
 import axios from "axios";
 import ProfileImageUploadModal from "../../components/ProfileImageUploadModal";
-import { getTokenFromLocalStorage } from "../../utils/tokenUtils";
+import { decodeToken, getTokenFromLocalStorage } from "../../utils/tokenUtils";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -67,7 +68,7 @@ const API_BASE_URL =
       setFeedback({ type: "", message: "" });
 
       const token = getTokenFromLocalStorage();
-      let decoded = jwtDecode(token);
+      let decoded = decodeToken(token);
 
       const response = await fetch(
         `${API_BASE_URL.replace(/\/$/, "")}/api/auth/change-password`,
@@ -80,7 +81,7 @@ const API_BASE_URL =
           body: JSON.stringify({
             newPassword,
             confirmPassword,
-            email : decoded?.email,
+            email: decoded?.email,
           }),
         },
       );
@@ -201,6 +202,14 @@ const API_BASE_URL =
             <Edit3 size={13} />
             Edit Profile
           </button>
+            <button
+            type="button"
+            onClick={()=>setIsPasswordModalOpen(true)}
+            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+          >
+            
+            Change password
+          </button>
           </div>
         )}
       </section>
@@ -242,10 +251,30 @@ const API_BASE_URL =
                 Are you sure you want to delete your profile photo? This action cannot be undone.
               </p>
             </div>
-            
-          
-           
-         
+            <div className="flex justify-end gap-3 px-5 pb-4">
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                className="rounded-xl border border-[#31415d] px-4 py-2 text-sm font-semibold text-[#c9d7f2] transition hover:bg-[#0f1b2e]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteImage}
+                disabled={deleting}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deleting ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <>
+                    <Trash2 size={14} />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
           </div>
       </section>
 
@@ -382,19 +411,16 @@ const API_BASE_URL =
               </button>
               <button
                 type="button"
-                onClick={handleDeleteImage}
-                disabled={deleting}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={handleChangePassword}
+                disabled={isSubmitting}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 text-[13px] font-semibold text-white transition hover:bg-blue-700 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {deleting ? (
+                {isSubmitting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
-                  <>
-                    <Trash2 size={14} />
-                    Delete
-                  </>
+                  "Change password"
                 )}
-              </button>
+               </button>
             </div>
           </div>
         </div>
