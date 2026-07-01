@@ -579,6 +579,13 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   placeholder="Computer Science"
                 />
                 <Field
+                  label="Department"
+                  name="department"
+                  value={professional.department}
+                  onChange={updateProfessional}
+                  placeholder="Computer Science"
+                />
+                <Field
                   label="Total Experience"
                   name="totalExperience"
                   value={professional.totalExperience}
