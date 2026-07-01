@@ -128,7 +128,7 @@ const uploadSteps = [
     id: "identity",
     title: "Other Documents",
     eyebrow: "Government Identity",
-    description: "Upload Aadhaar and PAN documents. PAN is optional.",
+    description: "Upload Aadhaar and PAN card copies — both are mandatory.",
     icon: IdCard,
     fields: [
       {
@@ -140,8 +140,8 @@ const uploadSteps = [
       {
         id: "panDocument",
         label: "PAN Document",
-        hint: "Optional",
-        required: false,
+        hint: "PAN card copy",
+        required: true,
       },
     ],
   },
@@ -595,7 +595,7 @@ const token = localStorage.getItem("hrms_token")
               </h2>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <StepProgress activeStep={activeStep} />
               {onClose && (
                 <button
@@ -607,7 +607,7 @@ const token = localStorage.getItem("hrms_token")
                   <X size={17} />
                 </button>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 

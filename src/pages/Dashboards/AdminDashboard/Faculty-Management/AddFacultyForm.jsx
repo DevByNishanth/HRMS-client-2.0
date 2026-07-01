@@ -69,12 +69,24 @@ const employeeCategories = [
   },
 ];
 const departments = [
-  "Computer Science",
-  "Information Technology",
-  "Electronics",
-  "Mechanical",
-  "Civil",
-  "Administration",
+  "English",
+  "Chemistry",
+  "Mech",
+  "IR",
+  "IT",
+  "AI & DS",
+  "PHYSICS",
+  "MATHS",
+  "EEE",
+  "ECE",
+  "CYS",
+  "CSE",
+  "CSBS",
+  "CCE",
+  "AIML",
+  "S&H",
+  "CFRD",
+  "QPT",
 ];
 
 const emptyQualification = {
@@ -114,6 +126,7 @@ const initialForm = {
   designation: "",
   jobTitle: "",
   department: "",
+  originalDepartment: "",
   shiftId: "",
   reportingManager: null,
   doorNo: "",
@@ -158,6 +171,8 @@ const mapFacultyToForm = (faculty = {}) => ({
   designation: faculty.designation || "",
   jobTitle: faculty.jobTitle || "",
   department: faculty.department || "",
+  originalDepartment: faculty.originalDepartment || "",
+  punchId: faculty.punchId || "",
   shiftId:
     typeof faculty.shiftId === "object"
       ? faculty.shiftId?._id || ""
@@ -231,6 +246,8 @@ const requiredByStep = {
     ["doj", "Date of Joining"],
     ["designation", "Designation"],
     ["department", "Department"],
+    ["originalDepartment", "Original Department"],
+    // ["punchId", "Punch ID"],
     ["shiftId", "Shift"],
   ],
 };
@@ -957,6 +974,8 @@ const AddFacultyForm = ({
     designation: form.designation.trim(),
     jobTitle: form.jobTitle.trim(),
     department: form.department,
+    originalDepartment: form.originalDepartment,
+    punchId: form.punchId.trim() || undefined,
     reportingTo:
       form.reportingManager
         ? {
@@ -1311,6 +1330,31 @@ const AddFacultyForm = ({
                   onChange={(value) => updateForm("department", value)}
                   options={departments}
                   error={errors.department}
+                />
+                <DropdownField
+                  label="Original Department"
+                  // required
+                  value={form.originalDepartment}
+                  onChange={(value) => updateForm("originalDepartment", value)}
+                  options={departments}
+                  error={errors.originalDepartment}
+                />
+                {/* <DropdownField
+                  label="Punch ID"
+                  required
+                  value={form.punchId}
+                  onChange={(value) => updateForm("punchId", value)}
+                  // options={departments}
+                  error={errors.punchId}
+                /> */}
+                <Field
+                  label="Punch ID"
+                  name="punchId"
+                  // required
+                  value={form.punchId}
+                  onChange={updateForm}
+                  error={errors.punchId}
+                  placeholder="2020"
                 />
                 <ObjectDropdownField
                   label="Shift"
