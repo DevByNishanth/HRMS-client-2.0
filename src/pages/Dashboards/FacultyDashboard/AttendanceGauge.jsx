@@ -85,6 +85,7 @@ const AttendanceGauge = () => {
   const [monthDropdownOpen, setMonthDropdownOpen] = useState(false);
 
   const dropdownRef = useRef(null);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -114,8 +115,7 @@ const AttendanceGauge = () => {
       const token = localStorage.getItem("hrms_token");
 
       const response = await fetch(
-        `http://192.168.4.9:5004/api/attendance/my-summary?month=${selectedMonth + 1
-        }&year=${selectedYear}`,
+        `${API_BASE_URL}/api/attendance/my-summary?month=${selectedMonth + 1}&year=${selectedYear}`,
         {
           method: "GET",
           headers: {
@@ -210,8 +210,8 @@ const AttendanceGauge = () => {
                     setMonthDropdownOpen(false);
                   }}
                   className={`w-full px-4 py-2 text-left text-[13px] transition ${idx === selectedMonth
-                      ? "bg-[#2563EB] text-white"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                    ? "bg-[#2563EB] text-white"
+                    : "text-[#cad7eb] hover:bg-[#132b49]"
                     }`}
                 >
                   {month} {selectedYear}
