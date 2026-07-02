@@ -68,7 +68,7 @@ const RecentLogs = () => {
       <div className="mb-4 flex items-center justify-between px-4 py-3">
         <h2 className="text-[18px] font-semibold text-white">Recent Logs</h2>
         <Link to="/dashboard-faculty/attendance" className="cursor-pointer">
-          <button className="flex items-center gap-1 text-[16px] font-medium cursor-pointer text-[#3984ff]">
+          <button className="flex items-center gap-1 text-[13px] font-medium cursor-pointer text-[#3984ff]">
             View All
             <ArrowRight size={16} />
           </button>

@@ -2,7 +2,7 @@
 // import logo from '../assets/logo.svg'
 import logo from '../assets/college_logo.png'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen,UserCheck } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, Network, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen,UserCheck } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
 
 const Sidebar = () => {
@@ -43,6 +43,7 @@ const Sidebar = () => {
         { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
         { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
         { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
+        { label: 'Teams', icon: Network , path: '/dashboard-admin/teams' },
     ];
 
     // Navigation items for Principal

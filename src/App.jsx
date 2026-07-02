@@ -37,6 +37,7 @@ import CompoffPage from "./components/CompoffPage";
 import Attendance from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceManagement";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import TeamsPage from "./pages/Dashboards/AdminDashboard/Teams/TeamsPage";
 
 function App() {
   // Role-based default route redirect
@@ -393,6 +394,14 @@ function App() {
           element={
             <ProtectedRoute>
               <HolidayManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/teams"
+          element={
+            <ProtectedRoute>
+              <TeamsPage />
             </ProtectedRoute>
           }
         />
