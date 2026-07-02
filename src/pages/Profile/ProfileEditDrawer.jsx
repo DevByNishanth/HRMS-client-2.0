@@ -58,7 +58,7 @@ const emptyQualification = {
 const FieldError = ({ message }) =>
   message ? <p className="mt-1 text-[11px] text-[#f16868]">{message}</p> : null;
 
-const Field = ({ label, name, value, onChange, error, required, className = "", type = "text", placeholder }) => (
+const Field = ({ label, name, value, onChange, error, required, className = "", type = "text", placeholder, disabled = false }) => (
   <label className={className}>
     <span className="mb-2 block text-[13px] font-semibold text-white">
       {label} {required && <span className="text-[#3984ff]">*</span>}
@@ -69,8 +69,9 @@ const Field = ({ label, name, value, onChange, error, required, className = "", 
       value={value}
       onChange={(event) => onChange(name, event.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={`h-11 w-full rounded-lg border bg-[#0d2138] px-3 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
-        }`}
+        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
     />
     <FieldError message={error} />
   </label>
@@ -556,6 +557,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   value={professional.employeeId}
                   onChange={updateProfessional}
                   placeholder="SECE-HOD-CS-012"
+                  disabled
                 />
                 <Field
                   label="Date of Joining"
@@ -570,6 +572,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   value={professional.designation}
                   onChange={updateProfessional}
                   placeholder="Assistant Professor"
+                  disabled
                 />
                 <Field
                   label="Department"
@@ -577,6 +580,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   value={professional.department}
                   onChange={updateProfessional}
                   placeholder="Computer Science"
+                  disabled
                 />
                 <Field
                   label="Department"
@@ -584,6 +588,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   value={professional.department}
                   onChange={updateProfessional}
                   placeholder="Computer Science"
+                  disabled
                 />
                 <Field
                   label="Total Experience"
@@ -783,6 +788,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                     onChange={updateAdditional}
                     placeholder="nishanth.a@sece.ac.in"
                     className="col-span-2"
+                    disabled
                   />
                   <DropdownField
                     label="Work Type"
@@ -821,6 +827,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                     value={additional.reportingManagerName}
                     onChange={updateAdditional}
                     placeholder="Manager name"
+                    disabled
                   />
                   <Field
                     label="Manager Designation"
@@ -828,6 +835,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                     value={additional.reportingManagerDesignation}
                     onChange={updateAdditional}
                     placeholder="HOD / Dean"
+                    disabled
                   />
                   <Field
                     label="Manager Department"
@@ -836,6 +844,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                     onChange={updateAdditional}
                     placeholder="Computer Science"
                     className="col-span-2"
+                    disabled
                   />
                 </div>
               </div>

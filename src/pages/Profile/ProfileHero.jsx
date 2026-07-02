@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Camera, Edit3, Eye, EyeOff, Loader2, Trash2, X } from "lucide-react";
+import { Camera, Edit3, Eye, EyeOff, Loader2, Trash2, X, Key } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import ProfileImageUploadModal from "../../components/ProfileImageUploadModal";
@@ -207,7 +207,7 @@ const API_BASE_URL =
             onClick={()=>setIsPasswordModalOpen(true)}
             className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
           >
-            
+            <Key size={13} />
             Change password
           </button>
           </div>
