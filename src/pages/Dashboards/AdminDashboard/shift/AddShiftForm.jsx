@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import {createShifts} from '../../../../services/shift/shiftService';
 import {updateShift} from '../../../../services/shift/updateShiftService'
 import CustomTimePicker from "../../../../components/CustomTimePicker";
-
+    const DEFAULT_GRACE_TIME = 10;
     const ErrorMsg = ({ msg }) =>
     msg ? (
         <p className="text-red-400 text-sm mt-1">
@@ -63,20 +63,41 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
     return Object.keys(newErrors).length === 0;
     };
 
+    // const calculateWorkingHours = (startTime, endTime) => {
+    //     if (!startTime || !endTime) return "";
+
+    //     const start = new Date(`1970-01-01T${startTime}:00`);
+    //     let end = new Date(`1970-01-01T${endTime}:00`);
+
+    //     if (end < start) {
+    //         end.setDate(end.getDate() + 1);
+    //     }
+
+    //     const diffMs = end - start;
+    //     const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    //     // Return hours for display
+    //     return (diffMinutes / 60).toFixed(2);
+    // };
     const calculateWorkingHours = (startTime, endTime) => {
         if (!startTime || !endTime) return "";
 
-        const start = new Date(`1970-01-01T${startTime}:00`);
+        let start = new Date(`1970-01-01T${startTime}:00`);
         let end = new Date(`1970-01-01T${endTime}:00`);
 
+        // Add 10 minutes grace time to the start time
+        start = new Date(
+            start.getTime() + DEFAULT_GRACE_TIME * 60 * 1000
+        );
+
+        // Handle overnight shifts
         if (end < start) {
             end.setDate(end.getDate() + 1);
         }
 
-        const diffMs = end - start;
-        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffMinutes = Math.floor((end - start) / (1000 * 60));
 
-        // Return hours for display
+        // Display hours (e.g. 8.00)
         return (diffMinutes / 60).toFixed(2);
     };
 
