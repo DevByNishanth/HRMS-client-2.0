@@ -28,6 +28,8 @@
                         employeeCategory: filters.employeeCategory,
                         fromDate: filters.fromDate,
                         toDate: filters.toDate,
+                        status:filters.status,
+                        date:filters.date
                     },
                     headers: {
                         Authorization: `Bearer ${token}`,
