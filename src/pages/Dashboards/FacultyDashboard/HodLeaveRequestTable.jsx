@@ -715,23 +715,31 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
 
 
     async function fetchLeaveRequests() {
-
         const token = localStorage.getItem("hrms_token");
-        let decoded = jwtDecode(token)
-        let facultyId = decoded?.facultyId
-
-        console.log("hod fetching req ")
-        const reponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${dept}`, {
-            headers: {
-                Authorization: `Bearer ${getTokenFromLocalStorage()}`
+        const decoded = jwtDecode(token);
+        const facultyId = decoded?.facultyId;
+    
+        // If department is CFRD, fetch both CFRD and QPT
+        const departmentParam = dept === "CFRD" ? "CFRD,QPT" : dept;
+    
+        console.log("hod fetching req");
+    
+        const response = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${encodeURIComponent(departmentParam)}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`
+                }
             }
-        });
-        let originalData = reponse.data?.leaveApplications
-
-        let data = originalData.filter((item) => {
-            return item.facultyId._id !== facultyId
-        })
-        console.log("hod data : ", data)
+        );
+    
+        const originalData = response.data?.leaveApplications || [];
+    
+        const data = originalData.filter(
+            (item) => item.facultyId?._id !== facultyId
+        );
+    
+        console.log("hod data:", data);
         setRequests(data);
     }
 
