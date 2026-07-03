@@ -19,5 +19,15 @@ const attendanceData = [
         outTime: "04:15 PM",
         status: "Present",
     },
+    {
+        empId: "EMP003",
+        name: "Manikandan",
+        department: "CCE",
+        category: "Teaching",
+        date: "2026-06-22",
+        inTime: "08:45 AM",
+        outTime: "04:15 PM",
+        status: "Present",
+    },
 ];
 export default attendanceData;
