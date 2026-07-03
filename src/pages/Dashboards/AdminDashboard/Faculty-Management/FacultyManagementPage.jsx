@@ -520,8 +520,9 @@ const FacultyManagementPage = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span className="block truncate">
-                                {faculty.reportingTo?.name || "-"}
-                              </span>
+                               {faculty.reportingTo?.facultyId
+  ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
+  : "-"}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span
