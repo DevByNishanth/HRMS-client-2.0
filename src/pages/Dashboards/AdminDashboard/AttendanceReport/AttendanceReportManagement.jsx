@@ -28,194 +28,12 @@ const tableCellBase =
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
 const toolbarInputBase =
   "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
- 
-  const summaryRightClasses = ["right-[114px]", "right-[76px]", "right-[38px]", "right-0"];
 
-const fallbackEmployees = [
-  {
-    id: "SECENAD002",
-    name: "A.ANBARASAN",
-    designation: "Senior Lab Technician, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "A",
-      "2026-06-03": "A",
-      "2026-06-04": "A",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A",
-      "2026-06-09": "A",
-      "2026-06-10": "A",
-      "2026-06-11": "A",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "A",
-    },
-    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECETCS136",
-    name: "ABINAYA M",
-    designation: "ASSISTANT PROFESSOR, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "A",
-      "2026-06-03": "A",
-      "2026-06-04": "A",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A",
-      "2026-06-09": "A",
-      "2026-06-10": "A",
-      "2026-06-11": "A",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "A",
-    },
-    summary: { P: 0, L: 0, H: 0, A: 12, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECEADM161",
-    name: "ABISHEK K",
-    designation: "Software Developer, Coimbatore",
-    attendance: {
-      "2026-06-01": "P",
-      "2026-06-02": "P",
-      "2026-06-03": "A",
-      "2026-06-04": "P",
-      "2026-06-05": "A:P",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A:P",
-      "2026-06-09": "A:P",
-      "2026-06-10": "A:P",
-      "2026-06-11": "A:P",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "A:P",
-    },
-    summary: { P: 6.5, L: 0, H: 0, A: 5.5, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECETCS127",
-    name: "AGALYA K",
-    designation: "ASSISTANT PROFESSOR, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "A",
-      "2026-06-03": "A",
-      "2026-06-04": "A",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A",
-      "2026-06-09": "A",
-      "2026-06-10": "A",
-      "2026-06-11": "A",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "P",
-    },
-    summary: { P: 1, L: 0, H: 0, A: 11, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECETMA012",
-    name: "AKILADEVI N",
-    designation: "ASSISTANT PROFESSOR, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "A:P",
-      "2026-06-03": "A",
-      "2026-06-04": "P",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A",
-      "2026-06-09": "A",
-      "2026-06-10": "P",
-      "2026-06-11": "A",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "P",
-    },
-    summary: { P: 3.5, L: 0, H: 0, A: 8.5, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECEPLC013",
-    name: "ALOYSIUS JUDE L D",
-    designation: "Softskills Trainer, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "A",
-      "2026-06-03": "A",
-      "2026-06-04": "A",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "A",
-      "2026-06-09": "P",
-      "2026-06-10": "A",
-      "2026-06-11": "A:P",
-      "2026-06-12": "P",
-      "2026-06-13": "A:P",
-      "2026-06-14": "OFF",
-      "2026-06-15": "P",
-    },
-    summary: { P: 4, L: 0, H: 0, A: 8, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECEADM102",
-    name: "ANAND BABU P",
-    designation: "Creative Head, Coimbatore",
-    attendance: {
-      "2026-06-01": "A",
-      "2026-06-02": "P",
-      "2026-06-03": "A",
-      "2026-06-04": "P:A",
-      "2026-06-05": "A",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "P",
-      "2026-06-09": "P",
-      "2026-06-10": "P",
-      "2026-06-11": "P",
-      "2026-06-12": "A",
-      "2026-06-13": "A",
-      "2026-06-14": "OFF",
-      "2026-06-15": "A",
-    },
-    summary: { P: 5.5, L: 0, H: 0, A: 6.5, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
-  {
-    id: "SECETCS073",
-    name: "ANANDARAJ A",
-    designation: "ASSISTANT PROFESSOR, Coimbatore",
-    attendance: {
-      "2026-06-01": "P",
-      "2026-06-02": "P",
-      "2026-06-03": "A",
-      "2026-06-04": "P",
-      "2026-06-05": "P",
-      "2026-06-06": "OFF",
-      "2026-06-07": "OFF",
-      "2026-06-08": "P",
-      "2026-06-09": "P",
-      "2026-06-10": "A",
-      "2026-06-11": "P",
-      "2026-06-12": "P",
-      "2026-06-13": "P",
-      "2026-06-14": "OFF",
-      "2026-06-15": "A:P",
-    },
-    summary: { P: 9.5, L: 0, H: 0, A: 2.5, OFF: 3, R: 0, OD: 0, "?": 0 },
-  },
+const summaryRightClasses = [
+  "right-[114px]",
+  "right-[76px]",
+  "right-[38px]",
+  "right-0",
 ];
 
 function getMonthDates(year, monthIndex) {
@@ -247,22 +65,34 @@ function getMonthDates(year, monthIndex) {
 // (temporary - remove once verified)
 // eslint-disable-next-line no-unused-vars
 function _logDatesForDebug(dates) {
-  if (typeof console !== "undefined") console.debug("Attendance window dates:", dates);
+  if (typeof console !== "undefined")
+    console.debug("Attendance window dates:", dates);
 }
 
-function getCellClass(status, isWeekend, isAlternateRow = false) {
+function getCellClass(
+  status,
+  isWeekend,
+  isAlternateRow = false,
+  isOverridden = false,
+  regularization = false,
+) {
   const normalizedStatus = String(status || "").trim();
   const baseClass = `${tableCellBase} font-medium text-white`;
   const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
-
+  // Override takes highest priority
+  if (isOverridden) {
+    return `${baseClass} bg-orange-400`;
+  }
+  
+  // Regularization
+  if (regularization) {
+    return `${baseClass} bg-yellow-400`;
+  }
   if (normalizedStatus === "A") return `${baseClass} bg-[#85444C]`;
-  if (normalizedStatus === "P")
-    return `${baseClass} bg-[#0A5D4D]`;
-  if (normalizedStatus === "OFF")
-    return `${baseClass} bg-[#0f1e36]`;
+  if (normalizedStatus === "P") return `${baseClass} bg-[#0A5D4D]`;
+  if (normalizedStatus === "OFF") return `${baseClass} bg-[#0f1e36]`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
-  if (normalizedStatus.includes(":"))
-    return `${baseClass} bg-[#3b82f6]`;
+  if (normalizedStatus.includes(":")) return `${baseClass} bg-[#3b82f6]`;
   return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
 }
 
@@ -342,7 +172,10 @@ function normalizeAttendanceMap(employee) {
           if (!Number.isNaN(parsedDate.getTime())) {
             normalizedKey = `${parsedDate.getFullYear()}-${String(
               parsedDate.getMonth() + 1,
-            ).padStart(2, "0")}-${String(parsedDate.getDate()).padStart(2, "0")}`;
+            ).padStart(
+              2,
+              "0",
+            )}-${String(parsedDate.getDate()).padStart(2, "0")}`;
           }
         }
 
@@ -367,7 +200,9 @@ function normalizeAttendanceMap(employee) {
 function calculateSummary(attendance) {
   return Object.values(attendance).reduce(
     (summary, rawStatus) => {
-      const status = String(rawStatus || "-");
+      const status = String(
+        typeof rawStatus === "object" ? rawStatus.status : rawStatus || "-",
+      );
 
       if (status === "P") summary.P += 1;
       else if (status === "A") summary.A += 1;
@@ -410,15 +245,37 @@ function normalizeEmployees(payload) {
 }
 
 function getAttendanceStatus(attendance, date) {
-  if (!attendance || typeof attendance !== "object") return "-";
+  if (!attendance || typeof attendance !== "object") {
+    return {
+      status: "-",
+      isOverridden: false,
+      regularization: false,
+    };
+  }
 
-  const dayKey = String(date.day);
-  if (attendance[dayKey] !== undefined) return attendance[dayKey];
+  const value =
+    attendance[String(date.day)] ??
+    attendance[date.key];
 
-  const isoKey = date.key;
-  if (attendance[isoKey] !== undefined) return attendance[isoKey];
+  if (value === undefined) {
+    return {
+      status: "-",
+      isOverridden: false,
+      regularization: false,
+    };
+  }
 
-  return "-";
+  // Backend sent a string ("OFF", "-", "P")
+  if (typeof value === "string") {
+    return {
+      status: value,
+      isOverridden: false,
+      regularization: false,
+    };
+  }
+
+  // Backend sent an object
+  return value;
 }
 
 export default function AttendanceManagement() {
@@ -431,12 +288,14 @@ export default function AttendanceManagement() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const effectiveMonth = useMemo(
-    () => (selectedMonth === "" ? new Date().getMonth() : Number(selectedMonth)),
+    () =>
+      selectedMonth === "" ? new Date().getMonth() : Number(selectedMonth),
     [selectedMonth],
   );
 
   const effectiveYear = useMemo(
-    () => (selectedYear === "" ? new Date().getFullYear() : Number(selectedYear)),
+    () =>
+      selectedYear === "" ? new Date().getFullYear() : Number(selectedYear),
     [selectedYear],
   );
 
@@ -448,9 +307,15 @@ export default function AttendanceManagement() {
   useEffect(() => {
     try {
       if (typeof console !== "undefined") {
-        console.debug("Attendance window effectiveMonth/effectiveYear:", effectiveMonth, effectiveYear);
+        console.debug(
+          "Attendance window effectiveMonth/effectiveYear:",
+          effectiveMonth,
+          effectiveYear,
+        );
       }
-      _logDatesForDebug(dates.map(d => ({ key: d.key, day: d.day, weekday: d.weekday })));
+      _logDatesForDebug(
+        dates.map((d) => ({ key: d.key, day: d.day, weekday: d.weekday })),
+      );
     } catch (e) {}
   }, [dates, effectiveMonth, effectiveYear]);
   const monthTitle = new Date(effectiveYear, effectiveMonth).toLocaleDateString(
@@ -500,14 +365,20 @@ export default function AttendanceManagement() {
     const dataRows = visibleEmployees.map((employee) => {
       const row = [
         `${employee.name} [${employee.id}]`,
-        ...dates.map((date) => getAttendanceStatus(employee.attendance, date)),
+        ...dates.map(
+          (date) => getAttendanceStatus(employee.attendance, date).status
+        ),
         ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
       ];
       return row;
     });
 
     // Place the month title centered across the entire table width
-    const worksheet = utils.aoa_to_sheet([[monthTitle], headerRow, ...dataRows]);
+    const worksheet = utils.aoa_to_sheet([
+      [monthTitle],
+      headerRow,
+      ...dataRows,
+    ]);
     if (worksheet.A1) {
       worksheet.A1.s = {
         alignment: { horizontal: "center", vertical: "center" },
@@ -581,38 +452,46 @@ export default function AttendanceManagement() {
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
           <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-           <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
-  <div>
-    <h1 className="m-0 text-2xl font-black text-white">
-      Attendance Report Management
-    </h1>
-  </div>
+            <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
+              <div>
+                <h1 className="m-0 text-2xl font-black text-white">
+                  Attendance Report Management
+                </h1>
+              </div>
 
-  <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
-      Present
-    </span>
+              <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
+                  Present
+                </span>
 
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
-      Absent
-    </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
+                  Absent
+                </span>
 
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
-      OFF
-    </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
+                  OFF
+                </span>
 
-    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-      <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
-      OD
-    </span>
-  </div>
-</div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
+                  OD
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
+                  Override
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-yellow-600" />
+                  Regularized
+                </span>
+              </div>
+            </div>
             <div className="mt-3 flex w-full flex-wrap items-center gap-2">
               <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-5">
-                  <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Search</span>
                   <Search
                     className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
@@ -631,7 +510,9 @@ export default function AttendanceManagement() {
                   <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
-                    onChange={(event) => setSelectedDepartment(event.target.value)}
+                    onChange={(event) =>
+                      setSelectedDepartment(event.target.value)
+                    }
                     className={`${toolbarInputBase} pr-10`}
                   >
                     <option
@@ -728,38 +609,36 @@ export default function AttendanceManagement() {
             )}
             <div className="min-h-0 flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
               <table className="w-max min-w-[1750px] border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
-               <thead>
-  <tr>
-    <th
-      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
-    >
-      Employee
-    </th>
+                <thead>
+                  <tr>
+                    <th
+                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
+                    >
+                      Employee
+                    </th>
 
-    {dates.map((date) => (
-      <th
-        key={date.key}
-        className={`${tableCellBase} sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
-      >
-        <span className="block text-base">
-          {date.day}
-        </span>
-        <small className="block text-[13px] font-bold">
-          {date.weekday}
-        </small>
-      </th>
-    ))}
+                    {dates.map((date) => (
+                      <th
+                        key={date.key}
+                        className={`${tableCellBase} sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+                      >
+                        <span className="block text-base">{date.day}</span>
+                        <small className="block text-[13px] font-bold">
+                          {date.weekday}
+                        </small>
+                      </th>
+                    ))}
 
-    {summaryColumns.map((column, index) => (
-      <th
-        key={column}
-        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
-      >
-        {column}
-      </th>
-    ))}
-  </tr>
-</thead>
+                    {summaryColumns.map((column, index) => (
+                      <th
+                        key={column}
+                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
+                      >
+                        {column}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
                 <tbody>
                   {isLoading && (
                     <tr>
@@ -790,21 +669,23 @@ export default function AttendanceManagement() {
                           </span>
                         </th>
                         {dates.map((date) => {
-                          const status = getAttendanceStatus(
+                          const attendance = getAttendanceStatus(
                             employee.attendance,
                             date,
                           );
 
                           return (
                             <td
+                            key={`${employee.id}-${date.key}`}
                               className={getCellClass(
-                                status,
+                                attendance.status,
                                 date.isWeekend,
                                 employeeIndex % 2 === 1,
+                                attendance.isOverridden,
+                                attendance.regularization,
                               )}
-                              key={`${employee.id}-${date.key}`}
                             >
-                              {status}
+                              {attendance.status}
                             </td>
                           );
                         })}
