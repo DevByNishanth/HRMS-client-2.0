@@ -83,7 +83,7 @@ function getCellClass(
   if (isOverridden) {
     return `${baseClass} bg-orange-400`;
   }
-  
+
   // Regularization
   if (regularization) {
     return `${baseClass} bg-yellow-400`;
@@ -253,9 +253,7 @@ function getAttendanceStatus(attendance, date) {
     };
   }
 
-  const value =
-    attendance[String(date.day)] ??
-    attendance[date.key];
+  const value = attendance[String(date.day)] ?? attendance[date.key];
 
   if (value === undefined) {
     return {
@@ -286,6 +284,10 @@ export default function AttendanceManagement() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedAttendance, setSelectedAttendance] = useState(null);
+  const [editedStatus, setEditedStatus] = useState("");
+
 
   const effectiveMonth = useMemo(
     () =>
@@ -366,7 +368,7 @@ export default function AttendanceManagement() {
       const row = [
         `${employee.name} [${employee.id}]`,
         ...dates.map(
-          (date) => getAttendanceStatus(employee.attendance, date).status
+          (date) => getAttendanceStatus(employee.attendance, date).status,
         ),
         ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
       ];
@@ -607,8 +609,8 @@ export default function AttendanceManagement() {
                 {errorMessage}
               </div>
             )}
-            <div className="min-h-0 flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
-              <table className="w-max min-w-[1750px] border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
+            <div className="min-h-0  flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
                 <thead>
                   <tr>
                     <th
@@ -620,7 +622,7 @@ export default function AttendanceManagement() {
                     {dates.map((date) => (
                       <th
                         key={date.key}
-                        className={`${tableCellBase} sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
                       >
                         <span className="block text-base">{date.day}</span>
                         <small className="block text-[13px] font-bold">
@@ -632,7 +634,7 @@ export default function AttendanceManagement() {
                     {summaryColumns.map((column, index) => (
                       <th
                         key={column}
-                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-[35] w-[38px] min-w-[38px]`}
+                        className={`${tableHeadCellBase}  ${summaryRightClasses[index]} z-[35] w-[38px]  min-w-[38px]`}
                       >
                         {column}
                       </th>
@@ -643,7 +645,7 @@ export default function AttendanceManagement() {
                   {isLoading && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold text-white`}
+                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold  text-white`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         Loading attendance muster...
@@ -654,7 +656,7 @@ export default function AttendanceManagement() {
                     visibleEmployees.map((employee, employeeIndex) => (
                       <tr key={employee.id}>
                         <th
-                          className={`${tableCellBase} sticky left-0 z-20 w-[270px] min-w-[270px] ${
+                          className={`${tableCellBase} sticky   left-0 z-20 w-[270px] min-w-[270px] ${
                             employeeIndex % 2 === 1
                               ? "bg-[#0a1a2e]"
                               : "bg-[#071425]"
@@ -676,14 +678,25 @@ export default function AttendanceManagement() {
 
                           return (
                             <td
-                            key={`${employee.id}-${date.key}`}
-                              className={getCellClass(
+                              key={`${employee.id}-${date.key}`}
+                             onClick={() => {
+  setSelectedAttendance({
+    employee: employee.name,
+    empId: employee.id,
+    date: date.key,
+    status: attendance.status,
+  });
+
+  setEditedStatus(attendance.status);
+  setShowPopup(true);
+}}
+                              className={`${getCellClass(
                                 attendance.status,
                                 date.isWeekend,
                                 employeeIndex % 2 === 1,
                                 attendance.isOverridden,
                                 attendance.regularization,
-                              )}
+                              )} border border-white cursor-pointer hover:brightness-110`}
                             >
                               {attendance.status}
                             </td>
@@ -691,7 +704,7 @@ export default function AttendanceManagement() {
                         })}
                         {summaryColumns.map((column, index) => (
                           <td
-                            className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-[25] w-[38px] min-w-[38px] ${
+                            className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-[25]  w-[38px] min-w-[38px] ${
                               employeeIndex % 2 === 1
                                 ? "bg-[#0a1a2e]"
                                 : "bg-[#1a2847]"
@@ -719,6 +732,29 @@ export default function AttendanceManagement() {
           </section>
         </main>
       </div>
+      {showPopup && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
+      <h2 className="mb-4 text-lg font-bold">
+        Attendance Details
+      </h2>
+
+      <p><strong>Employee:</strong> {selectedAttendance.employee}</p>
+      <p><strong>ID:</strong> {selectedAttendance.empId}</p>
+      <p><strong>Date:</strong> {selectedAttendance.date}</p>
+      <p><strong>Status:</strong> {selectedAttendance.status}</p>
+
+      <div className="mt-5 flex justify-end">
+        <button
+          onClick={() => setShowPopup(false)}
+          className="rounded bg-red-500 px-4 py-2 text-white"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
