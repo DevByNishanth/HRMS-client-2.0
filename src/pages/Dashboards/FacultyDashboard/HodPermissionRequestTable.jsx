@@ -346,7 +346,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       setRevokeLoading(true);
     }
     setError(null);
-console.log("")
+    console.log("")
     try {
       const token = getTokenFromLocalStorage();
       const body = action === "reject"
@@ -552,7 +552,7 @@ console.log("")
                               <X className="h-4 w-4" />
                             </button>
                           </>
-                        ) : permission.currentApprovalLevel !== "hod" ? (
+                        ) : permission.currentApprovalLevel !== "hod" && permission.status !== "Rejected" || permission.status !== "Approved" ? (
                           <button
                             type="button"
                             onClick={() => handleRevokeClick(permission)}
