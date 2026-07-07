@@ -30,6 +30,7 @@ import { exportToExcel } from "../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../hooks/usePasswordProtectedExport";
 import userImg from "../../assets/userImg.svg";
 import noDataFoundImg from "../../assets/no-data-found.svg";
+import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -1405,8 +1406,13 @@ const RegularaizationListPage = () => {
     try {
       setHodLoading(true);
       const token = getTokenFromLocalStorage();
+      let decoded = jwtDecode(token)
+      let department = decoded.department
+
+      let urlParams = department == "CFRD" ? "CFRD, QPT" : department
+
       const res = await fetch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/list`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/hod/${encodeURIComponent(urlParams)}`,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         },

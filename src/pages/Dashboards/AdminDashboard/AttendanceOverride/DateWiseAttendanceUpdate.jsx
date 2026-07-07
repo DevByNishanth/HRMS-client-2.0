@@ -78,6 +78,8 @@ export default function DateWiseAttendanceUpdate() {
             console.error(error);
         }
     };
+    console.log("fetchAttendance",fetchAttendance);
+    
 
     const filteredData = attendanceData.filter((row) => {
         const matchesSearch =

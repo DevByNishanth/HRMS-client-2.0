@@ -241,6 +241,7 @@ export default function EmployeeWiseAttendanceUpdate() {
             ? new Date(record.date).toLocaleDateString("en-GB")
             : "-";
     };
+    console.log("formart override data", formatOverrideDate);
 
     const showResetButton =
         fromDate ||
