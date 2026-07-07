@@ -3,6 +3,7 @@ import { Search, ChevronDown } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
+import { updateAttendanceOverrideSingle } from "../../../../services/AttendanceOverride/UpdateAttendanceOverrideSingle";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
@@ -61,12 +62,8 @@ function getMonthDates(year, monthIndex) {
   return dates;
 }
 
-// Debug: log computed dates so you can inspect in browser console
-// (temporary - remove once verified)
-// eslint-disable-next-line no-unused-vars
 function _logDatesForDebug(dates) {
-  if (typeof console !== "undefined")
-    console.debug("Attendance window dates:", dates);
+  if (typeof console !== "undefined") console.debug("Attendance window dates:", dates);
 }
 
 function getCellClass(
@@ -79,12 +76,9 @@ function getCellClass(
   const normalizedStatus = String(status || "").trim();
   const baseClass = `${tableCellBase} font-medium text-white`;
   const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
-  // Override takes highest priority
   if (isOverridden) {
     return `${baseClass} bg-orange-400`;
   }
-
-  // Regularization
   if (regularization) {
     return `${baseClass} bg-yellow-400`;
   }
@@ -124,6 +118,10 @@ function getEmployeeName(employee) {
   );
 }
 
+function isObjectId(value) {
+  return typeof value === "string" && /^[0-9a-fA-F]{24}$/.test(value);
+}
+
 function getEmployeeId(employee) {
   return (
     employee.id ||
@@ -135,8 +133,27 @@ function getEmployeeId(employee) {
   );
 }
 
+function getEmployeeDbId(employee) {
+  if (!employee || typeof employee !== "object") return null;
+
+  if (isObjectId(employee._id)) return employee._id;
+  if (employee.facultyId) {
+    if (typeof employee.facultyId === "string" && isObjectId(employee.facultyId)) {
+      return employee.facultyId;
+    }
+    if (typeof employee.facultyId === "object" && isObjectId(employee.facultyId._id)) {
+      return employee.facultyId._id;
+    }
+  }
+
+  if (isObjectId(employee.employeeId)) return employee.employeeId;
+  if (isObjectId(employee.id)) return employee.id;
+  if (isObjectId(employee.empId)) return employee.empId;
+
+  return null;
+}
+
 function getEmployeeDesignation(employee) {
-  // console.log("Employee:", employee);
   return employee.department || "";
 }
 
@@ -231,6 +248,7 @@ function normalizeEmployees(payload) {
 
     return {
       id: getEmployeeId(employee) || `employee-${index}`,
+      dbId: getEmployeeDbId(employee),
       name: getEmployeeName(employee),
       department: getEmployeeDepartmentType(employee),
       designation: getEmployeeDesignation(employee),
@@ -253,7 +271,7 @@ function getAttendanceStatus(attendance, date) {
     };
   }
 
-  const value = attendance[String(date.day)] ?? attendance[date.key];
+  const value = attendance[date.key] ?? attendance[String(date.day)];
 
   if (value === undefined) {
     return {
@@ -263,7 +281,6 @@ function getAttendanceStatus(attendance, date) {
     };
   }
 
-  // Backend sent a string ("OFF", "-", "P")
   if (typeof value === "string") {
     return {
       status: value,
@@ -272,11 +289,10 @@ function getAttendanceStatus(attendance, date) {
     };
   }
 
-  // Backend sent an object
   return value;
 }
 
-export default function AttendanceManagement() {
+export default function AttendanceManagementOverride() {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [employees, setEmployees] = useState([]);
@@ -287,6 +303,93 @@ export default function AttendanceManagement() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [editedStatus, setEditedStatus] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  function getToggleStatus(status) {
+    if (status === "A") return "P";
+    if (status === "P") return "A";
+    if (status === "A:P") return "P:A";
+    if (status === "P:A") return "A:P";
+    return null;
+  }
+
+  function parseSessionsFromStatus(status) {
+    if (status === "A") return { session1: "A", session2: "A" };
+    if (status === "P") return { session1: "P", session2: "P" };
+    if (status === "A:P") return { session1: "A", session2: "P" };
+    if (status === "P:A") return { session1: "P", session2: "A" };
+    return { session1: "A", session2: "A" };
+  }
+
+  async function handleSaveStatus() {
+    if (!selectedAttendance) return;
+
+    setIsSaving(true);
+
+    try {
+      const { session1, session2 } = parseSessionsFromStatus(editedStatus);
+      const payload = {
+        firstIn: `${selectedAttendance.date}T03:12:12.000Z`,
+        lastOut: `${selectedAttendance.date}T11:28:57.000Z`,
+        session1,
+        session2,
+        remarks:
+          remarks.trim() ||
+          `Attendance override set to ${editedStatus} for ${selectedAttendance.date}`,
+      };
+
+      let requestEmployeeId = selectedAttendance.empDbId;
+      if (!requestEmployeeId && isObjectId(selectedAttendance.empId)) {
+        requestEmployeeId = selectedAttendance.empId;
+      }
+
+      if (!requestEmployeeId) {
+        throw new Error("Unable to determine employee id for override update.");
+      }
+
+      await updateAttendanceOverrideSingle(
+        requestEmployeeId,
+        selectedAttendance.date,
+        payload,
+      );
+
+      setEmployees((prevEmployees) =>
+        prevEmployees.map((employee) => {
+          if (employee.id !== selectedAttendance.empId) return employee;
+
+          const updatedAttendance = {
+            ...employee.attendance,
+            [selectedAttendance.date]: editedStatus,
+          };
+
+          if (selectedAttendance.day !== undefined) {
+            updatedAttendance[String(selectedAttendance.day)] = editedStatus;
+          }
+
+          return {
+            ...employee,
+            attendance: updatedAttendance,
+            summary: calculateSummary(updatedAttendance),
+          };
+        }),
+      );
+
+      setSelectedAttendance((prev) =>
+        prev ? { ...prev, status: editedStatus } : prev,
+      );
+      setShowPopup(false);
+      setRemarks("");
+    } catch (error) {
+      console.error("Override update failed", error);
+      alert(
+        error?.response?.data?.message ||
+          "Unable to update override attendance.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   const effectiveMonth = useMemo(
     () =>
@@ -304,7 +407,7 @@ export default function AttendanceManagement() {
     () => getMonthDates(effectiveYear, effectiveMonth),
     [effectiveMonth, effectiveYear],
   );
-  // Log computed dates for debugging (temporary)
+
   useEffect(() => {
     try {
       if (typeof console !== "undefined") {
@@ -333,7 +436,7 @@ export default function AttendanceManagement() {
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b));
 
-    return Array.from(new Set(types));
+  return Array.from(new Set(types));
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -374,7 +477,6 @@ export default function AttendanceManagement() {
       return row;
     });
 
-    // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([
       [monthTitle],
       headerRow,
@@ -456,7 +558,7 @@ export default function AttendanceManagement() {
             <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
               <div>
                 <h1 className="m-0 text-2xl font-black text-white">
-                  Attendance Report Management
+                  Attendance Report Management (Override)
                 </h1>
               </div>
 
@@ -521,7 +623,7 @@ export default function AttendanceManagement() {
                       disabled
                       hidden
                       style={{ display: "none" }}
-                      className="bg-[#071425] text-white text-[#9ca3af]"
+                      className="bg-[#071425] text-[#9ca3af]"
                     >
                       Department
                     </option>
@@ -549,7 +651,7 @@ export default function AttendanceManagement() {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-white text-[#9ca3af]"
+                      className="bg-[#071425] text-[#9ca3af]"
                     >
                       Month
                     </option>
@@ -577,7 +679,7 @@ export default function AttendanceManagement() {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-white text-[#9ca3af]"
+                      className="bg-[#071425] text-[#9ca3af]"
                     >
                       Year
                     </option>
@@ -608,12 +710,12 @@ export default function AttendanceManagement() {
                 {errorMessage}
               </div>
             )}
-            <div className="min-h-0  flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
-              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
+            <div className="min-h-0  flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] scrollbar-thin [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-437.5 border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-405 max-md:text-[13px]">
                 <thead>
                   <tr>
                     <th
-                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
+                      className={`${tableHeadCellBase} left-0 z-30 w-67.5 min-w-67.5 text-base`}
                     >
                       Employee
                     </th>
@@ -621,7 +723,7 @@ export default function AttendanceManagement() {
                     {dates.map((date) => (
                       <th
                         key={date.key}
-                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+                        className={`${tableCellBase} sticky top-0 z-15 h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
                       >
                         <span className="block text-base">{date.day}</span>
                         <small className="block text-[13px] font-bold">
@@ -633,7 +735,7 @@ export default function AttendanceManagement() {
                     {summaryColumns.map((column, index) => (
                       <th
                         key={column}
-                        className={`${tableHeadCellBase}  ${summaryRightClasses[index]} z-[35] w-[38px]  min-w-[38px]`}
+                        className={`${tableHeadCellBase} ${summaryRightClasses[index]} z-35 w-9.5 min-w-9.5`}
                       >
                         {column}
                       </th>
@@ -644,7 +746,7 @@ export default function AttendanceManagement() {
                   {isLoading && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold  text-white`}
+                        className={`${tableCellBase} h-30 bg-[#1a2847] text-sm font-bold text-white`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         Loading attendance muster...
@@ -655,11 +757,11 @@ export default function AttendanceManagement() {
                     visibleEmployees.map((employee, employeeIndex) => (
                       <tr key={employee.id}>
                         <th
-                          className={`${tableCellBase} sticky   left-0 z-20 w-[270px] min-w-[270px] ${
+                          className={`${tableCellBase} sticky left-0 z-20 w-67.5 min-w-67.5 ${
                             employeeIndex % 2 === 1
                               ? "bg-[#0a1a2e]"
                               : "bg-[#071425]"
-                          } px-2.5 py-1.5 text-left align-middle max-md:w-[240px] max-md:min-w-[240px]`}
+                          } px-2.5 py-1.5 text-left align-middle max-md:w-60 max-md:min-w-60`}
                           scope="row"
                         >
                           <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-white">
@@ -682,7 +784,9 @@ export default function AttendanceManagement() {
                                 setSelectedAttendance({
                                   employee: employee.name,
                                   empId: employee.id,
+                                  empDbId: employee.dbId,
                                   date: date.key,
+                                  day: date.day,
                                   status: attendance.status,
                                 });
 
@@ -703,7 +807,7 @@ export default function AttendanceManagement() {
                         })}
                         {summaryColumns.map((column, index) => (
                           <td
-                            className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-[25]  w-[38px] min-w-[38px] ${
+                            className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-25 w-9.5 min-w-9.5 ${
                               employeeIndex % 2 === 1
                                 ? "bg-[#0a1a2e]"
                                 : "bg-[#1a2847]"
@@ -718,7 +822,7 @@ export default function AttendanceManagement() {
                   {!isLoading && visibleEmployees.length === 0 && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold text-white`}
+                        className={`${tableCellBase} h-30 bg-[#1a2847] text-sm font-bold text-white`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         No attendance records found for {monthTitle}.
@@ -749,13 +853,64 @@ export default function AttendanceManagement() {
               <strong>Status:</strong> {selectedAttendance.status}
             </p>
 
-            <div className="mt-5 flex justify-end">
-              <button
-                onClick={() => setShowPopup(false)}
-                className="rounded bg-red-500 px-4 py-2 text-white"
-              >
-                Close
-              </button>
+            <div className="mt-4 space-y-3">
+              <div className="rounded-xl border border-slate-500 bg-slate-900/90 p-3 text-sm text-white">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="font-semibold">Current status</span>
+                  <span className="font-bold">{selectedAttendance?.status}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span>Edited status</span>
+                  <span className="font-bold text-cyan-300">{editedStatus}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Override status
+                </label>
+                <select
+                  value={editedStatus}
+                  onChange={(event) => setEditedStatus(event.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-slate-100 p-2 text-sm text-slate-900"
+                >
+                  <option value="P">Present (P)</option>
+                  <option value="A">Absent (A)</option>
+                  <option value="A:P">Absent:Present (A:P)</option>
+                  <option value="P:A">Present:Absent (P:A)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Override remarks
+                </label>
+                <textarea
+                  value={remarks}
+                  onChange={(event) => setRemarks(event.target.value)}
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-300 bg-slate-100 p-2 text-sm text-slate-900"
+                  placeholder="Enter remarks for this override"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPopup(false)}
+                  className="rounded bg-red-500 px-4 py-2 text-white"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveStatus}
+                  disabled={isSaving}
+                  className="rounded bg-green-600 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

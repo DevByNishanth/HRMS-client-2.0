@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import OverrideTable from "./OverrideTable";
 import EmployeeWiseAttendanceUpdate from "./EmployeeWiseAttendanceUpdate";
 import DateWiseAttendanceUpdate from "./DateWiseAttendanceUpdate";
@@ -8,6 +9,7 @@ export default function AttendanceOverrideBody() {
     const [activeView, setActiveView] = useState("history");
 
     const [overrideHistory, setOverrideHistory] = useState([]);
+    const navigate = useNavigate();
 
     const handleOverrideSave = (records) => {
         setOverrideHistory((prev) => [...records, ...prev]);
@@ -58,10 +60,16 @@ export default function AttendanceOverrideBody() {
 
                         <div className="flex gap-4">
                             <button
+                                onClick={() => navigate("/dashboard-admin/attendance-report-override")}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer flex flex-row items-center gap-2"
+                            >
+                                Attendance Override
+                            </button>
+                            <button
                                 onClick={() => setActiveView("employee")}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer flex flex-row items-center gap-2"
                             >
-                                <span><User className="w-4"/></span>
+                                <span><User className="w-4 "/></span>
                                 Employee Wise
                             </button>
 
@@ -75,7 +83,7 @@ export default function AttendanceOverrideBody() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3 text-[18px]">
+                    <div className="flex items-center gap-3 text-[18px] ">
                         <button
                             onClick={() => setActiveView("history")}
                             className="text-[#4A90E2] hover:text-[#69a7ff] cursor-pointer"
@@ -96,7 +104,7 @@ export default function AttendanceOverrideBody() {
                     </div>
                 )}
             </div>
-            <div className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="rounded-xl border border-[#183052]  bg-[#0a1a2d]">
                 {renderContent()}
             </div>
         </div>
