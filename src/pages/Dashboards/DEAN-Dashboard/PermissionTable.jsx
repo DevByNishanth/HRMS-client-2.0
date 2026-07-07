@@ -10,6 +10,22 @@ import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
 import HodPermissionRequestTable from "./HodPermissionRequestTable";
 
+const formatTo12Hour = (time) => {
+  if (!time) return "";
+  const [hourStr, minute] = time.split(":");
+  const hour = parseInt(hourStr, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${period}`;
+};
+
+const formatSlotTo12Hour = (slotKey) => {
+  if (!slotKey) return "";
+  const [fromTime, toTime] = slotKey.split("-");
+  if (!fromTime || !toTime) return slotKey;
+  return `${formatTo12Hour(fromTime)} - ${formatTo12Hour(toTime)}`;
+};
+
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
   Rejected: "text-[#f16868] bg-[#f168681f]",
@@ -87,6 +103,7 @@ const PermissionTable = () => {
       "Date": p.date || "",
       "Session": p.session || "",
       "Duration": p.duration || "",
+      "Slot": formatSlotTo12Hour(p.slot) || "",
       "Reason": p.reason || "",
       "Status": p.status || "",
     }));
@@ -166,6 +183,7 @@ const PermissionTable = () => {
         status: p.status || "",
         fromTime: p.fromTime,
         toTime: p.toTime,
+        slot: p.slot || "",
       };
     };
 
@@ -263,6 +281,7 @@ const PermissionTable = () => {
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Session</th>
               <th className="px-4 py-3 font-semibold">Duration</th>
+              <th className="px-4 py-3 font-semibold">Slot</th>
               <th className="px-4 py-3 font-semibold">Reason</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 text-right font-semibold">Action</th>
@@ -287,6 +306,9 @@ const PermissionTable = () => {
                     <td className="px-4 py-3">{permission.session}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                      {formatSlotTo12Hour(permission.slot)}
                     </td>
                     <td className="max-w-[260px] truncate px-4 py-3">
                       {permission.reason}
@@ -329,13 +351,12 @@ const PermissionTable = () => {
                 );
               })
             ) : (
-              <tr>
-                <td
-                  colSpan="6"
-                  className="px-4 py-8 text-center text-[#8ca1bd]"
-                >
-                  No permission requests found matching your filters.
-                </td>
+              <tr>                  <td
+                    colSpan="7"
+                    className="px-4 py-8 text-center text-[#8ca1bd]"
+                  >
+                    No permission requests found matching your filters.
+                  </td>
               </tr>
             )}
           </tbody>

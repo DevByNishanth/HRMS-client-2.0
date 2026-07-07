@@ -7,6 +7,23 @@ import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+import { jwtDecode } from "jwt-decode";
+
+const formatTo12Hour = (time) => {
+  if (!time) return "";
+  const [hourStr, minute] = time.split(":");
+  const hour = parseInt(hourStr, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${period}`;
+};
+
+const formatSlotTo12Hour = (slotKey) => {
+  if (!slotKey) return "";
+  const [fromTime, toTime] = slotKey.split("-");
+  if (!fromTime || !toTime) return slotKey;
+  return `${formatTo12Hour(fromTime)} - ${formatTo12Hour(toTime)}`;
+};
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -43,10 +60,11 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
-                ? "bg-[#132b49] text-white"
-                : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
-                }`}
+              className={`block w-full px-4 py-3 text-left text-[13px] transition ${
+                value === option
+                  ? "bg-[#132b49] text-white"
+                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+              }`}
             >
               {option}
             </button>
@@ -57,7 +75,15 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
   );
 };
 
-const ConfirmationPopup = ({ action, request, reason, onReasonChange, onClose, onConfirm, submitting }) => {
+const ConfirmationPopup = ({
+  action,
+  request,
+  reason,
+  onReasonChange,
+  onClose,
+  onConfirm,
+  submitting,
+}) => {
   if (!action || !request) return null;
 
   const isReject = action === "reject";
@@ -78,7 +104,9 @@ const ConfirmationPopup = ({ action, request, reason, onReasonChange, onClose, o
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">{title}</h2>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              {title}
+            </h2>
           </div>
           <button
             type="button"
@@ -116,7 +144,8 @@ const ConfirmationPopup = ({ action, request, reason, onReasonChange, onClose, o
           )}
           {isRevoke && (
             <p className="text-[13px] leading-5 text-[#cad7eb]">
-              Revoke the pending decision for {request.name}'s permission request for {request.date}?
+              Revoke the pending decision for {request.name}'s permission
+              request for {request.date}?
             </p>
           )}
         </div>
@@ -133,12 +162,19 @@ const ConfirmationPopup = ({ action, request, reason, onReasonChange, onClose, o
             type="button"
             onClick={onConfirm}
             disabled={(isReject && !reason.trim()) || submitting}
-            className={`inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md px-4 text-[16px] font-semibold shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition disabled:cursor-not-allowed disabled:opacity-60 ${isRevoke
-              ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
-              : "bg-[#2563EB] text-white hover:bg-[#0d2b55]"
-              }`}
+            className={`inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md px-4 text-[16px] font-semibold shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition disabled:cursor-not-allowed disabled:opacity-60 ${
+              isRevoke
+                ? "bg-[#f0a15f] text-[#071425] hover:bg-[#ffbd7f]"
+                : "bg-[#2563EB] text-white hover:bg-[#0d2b55]"
+            }`}
           >
-            {submitting ? <div className="loader"></div> : (isRevoke ? "Revoke Decision" : "Reject Request")}
+            {submitting ? (
+              <div className="loader"></div>
+            ) : isRevoke ? (
+              "Revoke Decision"
+            ) : (
+              "Reject Request"
+            )}
           </button>
         </div>
       </div>
@@ -171,17 +207,20 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
 
   const exportCurrentFilteredRows = () => {
     const rows = filteredRequests.map((p) => ({
-      "Name": p.name || "",
-      "Date": p.date || "",
-      "Session": p.session || "",
-      "Duration": p.duration || "",
-      "Reason": p.reason || "",
-      "Status": p.status || "Pending",
+      Name: p.name || "",
+      Date: p.date || "",
+      Session: p.session || "",
+      Duration: p.duration || "",
+      Slot: formatSlotTo12Hour(p.slot) || "",
+      Reason: p.reason || "",
+      Status: p.status || "Pending",
     }));
     exportToExcel(rows, "Team-Permission-Requests.xlsx");
   };
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://sece_hrms_server.onrender.com";
 
   const mapApiToPermission = (p) => {
     const dateObj = p.permissionDate ? new Date(p.permissionDate) : null;
@@ -204,10 +243,10 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       dateObj: dateObj,
       date: dateObj
         ? dateObj.toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
         : "",
       name,
       designation,
@@ -216,6 +255,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       reason: p.reason || "",
       status: p.approvalStatus?.hod || "Pending",
       currentApprovalLevel: p.currentApprovalLevel || "hod",
+      slot: p.slot || "",
     };
   };
 
@@ -225,9 +265,17 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
 
     try {
       const token = localStorage.getItem("hrms_token");
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/list`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      let decoded = jwtDecode(token);
+      let department = decoded.department;
+
+      let urlParams = department == "CFRD" ? "CRFD, QPT" : department;
+
+      const response = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/${encodeURIComponent(urlParams)}`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
       const data = await response.json();
 
       if (!response.ok || !data?.success) {
@@ -251,23 +299,30 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
     fetchTeamPermissions();
   }, [fetchTeamPermissions]);
 
-  const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const normalizeDateOnly = (d) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
   const filteredRequests = useMemo(
     () =>
       requests.filter((permission) => {
         const permissionDate = permission.dateObj || new Date(permission.date);
         const statusMatch = status === "All" || permission.status === status;
-        const sessionMatch = session === "All" || permission.session === session;
-        const fromMatch = !fromDate || normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
-        const toMatch = !toDate || normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
+        const sessionMatch =
+          session === "All" || permission.session === session;
+        const fromMatch =
+          !fromDate ||
+          normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
+        const toMatch =
+          !toDate ||
+          normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
 
         return statusMatch && sessionMatch && fromMatch && toMatch;
       }),
     [fromDate, requests, session, status, toDate],
   );
 
-  const hasFilters = status !== "All" || session !== "All" || fromDate || toDate;
+  const hasFilters =
+    status !== "All" || session !== "All" || fromDate || toDate;
 
   const resetFilters = () => {
     setStatus("All");
@@ -336,9 +391,10 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
     const requestId = confirmation.request.id;
     const action = confirmation.action;
 
-    const url = action === "revoke"
-      ? `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/revoke`
-      : `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/reject`;
+    const url =
+      action === "revoke"
+        ? `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/revoke`
+        : `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/${requestId}/reject`;
 
     if (action === "reject") {
       setActionInProgress(requestId);
@@ -349,9 +405,10 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
     console.log("")
     try {
       const token = getTokenFromLocalStorage();
-      const body = action === "reject"
-        ? JSON.stringify({ remarks: rejectReason.trim() })
-        : JSON.stringify({});
+      const body =
+        action === "reject"
+          ? JSON.stringify({ remarks: rejectReason.trim() })
+          : JSON.stringify({});
 
       const response = await fetch(url, {
         method: action === "revoke" ? "PUT" : "PATCH",
@@ -452,7 +509,9 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
       <ExportPasswordModal
         isOpen={isExportModalOpen}
         onClose={closeExportModal}
-        onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+        onConfirm={(password) =>
+          handleConfirmExport(password, exportCurrentFilteredRows)
+        }
         loading={exportLoading}
         error={exportError}
       />
@@ -465,6 +524,7 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Session</th>
               <th className="px-4 py-3 font-semibold">Duration</th>
+              <th className="px-4 py-3 font-semibold">Slot</th>
               <th className="px-4 py-3 font-semibold">Reason</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 text-right font-semibold">Action</th>
@@ -473,13 +533,19 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
           <tbody className="text-[13px] text-[#cad7eb]">
             {loading ? (
               <tr>
-                <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                <td
+                  colSpan="8"
+                  className="px-4 py-8 text-center text-[#8ca1bd]"
+                >
                   Loading team permission requests...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan="7" className="px-4 py-8 text-center text-[#f16868]">
+                <td
+                  colSpan="8"
+                  className="px-4 py-8 text-center text-[#f16868]"
+                >
                   {error}
                 </td>
               </tr>
@@ -508,12 +574,20 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-white">{permission.date}</td>
+                    <td className="px-4 py-3 font-semibold text-white">
+                      {permission.date}
+                    </td>
                     <td className="px-4 py-3">{permission.session}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration}
                     </td>
-                    <td className="max-w-[260px] truncate px-4 py-3" title={permission.reason}>
+                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                      {formatSlotTo12Hour(permission.slot)}
+                    </td>
+                    <td
+                      className="max-w-[260px] truncate px-4 py-3"
+                      title={permission.reason}
+                    >
                       {permission.reason}
                     </td>
                     <td className="px-4 py-3">
@@ -526,7 +600,8 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                        {permission.currentApprovalLevel === "hod" && permission.status === "Pending" ? (
+                        {permission.currentApprovalLevel === "hod" &&
+                        permission.status === "Pending" ? (
                           <>
                             {actionInProgress === permission.id ? (
                               <div className="loader"></div>
@@ -565,7 +640,9 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
                         ) : null}
                         <button
                           type="button"
-                          onClick={() => setSelectedPermission(permissionWithColor)}
+                          onClick={() =>
+                            setSelectedPermission(permissionWithColor)
+                          }
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
                           aria-label="View permission request details"
                           title="View"
@@ -579,7 +656,10 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
               })
             ) : (
               <tr>
-                <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                <td
+                  colSpan="8"
+                  className="px-4 py-8 text-center text-[#8ca1bd]"
+                >
                   No permission requests found matching your filters.
                 </td>
               </tr>
@@ -600,7 +680,11 @@ const HodPermissionRequestTable = ({ onCountChange, onRefresh }) => {
         onReasonChange={setRejectReason}
         onClose={closeConfirmationPopup}
         onConfirm={confirmReject}
-        submitting={confirmation?.action === "revoke" ? revokeLoading : actionInProgress === confirmation?.request?.id}
+        submitting={
+          confirmation?.action === "revoke"
+            ? revokeLoading
+            : actionInProgress === confirmation?.request?.id
+        }
       />
     </section>
   );
