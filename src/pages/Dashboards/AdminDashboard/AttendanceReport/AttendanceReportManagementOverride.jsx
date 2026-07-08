@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, X, User } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -63,7 +63,8 @@ function getMonthDates(year, monthIndex) {
 }
 
 function _logDatesForDebug(dates) {
-  if (typeof console !== "undefined") console.debug("Attendance window dates:", dates);
+  if (typeof console !== "undefined")
+    console.debug("Attendance window dates:", dates);
 }
 
 function getCellClass(
@@ -138,10 +139,16 @@ function getEmployeeDbId(employee) {
 
   if (isObjectId(employee._id)) return employee._id;
   if (employee.facultyId) {
-    if (typeof employee.facultyId === "string" && isObjectId(employee.facultyId)) {
+    if (
+      typeof employee.facultyId === "string" &&
+      isObjectId(employee.facultyId)
+    ) {
       return employee.facultyId;
     }
-    if (typeof employee.facultyId === "object" && isObjectId(employee.facultyId._id)) {
+    if (
+      typeof employee.facultyId === "object" &&
+      isObjectId(employee.facultyId._id)
+    ) {
       return employee.facultyId._id;
     }
   }
@@ -358,13 +365,29 @@ export default function AttendanceManagementOverride() {
         prevEmployees.map((employee) => {
           if (employee.id !== selectedAttendance.empId) return employee;
 
+          const currentValue =
+            employee.attendance?.[selectedAttendance.date] ??
+            employee.attendance?.[String(selectedAttendance.day)];
+          const overrideValue =
+            currentValue && typeof currentValue === "object"
+              ? {
+                  ...currentValue,
+                  status: editedStatus,
+                  isOverridden: true,
+                }
+              : {
+                  status: editedStatus,
+                  isOverridden: true,
+                  regularization: false,
+                };
+
           const updatedAttendance = {
             ...employee.attendance,
-            [selectedAttendance.date]: editedStatus,
+            [selectedAttendance.date]: overrideValue,
           };
 
           if (selectedAttendance.day !== undefined) {
-            updatedAttendance[String(selectedAttendance.day)] = editedStatus;
+            updatedAttendance[String(selectedAttendance.day)] = overrideValue;
           }
 
           return {
@@ -436,7 +459,7 @@ export default function AttendanceManagementOverride() {
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b));
 
-  return Array.from(new Set(types));
+    return Array.from(new Set(types));
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -836,43 +859,52 @@ export default function AttendanceManagementOverride() {
         </main>
       </div>
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-80 rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-bold">Attendance Details</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/60 backdrop-blur-[4px]">
+          <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
+            <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold">Attendance Details</h2>
+              <X className="cursor-pointer" onClick={() => setShowPopup(false)} />
+            </header>
 
-            <p>
-              <strong>Employee:</strong> {selectedAttendance.employee}
-            </p>
-            <p>
-              <strong>ID:</strong> {selectedAttendance.empId}
-            </p>
-            <p>
-              <strong>Date:</strong> {selectedAttendance.date}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedAttendance.status}
-            </p>
+            <section className="px-4 py-2">
+              <p className="">
+                <strong> Employee:</strong> {selectedAttendance.employee}
+              </p>
+              <p>
+                <strong>ID:</strong> {selectedAttendance.empId}
+              </p>
+              <p>
+                <strong>Date:</strong> {selectedAttendance.date}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedAttendance.status}
+              </p>
+            </section>
 
-            <div className="mt-4 space-y-3">
-              <div className="rounded-xl border border-slate-500 bg-slate-900/90 p-3 text-sm text-white">
+            <div className="mt-4 space-y-3 px-4">
+              <div className="rounded-lg border border-[#173150] p-3 text-sm text-white">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="font-semibold">Current status</span>
-                  <span className="font-bold">{selectedAttendance?.status}</span>
+                  <span className="font-bold">
+                    {selectedAttendance?.status}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span>Edited status</span>
-                  <span className="font-bold text-cyan-300">{editedStatus}</span>
+                  <span className="font-bold text-cyan-300">
+                    {editedStatus}
+                  </span>
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className="mb-2 block text-sm font-semibold ">
                   Override status
                 </label>
                 <select
                   value={editedStatus}
                   onChange={(event) => setEditedStatus(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-slate-100 p-2 text-sm text-slate-900"
+                  className="w-full rounded-lg border border-[#173150] outline-none p-2 text-sm text-white bg-[#071425]"
                 >
                   <option value="P">Present (P)</option>
                   <option value="A">Absent (A)</option>
@@ -882,23 +914,23 @@ export default function AttendanceManagementOverride() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className="mb-2 block text-sm font-semibold">
                   Override remarks
                 </label>
                 <textarea
                   value={remarks}
                   onChange={(event) => setRemarks(event.target.value)}
                   rows={3}
-                  className="w-full rounded-lg border border-slate-300 bg-slate-100 p-2 text-sm text-slate-900"
+                  className="w-full rounded-lg border border-[#173150] outline-none p-4 text-sm text-white bg-[#071425]"
                   placeholder="Enter remarks for this override"
                 />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 mb-4">
                 <button
                   type="button"
                   onClick={() => setShowPopup(false)}
-                  className="rounded bg-red-500 px-4 py-2 text-white"
+                  className="rounded bg-gray-700 px-4 py-2 text-white"
                 >
                   Close
                 </button>
@@ -906,9 +938,9 @@ export default function AttendanceManagementOverride() {
                   type="button"
                   onClick={handleSaveStatus}
                   disabled={isSaving}
-                  className="rounded bg-green-600 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded bg-[#2563eb] px-6 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Updating..." : "Update"}
                 </button>
               </div>
             </div>
