@@ -1,7 +1,10 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { ChevronDown, Download, Eye, RotateCcw } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { getRoleFromToken, getTokenFromLocalStorage } from "../../../utils/tokenUtils";
+import {
+  getRoleFromToken,
+  getTokenFromLocalStorage,
+} from "../../../utils/tokenUtils";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
@@ -9,6 +12,22 @@ import CustomDatePicker from "../../../components/CustomDatePicker";
 import PermissionDetailsPopup from "./PermissionDetailsPopup";
 import WithdrawPermissionPopup from "./WithdrawPermissionPopup";
 import HodPermissionRequestTable from "./HodPermissionRequestTable";
+
+const formatTo12Hour = (time) => {
+  if (!time) return "";
+  const [hourStr, minute] = time.split(":");
+  const hour = parseInt(hourStr, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${period}`;
+};
+
+const formatSlotTo12Hour = (slotKey) => {
+  if (!slotKey) return "";
+  const [fromTime, toTime] = slotKey.split("-");
+  if (!fromTime || !toTime) return slotKey;
+  return `${formatTo12Hour(fromTime)} - ${formatTo12Hour(toTime)}`;
+};
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -87,11 +106,12 @@ const PermissionTable = () => {
 
   const exportCurrentFilteredRows = () => {
     const rows = filteredPermissions.map((p) => ({
-      "Date": p.date || "",
-      "Session": p.session || "",
-      "Duration": p.duration || "",
-      "Reason": p.reason || "",
-      "Status": p.status || "",
+      Date: p.date || "",
+      Session: p.session || "",
+      Duration: p.duration || "",
+      Slot: formatSlotTo12Hour(p.slot) || "",
+      Reason: p.reason || "",
+      Status: p.status || "",
     }));
     exportToExcel(rows, "My-Permissions.xlsx");
   };
@@ -104,11 +124,16 @@ const PermissionTable = () => {
   const fetchTeamPermissions = useCallback(async () => {
     setTeamPermissionsLoading(true);
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+      const API_BASE_URL =
+        import.meta.env.VITE_API_BASE_URL ||
+        "https://sece_hrms_server.onrender.com";
       const token = localStorage.getItem("hrms_token");
-      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/list`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/hod/list`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
       const data = await res.json();
       if (res.ok && data?.success) {
         setTeamPermissionsRaw(data.data || []);
@@ -133,16 +158,25 @@ const PermissionTable = () => {
   const filteredPermissions = useMemo(
     () =>
       permissionsData.filter((permission) => {
-        const permissionDate = permission.dateObj || (permission.raw?.permissionDate ? new Date(permission.raw.permissionDate) : new Date(permission.date));
+        const permissionDate =
+          permission.dateObj ||
+          (permission.raw?.permissionDate
+            ? new Date(permission.raw.permissionDate)
+            : new Date(permission.date));
         const statusMatch = status === "All" || permission.status === status;
-        const sessionMatch = session === "All" || permission.session === session;
+        const sessionMatch =
+          session === "All" || permission.session === session;
 
-        const normalizeDateOnly = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const normalizeDateOnly = (d) =>
+          new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
-        const fromMatch = !fromDate || normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
-        const toMatch = !toDate || normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
-
-        return statusMatch && sessionMatch && fromMatch && toMatch;
+        const fromMatch =
+          !fromDate ||
+          normalizeDateOnly(permissionDate) >= normalizeDateOnly(fromDate);
+        const toMatch =
+          !toDate ||
+          normalizeDateOnly(permissionDate) <= normalizeDateOnly(toDate);
+        return statusMatch && sessionMatch && fromMatch && toMatch ;
       }),
     [permissionsData, fromDate, session, status, toDate],
   );
@@ -157,7 +191,9 @@ const PermissionTable = () => {
     setToDate(null);
   };
   const fetchPermissions = async () => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+    const API_BASE_URL =
+      import.meta.env.VITE_API_BASE_URL ||
+      "https://sece_hrms_server.onrender.com";
 
     const mapApiToPermission = (p) => {
       // Normalize permissionDate as local date-only (avoid TZ shifts)
@@ -196,14 +232,18 @@ const PermissionTable = () => {
         status: p.status || "",
         fromTime: p.fromTime,
         toTime: p.toTime,
+        slot: p.slot || "",
       };
     };
 
     try {
       const token = getTokenFromLocalStorage();
-      const res = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/permissions/my`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/permissions/my`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
 
       const data = await res.json();
       if (res.ok && data?.success) {
@@ -281,7 +321,9 @@ const PermissionTable = () => {
       <ExportPasswordModal
         isOpen={isExportModalOpen}
         onClose={closeExportModal}
-        onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+        onConfirm={(password) =>
+          handleConfirmExport(password, exportCurrentFilteredRows)
+        }
         loading={exportLoading}
         error={exportError}
       />
@@ -293,6 +335,7 @@ const PermissionTable = () => {
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Session</th>
               <th className="px-4 py-3 font-semibold">Duration</th>
+              <th className="px-4 py-3 font-semibold">Slot</th>
               <th className="px-4 py-3 font-semibold">Reason</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 text-right font-semibold">Action</th>
@@ -301,6 +344,7 @@ const PermissionTable = () => {
           <tbody className="text-[16px] text-[#cad7eb]">
             {filteredPermissions.length > 0 ? (
               filteredPermissions.map((permission) => {
+                console.log("permission : ", permission);
                 const permissionWithColor = {
                   ...permission,
                   statusColor: statusStyles[permission.status],
@@ -317,6 +361,9 @@ const PermissionTable = () => {
                     <td className="px-4 py-3">{permission.session}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                       {permission.duration}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                      {formatSlotTo12Hour(permission.slot)}
                     </td>
                     <td className="max-w-[260px] truncate px-4 py-3">
                       {permission.reason}
@@ -383,7 +430,7 @@ const PermissionTable = () => {
         onPermissionCancelled={() => {
           if (withdrawPermission?.id) {
             setPermissionsData((prev) =>
-              prev.filter((p) => p.id !== withdrawPermission.id)
+              prev.filter((p) => p.id !== withdrawPermission.id),
             );
           }
         }}
@@ -425,7 +472,9 @@ const PermissionTable = () => {
         </div>
       </div>
 
-      {hodSelectedTab === "My Permissions" ? myPermissionsTable : (
+      {hodSelectedTab === "My Permissions" ? (
+        myPermissionsTable
+      ) : (
         <HodPermissionRequestTable
           onCountChange={setTeamPermissionCount}
           initialRawData={teamPermissionsRaw}

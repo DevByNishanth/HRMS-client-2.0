@@ -13,7 +13,6 @@ import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
 import AddFacultyForm from "./AddFacultyForm";
 import EditFacultyCanvas from "./EditFacultyCanvas";
-import userImg from "../../../../assets/userImg.svg";
 import { jwtDecode } from "jwt-decode";
 import ExportPasswordModal from "../../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../../utils/exportToExcel";
@@ -77,6 +76,40 @@ const getFacultyName = (faculty) =>
   "Unnamed Faculty";
 
 const getFacultyId = (faculty) => faculty?._id;
+
+const getFacultyInitial = (faculty, name) =>
+  (faculty?.firstName?.trim()?.charAt(0) || name?.trim()?.charAt(0) || "?")
+    .toUpperCase();
+
+const FacultyAvatar = ({ faculty, name }) => {
+  const imageUrl = faculty?.profileImage?.url;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [imageUrl]);
+
+  if (imageUrl && !imageFailed) {
+    return (
+      <img
+        src={imageUrl}
+        alt={name}
+        className="h-10 w-10 flex-shrink-0 rounded-full object-cover"
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <span
+      className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-sm font-semibold text-white"
+      aria-label={name}
+      title={name}
+    >
+      {getFacultyInitial(faculty, name)}
+    </span>
+  );
+};
 
 const SelectFilter = ({ label, value, onChange, options }) => (
   <label className="relative min-w-[180px] flex-1 sm:min-w-[190px] sm:flex-none">
@@ -490,11 +523,7 @@ const FacultyManagementPage = () => {
                           >
                             <td className={``}>
                               <div className="flex items-center gap-3 pl-4">
-                                <img
-                                  src={userImg}
-                                  alt={name}
-                                  className="h-10 w-10 rounded-full object-cover flex-shrink-0"
-                                />
+                                <FacultyAvatar faculty={faculty} name={name} />
                                 <span className="block truncate">{name}</span>
                               </div>
                             </td>

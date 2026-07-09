@@ -595,7 +595,7 @@ const token = localStorage.getItem("hrms_token")
               </h2>
             </div>
 
-            {/* <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <StepProgress activeStep={activeStep} />
               {onClose && (
                 <button
@@ -607,7 +607,7 @@ const token = localStorage.getItem("hrms_token")
                   <X size={17} />
                 </button>
               )}
-            </div> */}
+            </div>
           </div>
         </div>
 
