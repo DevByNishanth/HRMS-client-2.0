@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, ChevronDown, X, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, ChevronDown, X, User, ArrowLeft } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -300,6 +301,7 @@ function getAttendanceStatus(attendance, date) {
 }
 
 export default function AttendanceManagementOverride() {
+  const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [employees, setEmployees] = useState([]);
@@ -579,7 +581,15 @@ export default function AttendanceManagementOverride() {
         <main className="min-h-0 flex-1 overflow-hidden">
           <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
             <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
-              <div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard-admin/attendance-override")}
+                  className="inline-flex items-center  gap-2 rounded-lg  px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3b82f6] hover:bg-[#142c46]"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Back</span>
+                </button>
                 <h1 className="m-0 text-2xl font-black text-white">
                   Attendance Report Management (Override)
                 </h1>
@@ -822,7 +832,7 @@ export default function AttendanceManagementOverride() {
                                 employeeIndex % 2 === 1,
                                 attendance.isOverridden,
                                 attendance.regularization,
-                              )} border border-white cursor-pointer hover:brightness-110`}
+                              )}  cursor-pointer hover:brightness-110`}
                             >
                               {attendance.status}
                             </td>
@@ -889,7 +899,7 @@ export default function AttendanceManagementOverride() {
                     {selectedAttendance?.status}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-center gap-3">
                   <span>Edited status</span>
                   <span className="font-bold text-cyan-300">
                     {editedStatus}

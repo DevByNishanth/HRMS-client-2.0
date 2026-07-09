@@ -695,7 +695,7 @@ export default function AttendanceManagement() {
                                 employeeIndex % 2 === 1,
                                 attendance.isOverridden,
                                 attendance.regularization,
-                              )} border border-white cursor-pointer hover:brightness-110`}
+                              )}  cursor-pointer hover:brightness-110`}
                             >
                               {attendance.status}
                             </td>
