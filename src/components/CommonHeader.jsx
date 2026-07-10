@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
   let decoded = jwtDecode(token);
-  console.log(decoded);
+  // console.log(decoded);
 
   return (
     <>
