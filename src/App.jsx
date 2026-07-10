@@ -29,6 +29,7 @@ import LeaveBalanceManagement from "./pages/Dashboards/AdminDashboard/LeaveBalan
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getRoleFromToken, isTokenValid } from "./utils/tokenUtils";
 import AttendanceManagement from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagement";
+import AttendanceManagementOverride from "./pages/Dashboards/AdminDashboard/AttendanceReport/AttendanceReportManagementOverride";
 import AttendanceOverrideManagement from "./pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement";
 import FacultyCalendar from "./pages/Common/Calendar";
 // import AttendanceOverrideManagement from './pages/Dashboards/AdminDashboard/AttendanceOverride/AttendanceOverrideManagement';
@@ -426,6 +427,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AttendanceManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/attendance-report-override"
+          element={
+            <ProtectedRoute>
+              <AttendanceManagementOverride />
             </ProtectedRoute>
           }
         />
