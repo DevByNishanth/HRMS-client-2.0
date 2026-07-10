@@ -19,6 +19,30 @@ const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
   const ifscCode = faculty?.bankDetails?.ifscCode || faculty?.ifscCode || "";
   const branch = faculty?.bankDetails?.branchLocation || faculty?.branch || "";
 
+  // Extract uploaded document URLs from faculty.documents
+  const aadharCardUrl = faculty?.documents?.aadharCard?.url || "";
+  const panCardUrl = faculty?.documents?.panCard?.url || "";
+
+  const handleDownload = async (url, fileName) => {
+    if (!url) return;
+
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(objectUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
   const docs = [];
 
   if (aadhaarNumber) {
@@ -28,6 +52,8 @@ const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
       value: aadhaarNumber,
       icon: BadgeIndianRupee,
       canReveal: true,
+      documentUrl: aadharCardUrl,
+      downloadFileName: `aadhar-card-${aadhaarNumber.slice(-4)}.png`,
     });
   }
 
@@ -37,6 +63,8 @@ const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
       value: panNumber,
       icon: CreditCard,
       canReveal: false,
+      documentUrl: panCardUrl,
+      downloadFileName: `pan-card-${panNumber.slice(-4)}.png`,
     });
   }
 
@@ -69,14 +97,14 @@ const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
     docs.push(
       {
         label: "Aadhaar Number",
-        maskedValue: "**** **** 8824",
-        value: "4321 5678 8824",
+        maskedValue: "--",
+        value: "--",
         icon: BadgeIndianRupee,
         canReveal: true,
       },
       {
         label: "PAN Card",
-        value: "BYPMPH4321L",
+        value: "--",
         icon: CreditCard,
         canReveal: false,
       }
@@ -113,9 +141,17 @@ const DocumentsCard = ({ canEdit, onEdit, faculty }) => {
                   <RevealIcon size={14} />
                 </button>
               )}
-              <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#8394b2] transition hover:bg-[#263654] hover:text-white">
-                <Download size={14} />
-              </button>
+              {doc.documentUrl ? (
+                <button
+                  type="button"
+                  onClick={() => handleDownload(doc.documentUrl, doc.downloadFileName)}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#8394b2] transition hover:bg-[#263654] hover:text-white"
+                  title={`Download ${doc.label}`}
+                  aria-label={`Download ${doc.label}`}
+                >
+                  <Download size={14} />
+                </button>
+              ) : null}
             </div>
           );
         })}

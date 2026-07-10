@@ -322,6 +322,7 @@ export default function OverrideTable({ data = [] }) {
                 return "";
         }
     };
+    console.log("status color",getStatusColor);
 
     return (
         <>

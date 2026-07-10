@@ -6,6 +6,7 @@ import DoumentUploadFormModal from "../../../components/DoumentUploadFormModal";
 import { jwtDecode } from "jwt-decode";
 
 const FacultyDashboard = () => {
+  console.log("")
 
    const [openDocumentUploadModal, setOpenDocumentUploadModal] = useState(false);
     const token = localStorage.getItem("hrms_token");
