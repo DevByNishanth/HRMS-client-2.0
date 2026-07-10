@@ -352,7 +352,7 @@ const token = localStorage.getItem("hrms_token")
   const [uploadedDocumentMeta, setUploadedDocumentMeta] = useState({});
   const [profileImageData, setProfileImageData] = useState(null);
   const [uploadingField, setUploadingField] = useState(null);
-  console.log('docs',uploadedDocumentMeta);
+  // console.log('docs',uploadedDocumentMeta);
   
 
   // const selectedFileCount = useMemo(
@@ -419,7 +419,7 @@ const token = localStorage.getItem("hrms_token")
           backendField,
           file,
         );
-        console.log("API Response:", response);
+        // console.log("API Response:", response);
         const uploadedDoc = response.documents[backendField];
 
         if (Array.isArray(uploadedDoc)) {
@@ -449,9 +449,9 @@ const token = localStorage.getItem("hrms_token")
             : uploadedDocs[0],
         };
       });
-      console.log("fieldId =", fieldId);
-        console.log("uploadedDocs =", uploadedDocs);
-        console.log("previous =", uploadedDocumentMeta[fieldId]);
+      // console.log("fieldId =", fieldId);
+      //   console.log("uploadedDocs =", uploadedDocs);
+      //   console.log("previous =", uploadedDocumentMeta[fieldId]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -543,13 +543,13 @@ const token = localStorage.getItem("hrms_token")
   const handleFinishUpload = async () => {
     try {
       const response = await firstLoginComplete();
-      console.log("API Response:", response);
+      // console.log("API Response:", response);
 
       // Save the NEW token returned from backend
       if (response.token) {
         localStorage.setItem("hrms_token", response.token);
         const decoded = jwtDecode(response.token);
-        console.log("Decoded New Token:", decoded);
+        // console.log("Decoded New Token:", decoded);
       }
 
       alert(
