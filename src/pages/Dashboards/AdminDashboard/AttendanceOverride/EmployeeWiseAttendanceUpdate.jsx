@@ -306,6 +306,16 @@ export default function EmployeeWiseAttendanceUpdate() {
         );
     };
 
+    const formatDateForApi = (date) => {
+        const d = new Date(date);
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
     return (
         <>
             {/* FILTERS */}
@@ -725,7 +735,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 );
                             await updateAttendanceOverrideSingle(
                                 row.employeeId,
-                                row.date.split("T")[0],
+                                formatDateForApi(row.date),
                                 {
                                     firstIn: row.firstIn,
                                     lastOut: row.lastOut,
@@ -746,7 +756,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const payload = {
                                 remarks: formData.remarks,
                                 updates: editedRecords.map(row => ({
-                                    date: row.date.split("T")[0],
+                                    date: formatDateForApi(row.date),
                                     session1: row.session1,
                                     session2: row.session2,
                                 })),
@@ -768,7 +778,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const payload = {
                                 remarks: formData.remarks,
                                 updates: selectedRecords.map(row => ({
-                                    date: row.date.split("T")[0],
+                                    date: formatDateForApi(row.date),
                                     session1: formData.session1,
                                     session2: formData.session2,
                                 })),
