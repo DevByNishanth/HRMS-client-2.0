@@ -8,11 +8,13 @@ import {
   Search,
   Trash2,
   Download,
+  UploadCloud,
 } from "lucide-react";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
 import AddFacultyForm from "./AddFacultyForm";
 import EditFacultyCanvas from "./EditFacultyCanvas";
+import BulkUploadCanvas from "./BulkUploadCanvas";
 import { jwtDecode } from "jwt-decode";
 import ExportPasswordModal from "../../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../../utils/exportToExcel";
@@ -78,8 +80,11 @@ const getFacultyName = (faculty) =>
 const getFacultyId = (faculty) => faculty?._id;
 
 const getFacultyInitial = (faculty, name) =>
-  (faculty?.firstName?.trim()?.charAt(0) || name?.trim()?.charAt(0) || "?")
-    .toUpperCase();
+  (
+    faculty?.firstName?.trim()?.charAt(0) ||
+    name?.trim()?.charAt(0) ||
+    "?"
+  ).toUpperCase();
 
 const FacultyAvatar = ({ faculty, name }) => {
   const imageUrl = faculty?.profileImage?.url;
@@ -139,6 +144,7 @@ const FacultyManagementPage = () => {
 
   const navigate = useNavigate();
   const [isAddFacultyOpen, setIsAddFacultyOpen] = useState(false);
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [editingFaculty, setEditingFaculty] = useState(null);
   const [deletingFaculty, setDeletingFaculty] = useState(null);
   const [isDeletingFaculty, setIsDeletingFaculty] = useState(false);
@@ -149,7 +155,8 @@ const FacultyManagementPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [departmentFilter, setDepartmentFilter] = useState("All");
-  const [originalDepartmentFilter, setOriginalDepartmentFilter] = useState("All");
+  const [originalDepartmentFilter, setOriginalDepartmentFilter] =
+    useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
 
   const {
@@ -395,14 +402,24 @@ const FacultyManagementPage = () => {
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsAddFacultyOpen(true)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
-              >
-                <Plus size={16} />
-                Add Faculty
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddFacultyOpen(true)}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
+                >
+                  <Plus size={16} />
+                  Add Faculty
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBulkUploadOpen(true)}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
+                >
+                  <UploadCloud size={16} />
+                  Bulk Upload
+                </button>
+              </div>
             </div>
 
             <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
@@ -549,9 +566,10 @@ const FacultyManagementPage = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span className="block truncate">
-                               {faculty.reportingTo?.facultyId
-  ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
-  : "-"}</span>
+                                {faculty.reportingTo?.facultyId
+                                  ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
+                                  : "-"}
+                              </span>
                             </td>
                             <td className="px-4 py-3">
                               <span
@@ -621,6 +639,10 @@ const FacultyManagementPage = () => {
           onClose={() => setIsAddFacultyOpen(false)}
           onCreated={handleFacultyCreated}
         />
+      )}
+
+      {isBulkUploadOpen && (
+        <BulkUploadCanvas onClose={() => setIsBulkUploadOpen(false)} />
       )}
 
       {editingFaculty && (
