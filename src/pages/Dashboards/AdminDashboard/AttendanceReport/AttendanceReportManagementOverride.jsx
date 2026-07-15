@@ -234,6 +234,8 @@ function normalizeAttendanceMap(employee) {
   return rawAttendance || {};
 }
 
+console.log("worked on Attendance in time and out time")
+
 function calculateSummary(attendance) {
   return Object.values(attendance).reduce(
     (summary, rawStatus) => {
