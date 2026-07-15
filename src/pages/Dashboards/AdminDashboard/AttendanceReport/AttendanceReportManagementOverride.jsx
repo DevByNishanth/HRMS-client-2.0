@@ -6,8 +6,7 @@ import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
 import { updateAttendanceOverrideSingle } from "../../../../services/AttendanceOverride/UpdateAttendanceOverrideSingle";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const summaryColumns = ["P", "A", "OFF", "OD"];
 const monthOptions = [
   "January",
@@ -203,13 +202,26 @@ function normalizeAttendanceMap(employee) {
             )}-${String(parsedDate.getDate()).padStart(2, "0")}`;
           }
         }
-
+        const attendanceData = {
+          status:
+            typeof item.status === "object"
+              ? item.status.status
+              : item.status ||
+                item.attendance ||
+                item.value ||
+                item.mark ||
+                "-",
+          isOverridden: item.status?.isOverridden ?? false,
+          regularization: item.status?.regularization ?? false,
+          inTime: item.inTime,
+          outTime: item.outTime,
+        };
         if (normalizedKey) {
-          attendance[normalizedKey] = status;
+          attendance[normalizedKey] = attendanceData;
           if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedKey)) {
             const dayOnly = String(Number(normalizedKey.split("-")[2]));
             if (!(dayOnly in attendance)) {
-              attendance[dayOnly] = status;
+              attendance[dayOnly] = attendanceData;
             }
           }
         }
@@ -251,6 +263,7 @@ function calculateSummary(attendance) {
 }
 
 function normalizeEmployees(payload) {
+  // console.log("Normalizing employees from payload:", payload);
   return getEmployeeList(payload).map((employee, index) => {
     const attendance = normalizeAttendanceMap(employee);
 
@@ -259,6 +272,7 @@ function normalizeEmployees(payload) {
       dbId: getEmployeeDbId(employee),
       name: getEmployeeName(employee),
       department: getEmployeeDepartmentType(employee),
+
       designation: getEmployeeDesignation(employee),
       attendance,
       summary:
@@ -276,6 +290,8 @@ function getAttendanceStatus(attendance, date) {
       status: "-",
       isOverridden: false,
       regularization: false,
+      inTime: null,
+      outTime: null,
     };
   }
 
@@ -333,14 +349,15 @@ export default function AttendanceManagementOverride() {
 
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
+    console.log("selectedAttendance", selectedAttendance);
 
     setIsSaving(true);
 
     try {
       const { session1, session2 } = parseSessionsFromStatus(editedStatus);
       const payload = {
-        firstIn: `${selectedAttendance.date}T03:12:12.000Z`,
-        lastOut: `${selectedAttendance.date}T11:28:57.000Z`,
+        firstIn: selectedAttendance.inTime || null,
+        lastOut: selectedAttendance.outTime || null,
         session1,
         session2,
         remarks:
@@ -544,7 +561,7 @@ export default function AttendanceManagementOverride() {
         const year = effectiveYear;
 
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster/v1?month=${month}&year=${year}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-override/muster?month=${month}&year=${year}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
@@ -573,6 +590,8 @@ export default function AttendanceManagementOverride() {
     return () => controller.abort();
   }, [effectiveMonth, effectiveYear]);
 
+  // console.log("employees", employees);
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
       <Sidebar />
@@ -584,7 +603,9 @@ export default function AttendanceManagementOverride() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => navigate("/dashboard-admin/attendance-override")}
+                  onClick={() =>
+                    navigate("/dashboard-admin/attendance-override")
+                  }
                   className="inline-flex items-center  gap-2 rounded-lg  px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3b82f6] hover:bg-[#142c46]"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -821,6 +842,8 @@ export default function AttendanceManagementOverride() {
                                   date: date.key,
                                   day: date.day,
                                   status: attendance.status,
+                                  inTime: attendance.inTime,
+                                  outTime: attendance.outTime,
                                 });
 
                                 setEditedStatus(attendance.status);
@@ -869,11 +892,14 @@ export default function AttendanceManagementOverride() {
         </main>
       </div>
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/60 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 border-white  flex items-center justify-center bg-[#020817]/60 backdrop-blur-[4px]">
           <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
             <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Attendance Details</h2>
-              <X className="cursor-pointer" onClick={() => setShowPopup(false)} />
+              <X
+                className="cursor-pointer"
+                onClick={() => setShowPopup(false)}
+              />
             </header>
 
             <section className="px-4 py-2">
@@ -888,6 +914,17 @@ export default function AttendanceManagementOverride() {
               </p>
               <p>
                 <strong>Status:</strong> {selectedAttendance.status}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedAttendance.status}
+              </p>
+
+              <p>
+                <strong>In Time:</strong> {selectedAttendance.inTime}
+              </p>
+
+              <p>
+                <strong>Out Time:</strong> {selectedAttendance.outTime}
               </p>
             </section>
 
