@@ -522,7 +522,6 @@ const token = localStorage.getItem("hrms_token")
       }
 
       const document = uploadedDocumentMeta[fieldId];
-console.log("")
       await deleteFacultyDocument(
         facultyId,
         backendField,

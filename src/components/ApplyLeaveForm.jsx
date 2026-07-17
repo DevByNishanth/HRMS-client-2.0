@@ -5,8 +5,6 @@ import { getTokenFromLocalStorage } from "../utils/tokenUtils";
 import { jwtDecode } from "jwt-decode";
 
 const dayOptions = ["Full Day", "First Half", "Second Half"];
-const backdateGraceDays = 2;
-
 const getCurrentAcademicYear = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -23,13 +21,6 @@ const getDateOnly = (date) => {
     if (!date) return null;
 
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
-
-const getMinimumApplyDate = () => {
-    const minimumDate = getDateOnly(new Date());
-    minimumDate.setDate(minimumDate.getDate() - backdateGraceDays);
-
-    return minimumDate;
 };
 
 const calculateTotalLeaveDays = (fromDate, toDate, dayType) => {
@@ -79,7 +70,6 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [validationErrors, setValidationErrors] = useState({});
-    const minimumApplyDate = getMinimumApplyDate();
 
 
     // Fetch leave balance and types on component mount
@@ -133,14 +123,6 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
 
         if (fromDate && toDate && new Date(toDate) < new Date(fromDate)) {
             errors.toDate = "To date must be after from date";
-        }
-
-        if (fromDate && getDateOnly(fromDate) < minimumApplyDate) {
-            errors.fromDate = "Leave can be applied only within 2 days from today for past dates";
-        }
-
-        if (toDate && getDateOnly(toDate) < minimumApplyDate) {
-            errors.toDate = "Leave can be applied only within 2 days from today for past dates";
         }
 
         if (!leaveTypeId) errors.leaveType = "Leave type is required";
@@ -369,7 +351,6 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                         setValidationErrors(prev => ({ ...prev, fromDate: "" }));
                                     }}
                                     placeholder="From date"
-                                    minDate={minimumApplyDate}
                                 />
                                 {validationErrors.fromDate && (
                                     <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.fromDate}</p>
@@ -387,7 +368,6 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                     }}
                                     placeholder="To date"
                                     popupAlign="right"
-                                    minDate={minimumApplyDate}
                                 />
                                 {validationErrors.toDate && (
                                     <p className="mt-1 text-[11px] text-[#f16868]">{validationErrors.toDate}</p>
