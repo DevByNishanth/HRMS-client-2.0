@@ -420,11 +420,14 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                         </div>
                                     ) : (
                                         leaveTypes.map((type) => {
+                                            console.log("leave types : ", leaveTypes)
                                             const typeId = type.leaveTypeId?._id;
                                             const leaveName = type.leaveTypeId?.leaveName || "Unnamed Leave";
                                             const remainingDays = type.remainingDays || 0;
                                             const isLOP = leaveName.toLowerCase().includes("lop") || leaveName.toLowerCase().includes("loss of pay");
-                                            const isDisabled = (remainingDays === 0 && !isLOP) || !typeId;
+                                            const isOnDutyOfficial = leaveName.toLowerCase('On Duty - Official')
+                                            // const isDisabled = (remainingDays === 0 && !isLOP) || !typeId ;
+                                            const isDisabled = (remainingDays === 0 && !isLOP && !isOnDutyOfficial) || !typeId;
                                             return (
                                                 <button
                                                     key={type._id}
