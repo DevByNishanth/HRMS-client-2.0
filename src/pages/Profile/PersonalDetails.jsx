@@ -23,7 +23,7 @@ const getAddressText = (address) => {
 };
 
 const PersonalDetails = ({ canEdit, onEdit, faculty }) => {
-  console.log("faculty : ", faculty)
+  // console.log("faculty : ", faculty)
   const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "N/A";
   const dob = formatDate(faculty?.dob);
   const gender = faculty?.gender || "N/A";

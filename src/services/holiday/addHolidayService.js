@@ -4,11 +4,11 @@ import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/holidays`;
 
-console.log("API_URL =", API_URL);
+// console.log("API_URL =", API_URL);
 
 export const createHoliday = async (holidayData) => {
     const token = localStorage.getItem("hrms_token");
-    console.log("TOKEN:", token);
+    // console.log("TOKEN:", token);
 
     const response = await axios.post(
         API_URL,

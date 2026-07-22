@@ -47,7 +47,7 @@ export default function AttendanceBody() {
             const response =
                 await getAttendanceStackCardData();
 
-            console.log(response);
+            // console.log(response);
 
             setStats([
                 {

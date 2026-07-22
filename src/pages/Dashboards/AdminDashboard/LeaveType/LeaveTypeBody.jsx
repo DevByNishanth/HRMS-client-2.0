@@ -49,7 +49,7 @@ export default function LeaveTypeBody() {
     }, []);
 
     useEffect(() => {
-        console.log("leaveTypes state:", leaveTypes);
+        // console.log("leaveTypes state:", leaveTypes);
     }, [leaveTypes]);
 
     const fetchLeaveTypes = async () => {
@@ -58,10 +58,10 @@ export default function LeaveTypeBody() {
 
             const response = await getLeaveTypes();
 
-            console.log(
-                "Leave Type API Response:",
-                response
-            );
+            // console.log(
+            //     "Leave Type API Response:",
+            //     response
+            // );
 
             setLeaveTypes(response?.leaveTypes || []);
         } catch (error) {

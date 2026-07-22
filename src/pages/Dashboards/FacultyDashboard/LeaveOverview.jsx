@@ -46,7 +46,7 @@ const LeaveOverview = () => {
           "Authorization": `Bearer ${token}`
         }
       });
-      console.log("leave statcard res : ", res.data?.leaveBalances)
+      // console.log("leave statcard res : ", res.data?.leaveBalances)
       setLeaveCounts(res?.data?.leaveBalances || [])
     } catch (err) {
       console.error(err.message)

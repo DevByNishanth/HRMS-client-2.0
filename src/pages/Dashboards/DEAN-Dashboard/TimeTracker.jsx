@@ -62,7 +62,7 @@ const TimeTracker = () => {
 
       setTrackerData(dayData);
 
-      console.log("Time Tracker Data :", dayData);
+      // console.log("Time Tracker Data :", dayData);
     } catch (err) {
       console.error(
         "Error occured while fetching time tracker data : ",

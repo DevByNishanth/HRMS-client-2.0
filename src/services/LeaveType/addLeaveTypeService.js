@@ -4,13 +4,13 @@ import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/leave-type`;
 
-console.log("API_URL =", API_URL);
+// console.log("API_URL =", API_URL);
 
 export const createLeaveType = async (leaveTypeData) => {
     const token = localStorage.getItem("hrms_token");
-    console.log("TOKEN:", token);
-    console.log("API_URL:", API_URL);
-    console.log("Sending Payload:", leaveTypeData);
+    // console.log("TOKEN:", token);
+    // console.log("API_URL:", API_URL);
+    // console.log("Sending Payload:", leaveTypeData);
 
     const response = await axios.post(
         API_URL,

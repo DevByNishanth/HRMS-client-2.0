@@ -149,10 +149,10 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
             if (isEdit) {
                 await updateShift(shiftData._id, payload);
-                console.log("Shift updated successfully");
+                // console.log("Shift updated successfully");
             } else {
                 await createShifts(payload);
-                console.log("Shift created successfully");
+                // console.log("Shift created successfully");
             }
 
             refreshShifts?.();

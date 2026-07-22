@@ -639,7 +639,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
     const token = getTokenFromLocalStorage();
     let decodedData = decodeToken(token);
     let dept = decodedData ? decodedData.department : null;
-    console.log(decodedData);
+    // console.log(decodedData);
 
     // States
     const [requests, setRequests] = useState([]);
@@ -722,7 +722,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
         // If department is CFRD, fetch both CFRD and QPT
         const departmentParam = dept === "CFRD" ? "CFRD,QPT" : dept;
     
-        console.log("hod fetching req");
+        // console.log("hod fetching req");
     
         const response = await axios.get(
             `${import.meta.env.VITE_API_BASE_URL}/api/leave-application/?department=${encodeURIComponent(departmentParam)}`,
@@ -739,13 +739,13 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
             (item) => item.facultyId?._id !== facultyId
         );
     
-        console.log("hod data:", data);
+        // console.log("hod data:", data);
         setRequests(data);
     }
 
 
     const handleApprove = async (request) => {
-        console.log("request id:", request?._id);
+        // console.log("request id:", request?._id);
         try {
             setApprovingId(request?._id);
             const res = await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/${request?._id}/approve`, {}, {
@@ -753,7 +753,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`
                 }
             })
-            console.log("leave approved : ", res);
+            // console.log("leave approved : ", res);
             await fetchLeaveRequests();
             setApprovingId(null);
         } catch (error) {
@@ -797,7 +797,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                         }
                     }
                 );
-                console.log("leave rejected");
+                // console.log("leave rejected");
             } else if (confirmation.action === "revoke") {
                 // Call API to revoke leave decision
                 setRevokeLoading(true);
@@ -811,7 +811,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                         }
                     }
                 );
-                console.log("leave decision revoked: ", res);
+                // console.log("leave decision revoked: ", res);
                 setRevokeLoading(false);
             }
 

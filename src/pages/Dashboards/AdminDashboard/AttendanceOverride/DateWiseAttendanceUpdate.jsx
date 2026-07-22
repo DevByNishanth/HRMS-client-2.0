@@ -63,8 +63,8 @@ export default function DateWiseAttendanceUpdate() {
         try {
             const formattedDate = dayjs(attendanceDate).format("YYYY-MM-DD");
             const response = await getAttendanceByDate(formattedDate);
-            console.log("API Response:", response.data);
-            console.log("Fresh Attendance Response:");
+            // console.log("API Response:", response.data);
+            // console.log("Fresh Attendance Response:");
             console.table(
                 response.data.map((r) => ({
                     name: r.employeeName,
@@ -78,7 +78,7 @@ export default function DateWiseAttendanceUpdate() {
             console.error(error);
         }
     };
-    console.log("fetchAttendance",fetchAttendance);
+    // console.log("fetchAttendance",fetchAttendance);
     
 
     const filteredData = attendanceData.filter((row) => {
@@ -101,8 +101,8 @@ export default function DateWiseAttendanceUpdate() {
             matchesCategory
         );
     });
-    console.log("Attendance Data:", attendanceData);
-    console.log("Filtered Data:", filteredData);
+    // console.log("Attendance Data:", attendanceData);
+    // console.log("Filtered Data:", filteredData);
 
     const handleSessionChange = (
         rowKey,
@@ -175,7 +175,7 @@ export default function DateWiseAttendanceUpdate() {
                 remarks,
             };
 
-            console.log("Single Payload:", payload);
+            // console.log("Single Payload:", payload);
 
             await updateAttendanceOverrideSingle(
                 employeeId,
@@ -235,10 +235,10 @@ export default function DateWiseAttendanceUpdate() {
                 updates,
             };
 
-            console.log(
-                "Bulk Edited Payload:",
-                payload
-            );
+            // console.log(
+            //     "Bulk Edited Payload:",
+            //     payload
+            // );
 
             await updateAttendanceOverrideBulk(
                 payload
@@ -282,16 +282,16 @@ export default function DateWiseAttendanceUpdate() {
                 updates,
             };
 
-            console.log(
-                "Bulk Selected Payload:",
-                payload
-            );
+            // console.log(
+            //     "Bulk Selected Payload:",
+            //     payload
+            // );
 
-            console.log("Bulk Selected Payload:", payload);
-            const response = await updateAttendanceOverrideBulk(
-                payload
-            );
-            console.log("Bulk Response:", response);
+            // console.log("Bulk Selected Payload:", payload);
+            // const response = await updateAttendanceOverrideBulk(
+            //     payload
+            // );
+            // console.log("Bulk Response:", response);
             toast.success("Attendance updated successfully!");
             setOverrideModal(false);
             setSelectedRows([]);

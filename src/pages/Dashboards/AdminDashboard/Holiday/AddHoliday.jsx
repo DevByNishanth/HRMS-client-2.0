@@ -167,7 +167,7 @@ export default function AddHoliday({
 
             const response = await createBulkUploadHoliday(formData);
 
-            console.log("Bulk Upload Response:", response);
+            // console.log("Bulk Upload Response:", response);
 
             refreshHolidays?.();
 

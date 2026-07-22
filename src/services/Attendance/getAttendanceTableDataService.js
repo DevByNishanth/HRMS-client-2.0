@@ -11,7 +11,7 @@ const getCurrentDate = () => {
 };
 
 export const getAttendanceTableData = async (filters) => {
-  console.log("filter:", filters);
+  // console.log("filter:", filters);
   try {
     const token = localStorage.getItem("hrms_token");
 

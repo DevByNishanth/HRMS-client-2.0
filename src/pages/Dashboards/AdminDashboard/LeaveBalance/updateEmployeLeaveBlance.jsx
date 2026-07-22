@@ -49,7 +49,7 @@ export default function UpdateEmployeeLeaveBalance({
             setLoading(true);
             setApiError("");
 
-            console.log("Selected Leave:", leaveData);
+            // console.log("Selected Leave:", leaveData);
 
             const payload = {
                 leaveBalanceId: leaveData?._id,

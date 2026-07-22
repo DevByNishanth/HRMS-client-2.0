@@ -294,7 +294,7 @@ const FacultyDashboardBody = () => {
   // decoding token
   let token = localStorage.getItem("hrms_token");
   const decodedToken = jwtDecode(token);
-  console.log("decoded", decodedToken);
+  // console.log("decoded", decodedToken);
 
   return (
     <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
