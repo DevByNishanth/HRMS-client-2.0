@@ -156,6 +156,7 @@ const FacultyManagementPage = () => {
     isExportModalOpen,
     exportLoading,
     exportError,
+
     handleExportClick,
     closeExportModal,
     handleConfirmExport,
@@ -163,13 +164,24 @@ const FacultyManagementPage = () => {
 
   const exportCurrentFilteredRows = () => {
     const rows = filteredFaculty.map((faculty) => ({
-      "Faculty Name": getFacultyName(faculty),
+
       "Emp ID": faculty.empId || "-",
-      Designation: faculty.designation || "-",
-      Department: faculty.department || "-",
+      "Name": getFacultyName(faculty),
+      "Organization Email": faculty.organizationEmail || "-",
+      "Phone": faculty.phone || faculty.mobileNumber || "-",
+      "Designation": faculty.designation || "-",
       "Original Department": faculty.originalDepartment || "-",
-      Type: faculty.employeeCategory || "-",
+      "Department": faculty.department || "-",
+      "Reporting To": faculty.reportingTo?.facultyId
+        ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${
+            faculty.reportingTo.facultyId.firstName ?? ""
+          } ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
+        : "-",
+      "Punch ID": faculty.punchId || "-",
+      "Employment Type": faculty.employeeCategory || faculty.employmentType || "-",
+      "Shift": faculty.shiftId?.shiftName || faculty.shiftName || "-",
     }));
+
     exportToExcel(rows, "Faculty-List.xlsx");
   };
 
