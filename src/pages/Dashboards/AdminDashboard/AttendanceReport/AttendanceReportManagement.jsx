@@ -235,18 +235,25 @@ function normalizeEmployees(payload) {
   return getEmployeeList(payload).map((employee, index) => {
     const attendance = normalizeAttendanceMap(employee);
 
-    return {
-      id: getEmployeeId(employee) || `employee-${index}`,
-      name: getEmployeeName(employee),
-      department: getEmployeeDepartmentType(employee),
-      designation: getEmployeeDesignation(employee),
-      attendance,
-      summary:
-        employee.summary ||
-        employee.totals ||
-        employee.counts ||
-        calculateSummary(attendance),
-    };
+  return {
+  id: getEmployeeId(employee),
+  name: getEmployeeName(employee),
+  department: getEmployeeDepartmentType(employee),
+  punchId:
+    employee.punchId ||
+    employee.punchID ||
+    employee.facultyId?.punchId ||
+    "",
+  designation: getEmployeeDesignation(employee),
+  attendance,
+  summary:
+    employee.summary ||
+    employee.totals ||
+    employee.counts ||
+    calculateSummary(attendance),
+};
+
+
   });
 }
 
@@ -364,22 +371,30 @@ export default function AttendanceManagement() {
   }, [employees, searchTerm, selectedDepartment]);
 
   function exportToExcel() {
-    const headerRow = [
-      "Employee",
-      ...dates.map((date) => `${date.day}-${date.weekday}`),
-      ...summaryColumns,
-    ];
+   const headerRow = [
+  "Employee ID",
+  "Employee Name",
+  "Department",
+  "Punch ID",
+  ...dates.map((date) => `${date.day}-${date.weekday}`),
+  ...summaryColumns,
+];
 
-    const dataRows = visibleEmployees.map((employee) => {
-      const row = [
-        `${employee.name} [${employee.id}]`,
-        ...dates.map(
-          (date) => getAttendanceStatus(employee.attendance, date).status,
-        ),
-        ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
-      ];
-      return row;
-    });
+
+  const dataRows = visibleEmployees.map((employee) => {
+  const row = [
+    employee.id,
+    employee.name,
+    employee.department,
+    employee.punchId || "",
+    ...dates.map(
+      (date) => getAttendanceStatus(employee.attendance, date).status
+    ),
+    ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
+  ];
+
+  return row;
+});
 
     // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([
