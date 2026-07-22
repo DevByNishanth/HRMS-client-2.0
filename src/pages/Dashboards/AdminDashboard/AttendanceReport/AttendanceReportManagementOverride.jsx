@@ -341,13 +341,15 @@ export default function AttendanceManagementOverride() {
     return null;
   }
 
-  function parseSessionsFromStatus(status) {
-    if (status === "A") return { session1: "A", session2: "A" };
-    if (status === "P") return { session1: "P", session2: "P" };
-    if (status === "A:P") return { session1: "A", session2: "P" };
-    if (status === "P:A") return { session1: "P", session2: "A" };
-    return { session1: "A", session2: "A" };
-  }
+ function parseSessionsFromStatus(status) {
+  if (status === "A") return { session1: "A", session2: "A" };
+  if (status === "P") return { session1: "P", session2: "P" };
+  if (status === "OD") return { session1: "OD", session2: "OD" };
+  if (status === "A:P") return { session1: "A", session2: "P" };
+  if (status === "P:A") return { session1: "P", session2: "A" };
+
+  return { session1: "A", session2: "A" };
+}
 
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
@@ -952,15 +954,16 @@ export default function AttendanceManagementOverride() {
                   Override status
                 </label>
                 <select
-                  value={editedStatus}
-                  onChange={(event) => setEditedStatus(event.target.value)}
-                  className="w-full rounded-lg border border-[#173150] outline-none p-2 text-sm text-white bg-[#071425]"
-                >
-                  <option value="P">Present (P)</option>
-                  <option value="A">Absent (A)</option>
-                  <option value="A:P">Absent:Present (A:P)</option>
-                  <option value="P:A">Present:Absent (P:A)</option>
-                </select>
+  value={editedStatus}
+  onChange={(event) => setEditedStatus(event.target.value)}
+  className="w-full rounded-lg border border-[#173150] outline-none p-2 text-sm text-white bg-[#071425]"
+>
+  <option value="P">Present (P)</option>
+  <option value="A">Absent (A)</option>
+  <option value="OD">On Duty (OD)</option>
+  <option value="A:P">Absent:Present (A:P)</option>
+  <option value="P:A">Present:Absent (P:A)</option>
+</select>
               </div>
 
               <div>
