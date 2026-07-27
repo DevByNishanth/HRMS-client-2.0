@@ -37,6 +37,18 @@ export default function EmployeeWiseAttendanceUpdate() {
     const [updateLoading, setUpdateLoading] = useState(false);
     const [openPicker, setOpenPicker] = useState(null);
     const [leaveBalances,setLeaveBalances]=useState([]);
+    const [bulkSession1, setBulkSession1] = useState({
+        value: "P",
+        leaveTypeId: null,
+        leaveName: "Present",
+        academicYear: getCurrentAcademicYear(),
+    });
+    const [bulkSession2, setBulkSession2] = useState({
+        value: "P",
+        leaveTypeId: null,
+        leaveName: "Present",
+        academicYear: getCurrentAcademicYear(),
+    });
 
     const {
         isExportModalOpen,
@@ -144,22 +156,24 @@ export default function EmployeeWiseAttendanceUpdate() {
         }
     };
 
-    const loadLeaveBalance = async (facultyId)=>{
-        try{
+    const loadLeaveBalance = async (facultyId) => {
+        try {
             const response = await getLeaveBalance(facultyId);
-            if(response.success){
-                const currentAcademicYear =
-                    getCurrentAcademicYear();
-                const filtered =
-                    response.data.filter(
-                        item=>item.academicYear===currentAcademicYear
-                    );
-                setLeaveBalances(filtered);
+            if (response.success) {
+                const currentAcademicYear = getCurrentAcademicYear();
+                const allBalances = response.balances || []; // fixed: was response.data
+                const filtered = allBalances.filter(
+                    (item) => item.academicYear === currentAcademicYear
+                );
+
+                setLeaveBalances(
+                    filtered.length > 0 ? filtered : allBalances
+                );
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
-    }
+};
 
     useEffect(() => {
         if (!fromDate || !toDate) {
@@ -227,6 +241,8 @@ export default function EmployeeWiseAttendanceUpdate() {
     // };
 
     const handleSessionChange = (rowId, field, value) => {
+        console.log("handleSessionChange", rowId, field, value);
+        console.log("Selected Value:", value);
         const selectedOption =
             [...leaveOptions, ...odOptions].find(
                 option => option.value === value
@@ -238,6 +254,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                 academicYear: getCurrentAcademicYear(),
                 balance: null,
             };
+            console.log("Selected Option:", selectedOption);
         const updated = filteredAttendance.map((row) =>
             row._id === rowId
                 ? {
@@ -287,6 +304,18 @@ export default function EmployeeWiseAttendanceUpdate() {
                     ? "bulk-selected"
                     : "bulk-selected"
             );
+            setBulkSession1({
+                value: "P",
+                leaveTypeId: null,
+                leaveName: "Present",
+                academicYear: getCurrentAcademicYear(),
+            });
+            setBulkSession2({
+                value: "P",
+                leaveTypeId: null,
+                leaveName: "Present",
+                academicYear: getCurrentAcademicYear(),
+            });
             setShowModal(true);
             return;
         }
@@ -414,35 +443,59 @@ export default function EmployeeWiseAttendanceUpdate() {
         return 1;
     };
 
-    const leaveOptions = leaveBalances.map((item) => ({
-        value: leaveCodeMap[item.leaveName],   // CL
-        label: `${leaveCodeMap[item.leaveName]} (${item.balance})`,
-        leaveTypeId: item.leaveTypeId?._id,
-        leaveName: item.leaveName,             // Casual Leave
-        academicYear: item.academicYear,
-        balance: item.balance,
-    }));
+    const normalizedLeaveCodeMap = Object.fromEntries(
+        Object.entries({
+            ...leaveCodeMap,
+            "on duty - official": "OD-O",
+            "on duty - exam": "OD-E",
+            "on duty - research": "OD-R",
+            "od-o": "OD-O",
+            "od-e": "OD-E",
+            "od-r": "OD-R",
+            "od-exam": "OD-E",
+            "od-off": "OD-O",
+            "lop": "LOP", // added: API returns leaveName "LOP" directly, not "Loss of Pay"
+        }).map(([key, value]) => [
+            key.trim().toLowerCase(),
+            value,
+        ])
+    );
 
-    const odOptions = [
-        {
-            value: "OD-R",
-            label: "OD-R (12)",
-            leaveTypeId: 101,
-            leaveName: "OD-R",
-        },
-        {
-            value: "OD-EXAM",
-            label: "OD-E (15)",
-            leaveTypeId: 102,
-            leaveName: "OD-EXAM",
-        },
-        {
-            value: "OD-OFF",
-            label: "OD-O (20)",
-            leaveTypeId: 103,
-            leaveName: "OD-OFF",
-        },
-    ];
+    const attendanceOptions = leaveBalances
+        .map((item) => {
+            const leaveTypeObj =
+                item.leaveTypeId && typeof item.leaveTypeId === "object"
+                    ? item.leaveTypeId
+                    : null;
+
+            const rawLeaveName =
+                leaveTypeObj?.leaveName || item.leaveName || item.leaveType;
+
+            const normalizedName = rawLeaveName?.trim()?.toLowerCase();
+            const code = normalizedLeaveCodeMap[normalizedName];
+
+            if (!code) {
+                return null;
+            }
+
+            return {
+                value: code,
+                label: `${code} (${item.remainingDays ?? item.balance ?? 0})`,
+                leaveTypeId: leaveTypeObj?._id || item.leaveTypeId,
+                leaveName: rawLeaveName,
+                academicYear: item.academicYear,
+                remainingDays: item.remainingDays ?? item.balance ?? 0,
+            };
+        })
+        .filter(Boolean);
+
+    const leaveOptions = attendanceOptions.filter((option) =>
+        ["CL", "ML", "LOP"].includes(option.value)
+    );
+
+    const odOptions = attendanceOptions.filter((option) =>
+        ["OD-R", "OD-E", "OD-O"].includes(option.value)
+    );
 
     useEffect(() => {
         if (!attendanceData.length || !leaveOptions.length) return;
@@ -817,11 +870,11 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 leaveOptions={leaveOptions}
                                                 odOptions={odOptions}
                                                 onChange={(value) =>
-                                                handleSessionChange(
-                                                    row._id,
-                                                    "session1",
-                                                    value
-                                                )
+                                                    handleSessionChange(
+                                                        row._id,
+                                                        "session1",
+                                                        value
+                                                    )
                                                 }
                                             />
                                         </td>
@@ -832,11 +885,11 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 leaveOptions={leaveOptions}
                                                 odOptions={odOptions}
                                                 onChange={(value) =>
-                                                handleSessionChange(
-                                                    row._id,
-                                                    "session2",
-                                                    value
-                                                )
+                                                    handleSessionChange(
+                                                        row._id,
+                                                        "session2",
+                                                        value
+                                                    )
                                                 }
                                             />
                                         </td>
@@ -869,6 +922,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                 mode={modalMode}
                 loading={updateLoading}
                 selectedRow={selectedRowData}
+                leaveOptions={leaveOptions}
+                odOptions={odOptions}
+                bulkSession1={bulkSession1}
+                bulkSession2={bulkSession2}
                 onClose={() =>
                     setShowModal(false)
                 }
@@ -926,10 +983,17 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const payload = {
                                 remarks: formData.remarks,
                                 updates: editedRecords.map((row) => ({
+                                    employeeId: row.employeeId,
+                                    facultyId: selectedEmployee.facultyId,
                                     date: formatDateForApi(row.date),
+
+                                    firstIn: row.firstIn,
+                                    lastOut: row.lastOut,
 
                                     session1: row.session1.value,
                                     session2: row.session2.value,
+
+                                    remarks: formData.remarks,
 
                                     leaveTypeId:
                                         row.session1.leaveTypeId ??
@@ -939,15 +1003,22 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         row.session1.leaveName ??
                                         row.session2.leaveName,
 
-                                    academicYear: getCurrentAcademicYear(),
+                                    academicYear:
+                                        row.session1.academicYear ??
+                                        row.session2.academicYear ??
+                                        getCurrentAcademicYear(),
 
                                     totalNoOfDays: calculateLeaveDays(
                                         row.session1,
                                         row.session2
                                     ),
-
-                                }))
+                                })),
                             };
+
+                            console.log(
+                                "Bulk Row Payload",
+                                JSON.stringify(payload, null, 2)
+                            );
 
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,
@@ -969,10 +1040,17 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const payload = {
                                 remarks: formData.remarks,
                                 updates: selectedRecords.map((row) => ({
+                                    employeeId: row.employeeId,
+                                    facultyId: selectedEmployee.facultyId,
                                     date: formatDateForApi(row.date),
+
+                                    firstIn: row.firstIn,
+                                    lastOut: row.lastOut,
 
                                     session1: formData.session1.value,
                                     session2: formData.session2.value,
+
+                                    remarks: formData.remarks,
 
                                     leaveTypeId:
                                         formData.session1.leaveTypeId ??
@@ -982,11 +1060,22 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         formData.session1.leaveName ??
                                         formData.session2.leaveName,
 
-                                    academicYear: getCurrentAcademicYear(),
+                                    academicYear:
+                                        formData.session1.academicYear ??
+                                        formData.session2.academicYear ??
+                                        getCurrentAcademicYear(),
 
-                                    totalNoOfDays,
+                                    totalNoOfDays: calculateLeaveDays(
+                                        formData.session1,
+                                        formData.session2
+                                    ),
                                 })),
                             };
+
+                            console.log(
+                                "Bulk Selected Payload",
+                                JSON.stringify(payload, null, 2)
+                            );
 
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,

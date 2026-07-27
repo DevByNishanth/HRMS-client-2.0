@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function AttendanceDropdown({
   value = "P",
@@ -8,14 +9,19 @@ export default function AttendanceDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const [hoverMenu, setHoverMenu] = useState(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
+  const [subMenuPos, setSubMenuPos] = useState({ top: 0, left: 0 });
 
-  const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target)
+        buttonRef.current &&
+        !buttonRef.current.contains(e.target) &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target)
       ) {
         setOpen(false);
         setHoverMenu(null);
@@ -23,47 +29,81 @@ export default function AttendanceDropdown({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Close on scroll/resize so the flyout doesn't stay stuck in the wrong spot
+  useEffect(() => {
+    if (!open) return;
+
+    const close = () => {
+      setOpen(false);
+      setHoverMenu(null);
+    };
+
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  const toggleOpen = () => {
+    if (!open && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setMenuPos({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+    setOpen((prev) => !prev);
+    setHoverMenu(null);
+  };
+
   const handleSelect = (option) => {
-    onChange(option.value);
+    console.log("Selected option:", option);
+
+    if (typeof onChange === "function") {
+      console.log("Calling parent onChange");
+      onChange(option.value);
+    }
+
     setOpen(false);
     setHoverMenu(null);
   };
 
+  const openSubMenu = (menu, e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setSubMenuPos({
+      top: rect.top,
+      left: rect.right + 4,
+    });
+    setHoverMenu(menu);
+  };
+
   const getDisplayText = () => {
-    if (value === "P") return "P";
+    if (!value || value === "P") {
+      return "P";
+    }
 
-    const leave = leaveOptions.find(
-      (item) => item.value === value
+    const option = [...leaveOptions, ...odOptions].find(
+      (item) => String(item.value) === String(value)
     );
 
-    if (leave) return leave.value;
-
-    const od = odOptions.find(
-      (item) => item.value === value
-    );
-
-    if (od) return od.value;
-
-    return value;
+    return option ? option.value : value;
   };
 
   return (
-    <div
-      ref={dropdownRef}
-      className="relative inline-block w-[140px]"
-    >
+    <div className="relative inline-block w-[140px]">
       {/* Selected Value */}
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         className="
           w-full
           h-10
@@ -79,7 +119,7 @@ export default function AttendanceDropdown({
           cursor-pointer
         "
       >
-        <span>{getDisplayText()}</span>
+        <span className="truncate">{getDisplayText()}</span>
 
         <svg
           className={`w-4 h-4 transition-transform ${
@@ -98,147 +138,121 @@ export default function AttendanceDropdown({
         </svg>
       </button>
 
-      {/* Main Dropdown */}
-      {open && (
-        <div
-          className="
-            absolute
-            top-full
-            left-0
-            mt-1
-            w-full
-            rounded-lg
-            border
-            border-[#244061]
-            bg-[#172c46]
-            shadow-xl
-            z-50
-            overflow-visible
-          "
-        >
-          {/* Present */}
+      {open &&
+        createPortal(
           <div
-            onClick={() => handleSelect({ value: "P" })}
-            className="
-              px-4
-              py-2
-              hover:bg-[#3984ff]
-              cursor-pointer
-              text-white
-            "
+            ref={menuRef}
+            style={{
+              position: "fixed",
+              top: menuPos.top,
+              left: menuPos.left,
+              minWidth: menuPos.width,
+              zIndex: 9999,
+            }}
+            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl overflow-visible"
           >
-            P
-          </div>
+            {/* Present */}
+            <div
+              onClick={() => handleSelect({ value: "P" })}
+              className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+            >
+              P
+            </div>
 
-          {/* Absent */}
+            {/* Absent */}
+            <div
+              onMouseEnter={(e) => openSubMenu("A", e)}
+              // onMouseLeave={() => setTimeout(() => setHoverMenu(null), 150)}
+              className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
+            >
+              <span>A</span>
+              <span>▶</span>
+            </div>
+
+            {/* OD */}
+            <div
+              onMouseEnter={(e) => openSubMenu("OD", e)}
+              // onMouseLeave={() => setTimeout(() => setHoverMenu(null), 150)}
+              className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
+            >
+              <span>OD</span>
+              <span>▶</span>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {open &&
+        hoverMenu === "A" &&
+        createPortal(
           <div
-            className="
-              relative
-              px-4
-              py-2
-              hover:bg-[#1f3a5c]
-              cursor-pointer
-              flex
-              justify-between
-              items-center
-              text-white
-            "
+            style={{
+              position: "fixed",
+              top: subMenuPos.top,
+              left: subMenuPos.left,
+              minWidth: 170,
+              zIndex: 10000,
+            }}
+            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"
             onMouseEnter={() => setHoverMenu("A")}
           >
-            <span>A</span>
-            <span>▶</span>
-
-            {hoverMenu === "A" && (
-              <div
-                className="
-                  absolute
-                  left-full
-                  top-0
-                  ml-1
-                  min-w-[170px]
-                  rounded-lg
-                  border
-                  border-[#244061]
-                  bg-[#172c46]
-                  shadow-xl
-                  z-[999]
-                "
-                onMouseLeave={() => setHoverMenu(null)}
-              >
-                {leaveOptions.map((item) => (
-                  <div
-                    key={item.leaveTypeId}
-                    onClick={() => handleSelect(item)}
-                    className="
-                      px-4
-                      py-2
-                      hover:bg-[#3984ff]
-                      cursor-pointer
-                      text-white
-                    "
-                  >
-                    {item.label}
-                  </div>
-                ))}
+            {leaveOptions.length > 0 ? (
+              leaveOptions.map((item) => (
+                <div
+                  key={item.leaveTypeId || item.value}
+                  onMouseDown={() => {
+                    console.log("MouseDown:", item);
+                    handleSelect(item);
+                  }}
+                  className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+                >
+                  {item.label}
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-sm text-[#8ca1bd]">
+                No leave balance available
               </div>
             )}
-          </div>
+          </div>,
+          document.body
+        )}
 
-          {/* OD */}
+      {open &&
+        hoverMenu === "OD" &&
+        createPortal(
           <div
-            className="
-              relative
-              px-4
-              py-2
-              hover:bg-[#1f3a5c]
-              cursor-pointer
-              flex
-              justify-between
-              items-center
-              text-white
-            "
+            style={{
+              position: "fixed",
+              top: subMenuPos.top,
+              left: subMenuPos.left,
+              minWidth: 170,
+              zIndex: 10000,
+            }}
+            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"
             onMouseEnter={() => setHoverMenu("OD")}
           >
-            <span>OD</span>
-            <span>▶</span>
-
-            {hoverMenu === "OD" && (
-              <div
-                className="
-                  absolute
-                  left-full
-                  top-0
-                  ml-1
-                  min-w-[170px]
-                  rounded-lg
-                  border
-                  border-[#244061]
-                  bg-[#172c46]
-                  shadow-xl
-                  z-[999]
-                "
-                onMouseLeave={() => setHoverMenu(null)}
-              >
-                {odOptions.map((item) => (
-                  <div
-                    key={item.value}
-                    onClick={() => handleSelect(item)}
-                    className="
-                      px-4
-                      py-2
-                      hover:bg-[#3984ff]
-                      cursor-pointer
-                      text-white
-                    "
-                  >
-                    {item.label}
-                  </div>
-                ))}
+            {odOptions.length > 0 ? (
+              odOptions.map((item) => (
+                <div
+                  key={item.leaveTypeId || item.value}
+                  onMouseDown={() => {
+                    console.log("MouseDown:", item);
+                    handleSelect(item);
+                  }}
+                  className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+                >
+                  {item.label}
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-sm text-[#8ca1bd]">
+                No OD options available
               </div>
             )}
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

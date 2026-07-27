@@ -52,6 +52,8 @@ export default function AddHoliday({
         "Non-Teaching",
         "Housekeeping",
         "Driver",
+        "Security",
+        "Electrical-Maintenance",
     ];
 
     const holidayTypes = [
@@ -338,6 +340,8 @@ export default function AddHoliday({
                                     "Non-Teaching",
                                     "Housekeeping",
                                     "Driver",
+                                    "Security",
+                                    "Electrical-Maintenance",
                                 ];
 
                                 setFormData((prev) => ({
