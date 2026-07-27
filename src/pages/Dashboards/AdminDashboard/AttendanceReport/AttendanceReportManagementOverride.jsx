@@ -331,7 +331,14 @@ export default function AttendanceManagementOverride() {
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [editedStatus, setEditedStatus] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [remarksError, setRemarksError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+const [showLeaveMenu, setShowLeaveMenu] = useState(false);
+
+const [leaveType, setLeaveType] = useState("");
+const [showODMenu, setShowODMenu] = useState(false);
+const [odType, setOdType] = useState("");
 
   function getToggleStatus(status) {
     if (status === "A") return "P";
@@ -353,8 +360,13 @@ export default function AttendanceManagementOverride() {
 
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
-    console.log("selectedAttendance", selectedAttendance);
 
+    if (!remarks.trim()) {
+      setRemarksError("Remarks is required.");
+      return;
+    }
+
+    setRemarksError("");
     setIsSaving(true);
 
     try {
@@ -839,18 +851,26 @@ export default function AttendanceManagementOverride() {
                             <td
                               key={`${employee.id}-${date.key}`}
                               onClick={() => {
+                                const currentStatus = attendance.status;
+                                const options = ["P", "A", "OD", "A:P", "P:A"];
+                                const nextStatus = options.find(
+                                  (option) => option !== currentStatus,
+                                );
+
                                 setSelectedAttendance({
                                   employee: employee.name,
                                   empId: employee.id,
                                   empDbId: employee.dbId,
                                   date: date.key,
                                   day: date.day,
-                                  status: attendance.status,
+                                  status: currentStatus,
                                   inTime: attendance.inTime,
                                   outTime: attendance.outTime,
                                 });
 
-                                setEditedStatus(attendance.status);
+                                setEditedStatus(nextStatus || currentStatus);
+                                setRemarks("");
+                                setRemarksError("");
                                 setShowPopup(true);
                               }}
                               className={`${getCellClass(
@@ -899,7 +919,7 @@ export default function AttendanceManagementOverride() {
         <div className="fixed inset-0 z-50 border-white  flex items-center justify-center bg-[#020817]/60 backdrop-blur-[4px]">
           <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
             <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold">Attendance Details</h2>
+              <h2 className="text-lg font-bold">Attendance Detail</h2>
              { console.log("selectedAttendance", selectedAttendance)}
               <X
                 className="cursor-pointer"
@@ -941,30 +961,187 @@ export default function AttendanceManagementOverride() {
                     {selectedAttendance?.status}
                   </span>
                 </div>
-                <div className="flex items-center justify-center gap-3">
-                  <span>Edited status</span>
-                  <span className="font-bold text-cyan-300">
-                    {editedStatus}
-                  </span>
-                </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold ">
-                  Override status
-                </label>
-                <select
-  value={editedStatus}
-  onChange={(event) => setEditedStatus(event.target.value)}
-  className="w-full rounded-lg border border-[#173150] outline-none p-2 text-sm text-white bg-[#071425]"
+  <label className="mb-2 block text-sm font-semibold">
+    Override Status
+  </label>
+
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => setIsOpen(!isOpen)}
+      className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-white flex justify-between"
+    >
+<span>
+  {editedStatus === "A" && leaveType
+    ? `A - ${leaveType}`
+    : editedStatus === "OD" && odType
+    ? `OD - ${odType}`
+    : editedStatus || "Select Status"}
+</span>
+    </button>
+
+    {isOpen && (
+      <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#173150] bg-[#071425]">
+
+        <div
+  className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+  onClick={() => {
+    setEditedStatus("P");
+    setLeaveType("");
+    setOdType("");
+    setIsOpen(false);
+  }}
 >
-  <option value="P">Present (P)</option>
-  <option value="A">Absent (A)</option>
-  <option value="OD">On Duty (OD)</option>
-  <option value="A:P">Absent:Present (A:P)</option>
-  <option value="P:A">Present:Absent (P:A)</option>
-</select>
+  Present (P)
+</div>
+
+        <div
+          className="relative"
+          onMouseEnter={() => setShowLeaveMenu(true)}
+          onMouseLeave={() => setShowLeaveMenu(false)}
+        >
+          <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[#173150]">
+            <span>Absent (A)</span>
+            <span>▶</span>
+          </div>
+
+          {showLeaveMenu && (
+            <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[#173150] bg-[#071425]">
+
+              <div
+                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+               onClick={() => {
+  setEditedStatus("A");
+  setLeaveType("CL");
+  setOdType("");
+  setIsOpen(false);
+}}
+              >
+                Casual Leave (CL)
               </div>
+
+              <div
+                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                onClick={() => {
+                  setEditedStatus("A");
+                  setLeaveType("LOP");
+                  setOdType("");
+                  setIsOpen(false);
+                }}
+              >
+                Loss Of Pay (LOP)
+              </div>
+
+              <div
+                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+               onClick={() => {
+  setEditedStatus("A");
+  setLeaveType("Medical Leave");
+  setOdType("");
+  setIsOpen(false);
+}}
+              >
+                Medical Leave
+              </div>
+
+            </div>
+          )}
+        </div>
+<div
+  className="relative"
+  onMouseEnter={() => setShowODMenu(true)}
+  onMouseLeave={() => setShowODMenu(false)}
+>
+  <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[#173150]">
+    <span>On Duty (OD)</span>
+    <span>▶</span>
+  </div>
+
+  {showODMenu && (
+    <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+
+      <div
+        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+     onClick={() => {
+  setEditedStatus("OD");
+  setOdType("Research");
+  setLeaveType("");
+  setIsOpen(false);
+}}
+      >
+        OD Research
+      </div>
+
+      <div
+        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+       onClick={() => {
+  setEditedStatus("OD");
+  setOdType("Exam");
+  setLeaveType(""); // Add this
+  setIsOpen(false);
+}}
+      >
+        OD Exam
+      </div>
+
+      <div
+        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+     onClick={() => {
+  setEditedStatus("OD");
+  setOdType("Official");
+  setLeaveType("");
+  setIsOpen(false);
+}}
+      >
+        OD Official
+      </div>
+
+    </div>
+  )}
+</div>
+
+        <div
+          className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+          onClick={() => {
+            setEditedStatus("A:P");
+            setLeaveType("");
+            setIsOpen(false);
+          }}
+        >
+          Absent : Present (A:P)
+        </div>
+
+        <div
+          className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+          onClick={() => {
+            setEditedStatus("P:A");
+            setLeaveType("");
+            setIsOpen(false);
+          }}
+        >
+          Present : Absent (P:A)
+        </div>
+
+
+
+         <div
+  className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+  onClick={() => {
+    setEditedStatus("P");
+    setLeaveType("");
+    setIsOpen(false);
+  }}
+>
+ Casual Leave (CL)
+</div>
+
+      </div>
+    )}
+  </div>
+</div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold">
@@ -972,11 +1149,21 @@ export default function AttendanceManagementOverride() {
                 </label>
                 <textarea
                   value={remarks}
-                  onChange={(event) => setRemarks(event.target.value)}
+                  onChange={(event) => {
+                    setRemarks(event.target.value);
+                    if (event.target.value.trim()) {
+                      setRemarksError("");
+                    }
+                  }}
                   rows={3}
                   className="w-full rounded-lg border border-[#173150] outline-none p-4 text-sm text-white bg-[#071425]"
                   placeholder="Enter remarks for this override"
                 />
+                {remarksError && (
+                  <p className="mt-2 text-sm text-[#f87171]">
+                    {remarksError}
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 mb-4">
@@ -990,7 +1177,7 @@ export default function AttendanceManagementOverride() {
                 <button
                   type="button"
                   onClick={handleSaveStatus}
-                  disabled={isSaving}
+                  disabled={isSaving || !remarks.trim()}
                   className="rounded bg-[#2563eb] px-6 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSaving ? "Updating..." : "Update"}
