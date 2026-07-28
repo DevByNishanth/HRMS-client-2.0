@@ -5,6 +5,7 @@ import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
 import { updateAttendanceOverrideSingle } from "../../../../services/AttendanceOverride/UpdateAttendanceOverrideSingle";
+import { getEmployeLeaveBalance } from "../../../../services/LeaveBalance/getEmployeLeaveBalanceService";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const summaryColumns = ["P", "A", "OFF", "OD"];
@@ -65,6 +66,42 @@ function getMonthDates(year, monthIndex) {
 function _logDatesForDebug(dates) {
   if (typeof console !== "undefined")
     console.debug("Attendance window dates:", dates);
+}
+
+function formatIstTime(dateString) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+  return date.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Kolkata",
+  });
+}
+
+function getCurrentAcademicYear() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  return month >= 7 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+}
+
+function getTotalNumberOfDays(session1, session2) {
+  if (!session1 || !session2) return 0;
+  if (session1 === session2) {
+    return session1 === "A" || session1 === "OD" ? 1 : 0;
+  }
+  if (
+    (session1 === "A" && session2 === "P") ||
+    (session1 === "P" && session2 === "A") ||
+    (session1 === "OD" && session2 === "P") ||
+    (session1 === "P" && session2 === "OD")
+  ) {
+    return 0.5;
+  }
+  return 0;
 }
 
 function getCellClass(
@@ -335,10 +372,139 @@ export default function AttendanceManagementOverride() {
   const [isSaving, setIsSaving] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 const [showLeaveMenu, setShowLeaveMenu] = useState(false);
+const [leaveBalances, setLeaveBalances] = useState([]);
+const [leaveBalanceLoading, setLeaveBalanceLoading] = useState(false);
+const [leaveBalanceError, setLeaveBalanceError] = useState("");
 
 const [leaveType, setLeaveType] = useState("");
 const [showODMenu, setShowODMenu] = useState(false);
 const [odType, setOdType] = useState("");
+const [session1, setSession1] = useState("P");
+const [session2, setSession2] = useState("P");
+
+const fetchLeaveBalances = async (attendance) => {
+  const selected = attendance || selectedAttendance;
+  if (!selected) {
+    setLeaveBalances([]);
+    setLeaveBalanceError("");
+    return;
+  }
+
+  const employeeId =
+    selected.empDbId ||
+    (isObjectId(selected.empId) ? selected.empId : null);
+
+  if (!employeeId) {
+    setLeaveBalances([]);
+    setLeaveBalanceError("Unable to determine employee ID for leave balance.");
+    return;
+  }
+
+  setLeaveBalanceLoading(true);
+  setLeaveBalanceError("");
+
+  try {
+    const response = await getEmployeLeaveBalance(employeeId, selected.date);
+    setLeaveBalances(response?.balances || response?.leaveBalances || []);
+  } catch (error) {
+    console.error("Failed to fetch leave balances", error);
+    setLeaveBalances([]);
+    setLeaveBalanceError("Unable to load leave balances.");
+  } finally {
+    setLeaveBalanceLoading(false);
+  }
+};
+
+useEffect(() => {
+  fetchLeaveBalances(selectedAttendance);
+}, [selectedAttendance]);
+
+useEffect(() => {
+  if (!editedStatus) return;
+  const { session1: defaultSession1, session2: defaultSession2 } =
+    parseSessionsFromStatus(editedStatus);
+  setSession1(defaultSession1);
+  setSession2(defaultSession2);
+}, [editedStatus]);
+
+function getLeaveBalanceRemaining(typeKey) {
+  const key = String(typeKey || "").toLowerCase().trim();
+
+  const normalizedName = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/[-_\s]+/g, " ")
+      .trim();
+
+  const searchName = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/[-_\s]+/g, "")
+      .trim();
+
+  const leave = leaveBalances.find((item) => {
+    const name = normalizedName(
+      item.leaveTypeId?.leaveName ||
+        item.leaveTypeId?.name ||
+        item.leaveTypeId?.label ||
+        item.leaveType?.leaveName ||
+        item.leaveType?.name ||
+        item.leaveName ||
+        item.leaveType ||
+        "",
+    );
+    const compactName = searchName(name);
+
+    if (key === "cl") return compactName.includes("casual");
+    if (key === "lop") return compactName.includes("loss");
+    if (key === "medical leave" || key === "ml") return compactName.includes("medical");
+
+    if (key === "on duty - research" || key === "od research") {
+      return compactName.includes("onduty") && compactName.includes("research");
+    }
+    if (key === "on duty - exam" || key === "od exam") {
+      return compactName.includes("onduty") && compactName.includes("exam");
+    }
+    if (key === "on duty - official" || key === "od official") {
+      return compactName.includes("onduty") && compactName.includes("official");
+    }
+    if (key === "od" || key === "on duty") {
+      return (
+        compactName.includes("onduty") ||
+        compactName === "od"
+      );
+    }
+
+    return compactName.includes(searchName(key));
+  });
+
+  const remaining =
+    leave?.remainingDays ??
+    leave?.remainingDay ??
+    leave?.remaining ??
+    leave?.available ??
+    leave?.balance ??
+    leave?.leaveBalance ??
+    leave?.remainingLeaves ??
+    leave?.totalRemaining ??
+    leave?.remaining_count ??
+    leave?.count ??
+    leave?.balanceDays ??
+    leave?.leaveTypeId?.remainingDays ??
+    leave?.leaveType?.remainingDays;
+
+  if (remaining === null || remaining === undefined) {
+    return key === "lop" ? 0 : 0;
+  }
+
+  const numericRemaining = Number(remaining);
+  return Number.isFinite(numericRemaining) ? numericRemaining : remaining;
+}
+
+function renderRemainingText(typeKey) {
+  const remaining = getLeaveBalanceRemaining(typeKey);
+  return typeof remaining === "number" ? remaining : "";
+}
 
   function getToggleStatus(status) {
     if (status === "A") return "P";
@@ -358,6 +524,103 @@ const [odType, setOdType] = useState("");
   return { session1: "A", session2: "A" };
 }
 
+function getDisplayStatusFromSessions(session1, session2) {
+  if (session1 === session2) return session1;
+  return `${session1}:${session2}`;
+}
+
+function getOverrideLeaveType(status, type) {
+  if (status === "A") {
+    if (!type) return null;
+    const normalized = String(type).toLowerCase();
+    if (normalized === "cl" || normalized.includes("casual")) return "Casual Leave";
+    if (normalized === "lop" || normalized.includes("loss")) return "Loss Of Pay";
+    if (normalized.includes("medical")) return "Medical Leave";
+    return type;
+  }
+
+  if (status === "OD") {
+    if (!type) return "On Duty";
+    return String(type).trim().startsWith("On Duty")
+      ? String(type).trim()
+      : `On Duty - ${String(type).trim()}`;
+  }
+
+  return null;
+}
+
+function getSelectedLeaveTypeId(status, leaveType, odType) {
+  const selectedName =
+    status === "A"
+      ? leaveType
+      : status === "OD"
+      ? `On Duty - ${odType}`
+      : null;
+
+  if (!selectedName) return null;
+
+  const normalize = (value) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+
+  const aliasMap = {
+    cl: "casual leave",
+    casual: "casual leave",
+    "casual leave": "casual leave",
+    lop: "loss of pay",
+    "loss of pay": "loss of pay",
+    ml: "medical leave",
+    medical: "medical leave",
+    "medical leave": "medical leave",
+    od: "on duty",
+    "on duty": "on duty",
+    "od research": "on duty research",
+    "on duty research": "on duty research",
+    research: "on duty research",
+    "od exam": "on duty exam",
+    "on duty exam": "on duty exam",
+    exam: "on duty exam",
+    "od official": "on duty official",
+    "on duty official": "on duty official",
+    official: "on duty official",
+  };
+
+  const normalizedSelected =
+    aliasMap[normalize(selectedName)] || normalize(selectedName);
+
+  const match = leaveBalances.find((item) => {
+    const itemName = String(
+      item.leaveTypeId?.leaveName ||
+        item.leaveTypeId?.name ||
+        item.leaveTypeId?.label ||
+        item.leaveType?.leaveName ||
+        item.leaveType?.name ||
+        item.leaveName ||
+        item.leaveType ||
+        "",
+    )
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+
+    return (
+      itemName === normalizedSelected ||
+      itemName.includes(normalizedSelected) ||
+      normalizedSelected.includes(itemName)
+    );
+  });
+
+  return (
+    match?.leaveTypeId?._id ||
+    match?.leaveTypeId ||
+    match?._id ||
+    match?.leaveType ||
+    null
+  );
+}
+
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
 
@@ -370,15 +633,45 @@ const [odType, setOdType] = useState("");
     setIsSaving(true);
 
     try {
-      const { session1, session2 } = parseSessionsFromStatus(editedStatus);
+      const effectiveSession1 = session1 || "P";
+      const effectiveSession2 = session2 || "P";
+      const effectiveStatus =
+        effectiveSession1 === "OD" || effectiveSession2 === "OD"
+          ? "OD"
+          : effectiveSession1 === "A" || effectiveSession2 === "A"
+          ? "A"
+          : "P";
+
+      if (effectiveStatus === "A" && !leaveType) {
+        setRemarksError("Please select a leave type for absent session(s).");
+        setIsSaving(false);
+        return;
+      }
+
+      if (effectiveStatus === "OD" && !odType) {
+        setRemarksError("Please select an OD type for the OD session.");
+        setIsSaving(false);
+        return;
+      }
+
+      const overrideType = effectiveStatus === "OD" ? odType : leaveType;
+      const leaveTypeId = getSelectedLeaveTypeId(effectiveStatus, leaveType, odType);
+      const leaveName = getOverrideLeaveType(effectiveStatus, overrideType);
+      const totalNumberOfDays = getTotalNumberOfDays(effectiveSession1, effectiveSession2);
       const payload = {
+        facultyId: selectedAttendance.empDbId || selectedAttendance.empId,
+        leaveTypeId,
+        academicYear: getCurrentAcademicYear(),
+        leaveName,
+        totalNumberOfDays,
         firstIn: selectedAttendance.inTime || null,
         lastOut: selectedAttendance.outTime || null,
-        session1,
-        session2,
+        session1: effectiveSession1,
+        session2: effectiveSession2,
+        leaveType: leaveName,
         remarks:
           remarks.trim() ||
-          `Attendance override set to ${editedStatus} for ${selectedAttendance.date}`,
+          `Attendance override set to ${effectiveStatus} for ${selectedAttendance.date}`,
       };
 
       let requestEmployeeId = selectedAttendance.empDbId;
@@ -390,11 +683,13 @@ const [odType, setOdType] = useState("");
         throw new Error("Unable to determine employee id for override update.");
       }
 
-      await updateAttendanceOverrideSingle(
+      const updateResponse = await updateAttendanceOverrideSingle(
         requestEmployeeId,
         selectedAttendance.date,
         payload,
       );
+
+      await fetchLeaveBalances(selectedAttendance);
 
       setEmployees((prevEmployees) =>
         prevEmployees.map((employee) => {
@@ -403,15 +698,19 @@ const [odType, setOdType] = useState("");
           const currentValue =
             employee.attendance?.[selectedAttendance.date] ??
             employee.attendance?.[String(selectedAttendance.day)];
+          const displayStatus = getDisplayStatusFromSessions(
+            session1 || "P",
+            session2 || "P",
+          );
           const overrideValue =
             currentValue && typeof currentValue === "object"
               ? {
                   ...currentValue,
-                  status: editedStatus,
+                  status: displayStatus,
                   isOverridden: true,
                 }
               : {
-                  status: editedStatus,
+                  status: displayStatus,
                   isOverridden: true,
                   regularization: false,
                 };
@@ -852,7 +1151,7 @@ const [odType, setOdType] = useState("");
                               key={`${employee.id}-${date.key}`}
                               onClick={() => {
                                 const currentStatus = attendance.status;
-                                const options = ["P", "A", "OD", "A:P", "P:A"];
+                                const options = ["P", "A", "OD"];
                                 const nextStatus = options.find(
                                   (option) => option !== currentStatus,
                                 );
@@ -862,7 +1161,7 @@ const [odType, setOdType] = useState("");
                                   empId: employee.id,
                                   empDbId: employee.dbId,
                                   date: date.key,
-                                  day: date.day,
+                                  day: String(date.day),
                                   status: currentStatus,
                                   inTime: attendance.inTime,
                                   outTime: attendance.outTime,
@@ -945,11 +1244,11 @@ const [odType, setOdType] = useState("");
               </p>
 
               <p>
-                <strong>In Time:</strong> {selectedAttendance.inTime}
+                <strong>In Time:</strong> {formatIstTime(selectedAttendance.inTime)}
               </p>
 
               <p>
-                <strong>Out Time:</strong> {selectedAttendance.outTime}
+                <strong>Out Time:</strong> {formatIstTime(selectedAttendance.outTime)}
               </p>
             </section>
 
@@ -975,11 +1274,19 @@ const [odType, setOdType] = useState("");
       className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-white flex justify-between"
     >
 <span>
-  {editedStatus === "A" && leaveType
-    ? `A - ${leaveType}`
-    : editedStatus === "OD" && odType
-    ? `OD - ${odType}`
-    : editedStatus || "Select Status"}
+  {session1 === session2
+    ? session1 === "P"
+      ? "Present"
+      : session1 === "A"
+      ? leaveType
+        ? `Full day - ${leaveType}`
+        : "Absent"
+      : session1 === "OD"
+      ? odType
+        ? `Full day OD - ${odType}`
+        : "On Duty"
+      : "Select Status"
+    : `First half: ${session1 === "A" ? leaveType || "Absent" : session1 === "OD" ? odType || "OD" : "Present"} | Second half: ${session2 === "A" ? leaveType || "Absent" : session2 === "OD" ? odType || "OD" : "Present"}`}
 </span>
     </button>
 
@@ -992,6 +1299,8 @@ const [odType, setOdType] = useState("");
     setEditedStatus("P");
     setLeaveType("");
     setOdType("");
+    setSession1("P");
+    setSession2("P");
     setIsOpen(false);
   }}
 >
@@ -1017,10 +1326,15 @@ const [odType, setOdType] = useState("");
   setEditedStatus("A");
   setLeaveType("CL");
   setOdType("");
+  setSession1("A");
+  setSession2("A");
   setIsOpen(false);
 }}
               >
                 Casual Leave (CL)
+                <span className="ml-2 text-sm text-white font-semibold">
+                  {leaveBalanceLoading ? "" : renderRemainingText("CL")}
+                </span>
               </div>
 
               <div
@@ -1029,10 +1343,15 @@ const [odType, setOdType] = useState("");
                   setEditedStatus("A");
                   setLeaveType("LOP");
                   setOdType("");
+                  setSession1("A");
+                  setSession2("A");
                   setIsOpen(false);
                 }}
               >
                 Loss Of Pay (LOP)
+                <span className="ml-2 text-sm text-white font-semibold">
+                  {leaveBalanceLoading ? "" : renderRemainingText("LOP")}
+                </span>
               </div>
 
               <div
@@ -1041,10 +1360,15 @@ const [odType, setOdType] = useState("");
   setEditedStatus("A");
   setLeaveType("Medical Leave");
   setOdType("");
+  setSession1("A");
+  setSession2("A");
   setIsOpen(false);
 }}
               >
-                Medical Leave
+                Medical Leave (ML)
+                <span className="ml-2 text-sm text-white font-semibold">
+                  {leaveBalanceLoading ? "" : renderRemainingText("Medical Leave")}
+                </span>
               </div>
 
             </div>
@@ -1069,10 +1393,15 @@ const [odType, setOdType] = useState("");
   setEditedStatus("OD");
   setOdType("Research");
   setLeaveType("");
+  setSession1("OD");
+  setSession2("OD");
   setIsOpen(false);
 }}
       >
         OD Research
+        <span className="ml-2 text-sm text-white font-semibold">
+          {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Research")}
+        </span>
       </div>
 
       <div
@@ -1080,11 +1409,16 @@ const [odType, setOdType] = useState("");
        onClick={() => {
   setEditedStatus("OD");
   setOdType("Exam");
-  setLeaveType(""); // Add this
+  setLeaveType("");
+  setSession1("OD");
+  setSession2("OD");
   setIsOpen(false);
 }}
       >
         OD Exam
+        <span className="ml-2 text-sm text-white font-semibold">
+          {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Exam")}
+        </span>
       </div>
 
       <div
@@ -1093,55 +1427,57 @@ const [odType, setOdType] = useState("");
   setEditedStatus("OD");
   setOdType("Official");
   setLeaveType("");
+  setSession1("OD");
+  setSession2("OD");
   setIsOpen(false);
 }}
       >
         OD Official
+        <span className="ml-2 text-sm text-white font-semibold">
+          {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Official")}
+        </span>
       </div>
 
     </div>
   )}
 </div>
 
-        <div
-          className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
-          onClick={() => {
-            setEditedStatus("A:P");
-            setLeaveType("");
-            setIsOpen(false);
-          }}
-        >
-          Absent : Present (A:P)
-        </div>
-
-        <div
-          className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
-          onClick={() => {
-            setEditedStatus("P:A");
-            setLeaveType("");
-            setIsOpen(false);
-          }}
-        >
-          Present : Absent (P:A)
-        </div>
-
-
-
-         <div
-  className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
-  onClick={() => {
-    setEditedStatus("P");
-    setLeaveType("");
-    setIsOpen(false);
-  }}
->
- Casual Leave (CL)
-</div>
 
       </div>
     )}
   </div>
 </div>
+
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold">
+                    First half
+                  </label>
+                  <select
+                    value={session1}
+                    onChange={(event) => setSession1(event.target.value)}
+                    className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-sm text-white outline-none"
+                  >
+                    <option value="P">Present (P)</option>
+                    <option value="A">Absent (A)</option>
+                    <option value="OD">On Duty (OD)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold">
+                    Second half
+                  </label>
+                  <select
+                    value={session2}
+                    onChange={(event) => setSession2(event.target.value)}
+                    className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-sm text-white outline-none"
+                  >
+                    <option value="P">Present (P)</option>
+                    <option value="A">Absent (A)</option>
+                    <option value="OD">On Duty (OD)</option>
+                  </select>
+                </div>
+              </div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold">
