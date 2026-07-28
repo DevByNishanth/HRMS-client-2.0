@@ -310,17 +310,8 @@ export default function OverrideTable({ data = [] }) {
     }, [overrideData]);
 
     const getStatusColor = (value) => {
-        switch (value) {
-            case "P":
-                return "text-[#155DFC]";
-                // return "text-green-500"
-            case "A":
-                return "text-[#155DFC]";
-            case "OD":
-                return "text-[#155DFC]";
-            default:
-                return "";
-        }
+        if (!value) return "";
+        return "text-[#155DFC]";
     };
     // console.log("status color",getStatusColor);
 

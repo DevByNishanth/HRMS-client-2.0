@@ -103,16 +103,16 @@ export default function EmployeeWiseAttendanceUpdate() {
 
     const selectEmployee = async (employee) => {
         setSelectedEmployee(employee);
-        // console.log("Selected Employee", employee);
         setEmployeeSearch(
             `${employee.name} (${employee.empId})`
         );
 
         setShowDropdown(false);
+        setLeaveBalances([]);
 
         await Promise.all([
             loadAttendance(employee.facultyId),
-            loadLeaveBalance(employee.facultyId),
+            loadLeaveBalance(employee.facultyId, true),
         ]);
     };
 
@@ -156,12 +156,14 @@ export default function EmployeeWiseAttendanceUpdate() {
         }
     };
 
-    const loadLeaveBalance = async (facultyId) => {
+    const loadLeaveBalance = async (facultyId, forceReload = false) => {
         try {
+            if (!facultyId) return;
+            if (!forceReload && leaveBalances.length > 0) return;
             const response = await getLeaveBalance(facultyId);
             if (response.success) {
                 const currentAcademicYear = getCurrentAcademicYear();
-                const allBalances = response.balances || []; // fixed: was response.data
+                const allBalances = response.balances || [];
                 const filtered = allBalances.filter(
                     (item) => item.academicYear === currentAcademicYear
                 );
@@ -242,20 +244,19 @@ export default function EmployeeWiseAttendanceUpdate() {
 
     const handleSessionChange = (rowId, field, value) => {
         console.log("handleSessionChange", rowId, field, value);
-        console.log("Selected Value:", value);
         const selectedOption =
             [...leaveOptions, ...odOptions].find(
                 option => option.value === value
             ) || {
-                value: "P",
-                label: "P",
+                value: value || "P",
+                label: value || "P",
                 leaveTypeId: null,
-                leaveName: "Present",
+                leaveName: value ? value : "Present",
                 academicYear: getCurrentAcademicYear(),
                 balance: null,
             };
-            console.log("Selected Option:", selectedOption);
-        const updated = filteredAttendance.map((row) =>
+
+        const updatedFiltered = filteredAttendance.map((row) =>
             row._id === rowId
                 ? {
                     ...row,
@@ -263,7 +264,19 @@ export default function EmployeeWiseAttendanceUpdate() {
                 }
                 : row
         );
-        setFilteredAttendance(updated);
+
+        const updatedAttendance = attendanceData.map((row) =>
+            row._id === rowId
+                ? {
+                    ...row,
+                    [field]: selectedOption,
+                }
+                : row
+        );
+
+        setFilteredAttendance(updatedFiltered);
+        setAttendanceData(updatedAttendance);
+
         if (!editedRows.includes(rowId)) {
             setEditedRows((prev) => [...prev, rowId]);
         }
@@ -500,7 +513,7 @@ export default function EmployeeWiseAttendanceUpdate() {
     useEffect(() => {
         if (!attendanceData.length || !leaveOptions.length) return;
 
-        const updated = attendanceData.map((row) => ({
+        const updatedAttendance = attendanceData.map((row) => ({
             ...row,
             session1:
                 [...leaveOptions, ...odOptions].find(
@@ -513,7 +526,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                 ) || row.session2,
         }));
 
-        setFilteredAttendance(updated);
+        setAttendanceData(updatedAttendance);
     }, [leaveBalances]);
     // const attendanceOptions = [
     //     {
@@ -869,6 +882,15 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 value={row.session1?.value || "P"}
                                                 leaveOptions={leaveOptions}
                                                 odOptions={odOptions}
+                                                hideAbsent={
+                                                    row.session1?.value === "H" &&
+                                                    row.session2?.value === "H"
+                                                }
+                                                onSubmenuOpen={(menu) => {
+                                                    if (menu === "A" || menu === "OD") {
+                                                        loadLeaveBalance(selectedEmployee?.facultyId, true);
+                                                    }
+                                                }}
                                                 onChange={(value) =>
                                                     handleSessionChange(
                                                         row._id,
@@ -884,6 +906,15 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                 value={row.session2?.value || "P"}
                                                 leaveOptions={leaveOptions}
                                                 odOptions={odOptions}
+                                                hideAbsent={
+                                                    row.session1?.value === "H" &&
+                                                    row.session2?.value === "H"
+                                                }
+                                                onSubmenuOpen={(menu) => {
+                                                    if (menu === "A" || menu === "OD") {
+                                                        loadLeaveBalance(selectedEmployee?.facultyId, true);
+                                                    }
+                                                }}
                                                 onChange={(value) =>
                                                     handleSessionChange(
                                                         row._id,
@@ -971,6 +1002,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     totalNoOfDays,
                                 }
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
                             toast.success(
                                 "Attendance Updated Successfully"
                             );
@@ -1024,6 +1056,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 selectedEmployee.facultyId,
                                 payload
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
                             toast.success(
                                 "Attendance Updated Successfully"
                             );
@@ -1076,11 +1109,29 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 "Bulk Selected Payload",
                                 JSON.stringify(payload, null, 2)
                             );
-
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,
                                 payload
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
+                            await loadAttendance(selectedEmployee.facultyId);
+
+                            setSelectedRows([]);
+                            setEditedRows([]);
+
+                            setBulkSession1({
+                                value: "P",
+                                leaveTypeId: null,
+                                leaveName: "Present",
+                                academicYear: getCurrentAcademicYear(),
+                            });
+
+                            setBulkSession2({
+                                value: "P",
+                                leaveTypeId: null,
+                                leaveName: "Present",
+                                academicYear: getCurrentAcademicYear(),
+                            });
                             toast.success(
                                 "Attendance Updated Successfully"
                             );

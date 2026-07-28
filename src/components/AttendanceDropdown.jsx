@@ -6,6 +6,9 @@ export default function AttendanceDropdown({
   leaveOptions = [],
   odOptions = [],
   onChange,
+  onOptionSelect,
+  onSubmenuOpen,
+  hideAbsent = false,
 }) {
   const [open, setOpen] = useState(false);
   const [hoverMenu, setHoverMenu] = useState(null);
@@ -52,37 +55,70 @@ export default function AttendanceDropdown({
   }, [open]);
 
   const toggleOpen = () => {
-    if (!open && buttonRef.current) {
+    const nextOpen = !open;
+
+    if (nextOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
+      const menuWidth = rect.width;
+      const availableWidth = window.innerWidth - 10;
+      let left = rect.left;
+
+      if (left + menuWidth > availableWidth) {
+        left = Math.max(10, availableWidth - menuWidth);
+      }
+
       setMenuPos({
         top: rect.bottom + 4,
-        left: rect.left,
-        width: rect.width,
+        left,
+        width: menuWidth,
       });
     }
-    setOpen((prev) => !prev);
-    setHoverMenu(null);
-  };
 
-  const handleSelect = (option) => {
-    console.log("Selected option:", option);
-
-    if (typeof onChange === "function") {
-      console.log("Calling parent onChange");
-      onChange(option.value);
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      setHoverMenu(null);
     }
-
-    setOpen(false);
-    setHoverMenu(null);
   };
 
   const openSubMenu = (menu, e) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const submenuWidth = 170;
+    const availableWidth = window.innerWidth - 10;
+    let left = rect.right + 4;
+
+    if (left + submenuWidth > availableWidth) {
+      left = Math.max(10, rect.left - submenuWidth - 4);
+    }
+
+    const availableHeight = window.innerHeight - 10;
+    let top = rect.top;
+    if (top + 200 > availableHeight) {
+      top = Math.max(10, availableHeight - 200);
+    }
+
     setSubMenuPos({
-      top: rect.top,
-      left: rect.right + 4,
+      top,
+      left,
     });
     setHoverMenu(menu);
+    if (typeof onSubmenuOpen === "function") {
+      onSubmenuOpen(menu);
+    }
+  };
+
+  const handleSelect = (option) => {
+      // For EmployeeWiseAttendanceUpdate
+      if (typeof onChange === "function") {
+          onChange(option.value);
+      }
+
+      // For AttendanceOverrideModal
+      if (typeof onOptionSelect === "function") {
+          onOptionSelect(option);
+      }
+
+      setOpen(false);
+      setHoverMenu(null);
   };
 
   const getDisplayText = () => {
@@ -98,7 +134,7 @@ export default function AttendanceDropdown({
   };
 
   return (
-    <div className="relative inline-block w-[140px]">
+    <div className="relative inline-block w-full max-w-[180px]">
       {/* Selected Value */}
       <button
         ref={buttonRef}
@@ -160,14 +196,15 @@ export default function AttendanceDropdown({
             </div>
 
             {/* Absent */}
-            <div
-              onMouseEnter={(e) => openSubMenu("A", e)}
-              // onMouseLeave={() => setTimeout(() => setHoverMenu(null), 150)}
-              className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
-            >
-              <span>A</span>
-              <span>▶</span>
-            </div>
+            {!hideAbsent && (
+              <div
+                onMouseEnter={(e) => openSubMenu("A", e)}
+                className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
+              >
+                <span>A</span>
+                <span>▶</span>
+              </div>
+            )}
 
             {/* OD */}
             <div
@@ -191,6 +228,8 @@ export default function AttendanceDropdown({
               top: subMenuPos.top,
               left: subMenuPos.left,
               minWidth: 170,
+              maxHeight: "min(360px, calc(100vh - 20px))",
+              overflowY: "auto",
               zIndex: 10000,
             }}
             className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"
@@ -227,6 +266,8 @@ export default function AttendanceDropdown({
               top: subMenuPos.top,
               left: subMenuPos.left,
               minWidth: 170,
+              maxHeight: "min(360px, calc(100vh - 20px))",
+              overflowY: "auto",
               zIndex: 10000,
             }}
             className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"

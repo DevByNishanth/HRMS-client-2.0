@@ -7,12 +7,16 @@ import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOve
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
 import { X,Search } from "lucide-react";
 import CustomDropdown from "../../../../components/CustomDropdown";
+import AttendanceDropdown from "../../../../components/AttendanceDropdown";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ExportPasswordModal from "../../../../components/ExportPasswordModal";
 import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
+import { getLeaveBalance } from "../../../../services/AttendanceOverride/GetLeaveBalance";
+import { getCurrentAcademicYear } from "../../../../utils/getCurrentAcademicYear";
+import { leaveCodeMap } from "../../../../utils/leaveCodeMap";
 
 export default function DateWiseAttendanceUpdate() {
 
@@ -25,6 +29,8 @@ export default function DateWiseAttendanceUpdate() {
     const [editedRows, setEditedRows] = useState({});
     const [overrideModal, setOverrideModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [facultyLeaveOptions, setFacultyLeaveOptions] = useState({});
+    const [loadingFacultyBalances, setLoadingFacultyBalances] = useState({});
 
     const {
         isExportModalOpen,
@@ -36,7 +42,7 @@ export default function DateWiseAttendanceUpdate() {
     } = usePasswordProtectedExport();
 
     const departmentOptions = [
-        "AIDS","AIML","CYS","CSBS","VLSI","CCE","CSE","ECE","EEE","MECH","IT","ADMIN",
+        "AIDS","AIML","CYS","CSBS","VLSI","CCE","CSE","ECE","EEE","MECH","IT","ADMIN","QPT",
     ];
 
     const categoryOptions = [
@@ -53,27 +59,152 @@ export default function DateWiseAttendanceUpdate() {
         departmentFilter ||
         categoryFilter;
 
+    const normalizedLeaveCodeMap = Object.fromEntries(
+        Object.entries({
+            ...leaveCodeMap,
+            "on duty - official": "OD-O",
+            "on duty - exam": "OD-E",
+            "on duty - research": "OD-R",
+            "od-o": "OD-O",
+            "od-e": "OD-E",
+            "od-r": "OD-R",
+            "od-exam": "OD-E",
+            "od-off": "OD-O",
+            "lop": "LOP",
+            "casual leave recovery": "CL-R",
+            "cl-r": "CL-R",
+            "cl recovery": "CL-R",
+        }).map(([key, value]) => [key.trim().toLowerCase(), value])
+    );
+
+    const buildAttendanceOptions = (balances = []) => {
+        return (balances || [])
+            .map((item) => {
+                const leaveTypeObj =
+                    item.leaveTypeId && typeof item.leaveTypeId === "object"
+                        ? item.leaveTypeId
+                        : null;
+
+                const rawLeaveName =
+                    leaveTypeObj?.leaveName ||
+                    item.leaveName ||
+                    item.leaveType ||
+                    item.name;
+
+                const normalizedName = rawLeaveName?.trim()?.toLowerCase();
+                const code = normalizedLeaveCodeMap[normalizedName];
+
+                if (!code) return null;
+
+                return {
+                    value: code,
+                    label: `${code} (${item.remainingDays ?? item.balance ?? 0})`,
+                    leaveTypeId: leaveTypeObj?._id || item.leaveTypeId,
+                    leaveName: rawLeaveName,
+                    academicYear: item.academicYear || getCurrentAcademicYear(),
+                    remainingDays: item.remainingDays ?? item.balance ?? 0,
+                };
+            })
+            .filter(Boolean);
+    };
+
+    const normalizeSessionValue = (value) => {
+        if (typeof value === "object" && value !== null) {
+            return {
+                value: value.value || "P",
+                leaveTypeId: value.leaveTypeId ?? null,
+                leaveName: value.leaveName || "Present",
+                academicYear: value.academicYear || getCurrentAcademicYear(),
+                remainingDays: value.remainingDays ?? null,
+            };
+        }
+
+        return {
+            value: value || "P",
+            leaveTypeId: null,
+            leaveName: value === "P" ? "Present" : "Absent",
+            academicYear: getCurrentAcademicYear(),
+            remainingDays: null,
+        };
+    };
+
+    const calculateLeaveDays = (session1, session2) => {
+        const firstHalf = session1?.value === "P";
+        const secondHalf = session2?.value === "P";
+
+        if (firstHalf && secondHalf) {
+            return 0;
+        }
+
+        if (firstHalf || secondHalf) {
+            return 0.5;
+        }
+
+        return 1;
+    };
+
     useEffect(() => {
         if (!attendanceDate) return;
 
         fetchAttendance();
     }, [attendanceDate]);
 
+    const loadFacultyLeaveBalances = async (facultyId, forceReload = false) => {
+        if (!facultyId) return;
+        if (!forceReload && facultyLeaveOptions[facultyId]) return;
+        if (loadingFacultyBalances[facultyId]) return;
+
+        setLoadingFacultyBalances((prev) => ({ ...prev, [facultyId]: true }));
+
+        try {
+            if (forceReload) {
+                setFacultyLeaveOptions((prev) => {
+                    const next = { ...prev };
+                    delete next[facultyId];
+                    return next;
+                });
+            }
+            const response = await getLeaveBalance(facultyId);
+            if (response?.success) {
+                const currentAcademicYear = getCurrentAcademicYear();
+                const allBalances = response.balances || [];
+                const filteredBalances = allBalances.filter(
+                    (item) => item.academicYear === currentAcademicYear
+                );
+                const selectedBalances =
+                    filteredBalances.length > 0
+                        ? filteredBalances
+                        : allBalances;
+
+                setFacultyLeaveOptions((prev) => ({
+                    ...prev,
+                    [facultyId]: buildAttendanceOptions(selectedBalances),
+                }));
+            } else {
+                setFacultyLeaveOptions((prev) => ({ ...prev, [facultyId]: [] }));
+            }
+        } catch (error) {
+            console.error(error);
+            setFacultyLeaveOptions((prev) => ({ ...prev, [facultyId]: [] }));
+        } finally {
+            setLoadingFacultyBalances((prev) => ({ ...prev, [facultyId]: false }));
+        }
+    };
+
     const fetchAttendance = async () => {
         try {
+            setSelectedRows([]);
+            setEditedRows({});
             const formattedDate = dayjs(attendanceDate).format("YYYY-MM-DD");
             const response = await getAttendanceByDate(formattedDate);
-            // console.log("API Response:", response.data);
-            // console.log("Fresh Attendance Response:");
-            console.table(
-                response.data.map((r) => ({
-                    name: r.employeeName,
-                    session1: r.session1,
-                    session2: r.session2,
-                    status: r.status,
-                }))
-        );
-            setAttendanceData(response.data || []);
+
+            const normalizedRows = (response.data || []).map((row) => ({
+                ...row,
+                session1: normalizeSessionValue(row.session1),
+                session2: normalizeSessionValue(row.session2),
+            }));
+
+            setAttendanceData(normalizedRows);
         } catch (error) {
             console.error(error);
         }
@@ -116,6 +247,18 @@ export default function DateWiseAttendanceUpdate() {
                 [field]: value,
             },
         }));
+    };
+
+    const getFacultyOptions = (facultyId) => {
+        const allOptions = facultyLeaveOptions[facultyId] || [];
+        return {
+            leaveOptions: allOptions.filter((option) =>
+                ["CL", "ML", "LOP"].includes(option.value)
+            ),
+            odOptions: allOptions.filter((option) =>
+                ["OD-R", "OD-E", "OD-O", "CL-R"].includes(option.value)
+            ),
+        };
     };
 
     const handleSelectAll = (e) => {
@@ -163,25 +306,31 @@ export default function DateWiseAttendanceUpdate() {
                 alert("Employee not found");
                 return;
             }
+
+            const session1 = editedRows[employeeId]?.session1 ?? row.session1;
+            const session2 = editedRows[employeeId]?.session2 ?? row.session2;
+
             const payload = {
                 firstIn: row.firstIn,
                 lastOut: row.lastOut,
-                session1:
-                    editedRows[employeeId]?.session1 ??
-                    row.session1,
-                session2:
-                    editedRows[employeeId]?.session2 ??
-                    row.session2,
+                session1: session1?.value ?? "P",
+                session2: session2?.value ?? "P",
                 remarks,
+                facultyId: row.facultyId,
+                leaveTypeId: session1?.leaveTypeId ?? session2?.leaveTypeId ?? null,
+                leaveName: session1?.leaveName ?? session2?.leaveName ?? "Present",
+                academicYear: session1?.academicYear ?? session2?.academicYear ?? getCurrentAcademicYear(),
+                leaveBalance: session1?.remainingDays ?? session2?.remainingDays ?? null,
+                totalNoOfDays: calculateLeaveDays(session1, session2),
             };
-
-            // console.log("Single Payload:", payload);
 
             await updateAttendanceOverrideSingle(
                 employeeId,
                 dayjs(attendanceDate).format("YYYY-MM-DD"),
                 payload
             );
+
+            await loadFacultyLeaveBalances(row.facultyId, true);
 
             toast.success("Attendance updated successfully!");
 
@@ -202,47 +351,39 @@ export default function DateWiseAttendanceUpdate() {
     const handleBulkEditedOverride = async ({ remarks }) => {
         try {
             setLoading(true);
-            const updates = Object.keys(
-                editedRows
-            ).map((employeeId) => {
-
+            const formattedDate = dayjs(attendanceDate).format("YYYY-MM-DD");
+            const updates = Object.keys(editedRows).map((employeeId) => {
                 const row = attendanceData.find(
                     (r) => r.facultyId === employeeId
                 );
+                const session1 = editedRows[employeeId]?.session1 ?? row?.session1;
+                const session2 = editedRows[employeeId]?.session2 ?? row?.session2;
 
                 return {
                     employeeId,
-                    session1:
-                        editedRows[employeeId]
-                            ?.session1 ??
-                        row.session1,
-
-                    session2:
-                        editedRows[employeeId]
-                            ?.session2 ??
-                        row.session2,
+                    facultyId: row?.facultyId,
+                    date: formattedDate,
+                    firstIn: row?.firstIn,
+                    lastOut: row?.lastOut,
+                    session1: session1?.value ?? "P",
+                    session2: session2?.value ?? "P",
+                    remarks,
+                    leaveTypeId: session1?.leaveTypeId ?? session2?.leaveTypeId ?? null,
+                    leaveName: session1?.leaveName ?? session2?.leaveName ?? "Present",
+                    academicYear: session1?.academicYear ?? session2?.academicYear ?? getCurrentAcademicYear(),
+                    leaveBalance: session1?.remainingDays ?? session2?.remainingDays ?? null,
+                    totalNoOfDays: calculateLeaveDays(session1, session2),
                 };
             });
 
             const payload = {
-                fromDate: dayjs(attendanceDate).format(
-                    "YYYY-MM-DD"
-                ),
-                toDate: dayjs(attendanceDate).format(
-                    "YYYY-MM-DD"
-                ),
+                fromDate: formattedDate,
+                toDate: formattedDate,
                 remarks,
                 updates,
             };
 
-            // console.log(
-            //     "Bulk Edited Payload:",
-            //     payload
-            // );
-
-            await updateAttendanceOverrideBulk(
-                payload
-            );
+            await updateAttendanceOverrideBulk(payload);
             toast.success("Attendance updated successfully!");
             setOverrideModal(false);
             setSelectedRows([]);
@@ -268,33 +409,40 @@ export default function DateWiseAttendanceUpdate() {
         remarks,
     }) => {
         try {
-            setLoading(true);   
-            const updates = selectedRows.map((employeeId) => ({
-                employeeId,
-                session1,
-                session2,
-            }));
+            setLoading(true);
+            const formattedDate = dayjs(attendanceDate).format("YYYY-MM-DD");
+            const updates = selectedRows.map((employeeId) => {
+                const row = attendanceData.find((r) => r.facultyId === employeeId);
+
+                return {
+                    employeeId,
+                    facultyId: row?.facultyId,
+                    date: formattedDate,
+                    firstIn: row?.firstIn,
+                    lastOut: row?.lastOut,
+                    session1: session1?.value ?? "P",
+                    session2: session2?.value ?? "P",
+                    remarks,
+                    leaveTypeId: session1?.leaveTypeId ?? session2?.leaveTypeId ?? null,
+                    leaveName: session1?.leaveName ?? session2?.leaveName ?? "Present",
+                    academicYear: session1?.academicYear ?? session2?.academicYear ?? getCurrentAcademicYear(),
+                    leaveBalance: session1?.remainingDays ?? session2?.remainingDays ?? null,
+                    totalNoOfDays: calculateLeaveDays(session1, session2),
+                };
+            });
 
             const payload = {
-                fromDate: dayjs(attendanceDate).format("YYYY-MM-DD"),
-                toDate: dayjs(attendanceDate).format("YYYY-MM-DD"),
+                fromDate: formattedDate,
+                toDate: formattedDate,
                 remarks,
                 updates,
             };
 
-            // console.log(
-            //     "Bulk Selected Payload:",
-            //     payload
-            // );
-
-            // console.log("Bulk Selected Payload:", payload);
-            // const response = await updateAttendanceOverrideBulk(
-            //     payload
-            // );
-            // console.log("Bulk Response:", response);
+            await updateAttendanceOverrideBulk(payload);
             toast.success("Attendance updated successfully!");
             setOverrideModal(false);
             setSelectedRows([]);
+            setEditedRows({});
             fetchAttendance();
 
         } catch (error) {
@@ -322,6 +470,26 @@ export default function DateWiseAttendanceUpdate() {
     };
 
     const isBulkSelectionMode = selectedRows.length > 0;
+
+    const getBulkModalOptions = () => {
+        const selectedFacultyIds = selectedRows.map((facultyId) => facultyId);
+        const optionMap = new Map();
+
+        selectedFacultyIds.forEach((facultyId) => {
+            const { leaveOptions, odOptions } = getFacultyOptions(facultyId);
+            leaveOptions.forEach((option) => optionMap.set(option.value, option));
+            odOptions.forEach((option) => optionMap.set(option.value, option));
+        });
+
+        return {
+            leaveOptions: Array.from(optionMap.values()).filter((option) =>
+                ["CL", "ML", "LOP"].includes(option.value)
+            ),
+            odOptions: Array.from(optionMap.values()).filter((option) =>
+                ["OD-R", "OD-E", "OD-O", "CL-R"].includes(option.value)
+            ),
+        };
+    };
 
     const exportToExcel = () => {
         const exportData = filteredData.map((row) => ({
@@ -561,68 +729,66 @@ export default function DateWiseAttendanceUpdate() {
                                                 : "-"}
                                         </td>
                                         <td className="px-5 py-3">
-                                            <select
-                                                disabled={isBulkSelectionMode}
-                                                value={
-                                                    editedRows[row.facultyId]?.session1 ??
-                                                    row.session1
-                                                }
-                                                onChange={(e) =>
-                                                    handleSessionChange(
-                                                        row.facultyId,
-                                                        "session1",
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className={`
-                                                    bg-[#13263d]
-                                                    border
-                                                    border-[#23476f]
-                                                    rounded
-                                                    cursor-pointer
-                                                    px-2
-                                                    py-1
-                                                    ${isBulkSelectionMode
-                                                        ? "opacity-50 cursor-not-allowed"
-                                                        : ""}
-                                                `}
-                                            >
-                                                <option value="P">P</option>
-                                                <option value="A">A</option>
-                                                <option value="OD">OD</option>
-                                            </select>
+                                            {isBulkSelectionMode ? (
+                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                    P
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <AttendanceDropdown
+                                                        value={
+                                                            editedRows[row.facultyId]?.session1?.value ??
+                                                            row.session1?.value ??
+                                                            "P"
+                                                        }
+                                                        leaveOptions={getFacultyOptions(row.facultyId).leaveOptions}
+                                                        odOptions={getFacultyOptions(row.facultyId).odOptions}
+                                                        onOptionSelect={(option) =>
+                                                            handleSessionChange(
+                                                                row.facultyId,
+                                                                "session1",
+                                                                option
+                                                            )
+                                                        }
+                                                        onSubmenuOpen={(menu) => {
+                                                            if (menu === "A" || menu === "OD") {
+                                                                loadFacultyLeaveBalances(row.facultyId);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-5 py-3">
-                                            <select
-                                                disabled={isBulkSelectionMode}
-                                                value={
-                                                    editedRows[row.facultyId]?.session2 ??
-                                                    row.session2
-                                                }
-                                                onChange={(e) =>
-                                                    handleSessionChange(
-                                                        row.facultyId,
-                                                        "session2",
-                                                        e.target.value
-                                                    )
-                                                }
-                                                className={`
-                                                    bg-[#13263d]
-                                                    border
-                                                    border-[#23476f]
-                                                    rounded
-                                                    cursor-pointer
-                                                    px-2
-                                                    py-1
-                                                    ${isBulkSelectionMode
-                                                        ? "opacity-50 cursor-not-allowed"
-                                                        : ""}
-                                                `}
-                                            >
-                                                <option value="P">P</option>
-                                                <option value="A">A</option>
-                                                <option value="OD">OD</option>
-                                            </select>
+                                            {isBulkSelectionMode ? (
+                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                    P
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <AttendanceDropdown
+                                                        value={
+                                                            editedRows[row.facultyId]?.session2?.value ??
+                                                            row.session2?.value ??
+                                                            "P"
+                                                        }
+                                                        leaveOptions={getFacultyOptions(row.facultyId).leaveOptions}
+                                                        odOptions={getFacultyOptions(row.facultyId).odOptions}
+                                                        onOptionSelect={(option) =>
+                                                            handleSessionChange(
+                                                                row.facultyId,
+                                                                "session2",
+                                                                option
+                                                            )
+                                                        }
+                                                        onSubmenuOpen={(menu) => {
+                                                            if (menu === "A" || menu === "OD") {
+                                                                loadFacultyLeaveBalances(row.facultyId);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
@@ -683,6 +849,9 @@ export default function DateWiseAttendanceUpdate() {
                 isOpen={overrideModal}
                 loading={loading}
                 mode={getModalMode()}
+                leaveOptions={getBulkModalOptions().leaveOptions}
+                odOptions={getBulkModalOptions().odOptions}
+                bulkSimpleOnly={getModalMode() === 'bulk-selected'}
                 onClose={() => setOverrideModal(false)}
                 onSubmit={(data) => {
                     if (
