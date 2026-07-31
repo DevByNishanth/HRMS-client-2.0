@@ -344,7 +344,7 @@ const PermissionTable = () => {
           <tbody className="text-[16px] text-[#cad7eb]">
             {filteredPermissions.length > 0 ? (
               filteredPermissions.map((permission) => {
-                console.log("permission : ", permission);
+                {/* console.log("permission : ", permission); */}
                 const permissionWithColor = {
                   ...permission,
                   statusColor: statusStyles[permission.status],

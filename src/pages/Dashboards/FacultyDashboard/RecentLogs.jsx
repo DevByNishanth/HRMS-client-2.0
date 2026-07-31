@@ -34,6 +34,27 @@ const formatDateFromISO = (dateStr) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 };
 
+const formatDateForAPI = (date) => {
+  if (!date) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const getToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const getDefaultFrom = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 15);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 const RecentLogs = () => {
   const [records, setRecords] = useState([]);
   const [selectedLog, setSelectedLog] = useState(null);
@@ -46,9 +67,17 @@ const RecentLogs = () => {
         const facultyId = getFacultyIdFromToken();
         if (!facultyId) return;
 
+        const fromDate = getDefaultFrom();
+        const toDate = getToday();
+
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+        const params = new URLSearchParams({ facultyId });
+        if (fromDate) params.append("fromDate", formatDateForAPI(fromDate));
+        if (toDate) params.append("toDate", formatDateForAPI(toDate));
+
         const res = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/faculty-attendance?facultyId=${facultyId}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/faculty-attendance?${params.toString()}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();

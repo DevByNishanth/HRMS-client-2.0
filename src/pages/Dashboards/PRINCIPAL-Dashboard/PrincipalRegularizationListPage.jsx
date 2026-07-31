@@ -151,7 +151,7 @@ const RegularizationDetailsPanel = ({
                 Date
               </div>
               <p className="mt-1 text-[16px] font-semibold text-white">
-                {console.log("principal regularization : ", request)}
+                {/* {console.log("principal regularization : ", request)} */}
                 {request.date ||
                   formatDateDisplay(
                     request.fromDate ||

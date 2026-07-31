@@ -599,7 +599,7 @@ const PrincipalLeaveRequestPage = () => {
         );
       });
 
-      console.log("filtered principal reqs : ", filteredRequests);
+      // console.log("filtered principal reqs : ", filteredRequests);
       setRequests(filteredRequests || []);
     } catch (error) {
       console.error("Error fetching leave requests:", error);

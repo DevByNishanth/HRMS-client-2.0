@@ -1,4 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import AttendanceDropdown from "../../../../components/AttendanceDropdown";
+import { getCurrentAcademicYear } from "../../../../utils/getCurrentAcademicYear";
+
+const getDefaultSession = () => ({
+    value: "P",
+    leaveTypeId: null,
+    leaveName: "Present",
+    academicYear: getCurrentAcademicYear(),
+});
 
 export default function AttendanceOverrideModal({
     isOpen,
@@ -6,18 +16,23 @@ export default function AttendanceOverrideModal({
     onSubmit,
     mode = "single",
     loading = false,
+    leaveOptions = [],
+    odOptions = [],
+    bulkSession1,
+    bulkSession2,
+    bulkSimpleOnly = false,
 }) {
-    const [session1, setSession1] = useState("P");
-    const [session2, setSession2] = useState("P");
+    const [session1, setSession1] = useState(getDefaultSession());
+    const [session2, setSession2] = useState(getDefaultSession());
     const [remarks, setRemarks] = useState("");
 
     useEffect(() => {
         if (!isOpen) return;
 
-        setSession1("P");
-        setSession2("P");
+        setSession1(bulkSession1 || getDefaultSession());
+        setSession2(bulkSession2 || getDefaultSession());
         setRemarks("");
-    }, [isOpen]);
+    }, [isOpen, bulkSession1, bulkSession2]);
 
     const handleSubmit = () => {
         if (loading) return;
@@ -74,17 +89,32 @@ export default function AttendanceOverrideModal({
                                     Session 1
                                 </label>
 
-                                <select
-                                    value={session1}
-                                    onChange={(e) =>
-                                        setSession1(e.target.value)
-                                    }
-                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white cursor-pointer"
-                                >
-                                    <option value="P">Present (P)</option>
-                                    <option value="A">Absent (A)</option>
-                                    <option value="OD">On-Duty (OD)</option>
-                                </select>
+                                {bulkSimpleOnly ? (
+                                    <select
+                                        value={session1.value}
+                                        onChange={(e) =>
+                                            setSession1({
+                                                value: e.target.value,
+                                                leaveTypeId: null,
+                                                leaveName: e.target.value === "P" ? "Present" : "",
+                                                academicYear: getCurrentAcademicYear(),
+                                                remainingDays: null,
+                                            })
+                                        }
+                                        className="w-full h-10 px-3 rounded-lg border border-[#244061] bg-[#172c46] text-white"
+                                    >
+                                        <option value="P">P</option>
+                                    </select>
+                                ) : (
+                                    <AttendanceDropdown
+                                        value={session1.value}
+                                        leaveOptions={leaveOptions}
+                                        odOptions={odOptions}
+                                        onOptionSelect={(option) => {
+                                            setSession1(option);
+                                        }}
+                                    />
+                                )}
                             </div>
 
                             <div>
@@ -92,17 +122,32 @@ export default function AttendanceOverrideModal({
                                     Session 2
                                 </label>
 
-                                <select
-                                    value={session2}
-                                    onChange={(e) =>
-                                        setSession2(e.target.value)
-                                    }
-                                    className="h-11 w-full rounded-lg border border-[#244061] bg-[#172c46] px-3 text-white cursor-pointer"
-                                >
-                                    <option value="P">Present (P)</option>
-                                    <option value="A">Absent (A)</option>
-                                    <option value="OD">On-Duty (OD)</option>
-                                </select>
+                                {bulkSimpleOnly ? (
+                                    <select
+                                        value={session2.value}
+                                        onChange={(e) =>
+                                            setSession2({
+                                                value: e.target.value,
+                                                leaveTypeId: null,
+                                                leaveName: e.target.value === "P" ? "Present" : "",
+                                                academicYear: getCurrentAcademicYear(),
+                                                remainingDays: null,
+                                            })
+                                        }
+                                        className="w-full h-10 px-3 rounded-lg border border-[#244061] bg-[#172c46] text-white"
+                                    >
+                                        <option value="P">P</option>
+                                    </select>
+                                ) : (
+                                    <AttendanceDropdown
+                                        value={session2.value}
+                                        leaveOptions={leaveOptions}
+                                        odOptions={odOptions}
+                                        onOptionSelect={(option) => {
+                                            setSession2(option);
+                                        }}
+                                    />
+                                )}
                             </div>
                         </>
                     )}

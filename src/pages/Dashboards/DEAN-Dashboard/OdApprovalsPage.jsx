@@ -444,7 +444,7 @@ const OdApprovalsPage = () => {
         );
         const data = await res.json();
 
-        console.log(data.leaveApplications);
+        // console.log(data.leaveApplications);
         if (res.ok && data?.leaveApplications) {
           const mapped = data.leaveApplications.map((app) => {
             const name = app.facultyId
@@ -514,7 +514,7 @@ const OdApprovalsPage = () => {
     fetchRequests();
   }, []);
 
-  console.log("req : ", requests)
+  // console.log("req : ", requests)
 
 
   const filteredRequests = useMemo(() => {

@@ -12,6 +12,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ExportPasswordModal from "../../../../components/ExportPasswordModal";
 import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
+import { leaveCodeMap } from "../../../../utils/leaveCodeMap";
+import { getLeaveBalance } from "../../../../services/AttendanceOverride/GetLeaveBalance";
+import { getCurrentAcademicYear } from "../../../../utils/getCurrentAcademicYear";
+import AttendanceDropdown  from "../../../../components/AttendanceDropdown";
 
 export default function EmployeeWiseAttendanceUpdate() {
 
@@ -32,6 +36,19 @@ export default function EmployeeWiseAttendanceUpdate() {
     // const [isBulkOverride, setIsBulkOverride] = useState(false);
     const [updateLoading, setUpdateLoading] = useState(false);
     const [openPicker, setOpenPicker] = useState(null);
+    const [leaveBalances,setLeaveBalances]=useState([]);
+    const [bulkSession1, setBulkSession1] = useState({
+        value: "P",
+        leaveTypeId: null,
+        leaveName: "Present",
+        academicYear: getCurrentAcademicYear(),
+    });
+    const [bulkSession2, setBulkSession2] = useState({
+        value: "P",
+        leaveTypeId: null,
+        leaveName: "Present",
+        academicYear: getCurrentAcademicYear(),
+    });
 
     const {
         isExportModalOpen,
@@ -86,31 +103,51 @@ export default function EmployeeWiseAttendanceUpdate() {
 
     const selectEmployee = async (employee) => {
         setSelectedEmployee(employee);
-        console.log("Selected Employee", employee);
         setEmployeeSearch(
             `${employee.name} (${employee.empId})`
         );
 
         setShowDropdown(false);
+        setLeaveBalances([]);
 
-        await loadAttendance(employee.facultyId);
+        await Promise.all([
+            loadAttendance(employee.facultyId),
+            loadLeaveBalance(employee.facultyId, true),
+        ]);
     };
 
     const loadAttendance = async (employeeId) => {
-        console.log("Loading Attendance For", employeeId);
+        // console.log("Loading Attendance For", employeeId);
 
         try {
             setLoading(true);
-
             const response =
                 await getEmployeeAttendanceOverride(employeeId);
-
-            console.log("Attendance Response", response);
-            console.log("Attendance Data", response?.data);
-
+            // console.log("Attendance Response", response);
+            // console.log("Attendance Data", response?.data);
             if (response?.success) {
-                setAttendanceData(response.data || []);
-                setFilteredAttendance(response.data || []);
+                const convertedData = (response.data || []).map((row) => ({
+                    ...row,
+                    session1: {
+                        value: row.session1,
+                        leaveTypeId: row.leaveTypeId ?? null,
+                        leaveName: row.leaveName ?? "Present",
+                        academicYear:
+                            row.academicYear ??
+                            getCurrentAcademicYear(),
+                    },
+
+                    session2: {
+                        value: row.session2,
+                        leaveTypeId: row.leaveTypeId ?? null,
+                        leaveName: row.leaveName ?? "Present",
+                        academicYear:
+                            row.academicYear ??
+                            getCurrentAcademicYear(),
+                    },
+                }));
+                setAttendanceData(convertedData);
+                setFilteredAttendance(convertedData);
             }
         } catch (error) {
             console.error(error);
@@ -118,6 +155,27 @@ export default function EmployeeWiseAttendanceUpdate() {
             setLoading(false);
         }
     };
+
+    const loadLeaveBalance = async (facultyId, forceReload = false) => {
+        try {
+            if (!facultyId) return;
+            if (!forceReload && leaveBalances.length > 0) return;
+            const response = await getLeaveBalance(facultyId);
+            if (response.success) {
+                const currentAcademicYear = getCurrentAcademicYear();
+                const allBalances = response.balances || [];
+                const filtered = allBalances.filter(
+                    (item) => item.academicYear === currentAcademicYear
+                );
+
+                setLeaveBalances(
+                    filtered.length > 0 ? filtered : allBalances
+                );
+            }
+        } catch (err) {
+            console.log(err);
+        }
+};
 
     useEffect(() => {
         if (!fromDate || !toDate) {
@@ -150,20 +208,75 @@ export default function EmployeeWiseAttendanceUpdate() {
         setEditedRows([]);
     };
 
-    const handleSessionChange = (
-        rowId,
-        field,
-        value
-    ) => {
-        const updated = filteredAttendance.map((row) =>
+    // const optionLookup = {
+    //     P: {
+    //         value: "P",
+    //         leaveTypeId: null,
+    //         leaveName: "Present",
+    //         academicYear: getCurrentAcademicYear(),
+    //     },
+
+    //     ...Object.fromEntries(
+    //         leaveOptions.map((item) => [
+    //             item.value,
+    //             {
+    //                 value: item.value,
+    //                 leaveTypeId: item.leaveTypeId,
+    //                 leaveName: item.leaveName,
+    //                 academicYear: item.academicYear,
+    //                 balance: item.balance,
+    //             },
+    //         ])
+    //     ),
+
+    //     ...Object.fromEntries(
+    //         odOptions.map((item) => [
+    //             item.value,
+    //             {
+    //                 value: item.value,
+    //                 leaveTypeId: item.leaveTypeId,
+    //                 leaveName: item.leaveName,
+    //                 academicYear: getCurrentAcademicYear(),
+    //             },
+    //         ])
+    //     ),
+    // };
+
+    const handleSessionChange = (rowId, field, value) => {
+        console.log("handleSessionChange", rowId, field, value);
+        const selectedOption =
+            [...leaveOptions, ...odOptions].find(
+                option => option.value === value
+            ) || {
+                value: value || "P",
+                label: value || "P",
+                leaveTypeId: null,
+                leaveName: value ? value : "Present",
+                academicYear: getCurrentAcademicYear(),
+                balance: null,
+            };
+
+        const updatedFiltered = filteredAttendance.map((row) =>
             row._id === rowId
                 ? {
                     ...row,
-                    [field]: value,
+                    [field]: selectedOption,
                 }
                 : row
         );
-        setFilteredAttendance(updated);
+
+        const updatedAttendance = attendanceData.map((row) =>
+            row._id === rowId
+                ? {
+                    ...row,
+                    [field]: selectedOption,
+                }
+                : row
+        );
+
+        setFilteredAttendance(updatedFiltered);
+        setAttendanceData(updatedAttendance);
+
         if (!editedRows.includes(rowId)) {
             setEditedRows((prev) => [...prev, rowId]);
         }
@@ -204,6 +317,18 @@ export default function EmployeeWiseAttendanceUpdate() {
                     ? "bulk-selected"
                     : "bulk-selected"
             );
+            setBulkSession1({
+                value: "P",
+                leaveTypeId: null,
+                leaveName: "Present",
+                academicYear: getCurrentAcademicYear(),
+            });
+            setBulkSession2({
+                value: "P",
+                leaveTypeId: null,
+                leaveName: "Present",
+                academicYear: getCurrentAcademicYear(),
+            });
             setShowModal(true);
             return;
         }
@@ -241,7 +366,7 @@ export default function EmployeeWiseAttendanceUpdate() {
             ? new Date(record.date).toLocaleDateString("en-GB")
             : "-";
     };
-    console.log("formart override data", formatOverrideDate);
+    // console.log("formart override data", formatOverrideDate);
 
     const showResetButton =
         fromDate ||
@@ -273,8 +398,8 @@ export default function EmployeeWiseAttendanceUpdate() {
                 })
                 : "-",
 
-            Session1: row.session1,
-            Session2: row.session2,
+            Session1: row.session1?.value || "P",
+            Session2: row.session2?.value || "P",
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -305,6 +430,125 @@ export default function EmployeeWiseAttendanceUpdate() {
             `${employeeName}_Attendance_Override.xlsx`
         );
     };
+
+    const formatDateForApi = (date) => {
+        const d = new Date(date);
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const calculateLeaveDays = (session1, session2) => {
+        const firstHalf = session1?.value === "P";
+        const secondHalf = session2?.value === "P";
+
+        if (firstHalf && secondHalf) {
+            return 0;
+        }
+
+        if (firstHalf || secondHalf) {
+            return 0.5;
+        }
+
+        return 1;
+    };
+
+    const normalizedLeaveCodeMap = Object.fromEntries(
+        Object.entries({
+            ...leaveCodeMap,
+            "on duty - official": "OD-O",
+            "on duty - exam": "OD-E",
+            "on duty - research": "OD-R",
+            "od-o": "OD-O",
+            "od-e": "OD-E",
+            "od-r": "OD-R",
+            "od-exam": "OD-E",
+            "od-off": "OD-O",
+            "lop": "LOP", // added: API returns leaveName "LOP" directly, not "Loss of Pay"
+        }).map(([key, value]) => [
+            key.trim().toLowerCase(),
+            value,
+        ])
+    );
+
+    const attendanceOptions = leaveBalances
+        .map((item) => {
+            const leaveTypeObj =
+                item.leaveTypeId && typeof item.leaveTypeId === "object"
+                    ? item.leaveTypeId
+                    : null;
+
+            const rawLeaveName =
+                leaveTypeObj?.leaveName || item.leaveName || item.leaveType;
+
+            const normalizedName = rawLeaveName?.trim()?.toLowerCase();
+            const code = normalizedLeaveCodeMap[normalizedName];
+
+            if (!code) {
+                return null;
+            }
+
+            return {
+                value: code,
+                label: `${code} (${item.remainingDays ?? item.balance ?? 0})`,
+                leaveTypeId: leaveTypeObj?._id || item.leaveTypeId,
+                leaveName: rawLeaveName,
+                academicYear: item.academicYear,
+                remainingDays: item.remainingDays ?? item.balance ?? 0,
+            };
+        })
+        .filter(Boolean);
+
+    const leaveOptions = attendanceOptions.filter((option) =>
+        ["CL", "ML", "LOP"].includes(option.value)
+    );
+
+    const odOptions = attendanceOptions.filter((option) =>
+        ["OD-R", "OD-E", "OD-O"].includes(option.value)
+    );
+
+    useEffect(() => {
+        if (!attendanceData.length || !leaveOptions.length) return;
+
+        const updatedAttendance = attendanceData.map((row) => ({
+            ...row,
+            session1:
+                [...leaveOptions, ...odOptions].find(
+                    x => x.value === row.session1.value
+                ) || row.session1,
+
+            session2:
+                [...leaveOptions, ...odOptions].find(
+                    x => x.value === row.session2.value
+                ) || row.session2,
+        }));
+
+        setAttendanceData(updatedAttendance);
+    }, [leaveBalances]);
+    // const attendanceOptions = [
+    //     {
+    //         label: "Present",
+    //         options: [
+    //             {
+    //                 value: "P",
+    //                 label: "P",
+    //             },
+    //         ],
+    //     },
+
+    //     {
+    //         label: "Absent",
+    //         options: leaveOptions,
+    //     },
+
+    //     {
+    //         label: "OD",
+    //         options: odOptions,
+    //     },
+    // ];
 
     return (
         <>
@@ -596,11 +840,11 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
-                                            {formatOverrideDate(row)}
+                                            {row.employeeCategory || "-"}
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
-                                            {row.employeeCategory || "-"}
+                                            {formatOverrideDate(row)}
                                         </td>
 
                                         <td className="px-3 py-3 text-center">
@@ -634,51 +878,51 @@ export default function EmployeeWiseAttendanceUpdate() {
                                         </td>
 
                                         <td className="px-3 py-3 text-center cursor-pointer">
-                                            <select
-                                                value={row.session1}
-                                                onChange={(e) =>
+                                            <AttendanceDropdown
+                                                value={row.session1?.value || "P"}
+                                                leaveOptions={leaveOptions}
+                                                odOptions={odOptions}
+                                                hideAbsent={
+                                                    row.session1?.value === "H" &&
+                                                    row.session2?.value === "H"
+                                                }
+                                                onSubmenuOpen={(menu) => {
+                                                    if (menu === "A" || menu === "OD") {
+                                                        loadLeaveBalance(selectedEmployee?.facultyId, true);
+                                                    }
+                                                }}
+                                                onChange={(value) =>
                                                     handleSessionChange(
                                                         row._id,
                                                         "session1",
-                                                        e.target.value
+                                                        value
                                                     )
                                                 }
-                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white cursor-pointer"
-                                            >
-                                                <option value="P">
-                                                    P
-                                                </option>
-                                                <option value="A">
-                                                    A
-                                                </option>
-                                                <option value="OD">
-                                                    OD
-                                                </option>
-                                            </select>
+                                            />
                                         </td>
 
                                         <td className="px-3 py-3 text-center cursor-pointer">
-                                            <select
-                                                value={row.session2}
-                                                onChange={(e) =>
+                                            <AttendanceDropdown
+                                                value={row.session2?.value || "P"}
+                                                leaveOptions={leaveOptions}
+                                                odOptions={odOptions}
+                                                hideAbsent={
+                                                    row.session1?.value === "H" &&
+                                                    row.session2?.value === "H"
+                                                }
+                                                onSubmenuOpen={(menu) => {
+                                                    if (menu === "A" || menu === "OD") {
+                                                        loadLeaveBalance(selectedEmployee?.facultyId, true);
+                                                    }
+                                                }}
+                                                onChange={(value) =>
                                                     handleSessionChange(
                                                         row._id,
                                                         "session2",
-                                                        e.target.value
+                                                        value
                                                     )
                                                 }
-                                                className="h-10 w-[78px] rounded-lg border border-[#244061] bg-[#172c46] px-2 text-white cursor-pointer"
-                                            >
-                                                <option value="P">
-                                                    P
-                                                </option>
-                                                <option value="A">
-                                                    A
-                                                </option>
-                                                <option value="OD">
-                                                    OD
-                                                </option>
-                                            </select>
+                                            />
                                         </td>
                                     </tr>
                                 ))
@@ -709,6 +953,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                 mode={modalMode}
                 loading={updateLoading}
                 selectedRow={selectedRowData}
+                leaveOptions={leaveOptions}
+                odOptions={odOptions}
+                bulkSession1={bulkSession1}
+                bulkSession2={bulkSession2}
                 onClose={() =>
                     setShowModal(false)
                 }
@@ -723,17 +971,38 @@ export default function EmployeeWiseAttendanceUpdate() {
                                             item._id
                                         )
                                 );
+                            const totalNoOfDays = calculateLeaveDays(
+                                row.session1,
+                                row.session2
+                            );
                             await updateAttendanceOverrideSingle(
                                 row.employeeId,
-                                row.date.split("T")[0],
+                                formatDateForApi(row.date),
                                 {
                                     firstIn: row.firstIn,
                                     lastOut: row.lastOut,
-                                    session1: row.session1,
-                                    session2: row.session2,
+
+                                    session1: row.session1.value,
+                                    session2: row.session2.value,
+
                                     remarks: formData.remarks,
+
+                                    facultyId: selectedEmployee.facultyId,
+
+                                    leaveTypeId:
+                                        row.session1.leaveTypeId ??
+                                        row.session2.leaveTypeId,
+
+                                    leaveName:
+                                        row.session1.leaveName ??
+                                        row.session2.leaveName,
+
+                                    academicYear: getCurrentAcademicYear(),
+
+                                    totalNoOfDays,
                                 }
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
                             toast.success(
                                 "Attendance Updated Successfully"
                             );
@@ -745,17 +1014,49 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                             const payload = {
                                 remarks: formData.remarks,
-                                updates: editedRecords.map(row => ({
-                                    date: row.date.split("T")[0],
-                                    session1: row.session1,
-                                    session2: row.session2,
+                                updates: editedRecords.map((row) => ({
+                                    employeeId: row.employeeId,
+                                    facultyId: selectedEmployee.facultyId,
+                                    date: formatDateForApi(row.date),
+
+                                    firstIn: row.firstIn,
+                                    lastOut: row.lastOut,
+
+                                    session1: row.session1.value,
+                                    session2: row.session2.value,
+
+                                    remarks: formData.remarks,
+
+                                    leaveTypeId:
+                                        row.session1.leaveTypeId ??
+                                        row.session2.leaveTypeId,
+
+                                    leaveName:
+                                        row.session1.leaveName ??
+                                        row.session2.leaveName,
+
+                                    academicYear:
+                                        row.session1.academicYear ??
+                                        row.session2.academicYear ??
+                                        getCurrentAcademicYear(),
+
+                                    totalNoOfDays: calculateLeaveDays(
+                                        row.session1,
+                                        row.session2
+                                    ),
                                 })),
                             };
+
+                            console.log(
+                                "Bulk Row Payload",
+                                JSON.stringify(payload, null, 2)
+                            );
 
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,
                                 payload
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
                             toast.success(
                                 "Attendance Updated Successfully"
                             );
@@ -764,37 +1065,91 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const selectedRecords = filteredAttendance.filter(
                                 row => selectedRows.includes(row._id)
                             );
+                            const totalNoOfDays = calculateLeaveDays(
+                                formData.session1,
+                                formData.session2
+                            );
 
                             const payload = {
                                 remarks: formData.remarks,
-                                updates: selectedRecords.map(row => ({
-                                    date: row.date.split("T")[0],
-                                    session1: formData.session1,
-                                    session2: formData.session2,
+                                updates: selectedRecords.map((row) => ({
+                                    employeeId: row.employeeId,
+                                    facultyId: selectedEmployee.facultyId,
+                                    date: formatDateForApi(row.date),
+
+                                    firstIn: row.firstIn,
+                                    lastOut: row.lastOut,
+
+                                    session1: formData.session1.value,
+                                    session2: formData.session2.value,
+
+                                    remarks: formData.remarks,
+
+                                    leaveTypeId:
+                                        formData.session1.leaveTypeId ??
+                                        formData.session2.leaveTypeId,
+
+                                    leaveName:
+                                        formData.session1.leaveName ??
+                                        formData.session2.leaveName,
+
+                                    academicYear:
+                                        formData.session1.academicYear ??
+                                        formData.session2.academicYear ??
+                                        getCurrentAcademicYear(),
+
+                                    totalNoOfDays: calculateLeaveDays(
+                                        formData.session1,
+                                        formData.session2
+                                    ),
                                 })),
                             };
 
+                            console.log(
+                                "Bulk Selected Payload",
+                                JSON.stringify(payload, null, 2)
+                            );
                             await updateAttendanceOverrideEmployeeBulk(
                                 selectedEmployee.facultyId,
                                 payload
                             );
+                            await loadLeaveBalance(selectedEmployee.facultyId);
+                            await loadAttendance(selectedEmployee.facultyId);
+
+                            setSelectedRows([]);
+                            setEditedRows([]);
+
+                            setBulkSession1({
+                                value: "P",
+                                leaveTypeId: null,
+                                leaveName: "Present",
+                                academicYear: getCurrentAcademicYear(),
+                            });
+
+                            setBulkSession2({
+                                value: "P",
+                                leaveTypeId: null,
+                                leaveName: "Present",
+                                academicYear: getCurrentAcademicYear(),
+                            });
                             toast.success(
                                 "Attendance Updated Successfully"
                             );
                         }
                         setShowModal(false);
-                        const refreshed =
-                            await getEmployeeAttendanceOverride(
-                                selectedEmployee.facultyId
-                            );
-                        if (refreshed?.success) {
-                            setAttendanceData(
-                                refreshed.data || []
-                            );
-                            setFilteredAttendance(
-                                refreshed.data || []
-                            );
-                        }
+                        // const refreshed =
+                            // await getEmployeeAttendanceOverride(
+                            //     selectedEmployee.facultyId
+                            // );
+                            await loadAttendance(selectedEmployee.facultyId);
+                        // if (refreshed?.success) {
+                        //     setAttendanceData(
+                        //         refreshed.data || []
+                        //     );
+                        //     setFilteredAttendance(
+                        //         refreshed.data || []
+                        //     );
+                        // }
                         setSelectedRows([]);
                         setEditedRows([]);
                     } catch (error) {

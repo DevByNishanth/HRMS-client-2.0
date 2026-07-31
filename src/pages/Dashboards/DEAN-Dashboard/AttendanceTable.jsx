@@ -1,21 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronDown, Download } from "lucide-react";
 import CustomDatePicker from "../../../components/CustomDatePicker";
 import ReqularizationCanvas from "./ReqularizationCanvas";
 import { getTokenFromLocalStorage, getFacultyIdFromToken } from "../../../utils/tokenUtils";
 import { canApplyRegularization } from "../../../utils/regularizationUtils";
+import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
   Present: "text-[#18d3bf] bg-[#18d3bf1f]",
-  "Partially Present": "text-[#f0a15f] bg-[#f0a15f1f]",
-  "Second Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
   Absent: "text-[#f16868] bg-[#f168681f]",
-  "On Leave": "text-[#f16868] bg-[#f168681f]",
+  Leave: "text-[#f16868] bg-[#f168681f]",
   Holiday: "text-[#3984ff] bg-[#3984ff1f]",
-  "On Duty": "text-[#3984ff] bg-[#3984ff1f]",
+  "First Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
+  "Second Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
+  "Missed Punch": "text-[#f59d62] bg-[#f59d621f]",
 };
 
-const statuses = Object.keys(statusStyles);
+const statuses = [
+  "Present",
+  "Absent",
+  "Leave",
+  "Holiday",
+  "First Half Leave",
+  "Second Half Leave",
+  "Missed Punch",
+];
 
 const formatMinutesToHours = (minutes) => {
   if (minutes == null) return "--";
@@ -34,6 +45,14 @@ const formatDateFromISO = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
   return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+};
+
+const formatDateForAPI = (date) => {
+  if (!date) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 const StatusFilter = ({ value, onChange }) => {
@@ -79,15 +98,24 @@ const StatusFilter = ({ value, onChange }) => {
   );
 };
 
-import ExportPasswordModal from "../../../components/ExportPasswordModal";
-import { exportToExcel } from "../../../utils/exportToExcel";
-import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+const getToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const getDefaultFrom = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 15);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
 
 const AttendanceTable = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
+  const [fromDate, setFromDate] = useState(getDefaultFrom);
+  const [toDate, setToDate] = useState(getToday);
   const [status, setStatus] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
 
@@ -101,7 +129,7 @@ const AttendanceTable = () => {
   } = usePasswordProtectedExport();
 
   const exportCurrentFilteredRows = () => {
-    const rows = filteredLogs.map((r) => ({
+    const rows = records.map((r) => ({
       "Date": formatDateFromISO(r.date),
       "Check-In": formatTime(r.checkIn),
       "Check-Out": r.checkIn === r.checkOut ? "--" : formatTime(r.checkOut),
@@ -121,8 +149,14 @@ const AttendanceTable = () => {
         if (!facultyId) return;
 
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
+
+        const params = new URLSearchParams({ facultyId });
+        if (fromDate) params.append("fromDate", formatDateForAPI(fromDate));
+        if (toDate) params.append("toDate", formatDateForAPI(toDate));
+        if (status) params.append("status", status);
+
         const res = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/faculty-attendance?facultyId=${facultyId}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/faculty-attendance?${params.toString()}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();
@@ -137,30 +171,19 @@ const AttendanceTable = () => {
     };
 
     fetchAttendance();
-  }, []);
+  }, [fromDate, toDate, status]);
 
-  const filteredLogs = useMemo(() => {
-    return records.filter((record) => {
-      const logDate = new Date(record.checkIn);
-      logDate.setHours(0, 0, 0, 0);
-      const from = fromDate ? new Date(fromDate) : null;
-      const to = toDate ? new Date(toDate) : null;
-      if (from) from.setHours(0, 0, 0, 0);
-      if (to) to.setHours(0, 0, 0, 0);
+  const today = getToday();
+  const defaultFrom = getDefaultFrom();
 
-      const fromMatch = !from || logDate >= from;
-      const toMatch = !to || logDate <= to;
-      const statusMatch = !status || record.status === status;
-
-      return fromMatch && toMatch && statusMatch;
-    });
-  }, [records, fromDate, toDate, status]);
-
-  const hasFilters = fromDate || toDate || status;
+  const isDefaultFilters =
+    fromDate.getTime() === defaultFrom.getTime() &&
+    toDate.getTime() === today.getTime() &&
+    status === "";
 
   const resetFilters = () => {
-    setFromDate(null);
-    setToDate(null);
+    setFromDate(getDefaultFrom());
+    setToDate(getToday());
     setStatus("");
   };
 
@@ -195,14 +218,14 @@ const AttendanceTable = () => {
           <button
             type="button"
             onClick={handleExportClick}
-            disabled={filteredLogs.length === 0}
+            disabled={records.length === 0}
             className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export
           </button>
 
-          {hasFilters && (
+          {!isDefaultFilters && (
             <button
               type="button"
               onClick={resetFilters}
@@ -227,7 +250,7 @@ const AttendanceTable = () => {
           <div className="flex min-h-[240px] items-center justify-center">
             <p className="text-[14px] text-[#8ca1bd]">Loading attendance records...</p>
           </div>
-        ) : filteredLogs.length > 0 ? (
+        ) : records.length > 0 ? (
           <table className="w-full min-w-[760px] border-collapse text-left">
             <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
               <tr>
@@ -240,7 +263,7 @@ const AttendanceTable = () => {
               </tr>
             </thead>
             <tbody className="text-[13px] text-[#cad7eb]">
-              {filteredLogs.map((record) => (
+              {records.map((record) => (
                 <tr key={record.attendanceId || record.checkIn} className="border-b border-[#132944] last:border-0">
                   <td className="px-4 py-4">{formatDateFromISO(record.date)}</td>
                   <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
@@ -282,7 +305,7 @@ const AttendanceTable = () => {
         ) : (
           <div className="flex min-h-[240px] items-center justify-center">
             <p className="text-[14px] text-[#8ca1bd]">
-              {records.length === 0
+              {records.length === 0 && !loading
                 ? "No attendance records found."
                 : "No attendance logs found for the selected filters."}
             </p>
