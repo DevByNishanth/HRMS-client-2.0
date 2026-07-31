@@ -13,6 +13,9 @@ const statusColors = {
   P: "bg-teal-500 text-white",
   A: "bg-[#e0474f] text-white",
   OFF: "bg-[#1d74d8] text-white",
+  H: "bg-[#1d74d8] text-white",
+  L: "bg-[#e0474f] text-white",
+  MP: "bg-[#8b5cf6] text-white",
   "-": "bg-[#173252] text-[#8ca1bd]",
 };
 
@@ -32,6 +35,7 @@ const ActiveDayCalendar = () => {
   const [presentCount, setPresentCount] = useState(0);
   const [absentCount, setAbsentCount] = useState(0);
   const [holidayCount, setHolidayCount] = useState(0);
+  const [mpCount, setMPCount] = useState(0);
   const dropdownRef = useRef(null);
 
   // Close dropdown on outside click
@@ -71,10 +75,12 @@ const ActiveDayCalendar = () => {
           let pCount = 0;
           let aCount = 0;
           let hCount = 0;
+          let mpCount = 0;
           Object.values(attendance || {}).forEach((code) => {
             if (code === "P") pCount++;
-            else if (code === "A") aCount++;
-            else if (code === "OFF") hCount++;
+            else if (code === "A" || code === "L") aCount++;
+            else if (code === "OFF" || code === "H") hCount++;
+            else if (code === "MP") mpCount++;
             else if (code === "P:A") {
               pCount++;
               aCount++;
@@ -83,6 +89,7 @@ const ActiveDayCalendar = () => {
           setPresentCount(pCount);
           setAbsentCount(aCount);
           setHolidayCount(hCount);
+          setMPCount(mpCount);
         }
       } catch (err) {
         console.error("Error fetching muster:", err);
@@ -209,6 +216,7 @@ const ActiveDayCalendar = () => {
         <LegendItem color="#19cfba" label={`Present (${presentCount})`} />
         <LegendItem color="#e0474f" label={`Absent (${absentCount})`} />
         <LegendItem color="#1d74d8" label={`Holiday (${holidayCount})`} />
+        <LegendItem color="#8b5cf6" label={`MP (${mpCount})`} />
       </div>
     </section>
   );

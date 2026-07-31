@@ -31,6 +31,7 @@ import axios from "axios";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -136,6 +137,9 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
 
   const canRevoke =
     request.status === "Approved" || request.status === "Rejected";
+
+  const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
+  const doc = getLeaveSupportingDocument(request);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -294,6 +298,30 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
               {request.reason || "No reason provided"}
             </div>
           </div>
+
+          {requiresFile && (
+            <div className="mt-3">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+                <FileText size={15} className="text-[#3984ff]" />
+                Supporting Document
+              </p>
+              <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+                {doc ? (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#3984ff] transition hover:text-[#6ea1ff] hover:underline"
+                  >
+                    <FileText size={14} />
+                    View Document
+                  </a>
+                ) : (
+                  <span className="text-[#6f839f]">No document</span>
+                )}
+              </div>
+            </div>
+          )}
 
           {request.rejectionReason && (
             <div className="mt-3">
@@ -873,6 +901,7 @@ const PrincipalLeaveRequestPage = () => {
                     <tr>
                       <th className="px-4 py-3 font-semibold">Faculty Name</th>
                       <th className="px-4 py-3 font-semibold">Leave Type</th>
+                      <th className="px-4 py-3 font-semibold">Doc</th>
                       <th className="px-4 py-3 font-semibold">From</th>
                       <th className="px-4 py-3 font-semibold">To</th>
                       <th className="px-4 py-3 font-semibold">Duration</th>
@@ -884,7 +913,10 @@ const PrincipalLeaveRequestPage = () => {
                   </thead>
                   <tbody className="text-[12px] text-[#cad7eb]">
                     {filteredRequests.length > 0 ? (
-                      filteredRequests.map((request, index) => (
+                      filteredRequests.map((request, index) => {
+                        const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
+                        const doc = getLeaveSupportingDocument(request);
+                        return (
                         <tr
                           key={`${request._id}-${index}`}
                           className="border-b border-[#132944] last:border-0"
@@ -907,6 +939,28 @@ const PrincipalLeaveRequestPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             {request.leaveTypeId?.leaveName}
+                          </td>
+                          <td className="px-4 py-3">
+                            {requiresFile ? (
+                              doc ? (
+                                <a
+                                  href={doc.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="View document"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                                >
+                                  <FileText className="h-4 w-4" />
+                                </a>
+                              ) : (
+                                <span
+                                  title="No document uploaded"
+                                  className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                                >
+                                  <FileText className="h-4 w-4" />
+                                </span>
+                              )
+                            ) : null}
                           </td>
                           <td className="px-4 py-3">
                             {formatDate(request.fromDate)}
@@ -973,11 +1027,12 @@ const PrincipalLeaveRequestPage = () => {
                             </div>
                           </td>
                         </tr>
-                      ))
+                        );
+                      })
                     ) : (
                       <tr>
                         <td
-                          colSpan="7"
+                          colSpan="8"
                           className="px-4 py-8 text-center text-[#8ca1bd]"
                         >
                           No leave requests found matching your filters.

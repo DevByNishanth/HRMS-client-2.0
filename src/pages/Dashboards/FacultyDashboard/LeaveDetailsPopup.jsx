@@ -11,9 +11,13 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 
 const LeaveDetailsPopup = ({ leave, onClose }) => {
   if (!leave) return null;
+
+  const requiresFile = isFileUploadRequired(leave?.leaveTypeId?.leaveName);
+  const doc = getLeaveSupportingDocument(leave);
 
   // Format date utility
   const formatDate = (dateString) => {
@@ -209,6 +213,30 @@ const LeaveDetailsPopup = ({ leave, onClose }) => {
               {leave.reason || leave.notes || "No reason provided"}
             </div>
           </div>
+
+          {requiresFile && (
+            <div className="mt-3">
+              <p className="mb-2 flex items-center gap-2 text-[16px] text-white">
+                <FileText size={15} className="text-[#3984ff]" />
+                Supporting Document
+              </p>
+              <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+                {doc ? (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#3984ff] transition hover:text-[#6ea1ff] hover:underline"
+                  >
+                    <FileText size={14} />
+                    View Document
+                  </a>
+                ) : (
+                  <span className="text-[#6f839f]">No document</span>
+                )}
+              </div>
+            </div>
+          )}
 
           {leave.approvalHistory && leave.approvalHistory.length > 0 && (
             <div className="mt-3 border-t border-gray-400/20 pt-4">
