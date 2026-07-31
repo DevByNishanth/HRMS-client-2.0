@@ -234,7 +234,7 @@ function normalizeAttendanceMap(employee) {
   return rawAttendance || {};
 }
 
-console.log("worked on Attendance in time and out time")
+// console.log("worked on Attendance in time and out time")
 
 function calculateSummary(attendance) {
   return Object.values(attendance).reduce(
@@ -351,7 +351,7 @@ export default function AttendanceManagementOverride() {
 
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
-    console.log("selectedAttendance", selectedAttendance);
+    // console.log("selectedAttendance", selectedAttendance);
 
     setIsSaving(true);
 
@@ -898,7 +898,7 @@ export default function AttendanceManagementOverride() {
           <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
             <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Attendance Details</h2>
-             { console.log("selectedAttendance", selectedAttendance)}
+             {/* { console.log("selectedAttendance", selectedAttendance)} */}
               <X
                 className="cursor-pointer"
                 onClick={() => setShowPopup(false)}

@@ -15,7 +15,7 @@ const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
           Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
         },
       })
-      console.log("Leave withdrawn successfully:", res.data);
+      // console.log("Leave withdrawn successfully:", res.data);
       setIsLoading(false)
       fetchLeaves()
       onClose();

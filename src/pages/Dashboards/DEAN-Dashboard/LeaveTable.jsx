@@ -434,7 +434,7 @@ const LeaveTable = () => {
         }
       });
       setLeaves(response.data.leaveApplications);
-      console.log("Leaves fetched successfully:", response.data);
+      // console.log("Leaves fetched successfully:", response.data);
     } catch (err) {
       console.error("Error fetching leaves:", err);
     }

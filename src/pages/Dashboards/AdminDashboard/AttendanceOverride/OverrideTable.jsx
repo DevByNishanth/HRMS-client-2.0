@@ -33,12 +33,12 @@ export default function OverrideTable({ data = [] }) {
     } = usePasswordProtectedExport();
 
     useEffect(() => {
-        console.log("overrideData:", overrideData);
+        // console.log("overrideData:", overrideData);
     }, [overrideData]);
 
     useEffect(() => {
         overrideData.forEach(item => {
-            console.log("attendanceDate:", item.attendanceDate);
+            // console.log("attendanceDate:", item.attendanceDate);
         });
     }, [overrideData]);
 
@@ -299,30 +299,21 @@ export default function OverrideTable({ data = [] }) {
 
     
     useEffect(() => {
-        console.log("overrideData:", overrideData);
+        // console.log("overrideData:", overrideData);
 
         overrideData.forEach(item => {
-            console.log(
-                "Raw Attendance Date:",
-                item.attendanceDate
-            );
+            // console.log(
+            //     "Raw Attendance Date:",
+            //     item.attendanceDate
+            // );
         });
     }, [overrideData]);
 
     const getStatusColor = (value) => {
-        switch (value) {
-            case "P":
-                return "text-[#155DFC]";
-                // return "text-green-500"
-            case "A":
-                return "text-[#155DFC]";
-            case "OD":
-                return "text-[#155DFC]";
-            default:
-                return "";
-        }
+        if (!value) return "";
+        return "text-[#155DFC]";
     };
-    console.log("status color",getStatusColor);
+    // console.log("status color",getStatusColor);
 
     return (
         <>

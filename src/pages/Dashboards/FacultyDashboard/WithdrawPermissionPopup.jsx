@@ -22,7 +22,7 @@ const WithdrawPermissionPopup = ({ permission, onClose, fetchPermissions, onPerm
         },
       });
 
-      console.log("Permission cancelled successfully:", res.data);
+      // console.log("Permission cancelled successfully:", res.data);
       setIsLoading(false);
       
       // Optimistically remove from table, then close

@@ -44,7 +44,7 @@ export default function HolidayBody() {
 
             const response = await getHolidays();
 
-            console.log("Holiday API Response:", response);
+            // console.log("Holiday API Response:", response);
 
             setHolidays(response || []);
         } catch (error) {
@@ -54,7 +54,7 @@ export default function HolidayBody() {
         }
     };
     useEffect(() => {
-        console.log("holidays state:", holidays);
+        // console.log("holidays state:", holidays);
     }, [holidays]);
 
     const handleDelete = async () => {

@@ -37,7 +37,7 @@ export default function ShiftBody() {
 
         const response = await getShifts();
 
-        console.log("Shift API Response:", response);
+        // console.log("Shift API Response:", response);
 
         setShifts(response.data);
         } catch (error) {

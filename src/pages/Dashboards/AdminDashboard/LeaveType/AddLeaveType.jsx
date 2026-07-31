@@ -170,7 +170,7 @@ export default function AddLeaveType({
             sandwichRuleApplicable:
                 formData.sandwichRuleApplicable,
         };
-        console.log("Payload:", payload);
+        // console.log("Payload:", payload);
 
         try {
             setLoading(true);
@@ -191,9 +191,9 @@ export default function AddLeaveType({
                     error.response?.data?.message ||
                     "Failed to create leave name"
                 );
-                console.log("Error Status:", error.response?.status);
-                console.log("Error Data:", error.response?.data);
-                console.log("Full Error Response:", error.response);
+                // console.log("Error Status:", error.response?.status);
+                // console.log("Error Data:", error.response?.data);
+                // console.log("Full Error Response:", error.response);
 
                 console.error(error);
         } finally {

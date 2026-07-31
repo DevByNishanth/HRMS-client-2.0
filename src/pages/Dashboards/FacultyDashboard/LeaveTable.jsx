@@ -430,7 +430,7 @@ const LeaveTable = () => {
         }
       });
       setLeaves(response.data.leaveApplications);
-      console.log("Leaves fetched successfully:", response.data);
+      // console.log("Leaves fetched successfully:", response.data);
     } catch (err) {
       console.error("Error fetching leaves:", err);
     }
@@ -458,7 +458,7 @@ const LeaveTable = () => {
       let data = originalData.filter((item) => {
         return item.facultyId._id !== decodedData.facultyId
       })
-      console.log("hod data : ", data)
+      // console.log("hod data : ", data)
       // setRequests(data);
 
       setTeamLeavesCount(data.length);
