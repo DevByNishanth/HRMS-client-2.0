@@ -25,6 +25,7 @@ import { jwtDecode } from "jwt-decode";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 
 const statusStyles = {
     Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -939,6 +940,7 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                             <tr>
                                 <th className="px-4 py-3 font-semibold">Name</th>
                                 <th className="px-4 py-3 font-semibold">Leave Type</th>
+                                <th className="px-4 py-3 font-semibold">Doc</th>
                                 <th className="px-4 py-3 font-semibold">From Date</th>
                                 <th className="px-4 py-3 font-semibold">To Date</th>
                                 <th className="px-4 py-3 font-semibold">Reason</th>
@@ -948,7 +950,10 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                         </thead>
                         <tbody className="text-[12px] text-[#cad7eb]">
                             {filteredRequests.length > 0 ? (
-                                filteredRequests.map((request, index) => (
+                                filteredRequests.map((request, index) => {
+                                    const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
+                                    const doc = getLeaveSupportingDocument(request);
+                                    return (
                                     <tr
                                         key={`${request.name}-${request.date}-${index}`}
                                         className="border-b border-[#132944] last:border-0"
@@ -965,6 +970,28 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-2">{request.leaveTypeId?.leaveName}</td>
+                                        <td className="px-4 py-2">
+                                            {requiresFile ? (
+                                                doc ? (
+                                                    <a
+                                                        href={doc.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        title="View document"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                                                    >
+                                                        <FileText className="h-4 w-4" />
+                                                    </a>
+                                                ) : (
+                                                    <span
+                                                        title="No document uploaded"
+                                                        className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                                                    >
+                                                        <FileText className="h-4 w-4" />
+                                                    </span>
+                                                )
+                                            ) : null}
+                                        </td>
                                         <td className="px-4 py-2">{formatDate(request.fromDate || request.from || request.date) || request.fromDate || request.from || request.date}</td>
                                         <td className="px-4 py-2">{formatDate(request.toDate || request.to || request.date) || request.toDate || request.to || request.date}</td>
                                         <td className="px-4 py-2 truncate max-w-[120px]" title={request.reason}>
@@ -1036,10 +1063,11 @@ const HodLeaveRequestTable = ({ onCountChange }) => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <tr>
-                                    <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                                    <td colSpan="8" className="px-4 py-8 text-center text-[#8ca1bd]">
                                         No leave requests found matching your filters.
                                     </td>
                                 </tr>

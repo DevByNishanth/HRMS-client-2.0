@@ -1,4 +1,5 @@
-import { Download, Eye } from "lucide-react";
+import { Download, Eye, FileText } from "lucide-react";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 import { useState, useMemo } from "react";
 import LeaveDetailsPopup from "../FacultyDashboard/LeaveDetailsPopup";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
@@ -114,6 +115,7 @@ const PrincipalLeaveTable = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Employee</th>
                 <th className="px-4 py-3 font-semibold">Leave Type</th>
+                <th className="px-4 py-3 font-semibold">Doc</th>
                 <th className="px-4 py-3 font-semibold">From</th>
                 <th className="px-4 py-3 font-semibold">To</th>
                 <th className="px-4 py-3 font-semibold">Duration</th>
@@ -123,11 +125,14 @@ const PrincipalLeaveTable = () => {
             </thead>
             <tbody className="text-[12px] text-[#cad7eb]">
               {filteredLeaves.length > 0 ? (
-                filteredLeaves.map((leave, index) => (
-                  <tr
-                    key={`${leave.empid}-${leave.from}-${index}`}
-                    className="border-b border-[#132944] last:border-0"
-                  >
+                filteredLeaves.map((leave, index) => {
+                  const requiresFile = isFileUploadRequired(leave?.leaveTypeId?.leaveName);
+                  const doc = getLeaveSupportingDocument(leave);
+                  return (
+                    <tr
+                      key={`${leave.empid}-${leave.from}-${index}`}
+                      className="border-b border-[#132944] last:border-0"
+                    >
                     <td className="px-4 py-3 font-semibold text-white">
                       <div>
                         <p className="truncate">{leave.employee}</p>
@@ -135,6 +140,28 @@ const PrincipalLeaveTable = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3">{leave.type}</td>
+                    <td className="px-4 py-3">
+                      {requiresFile ? (
+                        doc ? (
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="View document"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </a>
+                        ) : (
+                          <span
+                            title="No document uploaded"
+                            className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </span>
+                        )
+                      ) : null}
+                    </td>
                     <td className="px-4 py-3">{leave.from}</td>
                     <td className="px-4 py-3">{leave.to}</td>
                     <td className="px-4 py-3 font-semibold text-[#18d3bf]">{leave.duration}</td>
@@ -155,12 +182,12 @@ const PrincipalLeaveTable = () => {
                           <Eye className="h-4 w-4" />
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))
+                    </td>                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                  <td colSpan="8" className="px-4 py-8 text-center text-[#8ca1bd]">
                     No leave requests found.
                   </td>
                 </tr>

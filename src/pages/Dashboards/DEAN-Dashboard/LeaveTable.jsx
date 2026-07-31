@@ -1,4 +1,4 @@
-import { Download, Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple } from "lucide-react";
+import { Download, Eye, RotateCcw, ChevronDown, CalendarDays, ChevronLeft, ChevronRight, Apple, FileText } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getRoleFromToken, getTokenFromLocalStorage, decodeToken } from "../../../utils/tokenUtils";
@@ -10,6 +10,7 @@ import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import HodLeaveRequestTable from "./HodLeaveRequestTable";
 import axios from "axios";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -614,6 +615,7 @@ const LeaveTable = () => {
             <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
               <tr>
                 <th className="px-4 py-3 font-semibold">Leave Type</th>
+                <th className="px-4 py-3 font-semibold">Doc</th>
                 <th className="px-4 py-3 font-semibold">From</th>
                 <th className="px-4 py-3 font-semibold">To</th>
                 <th className="px-4 py-3 font-semibold">Duration</th>
@@ -628,6 +630,8 @@ const LeaveTable = () => {
                     ...leave,
                     statusColor: statusStyles[leave.status],
                   };
+                  const requiresFile = isFileUploadRequired(leave?.leaveTypeId?.leaveName);
+                  const doc = getLeaveSupportingDocument(leave);
 
                   return (
                     <tr
@@ -635,6 +639,28 @@ const LeaveTable = () => {
                       className="border-b border-[#132944] last:border-0"
                     >
                       <td className="px-4 py-2 font-semibold text-white">{leave?.leaveTypeId?.leaveName}</td>
+                      <td className="px-4 py-2">
+                        {requiresFile ? (
+                          doc ? (
+                            <a
+                              href={doc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="View document"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                            >
+                              <FileText className="h-4 w-4" />
+                            </a>
+                          ) : (
+                            <span
+                              title="No document uploaded"
+                              className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                            >
+                              <FileText className="h-4 w-4" />
+                            </span>
+                          )
+                        ) : null}
+                      </td>
                       <td className="px-4 py-2">{formatDate(leave.fromDate)}</td>
                       <td className="px-4 py-2">{formatDate(leave.toDate)}</td>
                       <td className="px-4 py-2 font-semibold text-[#18d3bf]">{leave.totalDays} {daysLable(leave.totalDays)}</td>
@@ -674,7 +700,7 @@ const LeaveTable = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-4 py-8 text-center text-[#8ca1bd]">
+                  <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
                     No leave requests found matching your filters.
                   </td>
                 </tr>
