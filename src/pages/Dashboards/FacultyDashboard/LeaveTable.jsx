@@ -10,6 +10,7 @@ import WithdrawLeavePopup from "./WithdrawLeavePopup";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import HodLeaveRequestTable from "./HodLeaveRequestTable";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -311,6 +312,12 @@ const LeaveTable = () => {
   const [isLeaveApplyForm, setIsLeaveApplyForm] = useState(false);
 
   const [leaves, setLeaves] = useState([]);
+
+
+  const token = localStorage.getItem("hrms_token");
+  const decoded = jwtDecode(token);
+  const isHod = decoded?.role === "hod";
+
 
   const {
     isExportModalOpen,
@@ -635,7 +642,19 @@ const LeaveTable = () => {
                             <Eye className="h-4 w-4" />
                           </button>
 
+
                           {leave.status === "Pending" && leave.currentApprovalLevel == "hod" && (
+                            <button
+                              type="button"
+                              onClick={() => setWithdrawLeave(leaveWithColor)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                              aria-label={`Withdraw ${leave.type}`}
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          {isHod == true && leave.status === "Pending" && leave.currentApprovalLevel == "principal" && (
                             <button
                               type="button"
                               onClick={() => setWithdrawLeave(leaveWithColor)}

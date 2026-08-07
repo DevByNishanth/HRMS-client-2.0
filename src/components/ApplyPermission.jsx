@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { Clock3, FileText, Send, X } from "lucide-react";
 import CustomDatePicker from "./CustomDatePicker";
 import CustomDropdown from "./CustomDropdown";
@@ -27,7 +28,20 @@ const calculateEndTime = (fromTime, totalMinutes) => {
     return `${endHour}:${endMinute}`;
 };
 
-const getDefaultFromTime = (session) => {
+const getDepartmentFromToken = () => {
+    try {
+        const token = getTokenFromLocalStorage();
+        if (!token) return "";
+        const decoded = jwtDecode(token);
+        return (decoded?.department || decoded?.dept || "").toUpperCase();
+    } catch {
+        return "";
+    }
+};
+
+const getDefaultFromTime = (session, isOptDepartment, totalMinutes) => {
+    if (isOptDepartment && totalMinutes === 120) return "14:30";
+    if (isOptDepartment && session === "Afternoon" && totalMinutes === 60) return "16:00";
     return session === "Afternoon" ? "14:00" : "09:00";
 };
 
@@ -43,8 +57,11 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
     const [submitting, setSubmitting] = useState(false);
 
     const totalMinutes = duration === "2 Hours" ? 120 : 60;
-    const fromTime = getDefaultFromTime(session);
-    const toTime = calculateEndTime(fromTime, totalMinutes);
+    const isOptDepartment = getDepartmentFromToken() === "QPT";
+    const fromTime = getDefaultFromTime(session, isOptDepartment, totalMinutes);
+    const toTime = isOptDepartment && totalMinutes === 120
+        ? "17:30"
+        : calculateEndTime(fromTime, totalMinutes);
     const remainingMinutes = remainingPermission !== null ? remainingPermission * 60 : null;
 
     const handleSubmit = async (event) => {
