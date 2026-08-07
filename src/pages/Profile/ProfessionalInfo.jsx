@@ -27,7 +27,7 @@ const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
   const designation = faculty?.designation || "N/A";
   const department = faculty?.department || "N/A";
   const workType = faculty?.workType || "";
-  const employmentStatus = faculty?.employmentStatus;
+  const employmentStatus = faculty?.isActive;
   const isActive = employmentStatus === true;
 
   // Gather skills/specializations from various possible fields

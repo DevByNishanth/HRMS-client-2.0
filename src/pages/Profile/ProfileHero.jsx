@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { Camera, Edit3, Eye, EyeOff, Loader2, Trash2, X, Key } from "lucide-react";
+import {
+  Camera,
+  Edit3,
+  Eye,
+  EyeOff,
+  Loader2,
+  Trash2,
+  X,
+  Key,
+  Pen,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import ProfileImageUploadModal from "../../components/ProfileImageUploadModal";
 import { decodeToken, getTokenFromLocalStorage } from "../../utils/tokenUtils";
+import ResignPopup from "../../components/ResignPopup";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -12,14 +23,14 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
+  const fullName =
+    [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
 
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://sece-hrms-server.onrender.com";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
-
-
-  const isActive = faculty?.employmentStatus === true;
+  const isActive = faculty?.isActive === true;
   const designation = faculty?.designation || "";
   const department = faculty?.department || "";
   const empId = faculty?.empId || "";
@@ -104,15 +115,15 @@ const API_BASE_URL =
     }
   };
 
-
-
   const handleDeleteImage = async () => {
     if (!faculty?._id) return;
     setDeleting(true);
     try {
       const token = getTokenFromLocalStorage();
       await axios.delete(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${faculty._id}/profile-image`,
+        `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${
+          faculty._id
+        }/profile-image`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       setShowDeleteConfirm(false);
@@ -122,6 +133,14 @@ const API_BASE_URL =
     } finally {
       setDeleting(false);
     }
+  };
+  const token = getTokenFromLocalStorage();
+  let decoded = decodeToken(token);
+  const isadmin = decoded?.role === "admin";
+  const [showResignConfirm, setShowResignConfirm] = useState(false);
+
+  const onResignClick = () => {
+    setShowResignConfirm(true);
   };
 
   return (
@@ -182,6 +201,23 @@ const API_BASE_URL =
               >
                 {isActive ? "Active" : "Inactive"}
               </span>
+
+              {isActive && (
+                <>
+                  {isadmin && (
+                    <button
+                      type="button"
+                      onClick={onResignClick}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#2563EB] text-white shadow-lg transition hover:bg-[#1d4ed8]"
+                    >
+                      <Pen
+                        size={16}
+                        className="text-[#8ca1bd] transition hover:text-white"
+                      />
+                    </button>
+                  )}
+                </>
+              )}
             </div>
             <p className="mt-1 text-[15px] font-medium text-[#c9d7f2]">
               {designation}
@@ -195,21 +231,21 @@ const API_BASE_URL =
         {canEdit && (
           <div className="flex flex-wrap items-center gap-3">
             <button
-            type="button"
-            onClick={onEdit}
-            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
-          >
-            <Edit3 size={13} />
-            Edit Profile
-          </button>
+              type="button"
+              onClick={onEdit}
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            >
+              <Edit3 size={13} />
+              Edit Profile
+            </button>
             <button
-            type="button"
-            onClick={()=>setIsPasswordModalOpen(true)}
-            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
-          >
-            <Key size={13} />
-            Change password
-          </button>
+              type="button"
+              onClick={() => setIsPasswordModalOpen(true)}
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            >
+              <Key size={13} />
+              Change password
+            </button>
           </div>
         )}
       </section>
@@ -236,7 +272,9 @@ const API_BASE_URL =
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                   Confirmation
                 </p>
-                <h2 className="mt-1 text-[18px] font-semibold text-white">Delete Profile Photo</h2>
+                <h2 className="mt-1 text-[18px] font-semibold text-white">
+                  Delete Profile Photo
+                </h2>
               </div>
               <button
                 type="button"
@@ -248,7 +286,8 @@ const API_BASE_URL =
             </div>
             <div className="px-5 py-4">
               <p className="text-[13px] leading-5 text-[#cad7eb]">
-                Are you sure you want to delete your profile photo? This action cannot be undone.
+                Are you sure you want to delete your profile photo? This action
+                cannot be undone.
               </p>
             </div>
             <div className="flex justify-end gap-3 px-5 pb-4">
@@ -276,11 +315,8 @@ const API_BASE_URL =
               </button>
             </div>
           </div>
-      </section>
-
-        )}
-
-       
+        </section>
+      )}
 
       {isPasswordModalOpen && (
         <div
@@ -420,10 +456,17 @@ const API_BASE_URL =
                 ) : (
                   "Change password"
                 )}
-               </button>
+              </button>
             </div>
           </div>
         </div>
+      )}
+
+      {showResignConfirm && (
+        <ResignPopup
+          facultyId={faculty?._id}
+          onClose={() => setShowResignConfirm(false)}
+        />
       )}
     </>
   );

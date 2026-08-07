@@ -160,6 +160,18 @@ const LoginPage = () => {
 
       const data = await response.json().catch(() => null);
 
+      const isActive =
+        data?.isActive ??
+        data?.user?.isActive ??
+        data?.employee?.isActive ??
+        data?.staff?.isActive;
+
+      if (isActive === false) {
+        setApiError("This is not a valid email. Kindly contact HR Team.");
+        setIsLoading(false);
+        return;
+      }
+
       if (!response.ok) {
         const errorMessage =
           data?.message || data?.error || "Login failed. Please try again.";

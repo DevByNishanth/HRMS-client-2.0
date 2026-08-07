@@ -151,6 +151,7 @@ const FacultyManagementPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState("All");
   const [originalDepartmentFilter, setOriginalDepartmentFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("Active");
 
   const {
     isExportModalOpen,
@@ -280,6 +281,11 @@ const FacultyManagementPage = () => {
     [facultyMembers],
   );
 
+  const statusOptions = useMemo(
+  () => ["All", "Active", "Inactive"],
+  []
+);
+
   const filteredFaculty = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
 
@@ -307,13 +313,18 @@ const FacultyManagementPage = () => {
         faculty.originalDepartment === originalDepartmentFilter;
       const matchesType =
         typeFilter === "All" || faculty.employeeCategory === typeFilter;
+      const matchesStatus =
+        statusFilter === "All" ||
+        (statusFilter === "Active" && faculty.isActive) ||
+        (statusFilter === "Inactive" && !faculty.isActive);
 
       return (
         matchesSearch &&
         matchesRole &&
         matchesDepartment &&
         matchesOriginalDepartment &&
-        matchesType
+        matchesType &&
+        matchesStatus
       );
     });
   }, [
@@ -323,6 +334,7 @@ const FacultyManagementPage = () => {
     roleFilter,
     searchQuery,
     typeFilter,
+    statusFilter,
   ]);
 
   const handleFacultyCreated = () => {
@@ -461,16 +473,23 @@ const FacultyManagementPage = () => {
                     onChange={setTypeFilter}
                     options={typeOptions}
                   />
+                  <SelectFilter
+                    label="Status"
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    options={statusOptions}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleExportClick}
+                    disabled={filteredFaculty.length === 0}
+                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleExportClick}
-                  disabled={filteredFaculty.length === 0}
-                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Download size={16} />
-                  Export
-                </button>
+                
               </div>
 
               <ExportPasswordModal
@@ -501,12 +520,13 @@ const FacultyManagementPage = () => {
                   <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
                     <tr>
                       <th className="py-3 pl-5 pr-4 font-semibold">Name</th>
-                      <th className="px-4 py-3 font-semibold">Emp ID</th>
+                      {/* <th className="px-4 py-3 font-semibold">Emp ID</th> */}
                       <th className="px-4 py-3 font-semibold">Designation</th>
                       <th className="px-4 py-3 font-semibold">Dept</th>
                       <th className="px-4 py-3 font-semibold">Original Dept</th>
                       <th className="px-4 py-3 font-semibold">Reporting To</th>
                       <th className="px-4 py-3 font-semibold">Type</th>
+                      <th className="px-4 py-3 font-semibold">Status</th>
                       <th className="px-4 py-3 text-right font-semibold">
                         Action
                       </th>
@@ -534,16 +554,22 @@ const FacultyManagementPage = () => {
                             className={`border-b border-[#132944] transition last:border-0 ${styles.row}`}
                           >
                             <td className={``}>
-                              <div className="flex items-center gap-3 pl-4">
-                                <FacultyAvatar faculty={faculty} name={name} />
-                                <span className="block truncate">{name}</span>
+                              <div className="flex flex-row items-center gap-3 pl-4">
+                                <div>
+                                  <FacultyAvatar faculty={faculty} name={name} />
+                                  </div>
+                                <div className="flex flex-col">
+                                  <span className="block truncate">{name}</span>
+                                  <span>{faculty.empId || "-"}</span>
+                                </div>
+                                
                               </div>
                             </td>
-                            <td className="px-4 py-3">
+                            {/* <td className="px-4 py-3">
                               <span className="block truncate">
                                 {faculty.empId || "-"}
                               </span>
-                            </td>
+                            </td> */}
                             <td className="px-4 py-3">
                               <span className="block truncate">
                                 {faculty.designation || "-"}
@@ -562,8 +588,8 @@ const FacultyManagementPage = () => {
                             <td className="px-4 py-3">
                               <span className="block truncate">
                                {faculty.reportingTo?.facultyId
-  ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
-  : "-"}</span>
+                                ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
+                                : "-"}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span
@@ -571,6 +597,13 @@ const FacultyManagementPage = () => {
                               >
                                 <span className="h-[4px] w-[4px] rounded-full bg-current" />
                                 {type}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`block truncate font-medium ${
+                                  faculty.isActive ? "text-[#12A38C]" : "text-red-500"
+                                }`}>
+                                {faculty.isActive ? "Active" : "Inactive"}
                               </span>
                             </td>
                             <td className="px-4 py-3">
@@ -584,27 +617,31 @@ const FacultyManagementPage = () => {
                                 >
                                   <Eye className="h-4 w-4" />
                                 </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingFaculty(faculty)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/60 transition hover:bg-[#3984ff24] hover:text-white"
-                                  aria-label={`Edit ${name}`}
-                                  title="Edit"
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setDeleteError("");
-                                    setDeletingFaculty(faculty);
-                                  }}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
-                                  aria-label={`Delete ${name}`}
-                                  title="Delete"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
+                                {faculty.isActive && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingFaculty(faculty)}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/60 transition hover:bg-[#3984ff24] hover:text-white"
+                                      aria-label={`Edit ${name}`}
+                                      title="Edit"
+                                    >
+                                      <Pencil className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setDeleteError("");
+                                        setDeletingFaculty(faculty);
+                                      }}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
+                                      aria-label={`Delete ${name}`}
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </button>
+                                  </>
+                                )}
                               </div>
                             </td>
                           </tr>

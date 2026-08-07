@@ -75,7 +75,7 @@ export default function AttendanceBody() {
     };
 
     return (
-        <main className="h-[calc(100vh-100px)] overflow-hidden bg-[#071425] px-4 py-4 text-white">
+        <main className="h-[calc(100vh-100px)] overflow-visible bg-[#071425] px-4 py-4 text-white">
             <div className="mx-auto h-full flex flex-col min-h-0">
                 <div>
                     <h1 className="text-xl font-medium text-white">

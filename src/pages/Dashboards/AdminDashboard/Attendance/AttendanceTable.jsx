@@ -291,7 +291,7 @@ export default function AttendanceTable() {
   };
 
   return (
-    <section className="mt-4 mb-4 rounded-xl border border-[#183052] bg-[#0a1a2d] flex flex-col h-[400px] overflow-hidden">
+    <section className="mt-4 mb-4 rounded-xl border border-[#183052] bg-[#0a1a2d] flex flex-col h-[400px] overflow-visible">
       <div className="p-4 border-b border-[#183052] flex flex-col gap-4 ">
         <div>
           <h1>Employee ({filteredData.length})</h1>
@@ -395,6 +395,7 @@ export default function AttendanceTable() {
           </div>
 
           <CustomDropdown
+          className="w-[150px]"
             value={department}
             placeholder="Department"
             options={[
@@ -408,6 +409,27 @@ export default function AttendanceTable() {
               "EEE",
               "Mech",
               "S&H",
+              "IT",
+              "HR",
+              "Chemistry",
+              "English",
+              "Maths",
+              "QPT",
+              "CFRD",
+              "IQAC",
+              "College Maintenance",
+              "Innovation",
+              "Electrical and Maintenance",
+              "Student Welfare",
+              "Transport",
+              "PRO",
+              "OFFICE",
+              "Media",
+              "Library",
+              "COE",
+              "IR",
+              "Placement",
+              "PD",
             ]}
             onChange={setDepartment}
           />
@@ -433,14 +455,14 @@ export default function AttendanceTable() {
             onChange={setShift}
           />
           <CustomDropdown
-            className="w-[200px]"
+            className="w-[160px]"
             value={checkInStatus}
             placeholder="Check In Status"
             options={["Present", "Not Checked In", "Leave", "Absent"]}
             onChange={setCheckInStatus}
           />
           <CustomDropdown
-            className="w-[200px]"
+            className="w-[160px]"
             value={lateCheckIn}
             placeholder="Late Check In"
             options={["Late Checked In", "Late Punch In"]}
