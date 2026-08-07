@@ -300,6 +300,9 @@ const LeaveTable = () => {
 
   // getting role from token 
   const role = getRoleFromToken()?.toLowerCase();
+  const isHod = role == "hod"
+// console.log("is hod : ", isHod)
+
 
   // states 
   const [selectedLeave, setSelectedLeave] = useState(null);
@@ -662,6 +665,16 @@ const LeaveTable = () => {
                           </button>
 
                           {leave.status === "Pending" && leave.currentApprovalLevel == "hod" && (
+                            <button
+                              type="button"
+                              onClick={() => setWithdrawLeave(leaveWithColor)}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-white"
+                              aria-label={`Withdraw ${leave.type}`}
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                            </button>
+                          )}
+                          {isHod == true && leave.status === "Pending" && leave.currentApprovalLevel == "principal" && (
                             <button
                               type="button"
                               onClick={() => setWithdrawLeave(leaveWithColor)}
