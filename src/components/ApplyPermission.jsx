@@ -88,12 +88,18 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
     const isQPT = department?.trim().toUpperCase() === "QPT";
 
     const fromTime = isQPT
-        ? "09:00"
+        ? session === "Afternoon"
+            ? "14:30"
+            : "09:00"
         : effectiveSlot?.fromTime || getDefaultFromTime(session);
     const toTime = isQPT
-        ? duration === "2 Hours"
-            ? "11:00"
-            : "10:00"
+        ? session === "Afternoon"
+            ? duration === "2 Hours"
+                ? "17:30"
+                : "15:30"
+            : duration === "2 Hours"
+                ? "11:00"
+                : "10:00"
         : effectiveSlot?.toTime || calculateEndTime(fromTime, totalMinutes);
     const remainingMinutes = remainingPermission !== null ? remainingPermission * 60 : null;
 
