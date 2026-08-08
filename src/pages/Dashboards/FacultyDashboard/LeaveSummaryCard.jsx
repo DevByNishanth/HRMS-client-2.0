@@ -4,7 +4,7 @@ const LeaveSummaryCard = ({ icon: Icon, title, code, used, total, color }) => {
   const percentage = total > 0 ? Math.min((used / total) * 100, 100) : 0;
 
   return (
-    <div className="rounded-lg border border-gray-800 bg-[#0A1929] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
+    <div className={`rounded-lg border border-gray-800 dark:border-none bg-[#0A1929]  p-4 shadow-[0_10px_30px_rgba(0,0,0,0.14)]`}>
       <div
         className="mb-5 flex h-8 w-8  items-center justify-center rounded-md"
         style={{ backgroundColor: `${color}22`, color }}

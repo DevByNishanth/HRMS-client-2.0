@@ -2,13 +2,15 @@
 // import logo from '../assets/logo.svg'
 import logo from '../assets/college_logo.png'
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, Network, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen,UserCheck } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, FileText, Network, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass, FingerprintPattern, UserPen, UserCheck, Sun, Moon } from "lucide-react";
 import { getRoleFromToken, logout } from '../utils/tokenUtils';
+import { useTheme } from '../hooks/useTheme';
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const role = getRoleFromToken()?.toLowerCase();
+    const { theme, toggleTheme } = useTheme();
 
     // Navigation items for Faculty
     const facultyNavItems = [
@@ -31,7 +33,7 @@ const Sidebar = () => {
         { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
         { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
         { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
-        ];
+    ];
 
     // Navigation items for Admin
     const adminNavItems = [
@@ -43,7 +45,7 @@ const Sidebar = () => {
         { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
         { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
         { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
-        { label: 'Teams', icon: Network , path: '/dashboard-admin/teams' },
+        { label: 'Teams', icon: Network, path: '/dashboard-admin/teams' },
     ];
 
     // Navigation items for Principal
@@ -151,7 +153,7 @@ const Sidebar = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`relative w-full flex items-center gap-2 text-white text-[18px] px-3 py-2 rounded-md transition font-semibold ${active
-                                    ? 'bg-[#0b2a73]/40 hover:bg-[#0d3a8f]'
+                                    ? 'bg-[#0b2a73]/40  hover:bg-[#0d3a8f]'
                                     : 'bg-transparent hover:bg-[#0b2a73]'
                                     }`}
                             >
@@ -165,6 +167,13 @@ const Sidebar = () => {
                     })}
                 </div>
                 <div className="btn-container absolute bottom-4 w-full px-4">
+                    <button
+                        onClick={toggleTheme}
+                        className="my-2 px-4 py-2 w-full bg-[#0b2a73] text-white rounded-md hover:bg-[#0d3a8f] flex items-center justify-center gap-2"
+                    >
+                        {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                        {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
+                    </button>
                     <button
                         onClick={() => {
                             logout();

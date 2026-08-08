@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import Sidebar from '../../../components/Siedbar'
 import CommonHeader from '../../../components/CommonHeader'
 import FacultyDashboardBody from './FacultyDashboardBody'
@@ -8,17 +8,17 @@ import { jwtDecode } from "jwt-decode";
 const FacultyDashboard = () => {
   // console.log("")
 
-   const [openDocumentUploadModal, setOpenDocumentUploadModal] = useState(false);
-    const token = localStorage.getItem("hrms_token");
-    useEffect(() => {
-      if (token) {
-        let decoded = jwtDecode(token);
-        if (decoded.isFirstTimeLogin) {
-          setOpenDocumentUploadModal(true);
-        }
+  const [openDocumentUploadModal, setOpenDocumentUploadModal] = useState(false);
+  const token = localStorage.getItem("hrms_token");
+  useEffect(() => {
+    if (token) {
+      let decoded = jwtDecode(token);
+      if (decoded.isFirstTimeLogin) {
+        setOpenDocumentUploadModal(true);
       }
-      return;
-    }, []);
+    }
+    return;
+  }, []);
   return (
     <>
       {openDocumentUploadModal && (

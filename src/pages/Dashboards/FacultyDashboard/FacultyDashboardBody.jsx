@@ -222,11 +222,10 @@ const FacultyRequestsPanel = () => {
             key={value}
             type="button"
             onClick={() => setSelectedRequestType(value)}
-            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${
-              selectedRequestType === value
+            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
                 ? "bg-[#2563EB] text-white"
                 : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
-            }`}
+              }`}
             title={label}
           >
             <Icon size={13} />
@@ -312,7 +311,7 @@ const FacultyDashboardBody = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setIsLeaveApplyModal(true)}
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] dark:bg-[#0d2643] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
             >
               <Plus size={14} />
               Apply Leave
