@@ -136,8 +136,14 @@ function getEmployeeId(employee) {
 }
 
 function getEmployeeDesignation(employee) {
-  // console.log("Employee:", employee);
-  return employee.department || "";
+  return (
+    employee.department ||
+    employee.departmentName ||
+    employee.designation ||
+    employee.facultyId?.department ||
+    employee.facultyId?.designation ||
+    ""
+  );
 }
 
 function getEmployeeDepartmentType(employee) {
@@ -229,18 +235,25 @@ function normalizeEmployees(payload) {
   return getEmployeeList(payload).map((employee, index) => {
     const attendance = normalizeAttendanceMap(employee);
 
-    return {
-      id: getEmployeeId(employee) || `employee-${index}`,
-      name: getEmployeeName(employee),
-      department: getEmployeeDepartmentType(employee),
-      designation: getEmployeeDesignation(employee),
-      attendance,
-      summary:
-        employee.summary ||
-        employee.totals ||
-        employee.counts ||
-        calculateSummary(attendance),
-    };
+  return {
+  id: getEmployeeId(employee),
+  name: getEmployeeName(employee),
+  department: getEmployeeDepartmentType(employee),
+  punchId:
+    employee.punchId ||
+    employee.punchID ||
+    employee.facultyId?.punchId ||
+    "",
+  designation: getEmployeeDesignation(employee),
+  attendance,
+  summary:
+    employee.summary ||
+    employee.totals ||
+    employee.counts ||
+    calculateSummary(attendance),
+};
+
+
   });
 }
 
@@ -326,14 +339,15 @@ export default function AttendanceManagement() {
       year: "numeric",
     },
   );
-
   const departmentOptions = useMemo(() => {
-    const types = employees
-      .map((employee) => getEmployeeDepartmentType(employee))
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b));
+    console.log("Employees:", employees);
 
-    return Array.from(new Set(types));
+    const departmentsSet = new Set(
+      employees
+        .map((employee) => getEmployeeDepartmentType(employee))
+        .filter(Boolean),
+    );
+    return Array.from(departmentsSet);
   }, [employees]);
 
   const visibleEmployees = useMemo(() => {
@@ -357,22 +371,30 @@ export default function AttendanceManagement() {
   }, [employees, searchTerm, selectedDepartment]);
 
   function exportToExcel() {
-    const headerRow = [
-      "Employee",
-      ...dates.map((date) => `${date.day}-${date.weekday}`),
-      ...summaryColumns,
-    ];
+   const headerRow = [
+  "Employee ID",
+  "Employee Name",
+  "Department",
+  "Punch ID",
+  ...dates.map((date) => `${date.day}-${date.weekday}`),
+  ...summaryColumns,
+];
 
-    const dataRows = visibleEmployees.map((employee) => {
-      const row = [
-        `${employee.name} [${employee.id}]`,
-        ...dates.map(
-          (date) => getAttendanceStatus(employee.attendance, date).status,
-        ),
-        ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
-      ];
-      return row;
-    });
+
+  const dataRows = visibleEmployees.map((employee) => {
+  const row = [
+    employee.id,
+    employee.name,
+    employee.department,
+    employee.punchId || "",
+    ...dates.map(
+      (date) => getAttendanceStatus(employee.attendance, date).status
+    ),
+    ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
+  ];
+
+  return row;
+});
 
     // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([
@@ -424,6 +446,7 @@ export default function AttendanceManagement() {
           },
         );
         const data = await response.json().catch(() => null);
+        console.log("Attendance API Response:", data);
 
         if (!response.ok) {
           throw new Error(
@@ -510,31 +533,23 @@ export default function AttendanceManagement() {
                 <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Role</span>
                   <select
-                    value={selectedDepartment}
-                    onChange={(event) =>
-                      setSelectedDepartment(event.target.value)
-                    }
-                    className={`${toolbarInputBase} pr-10`}
-                  >
-                    <option
-                      value=""
-                      disabled
-                      hidden
-                      style={{ display: "none" }}
-                      className="bg-[#071425] text-white text-[#9ca3af]"
-                    >
-                      Department
-                    </option>
-                    {departmentOptions.map((department) => (
-                      <option
-                        className="bg-[#071425] text-white"
-                        value={department}
-                        key={department}
-                      >
-                        {department}
-                      </option>
-                    ))}
-                  </select>
+  value={selectedDepartment}
+  onChange={(e) => setSelectedDepartment(e.target.value)}
+  className={`${toolbarInputBase} pr-10`}
+>
+  <option value="">All Departments</option>
+
+  {departmentOptions.map((department) => (
+    <option
+      key={department}
+      value={department}
+      className="bg-[#071425] text-white"
+    >
+      {department}
+    </option>
+  ))}
+</select>
+
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
 

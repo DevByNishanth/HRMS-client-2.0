@@ -2,31 +2,31 @@ import { useState, useEffect, useMemo } from "react";
 import { Clock3, FileText, Send, X } from "lucide-react";
 import CustomDatePicker from "./CustomDatePicker";
 import CustomDropdown from "./CustomDropdown";
-import { getFacultyIdFromToken, getTokenFromLocalStorage } from "../utils/tokenUtils";
+import { getDepartmentFromToken, getFacultyIdFromToken, getTokenFromLocalStorage } from "../utils/tokenUtils";
 
 const sessionOptions = ["Forenoon", "Afternoon"];
 const durationOptions = ["1 Hour", "2 Hours"];
 const permissionTypeOptions = ["Personal", "Official", "Medical", "Urgent"];
 
 const slotDefinitions = {
-  Forenoon: {
-    "1 Hour": [
-      { label: "8:40 AM - 9:40 AM", key: "8:40-9:40", fromTime: "08:40", toTime: "09:40" },
-      { label: "9:40 AM - 10:40 AM", key: "9:40-10:40", fromTime: "09:40", toTime: "10:40" },
-    ],
-    "2 Hours": [
-      { label: "8:40 AM - 10:40 AM", key: "8:40-10:40", fromTime: "08:40", toTime: "10:40" },
-    ],
-  },
-  Afternoon: {
-    "1 Hour": [
-      { label: "2:10 PM - 3:10 PM", key: "14:10-15:10", fromTime: "14:10", toTime: "15:10" },
-      { label: "3:10 PM - 4:10 PM", key: "15:10-16:10", fromTime: "15:10", toTime: "16:10" },
-    ],
-    "2 Hours": [
-      { label: "2:10 PM - 4:10 PM", key: "14:10-16:10", fromTime: "14:10", toTime: "16:10" },
-    ],
-  },
+    Forenoon: {
+        "1 Hour": [
+            { label: "8:40 AM - 9:40 AM", key: "8:40-9:40", fromTime: "08:40", toTime: "09:40" },
+            { label: "9:40 AM - 10:40 AM", key: "9:40-10:40", fromTime: "09:40", toTime: "10:40" },
+        ],
+        "2 Hours": [
+            { label: "8:40 AM - 10:40 AM", key: "8:40-10:40", fromTime: "08:40", toTime: "10:40" },
+        ],
+    },
+    Afternoon: {
+        "1 Hour": [
+            { label: "2:10 PM - 3:10 PM", key: "14:10-15:10", fromTime: "14:10", toTime: "15:10" },
+            { label: "3:10 PM - 4:10 PM", key: "15:10-16:10", fromTime: "15:10", toTime: "16:10" },
+        ],
+        "2 Hours": [
+            { label: "2:10 PM - 4:10 PM", key: "14:10-16:10", fromTime: "14:10", toTime: "16:10" },
+        ],
+    },
 };
 
 const formatDateToString = (date) => {
@@ -76,19 +76,35 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
     const availableSlots = slotDefinitions[session]?.[duration] || [];
 
     const effectiveSlot = useMemo(() => {
-      if (!selectedSlotKey || !availableSlots.some(s => s.key === selectedSlotKey)) {
-        return availableSlots[0];
-      }
-      return availableSlots.find(s => s.key === selectedSlotKey);
+        if (!selectedSlotKey || !availableSlots.some(s => s.key === selectedSlotKey)) {
+            return availableSlots[0];
+        }
+        return availableSlots.find(s => s.key === selectedSlotKey);
     }, [selectedSlotKey, availableSlots]);
 
     const totalMinutes = duration === "2 Hours" ? 120 : 60;
-    const fromTime = effectiveSlot?.fromTime || getDefaultFromTime(session);
-    const toTime = effectiveSlot?.toTime || calculateEndTime(fromTime, totalMinutes);
+
+    const department = getDepartmentFromToken();
+    const isQPT = department?.trim().toUpperCase() === "QPT";
+
+    const fromTime = isQPT
+        ? session === "Afternoon"
+            ? "14:30"
+            : "09:00"
+        : effectiveSlot?.fromTime || getDefaultFromTime(session);
+    const toTime = isQPT
+        ? session === "Afternoon"
+            ? duration === "2 Hours"
+                ? "17:30"
+                : "15:30"
+            : duration === "2 Hours"
+                ? "11:00"
+                : "10:00"
+        : effectiveSlot?.toTime || calculateEndTime(fromTime, totalMinutes);
     const remainingMinutes = remainingPermission !== null ? remainingPermission * 60 : null;
 
     useEffect(() => {
-      setSelectedSlotKey(null);
+        setSelectedSlotKey(null);
     }, [session, duration]);
 
     const handleSubmit = async (event) => {
@@ -131,7 +147,7 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                 facultyId,
                 permissionDate: formatDateToString(date),
                 permissionType,
-                slot: effectiveSlot?.key || "",
+                slot: isQPT ? "" : effectiveSlot?.key || "",
                 fromTime,
                 toTime,
                 totalMinutes,
@@ -295,20 +311,20 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                             </div>
                         </div>
 
-                        {/* Slot Selection - only visible for 1 Hour duration */}
+                        {/* Slot Selection - only visible for 1 Hour duration
                         {duration === "1 Hour" && availableSlots.length > 0 && (
-                          <CustomDropdown
-                            id="permission-slot"
-                            label="Time Slot"
-                            options={availableSlots.map(s => s.label)}
-                            value={effectiveSlot?.label || ""}
-                            onChange={(label) => {
-                              const slot = availableSlots.find(s => s.label === label);
-                              if (slot) setSelectedSlotKey(slot.key);
-                            }}
-                            placeholder="Select a time slot"
-                          />
-                        )}
+                            <CustomDropdown
+                                id="permission-slot"
+                                label="Time Slot"
+                                options={availableSlots.map(s => s.label)}
+                                value={effectiveSlot?.label || ""}
+                                onChange={(label) => {
+                                    const slot = availableSlots.find(s => s.label === label);
+                                    if (slot) setSelectedSlotKey(slot.key);
+                                }}
+                                placeholder="Select a time slot"
+                            />
+                        )} */}
 
                         <div className="rounded-lg border border-[#244061] bg-[#0d2138] p-4 text-[#cbd5e1]">
                             <p className="mb-2 text-[13px] font-semibold text-white">Time Summary</p>

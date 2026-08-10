@@ -47,6 +47,21 @@ export const getFacultyIdFromToken = () => {
   );
 };
 
+export const getDepartmentFromToken = () => {
+  const token = getTokenFromLocalStorage();
+  if (!token) return null;
+
+  const decoded = decodeToken(token);
+  if (!decoded) return null;
+
+  return (
+    decoded?.department ||
+    decoded?.dept ||
+    decoded?.Department ||
+    null
+  );
+};
+
 export const isTokenValid = () => {
   const token = getTokenFromLocalStorage();
   if (!token) return false;

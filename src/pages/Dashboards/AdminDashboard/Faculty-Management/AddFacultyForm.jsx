@@ -13,7 +13,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import CustomDatePicker from "../../../../components/CustomDatePicker";
+import FacultyDatePicker from "../../../../components/FacultyDatePicker";
 import userImg from "../../../../assets/userImg.svg";
 
 const API_BASE_URL =
@@ -740,7 +740,7 @@ const DateField = ({ id, label, required, value, onChange, placeholder, popupAli
       {label} {required && <span className="text-[#3984ff]">*</span>}
     </div>
     <div className={error ? "rounded-lg border border-[#f16868]" : ""}>
-      <CustomDatePicker
+      <FacultyDatePicker
         id={id}
         value={value}
         onChange={onChange}

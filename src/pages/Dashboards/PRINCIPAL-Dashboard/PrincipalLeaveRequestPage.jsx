@@ -31,6 +31,7 @@ import axios from "axios";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -136,6 +137,9 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
 
   const canRevoke =
     request.status === "Approved" || request.status === "Rejected";
+
+  const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
+  const doc = getLeaveSupportingDocument(request);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -294,6 +298,30 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
               {request.reason || "No reason provided"}
             </div>
           </div>
+
+          {requiresFile && (
+            <div className="mt-3">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+                <FileText size={15} className="text-[#3984ff]" />
+                Supporting Document
+              </p>
+              <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+                {doc ? (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#3984ff] transition hover:text-[#6ea1ff] hover:underline"
+                  >
+                    <FileText size={14} />
+                    View Document
+                  </a>
+                ) : (
+                  <span className="text-[#6f839f]">No document</span>
+                )}
+              </div>
+            </div>
+          )}
 
           {request.rejectionReason && (
             <div className="mt-3">
@@ -536,6 +564,107 @@ const ConfirmationPopup = ({
   );
 };
 
+// Bulk Approve Popup
+const BulkActionModal = ({
+  isOpen,
+  selectedCount,
+  remark,
+  onRemarkChange,
+  loading,
+  onClose,
+  onConfirm,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <section
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-[#020817]/60 px-4 backdrop-blur-[2px]"
+      onClick={loading ? undefined : onClose}
+    >
+      <div
+        className="w-full max-w-[460px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
+              Bulk Action
+            </p>
+            <h2 className="mt-1 text-[18px] font-semibold text-white">
+              Bulk Approve Leave Requests
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Close bulk action popup"
+          >
+            <X size={17} />
+          </button>
+        </div>
+
+        <div className="px-5 py-4">
+          <p className="text-[13px] leading-5 text-[#cad7eb]">
+            You have selected{" "}
+            <span className="font-semibold text-white">{selectedCount}</span>{" "}
+            leave request(s) for bulk approval.
+          </p>
+
+          {/* One remark for all the selected requests */}
+          <div className="mt-4">
+            <label
+              htmlFor="bulk-remark"
+              className="mb-2 block text-[13px] font-semibold text-white"
+            >
+              Remark (optional)
+            </label>
+            <input
+              id="bulk-remark"
+              type="text"
+              value={remark}
+              onChange={(event) => onRemarkChange(event.target.value)}
+              disabled={loading}
+              placeholder="Enter one remark for all the selected requests..."
+              className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={loading}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#18d3bf] px-4 text-[14px] font-semibold text-[#071425] transition hover:bg-[#14b8a6] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <div className="loader"></div>
+                Please wait...
+              </>
+            ) : (
+              <>
+                <Check size={15} />
+                Bulk Approve
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const PrincipalLeaveRequestPage = () => {
   const token = getTokenFromLocalStorage();
   let decodedData = decodeToken(token);
@@ -550,6 +679,13 @@ const PrincipalLeaveRequestPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
+
+  // ===== Bulk Approve / Reject state =====
+  const MAX_BULK_SELECTION = 10; // a user can select at most 10 requests
+  const [selectedIds, setSelectedIds] = useState([]); // _ids of checked rows
+  const [showBulkModal, setShowBulkModal] = useState(false); // show/hide the popup
+  const [bulkRemark, setBulkRemark] = useState(""); // one remark for all selected
+  const [bulkLoading, setBulkLoading] = useState(false); // loading while saving
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
@@ -705,6 +841,101 @@ const PrincipalLeaveRequestPage = () => {
     }
   };
 
+  // ===== Bulk Approve / Reject logic =====
+
+  // Check / uncheck one row (maximum 10 rows can be selected)
+  const handleRowSelect = (request) => {
+    const isSelected = selectedIds.includes(request._id);
+
+    if (isSelected) {
+      // Remove the row from the selection
+      setSelectedIds(selectedIds.filter((id) => id !== request._id));
+    } else {
+      // Stop if the user already selected 10 rows
+      if (selectedIds.length >= MAX_BULK_SELECTION) {
+        alert(
+          `You can select a maximum of ${MAX_BULK_SELECTION} leave requests at a time.`,
+        );
+        return;
+      }
+      // Add the row to the selection
+      setSelectedIds([...selectedIds, request._id]);
+    }
+  };
+
+  // Header checkbox -> select / unselect the first 10 Pending rows
+  const handleSelectAll = () => {
+    const pendingIds = filteredRequests
+      .filter((request) => request.status === "Pending")
+      .slice(0, MAX_BULK_SELECTION)
+      .map((request) => request._id);
+
+    const allSelected =
+      pendingIds.length > 0 &&
+      pendingIds.every((id) => selectedIds.includes(id));
+
+    if (allSelected) {
+      // Unselect those rows
+      setSelectedIds(selectedIds.filter((id) => !pendingIds.includes(id)));
+    } else {
+      // Select only the first 10 pending rows (max 10, no duplicates)
+      setSelectedIds(pendingIds);
+    }
+  };
+
+  // Open the bulk approve popup
+  const openBulkModal = () => {
+    if (selectedIds.length === 0) return;
+    setBulkRemark(""); // reset remark
+    setShowBulkModal(true);
+  };
+
+  // Close the popup (not allowed while the request is loading)
+  const closeBulkModal = () => {
+    if (bulkLoading) return;
+    setShowBulkModal(false);
+  };
+
+  // Send the selected leave ids + remark to the server
+  const handleBulkSubmit = async () => {
+    const token = getTokenFromLocalStorage();
+    if (!token) {
+      console.error("No auth token found. Please login again.");
+      return;
+    }
+    if (selectedIds.length === 0) return;
+
+    setBulkLoading(true);
+    try {
+      await axios.post(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/bulk-approve`,
+        {
+          leaveIds: selectedIds, // array of leave _ids
+          remarks: bulkRemark.trim(), // one remark for all the selected requests
+        },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      alert(
+        `${selectedIds.length} leave request(s) approved successfully.`,
+      );
+
+      // Reset the selection after success
+      setSelectedIds([]);
+      setBulkRemark("");
+      setShowBulkModal(false);
+      await fetchLeaveRequests(); // reload the table
+    } catch (error) {
+      console.error(
+        "Error in bulk action:",
+        error?.response?.data || error.message,
+      );
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   const handleReject = (request) => {
     setRejectReason("");
     setConfirmation({ action: "reject", request });
@@ -768,6 +999,15 @@ const PrincipalLeaveRequestPage = () => {
     const year = date.getUTCFullYear();
     return `${day}-${month}-${year}`;
   }
+
+  // Header checkbox state: true when the first 10 pending rows are all selected
+  const selectableIds = filteredRequests
+    .filter((request) => request.status === "Pending")
+    .slice(0, MAX_BULK_SELECTION)
+    .map((request) => request._id);
+  const allSelected =
+    selectableIds.length > 0 &&
+    selectableIds.every((id) => selectedIds.includes(id));
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
@@ -847,6 +1087,22 @@ const PrincipalLeaveRequestPage = () => {
                     options={statuses}
                   />
 
+                  {/* Bulk Approve button - appears only when rows are selected */}
+                  {selectedIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={openBulkModal}
+                      disabled={bulkLoading}
+                      className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#18d3bf33] bg-[#18d3bf12] px-3 text-[14px] font-medium text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <CheckCircle2 size={16} />
+                      Bulk Approve
+                      <span className="rounded-full bg-[#18d3bf] px-1.5 py-0.5 text-[11px] font-bold text-[#071425]">
+                        {selectedIds.length}
+                      </span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleExportClick}
@@ -871,8 +1127,19 @@ const PrincipalLeaveRequestPage = () => {
                 <table className="w-full min-w-[900px] border-collapse text-left">
                   <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
                     <tr>
+                      <th className="w-12 px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={allSelected}
+                          onChange={handleSelectAll}
+                          disabled={selectableIds.length === 0 || bulkLoading}
+                          title="Select first 10 pending requests"
+                          className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                        />
+                      </th>
                       <th className="px-4 py-3 font-semibold">Faculty Name</th>
                       <th className="px-4 py-3 font-semibold">Leave Type</th>
+                      <th className="px-4 py-3 font-semibold">Doc</th>
                       <th className="px-4 py-3 font-semibold">From</th>
                       <th className="px-4 py-3 font-semibold">To</th>
                       <th className="px-4 py-3 font-semibold">Duration</th>
@@ -884,11 +1151,34 @@ const PrincipalLeaveRequestPage = () => {
                   </thead>
                   <tbody className="text-[12px] text-[#cad7eb]">
                     {filteredRequests.length > 0 ? (
-                      filteredRequests.map((request, index) => (
+                      filteredRequests.map((request, index) => {
+                        const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
+                        const doc = getLeaveSupportingDocument(request);
+                        return (
                         <tr
                           key={`${request._id}-${index}`}
-                          className="border-b border-[#132944] last:border-0"
+                          className={`border-b border-[#132944] last:border-0 ${
+                            selectedIds.includes(request._id)
+                              ? "bg-[#18d3bf0d]"
+                              : ""
+                          }`}
                         >
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.includes(request._id)}
+                              onChange={() => handleRowSelect(request)}
+                              disabled={
+                                request.status !== "Pending" || bulkLoading
+                              }
+                              title={
+                                request.status !== "Pending"
+                                  ? "Only pending requests can be selected"
+                                  : "Select this request"
+                              }
+                              className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                            />
+                          </td>
                           <td className="px-4 py-3 font-semibold text-white">
                             <div className="flex items-center gap-2">
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
@@ -907,6 +1197,28 @@ const PrincipalLeaveRequestPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             {request.leaveTypeId?.leaveName}
+                          </td>
+                          <td className="px-4 py-3">
+                            {requiresFile ? (
+                              doc ? (
+                                <a
+                                  href={doc.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="View document"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                                >
+                                  <FileText className="h-4 w-4" />
+                                </a>
+                              ) : (
+                                <span
+                                  title="No document uploaded"
+                                  className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                                >
+                                  <FileText className="h-4 w-4" />
+                                </span>
+                              )
+                            ) : null}
                           </td>
                           <td className="px-4 py-3">
                             {formatDate(request.fromDate)}
@@ -973,11 +1285,12 @@ const PrincipalLeaveRequestPage = () => {
                             </div>
                           </td>
                         </tr>
-                      ))
+                        );
+                      })
                     ) : (
                       <tr>
                         <td
-                          colSpan="7"
+                          colSpan="9"
                           className="px-4 py-8 text-center text-[#8ca1bd]"
                         >
                           No leave requests found matching your filters.
@@ -1008,6 +1321,17 @@ const PrincipalLeaveRequestPage = () => {
         onClose={closeConfirmation}
         onConfirm={handleConfirmAction}
         revokeLoading={revokeLoading}
+      />
+
+      {/* Bulk Approve Popup */}
+      <BulkActionModal
+        isOpen={showBulkModal}
+        selectedCount={selectedIds.length}
+        remark={bulkRemark}
+        onRemarkChange={setBulkRemark}
+        loading={bulkLoading}
+        onClose={closeBulkModal}
+        onConfirm={handleBulkSubmit}
       />
     </div>
   );
