@@ -92,6 +92,18 @@ function getCellClass(
   return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
 }
 
+function getStatusText(value) {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") {
+    if (typeof value.status === "string") return value.status;
+    if (value.status && typeof value.status === "object") {
+      return value.status.status || "-";
+    }
+    return value.status || "-";
+  }
+  return "-";
+}
+
 function getEmployeeList(payload) {
   if (Array.isArray(payload)) return payload;
   if (Array.isArray(payload?.data)) return payload.data;
@@ -270,12 +282,16 @@ function normalizeEmployees(payload) {
   });
 }
 
+
+
 function getAttendanceStatus(attendance, date) {
   if (!attendance || typeof attendance !== "object") {
     return {
       status: "-",
       isOverridden: false,
       regularization: false,
+      inTime: null,
+      outTime: null,
     };
   }
 
@@ -286,6 +302,8 @@ function getAttendanceStatus(attendance, date) {
       status: "-",
       isOverridden: false,
       regularization: false,
+      inTime: null,
+      outTime: null,
     };
   }
 
@@ -294,10 +312,31 @@ function getAttendanceStatus(attendance, date) {
       status: value,
       isOverridden: false,
       regularization: false,
+      inTime: null,
+      outTime: null,
     };
   }
 
-  return value;
+  if (value && typeof value === "object") {
+    const nestedStatus =
+      value.status && typeof value.status === "object" ? value.status : value;
+
+    return {
+      status: nestedStatus.status || "-",
+      isOverridden: Boolean(nestedStatus.isOverridden),
+      regularization: Boolean(nestedStatus.regularization),
+      inTime: value.inTime ?? null,
+      outTime: value.outTime ?? null,
+    };
+  }
+
+  return {
+    status: "-",
+    isOverridden: false,
+    regularization: false,
+    inTime: null,
+    outTime: null,
+  };
 }
 
 export default function AttendanceManagementOverride() {
@@ -337,10 +376,11 @@ export default function AttendanceManagementOverride() {
     setIsSaving(true);
 
     try {
+      console.log("selected attendance : ", selectedAttendance)
       const { session1, session2 } = parseSessionsFromStatus(editedStatus);
       const payload = {
-        firstIn: `${selectedAttendance.date}T03:12:12.000Z`,
-        lastOut: `${selectedAttendance.date}T11:28:57.000Z`,
+        firstIn: selectedAttendance.inTime ,
+        lastOut: selectedAttendance.outTime ,
         session1,
         session2,
         remarks:
@@ -544,7 +584,7 @@ export default function AttendanceManagementOverride() {
         const year = effectiveYear;
 
         const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster/v1?month=${month}&year=${year}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-override/muster?month=${month}&year=${year}`,
           {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
             signal: controller.signal,
@@ -584,7 +624,9 @@ export default function AttendanceManagementOverride() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => navigate("/dashboard-admin/attendance-override")}
+                  onClick={() =>
+                    navigate("/dashboard-admin/attendance-override")
+                  }
                   className="inline-flex items-center  gap-2 rounded-lg  px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3b82f6] hover:bg-[#142c46]"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -786,6 +828,7 @@ export default function AttendanceManagementOverride() {
                       </td>
                     </tr>
                   )}
+                  -+
                   {!isLoading &&
                     visibleEmployees.map((employee, employeeIndex) => (
                       <tr key={employee.id}>
@@ -821,20 +864,22 @@ export default function AttendanceManagementOverride() {
                                   date: date.key,
                                   day: date.day,
                                   status: attendance.status,
+                                  inTime: attendance.inTime,
+                                  outTime: attendance.outTime,
                                 });
 
                                 setEditedStatus(attendance.status);
                                 setShowPopup(true);
                               }}
                               className={`${getCellClass(
-                                attendance.status,
+                                getStatusText(attendance.status),
                                 date.isWeekend,
                                 employeeIndex % 2 === 1,
                                 attendance.isOverridden,
                                 attendance.regularization,
                               )}  cursor-pointer hover:brightness-110`}
                             >
-                              {attendance.status}
+                              {getStatusText(attendance.status)}
                             </td>
                           );
                         })}
@@ -873,9 +918,11 @@ export default function AttendanceManagementOverride() {
           <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
             <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Attendance Details</h2>
-              <X className="cursor-pointer" onClick={() => setShowPopup(false)} />
+              <X
+                className="cursor-pointer"
+                onClick={() => setShowPopup(false)}
+              />
             </header>
-
             <section className="px-4 py-2">
               <p className="">
                 <strong> Employee:</strong> {selectedAttendance.employee}
