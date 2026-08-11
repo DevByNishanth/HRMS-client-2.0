@@ -7,13 +7,15 @@ import ProfessionalInfo from "./ProfessionalInfo";
 import ProfileHero from "./ProfileHero";
 import ProfileEditDrawer from "./ProfileEditDrawer";
 import ReportingManagerCard from "./ReportingManagerCard";
+import AttendanceTable from "../Dashboards/FacultyDashboard/AttendanceTable";
+import LeaveTable from "../Dashboards/FacultyDashboard/LeaveTable";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 // ? tab data ================== 
 const tabData = [
   { label: "Personal details", icon: User },
-  // { label: "Attendance", icon: CalendarCheck },
-  // { label: "Leaves", icon: CalendarDays },
+  { label: "Attendance", icon: CalendarCheck },
+  { label: "Leaves", icon: CalendarDays },
 ]
 
 
@@ -151,13 +153,23 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
         </div>
 
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 px-6">
-          <PersonalDetails canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(0)} faculty={faculty} />
-          <ProfessionalInfo canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(1)} faculty={faculty} />
-          <ReportingManagerCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(4)} faculty={faculty} />
-          <DocumentsCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(3)} faculty={faculty} />
-          <EducationQualifications canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(2)} faculty={faculty} />
-        </div>
+        {selectedTab === "Attendance" ? (
+          <div className="px-6">
+            <AttendanceTable />
+          </div>
+        ) : selectedTab === "Leaves" ? (
+          <div className="px-6">
+            <LeaveTable />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 px-6">
+            <PersonalDetails canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(0)} faculty={faculty} />
+            <ProfessionalInfo canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(1)} faculty={faculty} />
+            <ReportingManagerCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(4)} faculty={faculty} />
+            <DocumentsCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(3)} faculty={faculty} />
+            <EducationQualifications canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(2)} faculty={faculty} />
+          </div>
+        )}
       </div>
 
       {isEditOpen && (
