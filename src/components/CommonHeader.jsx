@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { Search, Bell, Settings, UserRound, Calendar } from "lucide-react";
+import { UserRound, KeyRound } from "lucide-react";
 import { Link } from "react-router-dom";
+import ChangePasswordModal from "./ChangePasswordModal";
+
 const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
   let decoded = jwtDecode(token);
   // console.log(decoded);
+
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
+  const isAdmin = decoded.role === "admin" || decoded.role === "hr";
 
   return (
     <>
@@ -49,10 +56,30 @@ const CommonHeader = () => {
               />
             </Link>
           )}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setIsChangePasswordOpen(true)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#d7e3ff] transition hover:bg-[#ffffff13] hover:text-white"
+              title="Change password"
+              aria-label="Change password"
+            >
+              <KeyRound
+                size={16}
+                className="text-[#d7e3ff] hover:text-white transition"
+              />
+            </button>
+          )}
         </div>
 
         {/* Profile */}
       </div>
+
+      {isChangePasswordOpen && (
+        <ChangePasswordModal
+          onClose={() => setIsChangePasswordOpen(false)}
+        />
+      )}
     </>
   );
 };
