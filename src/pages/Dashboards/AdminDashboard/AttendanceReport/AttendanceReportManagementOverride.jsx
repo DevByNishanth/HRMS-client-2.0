@@ -355,6 +355,151 @@ function getAttendanceStatus(attendance, date) {
   return value;
 }
 
+function SessionDropdown({ label, value, onSelect, renderBalance }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showLeaveMenu, setShowLeaveMenu] = useState(false);
+  const [showODMenu, setShowODMenu] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+    setShowLeaveMenu(false);
+    setShowODMenu(false);
+  };
+
+  const selectOption = (sessionValue, leave, od) => {
+    onSelect(sessionValue, leave, od);
+    setIsOpen(false);
+  };
+
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-semibold">
+        {label}
+      </label>
+
+      <div className="relative">
+        <button
+          type="button"
+          onClick={toggleMenu}
+          className="flex w-full items-center justify-between rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-sm text-white outline-none"
+        >
+          <span className={`font-bold ${value ? "text-white" : "text-[#8fa3bf]"}`}>
+            {value || "Select"}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+            <div
+              className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+              onClick={() => selectOption("P", null, null)}
+            >
+              P
+            </div>
+
+            <div
+              className="relative"
+              onMouseEnter={() => setShowLeaveMenu(true)}
+              onMouseLeave={() => setShowLeaveMenu(false)}
+            >
+              <div
+                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[#173150] ${showLeaveMenu ? "bg-[#284472]" : ""}`}
+              >
+                <span>A</span>
+                <span>▶</span>
+              </div>
+
+              {showLeaveMenu && (
+                <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("A", "Medical Leave", null)}
+                  >
+                    ML
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("Medical Leave")}
+                    </span>
+                  </div>
+
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("A", "LOP", null)}
+                  >
+                    LOP
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("LOP")}
+                    </span>
+                  </div>
+
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("A", "CL", null)}
+                  >
+                    CL
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("CL")}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              className="relative"
+              onMouseEnter={() => setShowODMenu(true)}
+              onMouseLeave={() => setShowODMenu(false)}
+            >
+              <div
+                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[#173150] ${showODMenu ? "bg-[#284472]" : ""}`}
+              >
+                <span>OD</span>
+                <span>▶</span>
+              </div>
+
+              {showODMenu && (
+                <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("OD", null, "Official")}
+                  >
+                    OD-O
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("On Duty - Official")}
+                    </span>
+                  </div>
+
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("OD", null, "Exam")}
+                  >
+                    OD-E
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("On Duty - Exam")}
+                    </span>
+                  </div>
+
+                  <div
+                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    onClick={() => selectOption("OD", null, "Research")}
+                  >
+                    OD-R
+                    <span className="ml-2 text-sm font-semibold">
+                      {renderBalance("On Duty - Research")}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AttendanceManagementOverride() {
   const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -418,14 +563,6 @@ const fetchLeaveBalances = async (attendance) => {
 useEffect(() => {
   fetchLeaveBalances(selectedAttendance);
 }, [selectedAttendance]);
-
-useEffect(() => {
-  if (!editedStatus) return;
-  const { session1: defaultSession1, session2: defaultSession2 } =
-    parseSessionsFromStatus(editedStatus);
-  setSession1(defaultSession1);
-  setSession2(defaultSession2);
-}, [editedStatus]);
 
 function getLeaveBalanceRemaining(typeKey) {
   const key = String(typeKey || "").toLowerCase().trim();
@@ -506,6 +643,38 @@ function renderRemainingText(typeKey) {
   return typeof remaining === "number" ? remaining : "";
 }
 
+function renderSessionBalance(typeKey) {
+  if (leaveBalanceLoading) return "";
+  const remaining = renderRemainingText(typeKey);
+  return remaining === "" || remaining === null || remaining === undefined
+    ? ""
+    : `(${remaining})`;
+}
+
+function formatSessionLabel(session) {
+  if (session === "P") return "Present";
+  if (session === "A") return leaveType || "Absent";
+  if (session === "OD") return odType || "OD";
+  return "Select";
+}
+
+function getOverrideStatusText() {
+  if (session1 || session2) {
+    if (session1 === session2) {
+      if (session1 === "P") return "Present";
+      if (session1 === "A") return leaveType ? `Full day - ${leaveType}` : "Absent";
+      if (session1 === "OD") return odType ? `Full day OD - ${odType}` : "On Duty";
+      return "Select Status";
+    }
+    return `First half: ${formatSessionLabel(session1)} | Second half: ${formatSessionLabel(session2)}`;
+  }
+
+  if (editedStatus === "P") return "Present";
+  if (editedStatus === "A") return leaveType ? `Full day - ${leaveType}` : "Absent";
+  if (editedStatus === "OD") return odType ? `Full day OD - ${odType}` : "On Duty";
+  return "Select Status";
+}
+
   function getToggleStatus(status) {
     if (status === "A") return "P";
     if (status === "P") return "A";
@@ -513,16 +682,6 @@ function renderRemainingText(typeKey) {
     if (status === "P:A") return "A:P";
     return null;
   }
-
- function parseSessionsFromStatus(status) {
-  if (status === "A") return { session1: "A", session2: "A" };
-  if (status === "P") return { session1: "P", session2: "P" };
-  if (status === "OD") return { session1: "OD", session2: "OD" };
-  if (status === "A:P") return { session1: "A", session2: "P" };
-  if (status === "P:A") return { session1: "P", session2: "A" };
-
-  return { session1: "A", session2: "A" };
-}
 
 function getDisplayStatusFromSessions(session1, session2) {
   if (session1 === session2) return session1;
@@ -634,8 +793,8 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     setIsSaving(true);
 
     try {
-      const effectiveSession1 = session1 || "P";
-      const effectiveSession2 = session2 || "P";
+      const effectiveSession1 = session1 || editedStatus || "P";
+      const effectiveSession2 = session2 || editedStatus || "P";
       const effectiveStatus =
         effectiveSession1 === "OD" || effectiveSession2 === "OD"
           ? "OD"
@@ -700,8 +859,8 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
             employee.attendance?.[selectedAttendance.date] ??
             employee.attendance?.[String(selectedAttendance.day)];
           const displayStatus = getDisplayStatusFromSessions(
-            session1 || "P",
-            session2 || "P",
+            effectiveSession1,
+            effectiveSession2,
           );
           const overrideValue =
             currentValue && typeof currentValue === "object"
@@ -734,7 +893,15 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
       );
 
       setSelectedAttendance((prev) =>
-        prev ? { ...prev, status: editedStatus } : prev,
+        prev
+          ? {
+              ...prev,
+              status: getDisplayStatusFromSessions(
+                effectiveSession1,
+                effectiveSession2,
+              ),
+            }
+          : prev,
       );
       setShowPopup(false);
       setRemarks("");
@@ -1151,24 +1318,22 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                             <td
                               key={`${employee.id}-${date.key}`}
                               onClick={() => {
-                                const currentStatus = attendance.status;
-                                const options = ["P", "A", "OD"];
-                                const nextStatus = options.find(
-                                  (option) => option !== currentStatus,
-                                );
-
                                 setSelectedAttendance({
                                   employee: employee.name,
                                   empId: employee.id,
                                   empDbId: employee.dbId,
                                   date: date.key,
                                   day: String(date.day),
-                                  status: currentStatus,
+                                  status: attendance.status,
                                   inTime: attendance.inTime,
                                   outTime: attendance.outTime,
                                 });
 
-                                setEditedStatus(nextStatus || currentStatus);
+                                setEditedStatus("");
+                                setSession1("");
+                                setSession2("");
+                                setLeaveType("");
+                                setOdType("");
                                 setRemarks("");
                                 setRemarksError("");
                                 setShowPopup(true);
@@ -1275,19 +1440,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
       className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-white flex justify-between"
     >
 <span>
-  {session1 === session2
-    ? session1 === "P"
-      ? "Present"
-      : session1 === "A"
-      ? leaveType
-        ? `Full day - ${leaveType}`
-        : "Absent"
-      : session1 === "OD"
-      ? odType
-        ? `Full day OD - ${odType}`
-        : "On Duty"
-      : "Select Status"
-    : `First half: ${session1 === "A" ? leaveType || "Absent" : session1 === "OD" ? odType || "OD" : "Present"} | Second half: ${session2 === "A" ? leaveType || "Absent" : session2 === "OD" ? odType || "OD" : "Present"}`}
+  {getOverrideStatusText()}
 </span>
     </button>
 
@@ -1300,8 +1453,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     setEditedStatus("P");
     setLeaveType("");
     setOdType("");
-    setSession1("P");
-    setSession2("P");
     setIsOpen(false);
   }}
 >
@@ -1327,8 +1478,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   setEditedStatus("A");
   setLeaveType("CL");
   setOdType("");
-  setSession1("A");
-  setSession2("A");
   setIsOpen(false);
 }}
               >
@@ -1344,8 +1493,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                   setEditedStatus("A");
                   setLeaveType("LOP");
                   setOdType("");
-                  setSession1("A");
-                  setSession2("A");
                   setIsOpen(false);
                 }}
               >
@@ -1361,8 +1508,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   setEditedStatus("A");
   setLeaveType("Medical Leave");
   setOdType("");
-  setSession1("A");
-  setSession2("A");
   setIsOpen(false);
 }}
               >
@@ -1394,8 +1539,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   setEditedStatus("OD");
   setOdType("Research");
   setLeaveType("");
-  setSession1("OD");
-  setSession2("OD");
   setIsOpen(false);
 }}
       >
@@ -1411,8 +1554,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   setEditedStatus("OD");
   setOdType("Exam");
   setLeaveType("");
-  setSession1("OD");
-  setSession2("OD");
   setIsOpen(false);
 }}
       >
@@ -1428,8 +1569,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   setEditedStatus("OD");
   setOdType("Official");
   setLeaveType("");
-  setSession1("OD");
-  setSession2("OD");
   setIsOpen(false);
 }}
       >
@@ -1450,34 +1589,26 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 </div>
 
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold">
-                    First half
-                  </label>
-                  <select
-                    value={session1}
-                    onChange={(event) => setSession1(event.target.value)}
-                    className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-sm text-white outline-none"
-                  >
-                    <option value="P">Present (P)</option>
-                    <option value="A">Absent (A)</option>
-                    <option value="OD">On Duty (OD)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-semibold">
-                    Second half
-                  </label>
-                  <select
-                    value={session2}
-                    onChange={(event) => setSession2(event.target.value)}
-                    className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-sm text-white outline-none"
-                  >
-                    <option value="P">Present (P)</option>
-                    <option value="A">Absent (A)</option>
-                    <option value="OD">On Duty (OD)</option>
-                  </select>
-                </div>
+                <SessionDropdown
+                  label="Session1"
+                  value={session1}
+                  renderBalance={renderSessionBalance}
+                  onSelect={(sessionValue, leave, od) => {
+                    setSession1(sessionValue);
+                    if (leave) setLeaveType(leave);
+                    if (od) setOdType(od);
+                  }}
+                />
+                <SessionDropdown
+                  label="Session2"
+                  value={session2}
+                  renderBalance={renderSessionBalance}
+                  onSelect={(sessionValue, leave, od) => {
+                    setSession2(sessionValue);
+                    if (leave) setLeaveType(leave);
+                    if (od) setOdType(od);
+                  }}
+                />
               </div>
 
               <div>
