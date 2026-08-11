@@ -222,11 +222,10 @@ const FacultyRequestsPanel = () => {
             key={value}
             type="button"
             onClick={() => setSelectedRequestType(value)}
-            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${
-              selectedRequestType === value
-                ? "bg-[#2563EB] text-white"
-                : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
-            }`}
+            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
+              ? "bg-[#2563EB] text-white"
+              : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
+              }`}
             title={label}
           >
             <Icon size={13} />
@@ -297,14 +296,14 @@ const FacultyDashboardBody = () => {
   // console.log("decoded", decodedToken);
 
   return (
-    <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
+    <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] dark:bg-[#fafbfc] px-4 py-4 text-white dark:text-black">
       <div className="mx-auto">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-xl font-semibold leading-tight text-white">
+            <h1 className="text-xl font-semibold leading-tight text-white dark:text-black">
               Hello, {decodedToken?.firstName} {decodedToken?.lastName} !
             </h1>
-            <p className="mt-1 text-[13px] text-[#9eb0cc]">
+            <p className="mt-1 text-[13px] text-[#9eb0cc] dark:text-gray-800">
               Here's your weekly leave and attendance overview
             </p>
           </div>
@@ -312,14 +311,14 @@ const FacultyDashboardBody = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setIsLeaveApplyModal(true)}
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+              className="inline-flex h-10 w-fit dark:bg-[#07275A] px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
             >
               <Plus size={14} />
               Apply Leave
             </button>
             <button
               onClick={() => setIsPermissionApplyModal(true)}
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+              className="inline-flex h-10 w-fit px-4 items-center dark:bg-[#07275A] justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
             >
               <Plus size={14} />
               Apply Permission

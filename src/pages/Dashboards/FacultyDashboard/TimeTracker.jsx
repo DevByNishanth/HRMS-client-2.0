@@ -148,27 +148,27 @@ const TimeTracker = () => {
   // Decide ring color: green-ish when >= 100%, blue while in progress, red-ish when overtime > 10%
   const ringColor =
     progress >= 1 ? "#10b981"
-    : progress > 0.9 ? "#3f7dff"
-    : "#3f7dff";
+      : progress > 0.9 ? "#3f7dff"
+        : "#3f7dff";
 
   // jsx 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-[#183052] bg-[#0a1a2d] p-5">
+    <section className="flex h-full flex-col rounded-xl border border-[#183052] bg-[#0a1a2d] dark:border-gray-300 dark:shadow-lg dark:bg-white p-5">
       <div className="mb-8 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-white">Time Tracker</h2>
+        <h2 className="text-[16px] font-semibold text-white dark:text-black">Time Tracker</h2>
 
         {/* Day Filter Dropdown */}
         <div className="relative">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-1 rounded-full bg-[#102640] px-3 py-1 text-[14px] text-[#a9bddb] outline-none transition hover:bg-[#183052]"
+            className="flex items-center gap-1 rounded-full bg-[#102640] dark:bg-[#F0F7FF] px-3 py-1 text-[14px] text-[#a9bddb] dark:text-gray-700 outline-none transition hover:bg-[#183052] dark:hover:bg-[#d7e2f0]"
           >
             {selectedDay}
             <ChevronDown size={12} className={`transition ${isOpen ? "rotate-180" : ""}`} />
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+            <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] rounded-lg border border-[#244061] dark:border-gray-300 bg-[#0a1a2d] dark:bg-[#F0F7FF] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
               {daysOfWeek.map((day) => (
                 <button
                   key={day}
@@ -177,8 +177,8 @@ const TimeTracker = () => {
                     setIsOpen(false);
                   }}
                   className={`w-full px-3 py-2 text-left text-[13px] transition ${selectedDay === day
-                    ? "bg-[#2563EB] text-white font-semibold"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    ? "bg-[#2563EB] text-white  font-semibold"
+                    : "text-[#cad7eb] hover:bg-[#132b49] hover:dark:bg-gray-200 dark:text-black"
                     }`}
                 >
                   {day}
@@ -192,8 +192,8 @@ const TimeTracker = () => {
       <div className="flex flex-1 items-center justify-center">
         <div className="relative mx-auto flex h-[175px] w-[175px] items-center justify-center">
           {/* Static decorative rings */}
-          <div className="absolute inset-0 rounded-full border-[8px] border-dotted border-[#1d314c]" />
-          <div className="absolute inset-[6px] rounded-full border-[8px] border-[#1c3049]" />
+          <div className="absolute inset-0 rounded-full border-[8px] border-dotted border-[#1d314c] dark:border-[#B0CFFF] " />
+          <div className="absolute inset-[6px] rounded-full border-[8px] border-[#1c3049] dark:border-[#B0CFFF]" />
 
           {/* Live progress ring (SVG) */}
           <svg
@@ -208,7 +208,7 @@ const TimeTracker = () => {
               cx={CENTER}
               cy={CENTER}
               r={RADIUS}
-              stroke="#1c3049"
+              // stroke="#1c3049"
               strokeWidth={STROKE_WIDTH}
             />
             {/* Foreground progress arc */}
@@ -229,8 +229,8 @@ const TimeTracker = () => {
           </svg>
 
           {/* Center text */}
-          <div className="relative text-center">
-            <p className="text-[27px] font-bold leading-none text-white">{workingTime}</p>
+          <div className="relative text-center ">
+            <p className="text-[27px] font-bold leading-none text-white dark:text-black">{workingTime}</p>
             <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-[#8ca1bd]">
               Working Time
             </p>

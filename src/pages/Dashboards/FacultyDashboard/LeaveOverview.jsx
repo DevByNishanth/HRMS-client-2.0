@@ -6,24 +6,33 @@ import { jwtDecode } from "jwt-decode";
 
 const leaveConfig = {
   "Casual Leave": {
-    color: "#2f80ff",
+    color: "#3B82F6",
+    lightBg: "#3B82F6",
     icon: BriefcaseBusiness,
     code: "CL",
+    bg: "bg-[#0A1929]"
   },
   "Medical Leave": {
-    color: "#21d6c2",
+    color: "#3CD856",
     icon: Stethoscope,
     code: "ML",
+    bg: "bg-[#0A1929]",
+    lightBg: "#3CD856"
   },
   "On Duty - Official": {
-    color: "#f59d62",
+    color: "#BF83FF",
     icon: Plane,
     code: "OD",
+    bg: "bg-[#0A1929]",
+    lightIconBg: "#BF83FF",
+    lightBg: "#BF83FF"
   },
   "LOP": {
     color: "#e9673e",
     icon: CalendarMinus,
     code: "LOP",
+    bg: "bg-[#0A1929]",
+    lightBg: "#FF947A"
   },
 };
 
@@ -71,6 +80,9 @@ const LeaveOverview = () => {
         color: "#94a3b8",
         icon: FileText,
         code: "LV",
+        bg: "bg-[#0A1929]",
+        lightBg: leaveConfig[item.lightBg],
+        lightIconBg: leaveConfig[item.lightIconBg],
       };
 
       return {
@@ -80,6 +92,9 @@ const LeaveOverview = () => {
         total: (item.available || 0) + (item.used || 0),
         color: config.color,
         icon: config.icon,
+        bg: config.bg,
+        lightBg: config.lightBg,
+        lightIconBg: config.lightIconBg
       };
     });
 

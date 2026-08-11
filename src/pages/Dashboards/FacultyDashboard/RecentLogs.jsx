@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { canApplyRegularization } from "../../../utils/regularizationUtils";
 
 const statusStyles = {
-  Present: "text-[#18d3bf] bg-[#18d3bf1f]",
+  Present: "text-[#18d3bf] bg-[#18d3bf1f] dark:bg-[#EBF9F1] dark:text-[#1F9254]",
   "Partially Present": "text-[#f0a15f] bg-[#f0a15f1f]",
   "Second Half Leave": "text-[#f0a15f] bg-[#f0a15f1f]",
   Absent: "text-[#f16868] bg-[#f168681f]",
@@ -93,22 +93,22 @@ const RecentLogs = () => {
   }, []);
 
   return (
-    <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] ">
-      <div className="mb-4 flex items-center justify-between px-4 py-3">
-        <h2 className="text-[18px] font-semibold text-white">Recent Logs</h2>
+    <section className="rounded-xl border border-[#183052] dark:bg-transparent dark:border-none bg-[#0a1a2d]  ">
+      <div className="mb-4 dark:mb-0 flex items-center justify-between dark:px-0 px-4 py-3 dark:bg-transparent dark:rounded-t-2xl">
+        <h2 className="text-[18px] font-semibold text-white dark:text-black ">Recent Logs</h2>
         <Link to="/dashboard-faculty/attendance" className="cursor-pointer">
-          <button className="flex items-center gap-1 text-[13px] font-medium cursor-pointer text-[#3984ff]">
+          <button className="flex items-center gap-1 text-[13px] font-medium cursor-pointer text-[#3984ff] dark:text-black ">
             View All
             <ArrowRight size={16} />
           </button>
         </Link>
       </div>
 
-      <div className="h-[calc(100vh-340px)] overflow-y-auto table-custom-scrollbar">
+      <div className="h-[calc(100vh-340px)] overflow-y-auto dark:rounded-xl dark:border dark:border-gray-300 table-custom-scrollbar">
         <table className="w-full overflow-auto  border-collapse text-left">
-          <thead className="bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7] sticky top-0">
+          <thead className="bg-[#172c46] dark:bg-[#07275A] text-[12px] uppercase tracking-wide text-[#9aacc7] dark:text-white sticky top-0">
             <tr>
-              <th className="px-4 py-3 font-semibold">Date</th>
+              <th className="px-4 py-3 font-semibold ">Date</th>
               <th className="px-4 py-3 font-semibold">Check-In</th>
               <th className="px-4 py-3 font-semibold">Check-Out</th>
               <th className="px-4 py-3 font-semibold">Working Hours</th>
@@ -116,8 +116,8 @@ const RecentLogs = () => {
               <th className="px-4 py-3 text-right font-semibold">Regularization</th>
             </tr>
           </thead>
-          <tbody className="text-[12px] text-[#cad7eb] ">
-            {records.map((record) => {
+          <tbody className="text-[12px] text-[#cad7eb] dark:text-black dark:bg-white ">
+            {records.map((record, index) => {
               const isHoliday = record.status === "Holiday" || record.holidayName;
 
               if (isHoliday) {
@@ -134,15 +134,15 @@ const RecentLogs = () => {
               }
 
               return (
-                <tr key={record.attendanceId} className="border-b border-[#132944] last:border-0">
-                  <td className="px-4 py-4">{formatDateFromISO(record?.date)}</td>
-                  <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
-                  <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
-                  <td className={`px-4 py-4 font-semibold ${record.workingHours != null && Number(record.workingHours) < Number(record?.shift?.workingMinutes ?? 0) ? "text-red-500" : record.workingHours != null && record?.shift?.workingMinutes != null && Number(record.workingHours) > Number(record?.shift?.workingMinutes ?? 0) ? "text-green-400" : record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62]"}`}>
+                <tr key={record.attendanceId} className={`border-b border-[#132944] dark:border-none last:border-0 ${index % 2 == 0 ? "dark:bg-[#EDF4FF]" : ""}`}>
+                  <td className="px-4 py-4 dark:text-[14px] dark:font-medium">{formatDateFromISO(record?.date)}</td>
+                  <td className="px-4 py-4 dark:text-[14px] dark:font-medium">{formatTime(record.checkIn)}</td>
+                  <td className="px-4 py-4 dark:text-[14px] dark:font-medium">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
+                  <td className={`px-4 py-4 font-semibold ${record.workingHours != null && Number(record.workingHours) < Number(record?.shift?.workingMinutes ?? 0) ? "text-red-500" : record.workingHours != null && record?.shift?.workingMinutes != null && Number(record.workingHours) > Number(record?.shift?.workingMinutes ?? 0) ? "text-green-400 dark:text-green-600" : record.workingHours == null ? "text-[#f16868]" : "text-[#f59d62] dark:text-amber-500 "}`}>
                     {formatMinutesToHours(record.workingHours)}
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f]"}`}>
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] dark:text-[13px]  font-semibold ${statusStyles[record.status] || "text-[#f0a15f] bg-[#f0a15f1f] dark:bg-[#FEF2E5] dark:text-[#CD6200] "}`}>
                       <span className="h-[4px] w-[4px] rounded-full bg-current" />
                       {record.status}
                     </span>

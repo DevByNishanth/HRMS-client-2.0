@@ -9,7 +9,7 @@ const CommonHeader = () => {
   return (
     <>
       {/* <div className="w-full py-2.5 bg-[#001d3b] flex items-center justify-between px-4"> */}
-      <div className="w-full py-3 bg-[#0d2643] flex items-center justify-end px-4">
+      <div className="w-full py-3 bg-[#0d2643] dark:bg-[#EDF4FF] flex items-center justify-end px-4">
         {/* Search Bar */}
         {/* <div className="relative ml-auto mr-4">
           <Search
@@ -45,7 +45,7 @@ const CommonHeader = () => {
             >
               <UserRound
                 size={14}
-                className="text-[#d7e3ff] hover:text-white transition"
+                className="text-[#d7e3ff] dark:text-black hover:text-white transition"
               />
             </Link>
           )}

@@ -168,17 +168,17 @@ const AttendanceGauge = () => {
   const progress = (percentage / 100) * circumference;
   if (loading) {
     return (
-      <section className="flex h-full items-center justify-center rounded-xl border border-[#183052] bg-[#0a1a2d] p-5">
+      <section className="flex h-full items-center justify-center rounded-xl border border-[#183052] bg-[#0a1a2d] dark:border-gray-300 dark:shadow-lg dark:bg-white p-5">
         <p className="text-white">Loading...</p>
       </section>
     );
   }
 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-[#183052] bg-[#0a1a2d] p-5">
+    <section className="flex h-full flex-col rounded-xl border border-[#183052] bg-[#0a1a2d] dark:border-gray-300 dark:shadow-lg dark:bg-white p-5">
       {/* Header */}
       <div className="mb-7 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-white">
+        <h2 className="text-[16px] font-semibold text-white dark:text-black">
           Overall Attendance
         </h2>
 
@@ -188,7 +188,7 @@ const AttendanceGauge = () => {
             onClick={() =>
               setMonthDropdownOpen(!monthDropdownOpen)
             }
-            className="flex items-center gap-1 rounded-full bg-[#102640] px-3 py-1 text-[14px] text-[#a9bddb] transition hover:bg-[#1a3556]"
+            className="flex items-center gap-1 rounded-full bg-[#102640] dark:bg-[#F0F7FF] dark:text-gray-700 dark:hover:bg-[#d7e2f0]   px-3 py-1 text-[14px] text-[#a9bddb] transition hover:bg-[#1a3556]"
           >
             {MONTHS[selectedMonth]} {selectedYear}
 
@@ -200,7 +200,7 @@ const AttendanceGauge = () => {
           </button>
 
           {monthDropdownOpen && (
-            <div className="table-custom-scrollbar absolute right-0 top-full z-50 mt-1 h-[260px] w-40 overflow-auto rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg">
+            <div className="table-custom-scrollbar absolute right-0 top-full z-50 mt-1 h-[260px] w-40 overflow-auto rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg dark:border-gray-300 dark:bg-[#F0F7FF]  ">
               {MONTHS.map((month, idx) => (
                 <button
                   key={month}
@@ -211,7 +211,7 @@ const AttendanceGauge = () => {
                   }}
                   className={`w-full px-4 py-2 text-left text-[13px] transition ${idx === selectedMonth
                     ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    : "text-[#cad7eb] hover:bg-[#132b49] dark:hover:bg-gray-200 dark:text-black"
                     }`}
                 >
                   {month} {selectedYear}
@@ -225,12 +225,23 @@ const AttendanceGauge = () => {
       {/* Gauge */}
       <div className="flex flex-1 items-center justify-center">
         <div className="relative ">
-          <svg width="300" height="210" viewBox="0 0 200 110">
+          <svg
+            width="300"
+            height="210"
+            viewBox="0 0 200 110"
+            style={{
+              "--arc-bg": "#18314e",
+              "--arc-progress": "#4585ff",
+              "--dark-arc-bg": "#e5e7eb",
+              "--dark-arc-progress": "#2563eb",
+            }}
+          >
             {/* Background Arc */}
             <path
               d="M 30 90 A 70 70 0 0 1 170 90"
               fill="none"
-              stroke="#18314e"
+              stroke="var(--arc-bg)"
+              className="dark:[stroke:var(--dark-arc-bg)]"
               strokeWidth="15"
               strokeLinecap="round"
             />
@@ -239,7 +250,8 @@ const AttendanceGauge = () => {
             <path
               d="M 30 90 A 70 70 0 0 1 170 90"
               fill="none"
-              stroke="#4585ff"
+              stroke="var(--arc-progress)"
+              className="dark:[stroke:var(--dark-arc-progress)]"
               strokeWidth="15"
               strokeLinecap="round"
               strokeDasharray={`${progress} ${circumference}`}
@@ -247,11 +259,11 @@ const AttendanceGauge = () => {
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pt-8 ">
-            <p className="text-[28px] font-bold text-white">
+            <p className="text-[28px] font-bold text-white dark:text-black">
               {percentage.toFixed(1)}%
             </p>
 
-            <p className="text-[10px] font-bold uppercase text-[#8ca1bd]">
+            <p className="text-[10px] font-bold uppercase text-[#8ca1bd] dark:text-gray-500 ">
               {status}
             </p>
           </div>
