@@ -24,6 +24,8 @@ const SkillBadge = ({ children }) => (
 const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
   const empId = faculty?.empId || "N/A";
   const doj = formatDate(faculty?.doj);
+  const resignationDate = formatDate(faculty?.resignationDate);
+  const resignationReason = faculty?.resignationReason || "N/A";
   const designation = faculty?.designation || "N/A";
   const department = faculty?.department || "N/A";
   const workType = faculty?.workType || "";
@@ -74,6 +76,14 @@ const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
         <div className="border-b border-[#26344f] pb-3">
           <p className="text-[12px] font-medium text-[#8a9ab7]">Date of Joining</p>
           <p className="mt-1 text-[14px] font-medium text-white">{doj}</p>
+        </div>
+        <div className="border-b border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Date</p>
+          <p className="mt-1 text-[14px] font-medium text-white">{resignationDate}</p>
+        </div>
+        <div className="border-b border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Reason</p>
+          <p className="mt-1 text-[14px] font-medium text-white">{resignationReason}</p>
         </div>
 
         {workType && (
