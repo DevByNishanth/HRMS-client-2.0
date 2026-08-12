@@ -77,14 +77,19 @@ const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
           <p className="text-[12px] font-medium text-[#8a9ab7]">Date of Joining</p>
           <p className="mt-1 text-[14px] font-medium text-white">{doj}</p>
         </div>
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Date</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{resignationDate}</p>
-        </div>
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Reason</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{resignationReason}</p>
-        </div>
+
+        {!isActive && (
+          <>
+            <div className="border-b border-[#26344f] pb-3">
+              <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Date</p>
+              <p className="mt-1 text-[14px] font-medium text-white">{resignationDate}</p>
+            </div>
+            <div className="border-b border-[#26344f] pb-3">
+              <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Reason</p>
+              <p className="mt-1 text-[14px] font-medium text-white">{resignationReason}</p>
+            </div>
+          </>
+        )}
 
         {workType && (
           <div className="border-b border-[#26344f] pb-3">
