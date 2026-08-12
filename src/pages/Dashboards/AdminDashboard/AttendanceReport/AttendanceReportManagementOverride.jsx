@@ -97,7 +97,9 @@ function getTotalNumberOfDays(session1, session2) {
     (session1 === "A" && session2 === "P") ||
     (session1 === "P" && session2 === "A") ||
     (session1 === "OD" && session2 === "P") ||
-    (session1 === "P" && session2 === "OD")
+    (session1 === "P" && session2 === "OD") ||
+    (session1 === "A" && session2 === "OD") ||
+    (session1 === "OD" && session2 === "A")
   ) {
     return 0.5;
   }
@@ -958,6 +960,11 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
         payload,
       );
 
+      const displayStatus = getDisplayStatusFromSessions(
+        formatSessionValue(effectiveSession1, session1Detail),
+        formatSessionValue(effectiveSession2, session2Detail),
+      );
+
       await fetchLeaveBalances(selectedAttendance);
 
       setEmployees((prevEmployees) =>
@@ -967,10 +974,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
           const currentValue =
             employee.attendance?.[selectedAttendance.date] ??
             employee.attendance?.[String(selectedAttendance.day)];
-          const displayStatus = getDisplayStatusFromSessions(
-            effectiveSession1,
-            effectiveSession2,
-          );
           const overrideValue =
             currentValue && typeof currentValue === "object"
               ? {
@@ -996,7 +999,6 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
           return {
             ...employee,
             attendance: updatedAttendance,
-            summary: calculateSummary(updatedAttendance),
           };
         }),
       );
@@ -1005,10 +1007,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
         prev
           ? {
               ...prev,
-              status: getDisplayStatusFromSessions(
-                effectiveSession1,
-                effectiveSession2,
-              ),
+              status: displayStatus,
             }
           : prev,
       );
@@ -1539,6 +1538,8 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                 </div>
               </div>
 
+              {/* Override Status control intentionally hidden; status is set per session. */}
+              {/*
               <div>
   <label className="mb-2 block text-sm font-semibold">
     Override Status
@@ -1698,6 +1699,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     )}
   </div>
 </div>
+              */}
 
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <SessionDropdown
