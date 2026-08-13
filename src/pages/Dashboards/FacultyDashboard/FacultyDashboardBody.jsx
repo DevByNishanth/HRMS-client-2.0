@@ -352,7 +352,7 @@ const FacultyDashboardBody = () => {
             <div
               className={
                 isHod
-                  ? "col-span-12 min-h-0 xl:col-span-4"
+                  ? "col-span-12 min-h-0 xl:col-span-"
                   : "col-span-12 min-h-0 xl:col-span-4"
               }
             >
