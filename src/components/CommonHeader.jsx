@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { UserRound, KeyRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import ChangePasswordModal from "./ChangePasswordModal";
+import SearchBar from "./SearchBar";
 
 const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
@@ -46,15 +47,21 @@ const CommonHeader = () => {
           {decoded.role == "admin" || decoded.role == "principal" ? (
             ""
           ) : (
-            <Link
-              to={`/profile/${decoded?.facultyId}`}
-              className="text-[#d7e3ff] hover:text-white transition"
-            >
-              <UserRound
-                size={14}
+            <div className="flex items-center gap-6">
+              <div className="">
+                <SearchBar />
+              </div>
+              <Link
+                to={`/profile/${decoded?.facultyId}`}
                 className="text-[#d7e3ff] hover:text-white transition"
-              />
-            </Link>
+              >
+                <UserRound
+                  size={14}
+                  className="text-[#d7e3ff] hover:text-white transition"
+                />
+              </Link>
+            </div>
+
           )}
           {isAdmin && (
             <button
