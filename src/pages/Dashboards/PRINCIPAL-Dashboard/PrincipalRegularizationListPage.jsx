@@ -1,5 +1,6 @@
 import {
   Check,
+  CheckCheck,
   X,
   ChevronDown,
   Eye,
@@ -29,6 +30,7 @@ import {
 } from "../../../utils/tokenUtils";
 import axios from "axios";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import BulkApproveModal from "../../../components/BulkApproveModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 
@@ -40,6 +42,8 @@ const statusStyles = {
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
+
+const MAX_BULK_SELECTION = 10;
 
 // ---------- Detail Slide Panel ----------
 const formatDateDisplay = (dateString) => {
@@ -525,6 +529,10 @@ const PrincipalRegularizationListPage = () => {
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkApproveOpen, setIsBulkApproveOpen] = useState(false);
+  const [bulkApproveLoading, setBulkApproveLoading] = useState(false);
+  const [bulkApproveError, setBulkApproveError] = useState("");
 
   const statuses = ["All", "Approved", "Rejected", "Pending"];
 
@@ -727,6 +735,69 @@ const PrincipalRegularizationListPage = () => {
     }
   };
 
+  // ---------- Bulk Approval ----------
+  const selectableRows = filteredRequests
+    .filter((request) => request.status === "Pending")
+    .slice(0, MAX_BULK_SELECTION);
+
+  const allSelected =
+    selectableRows.length > 0 &&
+    selectableRows.every((request) => selectedIds.includes(request._id));
+
+  const handleSelect = (requestId) => {
+    setSelectedIds((prev) => {
+      if (prev.includes(requestId)) {
+        return prev.filter((id) => id !== requestId);
+      }
+      if (prev.length >= MAX_BULK_SELECTION) {
+        return prev;
+      }
+      return [...prev, requestId];
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(selectableRows.map((request) => request._id));
+    }
+  };
+
+  const openBulkApprove = () => {
+    setBulkApproveError("");
+    setIsBulkApproveOpen(true);
+  };
+
+  const handleBulkApprove = async (remarks) => {
+    const token = getTokenFromLocalStorage();
+    if (!token) {
+      setBulkApproveError("No auth token found. Please login again.");
+      return;
+    }
+
+    try {
+      setBulkApproveLoading(true);
+      setBulkApproveError("");
+      await axios.patch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/attendance-regularization/approve`,
+        { requestIds: selectedIds, approvalRemarks: remarks.trim() },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setSelectedIds([]);
+      setIsBulkApproveOpen(false);
+      await fetchRegularizationRequests();
+    } catch (error) {
+      setBulkApproveError(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to bulk approve regularization requests.",
+      );
+    } finally {
+      setBulkApproveLoading(false);
+    }
+  };
+
   // ---------- Helper ----------
   function formatDate(dateString) {
     if (!dateString) return "N/A";
@@ -868,6 +939,23 @@ const PrincipalRegularizationListPage = () => {
                     />
                   </label>
 
+                  {/* Bulk Approve */}
+                  {selectedIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={openBulkApprove}
+                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#18d3bf] px-3 text-[14px] font-medium text-[#071425] transition hover:bg-[#2ce8d4]"
+                    >
+                      <CheckCheck size={16} />
+                      Bulk Approve ({selectedIds.length})
+                    </button>
+                  )}
+                  {selectedIds.length >= MAX_BULK_SELECTION && (
+                    <span className="text-[12px] font-medium text-[#f0a15f]">
+                      Max {MAX_BULK_SELECTION} selected
+                    </span>
+                  )}
+
                   {/* Export */}
                   <button
                     type="button"
@@ -904,6 +992,17 @@ const PrincipalRegularizationListPage = () => {
                 <table className="w-full min-w-[900px] border-collapse text-left">
                   <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
                     <tr>
+                      <th className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={allSelected}
+                          onChange={handleSelectAll}
+                          disabled={selectableRows.length === 0}
+                          title="Select first 10 pending requests"
+                          aria-label="Select first 10 pending requests"
+                          className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                        />
+                      </th>
                       <th className="px-4 py-3 font-semibold">Faculty Name</th>
                       <th className="px-4 py-3 font-semibold">Date</th>
                       <th className="px-4 py-3 font-semibold">Session</th>
@@ -922,6 +1021,21 @@ const PrincipalRegularizationListPage = () => {
                           key={`${request._id}-${index}`}
                           className="border-b border-[#132944] last:border-0"
                         >
+                          <td className="px-4 py-3">
+                            {request.status === "Pending" ? (
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.includes(request._id)}
+                                onChange={() => handleSelect(request._id)}
+                                disabled={
+                                  selectedIds.length >= MAX_BULK_SELECTION &&
+                                  !selectedIds.includes(request._id)
+                                }
+                                aria-label={`Select regularization request of ${request.facultyId?.firstName || "faculty"}`}
+                                className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                              />
+                            ) : null}
+                          </td>
                           <td className="px-4 py-3 font-semibold text-white">
                             <div className="flex items-center gap-2">
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
@@ -1018,7 +1132,7 @@ const PrincipalRegularizationListPage = () => {
                     ) : (
                       <tr>
                         <td
-                          colSpan="7"
+                          colSpan="8"
                           className="px-4 py-8 text-center text-[#8ca1bd]"
                         >
                           No regularization requests found matching your
@@ -1055,6 +1169,18 @@ const PrincipalRegularizationListPage = () => {
         revokeLoading={revokeLoading}
         rejectLoading={rejectLoading}
       />
+
+      {/* Bulk Approve Popup */}
+      {isBulkApproveOpen && (
+        <BulkApproveModal
+          title="Bulk Approve Regularization Requests"
+          message={`Approve ${selectedIds.length} selected regularization request(s)?`}
+          onConfirm={handleBulkApprove}
+          onClose={() => setIsBulkApproveOpen(false)}
+          loading={bulkApproveLoading}
+          error={bulkApproveError}
+        />
+      )}
     </div>
   );
 };
