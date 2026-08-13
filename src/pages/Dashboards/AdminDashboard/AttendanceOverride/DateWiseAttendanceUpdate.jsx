@@ -143,6 +143,30 @@ export default function DateWiseAttendanceUpdate() {
         return 1;
     };
 
+    const getPayloadLeaveDetails = (session1, session2) => {
+        const selectedSession =
+            session1?.value && session1.value !== "P"
+                ? session1
+                : session2;
+
+        const leaveName = selectedSession?.leaveName ?? "Present";
+
+        return {
+            leaveTypeId: selectedSession?.leaveTypeId ?? null,
+            leaveName,
+            leaveType: leaveName,
+            academicYear:
+                selectedSession?.academicYear ?? getCurrentAcademicYear(),
+        };
+    };
+
+    const getSessionLeaveFields = (session, index) => ({
+        [`session${index}LeaveTypeId`]: session?.leaveTypeId ?? null,
+        [`session${index}LeaveName`]:
+            session?.leaveName ??
+            (session?.value === "P" ? "Present" : session?.value),
+    });
+
     useEffect(() => {
         if (!attendanceDate) return;
 
@@ -309,19 +333,20 @@ export default function DateWiseAttendanceUpdate() {
 
             const session1 = editedRows[employeeId]?.session1 ?? row.session1;
             const session2 = editedRows[employeeId]?.session2 ?? row.session2;
+            const leaveDetails = getPayloadLeaveDetails(session1, session2);
 
             const payload = {
                 firstIn: row.firstIn,
                 lastOut: row.lastOut,
                 session1: session1?.value ?? "P",
                 session2: session2?.value ?? "P",
+                ...getSessionLeaveFields(session1, 1),
+                ...getSessionLeaveFields(session2, 2),
                 remarks,
                 facultyId: row.facultyId,
-                leaveTypeId: session1?.leaveTypeId ?? session2?.leaveTypeId ?? null,
-                leaveName: session1?.leaveName ?? session2?.leaveName ?? "Present",
-                academicYear: session1?.academicYear ?? session2?.academicYear ?? getCurrentAcademicYear(),
+                ...leaveDetails,
                 leaveBalance: session1?.remainingDays ?? session2?.remainingDays ?? null,
-                totalNoOfDays: calculateLeaveDays(session1, session2),
+                totalNumberOfDays: calculateLeaveDays(session1, session2),
             };
 
             await updateAttendanceOverrideSingle(
@@ -358,6 +383,7 @@ export default function DateWiseAttendanceUpdate() {
                 );
                 const session1 = editedRows[employeeId]?.session1 ?? row?.session1;
                 const session2 = editedRows[employeeId]?.session2 ?? row?.session2;
+                const leaveDetails = getPayloadLeaveDetails(session1, session2);
 
                 return {
                     employeeId,
@@ -367,12 +393,12 @@ export default function DateWiseAttendanceUpdate() {
                     lastOut: row?.lastOut,
                     session1: session1?.value ?? "P",
                     session2: session2?.value ?? "P",
+                    ...getSessionLeaveFields(session1, 1),
+                    ...getSessionLeaveFields(session2, 2),
                     remarks,
-                    leaveTypeId: session1?.leaveTypeId ?? session2?.leaveTypeId ?? null,
-                    leaveName: session1?.leaveName ?? session2?.leaveName ?? "Present",
-                    academicYear: session1?.academicYear ?? session2?.academicYear ?? getCurrentAcademicYear(),
+                    ...leaveDetails,
                     leaveBalance: session1?.remainingDays ?? session2?.remainingDays ?? null,
-                    totalNoOfDays: calculateLeaveDays(session1, session2),
+                    totalNumberOfDays: calculateLeaveDays(session1, session2),
                 };
             });
 

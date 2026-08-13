@@ -453,8 +453,32 @@ export default function EmployeeWiseAttendanceUpdate() {
             return 0.5;
         }
 
-        return 1;
+        return session1?.value === session2?.value ? 1 : 0.5;
     };
+
+    const getPayloadLeaveDetails = (session1, session2) => {
+        const selectedSession =
+            session1?.value && session1.value !== "P"
+                ? session1
+                : session2;
+
+        const leaveName = selectedSession?.leaveName ?? "Present";
+
+        return {
+            leaveTypeId: selectedSession?.leaveTypeId ?? null,
+            leaveName,
+            leaveType: leaveName,
+            academicYear:
+                selectedSession?.academicYear ?? getCurrentAcademicYear(),
+        };
+    };
+
+    const getSessionLeaveFields = (session, index) => ({
+        [`session${index}LeaveTypeId`]: session?.leaveTypeId ?? null,
+        [`session${index}LeaveName`]:
+            session?.leaveName ??
+            (session?.value === "P" ? "Present" : session?.value),
+    });
 
     const normalizedLeaveCodeMap = Object.fromEntries(
         Object.entries({
@@ -975,6 +999,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 row.session1,
                                 row.session2
                             );
+                            const leaveDetails = getPayloadLeaveDetails(
+                                row.session1,
+                                row.session2
+                            );
                             await updateAttendanceOverrideSingle(
                                 row.employeeId,
                                 formatDateForApi(row.date),
@@ -984,22 +1012,16 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                                     session1: row.session1.value,
                                     session2: row.session2.value,
+                                    ...getSessionLeaveFields(row.session1, 1),
+                                    ...getSessionLeaveFields(row.session2, 2),
 
                                     remarks: formData.remarks,
 
                                     facultyId: selectedEmployee.facultyId,
 
-                                    leaveTypeId:
-                                        row.session1.leaveTypeId ??
-                                        row.session2.leaveTypeId,
+                                    ...leaveDetails,
 
-                                    leaveName:
-                                        row.session1.leaveName ??
-                                        row.session2.leaveName,
-
-                                    academicYear: getCurrentAcademicYear(),
-
-                                    totalNoOfDays,
+                                    totalNumberOfDays: totalNoOfDays,
                                 }
                             );
                             await loadLeaveBalance(selectedEmployee.facultyId);
@@ -1014,37 +1036,35 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                             const payload = {
                                 remarks: formData.remarks,
-                                updates: editedRecords.map((row) => ({
-                                    employeeId: row.employeeId,
-                                    facultyId: selectedEmployee.facultyId,
-                                    date: formatDateForApi(row.date),
-
-                                    firstIn: row.firstIn,
-                                    lastOut: row.lastOut,
-
-                                    session1: row.session1.value,
-                                    session2: row.session2.value,
-
-                                    remarks: formData.remarks,
-
-                                    leaveTypeId:
-                                        row.session1.leaveTypeId ??
-                                        row.session2.leaveTypeId,
-
-                                    leaveName:
-                                        row.session1.leaveName ??
-                                        row.session2.leaveName,
-
-                                    academicYear:
-                                        row.session1.academicYear ??
-                                        row.session2.academicYear ??
-                                        getCurrentAcademicYear(),
-
-                                    totalNoOfDays: calculateLeaveDays(
+                                updates: editedRecords.map((row) => {
+                                    const leaveDetails = getPayloadLeaveDetails(
                                         row.session1,
                                         row.session2
-                                    ),
-                                })),
+                                    );
+
+                                    return {
+                                        employeeId: row.employeeId,
+                                        facultyId: selectedEmployee.facultyId,
+                                        date: formatDateForApi(row.date),
+
+                                        firstIn: row.firstIn,
+                                        lastOut: row.lastOut,
+
+                                        session1: row.session1.value,
+                                        session2: row.session2.value,
+                                        ...getSessionLeaveFields(row.session1, 1),
+                                        ...getSessionLeaveFields(row.session2, 2),
+
+                                        remarks: formData.remarks,
+
+                                        ...leaveDetails,
+
+                                        totalNumberOfDays: calculateLeaveDays(
+                                            row.session1,
+                                            row.session2
+                                        ),
+                                    };
+                                }),
                             };
 
                             console.log(
@@ -1065,7 +1085,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                             const selectedRecords = filteredAttendance.filter(
                                 row => selectedRows.includes(row._id)
                             );
-                            const totalNoOfDays = calculateLeaveDays(
+                            const leaveDetails = getPayloadLeaveDetails(
                                 formData.session1,
                                 formData.session2
                             );
@@ -1082,23 +1102,14 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                                     session1: formData.session1.value,
                                     session2: formData.session2.value,
+                                    ...getSessionLeaveFields(formData.session1, 1),
+                                    ...getSessionLeaveFields(formData.session2, 2),
 
                                     remarks: formData.remarks,
 
-                                    leaveTypeId:
-                                        formData.session1.leaveTypeId ??
-                                        formData.session2.leaveTypeId,
+                                    ...leaveDetails,
 
-                                    leaveName:
-                                        formData.session1.leaveName ??
-                                        formData.session2.leaveName,
-
-                                    academicYear:
-                                        formData.session1.academicYear ??
-                                        formData.session2.academicYear ??
-                                        getCurrentAcademicYear(),
-
-                                    totalNoOfDays: calculateLeaveDays(
+                                    totalNumberOfDays: calculateLeaveDays(
                                         formData.session1,
                                         formData.session2
                                     ),

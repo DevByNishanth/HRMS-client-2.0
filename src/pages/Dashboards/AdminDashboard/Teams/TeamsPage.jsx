@@ -149,7 +149,9 @@ const TeamsPage = () => {
       const matchesDepartment =
         departmentFilter === "All" || faculty.department === departmentFilter;
 
-      return matchesSearch && matchesDepartment;
+      const isActive = faculty.isActive === true;
+
+      return matchesSearch && matchesDepartment && isActive;
     });
   }, [departmentFilter, facultyMembers, searchQuery]);
 

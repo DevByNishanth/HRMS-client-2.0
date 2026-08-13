@@ -29,7 +29,7 @@ export default function ResignPopup({ facultyId, onClose }) {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ resignDate, resignReason: reason }),
+          body: JSON.stringify({ date: resignDate, reason: reason.trim() }),
         },
       );
 
