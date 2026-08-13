@@ -683,7 +683,7 @@ const PrincipalLeaveRequestPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
+  // const [selectedIds, setSelectedIds] = useState([]);
   const [isBulkApproveOpen, setIsBulkApproveOpen] = useState(false);
   const [bulkApproveLoading, setBulkApproveLoading] = useState(false);
   const [bulkApproveError, setBulkApproveError] = useState("");
@@ -1020,13 +1020,13 @@ const PrincipalLeaveRequestPage = () => {
     });
   };
 
-  const handleSelectAll = () => {
-    if (allSelected) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(selectableRows.map((request) => request._id));
-    }
-  };
+  // const handleSelectAll = () => {
+  //   if (allSelected) {
+  //     setSelectedIds([]);
+  //   } else {
+  //     setSelectedIds(selectableRows.map((request) => request._id));
+  //   }
+  // };
 
   const openBulkApprove = () => {
     setBulkApproveError("");
@@ -1076,9 +1076,9 @@ const PrincipalLeaveRequestPage = () => {
     .filter((request) => request.status === "Pending")
     .slice(0, MAX_BULK_SELECTION)
     .map((request) => request._id);
-  const allSelected =
-    selectableIds.length > 0 &&
-    selectableIds.every((id) => selectedIds.includes(id));
+  // const allSelected =
+  //   selectableIds.length > 0 &&
+  //   selectableIds.every((id) => selectedIds.includes(id));
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#051424]">
