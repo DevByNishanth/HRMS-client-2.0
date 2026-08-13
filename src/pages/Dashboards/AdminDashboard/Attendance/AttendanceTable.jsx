@@ -146,7 +146,7 @@ export default function AttendanceTable() {
   useEffect(() => {
     fetchAttendanceData();
   }, [selectedEmployee, department, category, fromDate, toDate, checkInStatus, lateCheckIn]);
-  // console.log("selected", selectedEmployee);
+  console.log("selected", selectedEmployee);
   // console.log("fetchAttendanceData called");
   const fetchAttendanceData = async () => {
     try {
