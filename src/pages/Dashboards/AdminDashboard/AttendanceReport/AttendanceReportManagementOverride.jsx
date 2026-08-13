@@ -357,7 +357,7 @@ function getAttendanceStatus(attendance, date) {
   return value;
 }
 
-function SessionDropdown({ label, value, displayValue, onSelect, renderBalance }) {
+function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, error }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showLeaveMenu, setShowLeaveMenu] = useState(false);
   const [showODMenu, setShowODMenu] = useState(false);
@@ -383,7 +383,9 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance }
         <button
           type="button"
           onClick={toggleMenu}
-          className="flex w-full items-center justify-between rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-sm text-white outline-none"
+          className={`flex w-full items-center justify-between rounded-lg border bg-[#071425] p-2 text-left text-sm text-white outline-none ${
+            error ? "border-[#f87171]" : "border-[#173150]"
+          }`}
         >
           <span className={`font-bold ${value ? "text-white" : "text-[#8fa3bf]"}`}>
             {displayValue || value || "Select"}
@@ -498,6 +500,7 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance }
           </div>
         )}
       </div>
+      {error && <p className="mt-2 text-sm text-[#f87171]">{error}</p>}
     </div>
   );
 }
@@ -530,6 +533,8 @@ const [session1, setSession1] = useState("P");
 const [session2, setSession2] = useState("P");
 const [session1Detail, setSession1Detail] = useState(null);
 const [session2Detail, setSession2Detail] = useState(null);
+const [session1Error, setSession1Error] = useState("");
+const [session2Error, setSession2Error] = useState("");
 
 const fetchLeaveBalances = async (attendance) => {
   const selected = attendance || selectedAttendance;
@@ -814,6 +819,15 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   async function handleSaveStatus() {
     if (!selectedAttendance) return;
     // console.log("selectedAttendance", selectedAttendance);
+
+    const isSession1Missing = !session1;
+    const isSession2Missing = !session2;
+    setSession1Error(isSession1Missing ? "Session 1 is required." : "");
+    setSession2Error(isSession2Missing ? "Session 2 is required." : "");
+
+    if (isSession1Missing || isSession2Missing) {
+      return;
+    }
 
     if (!remarks.trim()) {
       setRemarksError("Remarks is required.");
@@ -1442,6 +1456,8 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                                 setSession2("");
                                 setSession1Detail(null);
                                 setSession2Detail(null);
+                                setSession1Error("");
+                                setSession2Error("");
                                 setLeaveType("");
                                 setOdType("");
                                 setRemarks("");
@@ -1703,12 +1719,14 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <SessionDropdown
-                  label="Session1"
+                  label="Session 1"
                   value={session1}
                   displayValue={getSessionButtonText(session1, session1Detail)}
                   renderBalance={renderSessionBalance}
+                  error={session1Error}
                   onSelect={(sessionValue, leave, od) => {
                     setSession1(sessionValue);
+                    setSession1Error("");
                     setSession1Detail(
                       leave ? { leave } : od ? { od } : null,
                     );
@@ -1717,12 +1735,14 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                   }}
                 />
                 <SessionDropdown
-                  label="Session2"
+                  label="Session 2"
                   value={session2}
                   displayValue={getSessionButtonText(session2, session2Detail)}
                   renderBalance={renderSessionBalance}
+                  error={session2Error}
                   onSelect={(sessionValue, leave, od) => {
                     setSession2(sessionValue);
+                    setSession2Error("");
                     setSession2Detail(
                       leave ? { leave } : od ? { od } : null,
                     );
