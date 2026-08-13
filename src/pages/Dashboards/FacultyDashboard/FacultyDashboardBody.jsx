@@ -21,6 +21,7 @@ import TimeTracker from "./TimeTracker";
 import ApplyLeaveForm from "../../../components/ApplyLeaveForm";
 import ApplyPermission from "../../../components/ApplyPermission";
 import { jwtDecode } from "jwt-decode";
+import Celebrations from "../../../components/Celebrations";
 
 const requestTabs = [
   { label: "Leave Requests", value: "leave", icon: FileText },
@@ -222,11 +223,10 @@ const FacultyRequestsPanel = () => {
             key={value}
             type="button"
             onClick={() => setSelectedRequestType(value)}
-            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${
-              selectedRequestType === value
-                ? "bg-[#2563EB] text-white"
-                : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
-            }`}
+            className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
+              ? "bg-[#2563EB] text-white"
+              : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
+              }`}
             title={label}
           >
             <Icon size={13} />
@@ -335,28 +335,37 @@ const FacultyDashboardBody = () => {
             <ActiveDayCalendar />
             <AttendanceGauge />
           </div>
+          <div className="recent-logs-section grid grid-cols-12 items-stretch gap-4">
 
-          <div
-            className={
-              isHod
-                ? "recent-logs-section grid grid-cols-12 gap-2"
-                : "recent-logs-section"
-            }
-          >
+            {/* Recent Logs */}
             <div
               className={
                 isHod
-                  ? "table-container col-span-12 xl:col-span-8"
-                  : "table-container"
+                  ? "col-span-12 min-h-0 xl:col-span-5"
+                  : "col-span-12 min-h-0 xl:col-span-8"
               }
             >
               <RecentLogs />
             </div>
+
+            {/* Celebrations */}
+            <div
+              className={
+                isHod
+                  ? "col-span-12 min-h-0 xl:col-span-4"
+                  : "col-span-12 min-h-0 xl:col-span-4"
+              }
+            >
+              <Celebrations />
+            </div>
+
+            {/* Faculty Requests */}
             {isHod && (
-              <div className="col-span-12 xl:col-span-4 ">
+              <div className="col-span-12 min-h-0 xl:col-span-3">
                 <FacultyRequestsPanel />
               </div>
             )}
+
           </div>
         </div>
       </div>
