@@ -1,5 +1,6 @@
 import {
   Check,
+  CheckCheck,
   X,
   ChevronDown,
   Eye,
@@ -29,6 +30,7 @@ import {
 } from "../../../utils/tokenUtils";
 import axios from "axios";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
+import BulkApproveModal from "../../../components/BulkApproveModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
 import { isFileUploadRequired, getLeaveSupportingDocument } from "../../../utils/leaveDocumentUtils";
@@ -41,6 +43,8 @@ const statusStyles = {
   Rejected: "text-[#f16868] bg-[#f168681f]",
   Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
 };
+
+const MAX_BULK_SELECTION = 10;
 
 const CustomDropdown = ({
   placeholder = "Select",
@@ -679,6 +683,10 @@ const PrincipalLeaveRequestPage = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [approvingId, setApprovingId] = useState(null);
   const [revokeLoading, setRevokeLoading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkApproveOpen, setIsBulkApproveOpen] = useState(false);
+  const [bulkApproveLoading, setBulkApproveLoading] = useState(false);
+  const [bulkApproveError, setBulkApproveError] = useState("");
 
   // ===== Bulk Approve / Reject state =====
   const MAX_BULK_SELECTION = 10; // a user can select at most 10 requests
@@ -991,6 +999,69 @@ const PrincipalLeaveRequestPage = () => {
     }
   };
 
+  // ---------- Bulk Approval ----------
+  const selectableRows = filteredRequests
+    .filter((request) => request.status === "Pending")
+    .slice(0, MAX_BULK_SELECTION);
+
+  const allSelected =
+    selectableRows.length > 0 &&
+    selectableRows.every((request) => selectedIds.includes(request._id));
+
+  const handleSelect = (requestId) => {
+    setSelectedIds((prev) => {
+      if (prev.includes(requestId)) {
+        return prev.filter((id) => id !== requestId);
+      }
+      if (prev.length >= MAX_BULK_SELECTION) {
+        return prev;
+      }
+      return [...prev, requestId];
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(selectableRows.map((request) => request._id));
+    }
+  };
+
+  const openBulkApprove = () => {
+    setBulkApproveError("");
+    setIsBulkApproveOpen(true);
+  };
+
+  const handleBulkApprove = async (remarks) => {
+    const token = getTokenFromLocalStorage();
+    if (!token) {
+      setBulkApproveError("No auth token found. Please login again.");
+      return;
+    }
+
+    try {
+      setBulkApproveLoading(true);
+      setBulkApproveError("");
+      await axios.post(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/bulk-approve`,
+        { leaveIds: selectedIds, remarks: remarks.trim() },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setSelectedIds([]);
+      setIsBulkApproveOpen(false);
+      await fetchLeaveRequests();
+    } catch (error) {
+      setBulkApproveError(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to bulk approve leave requests.",
+      );
+    } finally {
+      setBulkApproveLoading(false);
+    }
+  };
+
   function formatDate(dateString) {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -1087,20 +1158,20 @@ const PrincipalLeaveRequestPage = () => {
                     options={statuses}
                   />
 
-                  {/* Bulk Approve button - appears only when rows are selected */}
                   {selectedIds.length > 0 && (
                     <button
                       type="button"
-                      onClick={openBulkModal}
-                      disabled={bulkLoading}
-                      className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#18d3bf33] bg-[#18d3bf12] px-3 text-[14px] font-medium text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={openBulkApprove}
+                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#18d3bf] px-3 text-[14px] font-medium text-[#071425] transition hover:bg-[#2ce8d4]"
                     >
-                      <CheckCircle2 size={16} />
-                      Bulk Approve
-                      <span className="rounded-full bg-[#18d3bf] px-1.5 py-0.5 text-[11px] font-bold text-[#071425]">
-                        {selectedIds.length}
-                      </span>
+                      <CheckCheck size={16} />
+                      Bulk Approve ({selectedIds.length})
                     </button>
+                  )}
+                  {selectedIds.length >= MAX_BULK_SELECTION && (
+                    <span className="text-[12px] font-medium text-[#f0a15f]">
+                      Max {MAX_BULK_SELECTION} selected
+                    </span>
                   )}
 
                   <button
@@ -1127,7 +1198,7 @@ const PrincipalLeaveRequestPage = () => {
                 <table className="w-full min-w-[900px] border-collapse text-left">
                   <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
                     <tr>
-                      <th className="w-12 px-4 py-3">
+                      <th className="px-4 py-3">
                         <input
                           type="checkbox"
                           checked={allSelected}
@@ -1164,20 +1235,19 @@ const PrincipalLeaveRequestPage = () => {
                           }`}
                         >
                           <td className="px-4 py-3">
-                            <input
-                              type="checkbox"
-                              checked={selectedIds.includes(request._id)}
-                              onChange={() => handleRowSelect(request)}
-                              disabled={
-                                request.status !== "Pending" || bulkLoading
-                              }
-                              title={
-                                request.status !== "Pending"
-                                  ? "Only pending requests can be selected"
-                                  : "Select this request"
-                              }
-                              className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
-                            />
+                            {request.status === "Pending" ? (
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.includes(request._id)}
+                                onChange={() => handleSelect(request._id)}
+                                disabled={
+                                  selectedIds.length >= MAX_BULK_SELECTION &&
+                                  !selectedIds.includes(request._id)
+                                }
+                                aria-label={`Select leave request of ${request.facultyId?.firstName || "faculty"}`}
+                                className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                              />
+                            ) : null}
                           </td>
                           <td className="px-4 py-3 font-semibold text-white">
                             <div className="flex items-center gap-2">
@@ -1324,15 +1394,16 @@ const PrincipalLeaveRequestPage = () => {
       />
 
       {/* Bulk Approve Popup */}
-      <BulkActionModal
-        isOpen={showBulkModal}
-        selectedCount={selectedIds.length}
-        remark={bulkRemark}
-        onRemarkChange={setBulkRemark}
-        loading={bulkLoading}
-        onClose={closeBulkModal}
-        onConfirm={handleBulkSubmit}
-      />
+      {isBulkApproveOpen && (
+        <BulkApproveModal
+          title="Bulk Approve Leave Requests"
+          message={`Approve ${selectedIds.length} selected leave request(s)?`}
+          onConfirm={handleBulkApprove}
+          onClose={() => setIsBulkApproveOpen(false)}
+          loading={bulkApproveLoading}
+          error={bulkApproveError}
+        />
+      )}
     </div>
   );
 };
