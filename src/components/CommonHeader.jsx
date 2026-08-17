@@ -9,7 +9,6 @@ const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
   let decoded = jwtDecode(token);
   // console.log(decoded);
-
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const isAdmin = decoded.role === "admin" || decoded.role === "hr";

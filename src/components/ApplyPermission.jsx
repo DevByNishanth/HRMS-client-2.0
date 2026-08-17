@@ -20,8 +20,8 @@ const slotDefinitions = {
     },
     Afternoon: {
         "1 Hour": [
-            { label: "2:10 PM - 3:10 PM", key: "14:10-15:10", fromTime: "14:10", toTime: "15:10" },
             { label: "3:10 PM - 4:10 PM", key: "15:10-16:10", fromTime: "15:10", toTime: "16:10" },
+            { label: "2:10 PM - 3:10 PM", key: "14:10-15:10", fromTime: "14:10", toTime: "15:10" },
         ],
         "2 Hours": [
             { label: "2:10 PM - 4:10 PM", key: "14:10-16:10", fromTime: "14:10", toTime: "16:10" },
@@ -89,14 +89,14 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
 
     const fromTime = isQPT
         ? session === "Afternoon"
-            ? "14:30"
+            ? "15:30"
             : "09:00"
         : effectiveSlot?.fromTime || getDefaultFromTime(session);
     const toTime = isQPT
         ? session === "Afternoon"
             ? duration === "2 Hours"
                 ? "17:30"
-                : "15:30"
+                : "16:30"
             : duration === "2 Hours"
                 ? "11:00"
                 : "10:00"
@@ -147,7 +147,7 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                 facultyId,
                 permissionDate: formatDateToString(date),
                 permissionType,
-                slot: isQPT ? "" : effectiveSlot?.key || "",
+                slot: effectiveSlot?.key || "",
                 fromTime,
                 toTime,
                 totalMinutes,
