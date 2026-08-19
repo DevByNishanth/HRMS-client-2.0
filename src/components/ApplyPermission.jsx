@@ -89,14 +89,12 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
 
     const fromTime = isQPT
         ? session === "Afternoon"
-            ? "15:30"
+            ? duration === "2 Hours" ? "15:30" : "16:30"
             : "09:00"
         : effectiveSlot?.fromTime || getDefaultFromTime(session);
     const toTime = isQPT
         ? session === "Afternoon"
-            ? duration === "2 Hours"
-                ? "17:30"
-                : "16:30"
+            ? "17:30"
             : duration === "2 Hours"
                 ? "11:00"
                 : "10:00"
@@ -147,7 +145,7 @@ const ApplyPermission = ({ onClose, employee, remainingPermission = null, onPerm
                 facultyId,
                 permissionDate: formatDateToString(date),
                 permissionType,
-                slot: effectiveSlot?.key || "",
+                slot: isQPT ? `${fromTime}-${toTime}` : (effectiveSlot?.key || ""),
                 fromTime,
                 toTime,
                 totalMinutes,
