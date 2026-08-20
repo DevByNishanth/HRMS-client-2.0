@@ -176,7 +176,7 @@ const ActiveDayCalendar = () => {
                 key={`${item.day}-${index}`}
                 className="relative flex aspect-square items-center justify-center rounded-full overflow-hidden"
                 style={{
-                  background: "linear-gradient(to left, #14b8a6 50%, #f87171 50%)"
+                  background: "linear-gradient(to right, #14b8a6 50%, #f87171 50%)"
                 }}
               >
                 <span className="relative z-10 text-[12px] font-bold text-black drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
