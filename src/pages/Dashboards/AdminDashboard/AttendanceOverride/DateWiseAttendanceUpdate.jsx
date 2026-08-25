@@ -42,7 +42,37 @@ export default function DateWiseAttendanceUpdate() {
     } = usePasswordProtectedExport();
 
     const departmentOptions = [
-        "AIDS","AIML","CYS","CSBS","VLSI","CCE","CSE","ECE","EEE","MECH","IT","ADMIN","QPT",
+        "AIML",
+        "AIDS",
+        "CYS",
+        "CSE",
+        "CCE",
+        "CSBS",
+        "ECE",
+        "EEE",
+        "Mech",
+        "S&H",
+        "IT",
+        "HR",
+        "Chemistry",
+        "English",
+        "Maths",
+        "QPT",
+        "CFRD",
+        "IQAC",
+        "College Maintenance",
+        "Innovation",
+        "Electrical and Maintenance",
+        "Student Welfare",
+        "Transport",
+        "PRO",
+        "OFFICE",
+        "Media",
+        "Library",
+        "COE",
+        "IR",
+        "Placement",
+        "PD",
     ];
 
     const categoryOptions = [

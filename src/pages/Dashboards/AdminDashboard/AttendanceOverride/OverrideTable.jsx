@@ -381,12 +381,37 @@ export default function OverrideTable({ data = [] }) {
                             value={department}
                             placeholder="Department"
                             options={[
+                                "AIML",
+                                "AIDS",
+                                "CYS",
                                 "CSE",
+                                "CCE",
+                                "CSBS",
                                 "ECE",
                                 "EEE",
-                                "MECH",
-                                "CIVIL",
-                                "CCE"
+                                "Mech",
+                                "S&H",
+                                "IT",
+                                "HR",
+                                "Chemistry",
+                                "English",
+                                "Maths",
+                                "QPT",
+                                "CFRD",
+                                "IQAC",
+                                "College Maintenance",
+                                "Innovation",
+                                "Electrical and Maintenance",
+                                "Student Welfare",
+                                "Transport",
+                                "PRO",
+                                "OFFICE",
+                                "Media",
+                                "Library",
+                                "COE",
+                                "IR",
+                                "Placement",
+                                "PD",
                             ]}
                             onChange={setDepartment}
                         />
