@@ -8,7 +8,7 @@ import { updateAttendanceOverrideSingle } from "../../../../services/AttendanceO
 import { getEmployeLeaveBalance } from "../../../../services/LeaveBalance/getEmployeLeaveBalanceService";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const summaryColumns = ["P", "A","LOP", "OFF", "OD"];
+const summaryColumns = ["P", "A", "CL","LOP", "OD","OFF"];
 const monthOptions = [
   "January",
   "February",
@@ -32,11 +32,12 @@ const toolbarInputBase =
   "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
 
   const summaryRightClasses = [
-    "right-[152px]", // P
-    "right-[114px]", // A
+    "right-[190px]", // P
+    "right-[152px]", // A
+    "right-[114px]", // CL
     "right-[76px]",  // LOP
-    "right-[38px]",  // OFF
-    "right-0",       // OD
+    "right-[38px]",  // OD
+    "right-0",       // OFF
   ];
 
 function getMonthDates(year, monthIndex) {
@@ -289,7 +290,15 @@ function calculateSummary(attendance) {
       else if (status === "L") summary.L += 1;
       else if (status === "H") summary.H += 1;
       else if (status === "R") summary.R += 1;
-      else if (status === "OD") summary.OD += 1;
+      else if (status === "CL") summary.CL += 1;
+      else if (
+        status === "OD" ||
+        status === "OD-O" ||
+        status === "OD-E" ||
+        status === "OD-R"
+      ) {
+        summary.OD += 1;
+      }
       else if (status === "LOP") summary.LOP += 1;
       else if (status.includes(":")) {
         status.split(":").forEach((part) => {
@@ -301,7 +310,7 @@ function calculateSummary(attendance) {
 
       return summary;
     },
-    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, OD: 0,LOP:0, "?": 0 },
+    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, CL:0, OD: 0, LOP: 0, "?": 0 },
   );
 }
 
