@@ -3,20 +3,33 @@ import React, { useEffect, useState } from "react";
 export default function TimeWheelPicker({
     value,
     onApply,
+    defaultPeriod = "AM",
     }) {
     const [hour, setHour] = useState("09");
     const [minute, setMinute] = useState("00");
-    const [period, setPeriod] = useState("AM");
+    const [period, setPeriod] = useState(defaultPeriod);
     const [hourOpen, setHourOpen] = useState(false);
     const [minuteOpen, setMinuteOpen] = useState(false);
     const [periodOpen, setPeriodOpen] = useState(false);
 
+    const buildTimeValue = (selectedHour, selectedMinute, selectedPeriod) => {
+        let hr24 = parseInt(selectedHour, 10);
+
+        if (selectedPeriod === "AM") {
+            if (hr24 === 12) hr24 = 0;
+        } else if (hr24 !== 12) {
+            hr24 += 12;
+        }
+
+        return `${String(hr24).padStart(2, "0")}:${selectedMinute}`;
+    };
+
     useEffect(() => {
         if (!value) {
-        setHour("09");
-        setMinute("00");
-        setPeriod("AM");
-        return;
+            setHour("09");
+            setMinute("00");
+            setPeriod(defaultPeriod);
+            return;
         }
 
         const [h, m] = value.split(":");
@@ -30,22 +43,17 @@ export default function TimeWheelPicker({
         setHour(String(hr).padStart(2, "0"));
         setMinute(m);
         setPeriod(p);
-    }, [value]);
+    }, [value, defaultPeriod]);
 
-    // const handleApply = () => {
-    //     let hr24 = parseInt(hour, 10);
+    const handleApply = (nextHour = hour, nextMinute = minute, nextPeriod = period) => {
+        const formattedTime = buildTimeValue(
+            nextHour,
+            nextMinute,
+            nextPeriod
+        );
 
-    //     if (period === "AM") {
-    //     if (hr24 === 12) hr24 = 0;
-    //     } else {
-    //     if (hr24 !== 12) hr24 += 12;
-    //     }
-
-    //     const formattedTime =
-    //     `${String(hr24).padStart(2, "0")}:${minute}`;
-
-    //     onApply(formattedTime);
-    // };
+        onApply(formattedTime);
+    };
 
     const hours = Array.from(
         { length: 12 },
@@ -115,8 +123,10 @@ export default function TimeWheelPicker({
                         <div
                         key={h}
                         onClick={() => {
-                            setHour(h);
+                            const nextHour = h;
+                            setHour(nextHour);
                             setHourOpen(false);
+                            handleApply(nextHour, minute, period);
                         }}
                         className={`
                             px-3
@@ -172,8 +182,10 @@ export default function TimeWheelPicker({
                         <div
                         key={m}
                         onClick={() => {
-                            setMinute(m);
+                            const nextMinute = m;
+                            setMinute(nextMinute);
                             setMinuteOpen(false);
+                            handleApply(hour, nextMinute, period);
                         }}
                         className={`
                             px-3
@@ -234,21 +246,10 @@ export default function TimeWheelPicker({
                         <div
                         key={p}
                         onClick={() => {
-                            setPeriod(p);
+                            const nextPeriod = p;
+                            setPeriod(nextPeriod);
                             setPeriodOpen(false);
-
-                            let hr24 = parseInt(hour, 10);
-
-                            if (p === "AM") {
-                                if (hr24 === 12) hr24 = 0;
-                            } else {
-                                if (hr24 !== 12) hr24 += 12;
-                            }
-
-                            const formattedTime =
-                                `${String(hr24).padStart(2, "0")}:${minute}`;
-
-                            onApply(formattedTime);
+                            handleApply(hour, minute, nextPeriod);
                         }}
                         className="
                             px-3

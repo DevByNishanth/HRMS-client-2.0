@@ -323,6 +323,7 @@ export default function AttendanceTable() {
 
     const columns = status === "Not Checked In"
       ? [
+          ["S.No", (_, index) => index + 1],
           ["Employee ID", (row) => row.empId],
           ["Name", (row) => row.employeeName],
           ["Department", (row) => row.department],
@@ -334,6 +335,7 @@ export default function AttendanceTable() {
           ["Status", (row) => row.status],
         ]
       : [
+          ["S.No", (_, index) => index + 1],
           ["Employee ID", (row) => row.empId],
           ["Name", (row) => row.employeeName],
           ["Department", (row) => row.department],
@@ -354,35 +356,31 @@ export default function AttendanceTable() {
       return groups;
     }, {});
 
+    const sheetRows = Object.entries(groupedRows)
+      .sort(([firstDepartment], [secondDepartment]) =>
+        firstDepartment.localeCompare(secondDepartment),
+      )
+      .flatMap(([, departmentRows]) =>
+        departmentRows
+          .sort((firstRow, secondRow) =>
+            String(firstRow.employeeName || "").localeCompare(
+              String(secondRow.employeeName || ""),
+            ),
+          )
+          .map((row) => row),
+      )
+      .map((row, index) =>
+        Object.fromEntries(
+          columns.map(([columnName, getValue]) => [columnName, getValue(row, index)]),
+        ),
+      );
+
     const workbook = XLSX.utils.book_new();
-    const usedSheetNames = new Set();
-    Object.entries(groupedRows).forEach(([departmentName, departmentRows]) => {
-      const sheetRows = departmentRows
-        .sort((firstRow, secondRow) =>
-          String(firstRow.employeeName || "").localeCompare(
-            String(secondRow.employeeName || ""),
-          ),
-        )
-        .map((row) =>
-          Object.fromEntries(columns.map(([columnName, getValue]) => [columnName, getValue(row)])),
-        );
-      const worksheet = XLSX.utils.json_to_sheet(sheetRows);
-      worksheet["!cols"] = columns.map(([columnName]) => ({
-        wch: Math.max(columnName.length + 2, 16),
-      }));
-      const baseSheetName = departmentName
-        .replace(/[\\/?*:[\]]/g, "-")
-        .slice(0, 31) || "Department";
-      let safeSheetName = baseSheetName;
-      let suffix = 2;
-      while (usedSheetNames.has(safeSheetName)) {
-        const suffixText = `-${suffix}`;
-        safeSheetName = `${baseSheetName.slice(0, 31 - suffixText.length)}${suffixText}`;
-        suffix += 1;
-      }
-      usedSheetNames.add(safeSheetName);
-      XLSX.utils.book_append_sheet(workbook, worksheet, safeSheetName);
-    });
+    const worksheet = XLSX.utils.json_to_sheet(sheetRows);
+    worksheet["!cols"] = columns.map(([columnName]) => ({
+      wch: Math.max(columnName.length + 2, 16),
+    }));
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
@@ -607,7 +605,7 @@ export default function AttendanceTable() {
             className="w-[160px]"
             value={lateCheckIn}
             placeholder="Late Check In"
-            options={["Late Checked In", "Late Punch In"]}
+            options={["Late Checked In"]}
             onChange={setLateCheckIn}
           />
           <div className="flex flex-wrap items-center gap-3">

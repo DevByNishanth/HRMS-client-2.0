@@ -6,6 +6,7 @@ export default function CustomTimePicker({
     value,
     onChange,
     error,
+    defaultPeriod = "AM",
     }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -80,6 +81,7 @@ export default function CustomTimePicker({
             <div className="absolute left-0 top-full mt-2 right-0 w-full z-50">
             <TimeWheelPicker
                 value={value}
+                defaultPeriod={defaultPeriod}
                 onApply={(selectedTime) => {
                 onChange(selectedTime);
                 setOpen(false);
