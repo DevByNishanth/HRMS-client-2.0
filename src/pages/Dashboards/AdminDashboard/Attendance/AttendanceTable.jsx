@@ -605,7 +605,7 @@ export default function AttendanceTable() {
             className="w-[160px]"
             value={lateCheckIn}
             placeholder="Late Check In"
-            options={["Late Checked In", "Late Punch In"]}
+            options={["Late Checked In"]}
             onChange={setLateCheckIn}
           />
           <div className="flex flex-wrap items-center gap-3">

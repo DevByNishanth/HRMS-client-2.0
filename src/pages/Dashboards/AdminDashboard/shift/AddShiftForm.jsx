@@ -257,6 +257,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             /> */}
                             <CustomTimePicker
                                 value={formData.startTime}
+                                defaultPeriod="AM"
                                 error={errors.startTime}
                                 onChange={(value) =>
                                     handleChange({
@@ -287,6 +288,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             /> */}
                             <CustomTimePicker
                                 value={formData.endTime}
+                                defaultPeriod="PM"
                                 error={errors.endTime}
                                 onChange={(value) =>
                                     handleChange({
