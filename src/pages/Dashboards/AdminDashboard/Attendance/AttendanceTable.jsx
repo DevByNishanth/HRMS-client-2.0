@@ -1,4 +1,4 @@
-import { Download, RotateCcw, Search, X } from "lucide-react";
+import { Download, Search, X } from "lucide-react";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -26,6 +26,7 @@ export default function AttendanceTable() {
   const [shift, setShift] = useState("");
   const [checkInStatus, setCheckInStatus] = useState("");
   const [lateCheckIn, setLateCheckIn] = useState("");
+  const [exportType, setExportType] = useState("attendance");
 
   const dropdownRef = useRef();
 
@@ -143,6 +144,24 @@ export default function AttendanceTable() {
     return `${year}-${month}-${day}`;
   };
 
+  const buildAttendancePayload = (status) => {
+    const currentDate = formatApiDate(new Date());
+    const payload = {
+      search: selectedEmployee?.firstName || selectedEmployee?.empId || "",
+      department,
+      employeeCategory: category,
+      fromDate: fromDate ? formatApiDate(fromDate) : currentDate,
+      toDate: toDate ? formatApiDate(toDate) : currentDate,
+      status,
+    };
+
+    if (status === "Not Checked In") {
+      payload.date = currentDate;
+    }
+
+    return payload;
+  };
+
   useEffect(() => {
     fetchAttendanceData();
   }, [selectedEmployee, department, category, fromDate, toDate, checkInStatus, lateCheckIn]);
@@ -251,6 +270,127 @@ export default function AttendanceTable() {
     });
 
     saveAs(file, `Attendance_${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
+
+  const formatIstDate = (date = new Date()) =>
+    date.toLocaleDateString("en-GB", {
+      timeZone: "Asia/Kolkata",
+    });
+
+  const formatIstApiDate = (date = new Date()) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+    }).format(date);
+
+  const formatIstDateTime = (value) =>
+    value
+      ? new Date(value).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "";
+
+  const formatIstShiftTime = (value) => {
+    if (!value) return "";
+
+    const [hours, minutes] = String(value).split(":").map(Number);
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) return `${value} IST`;
+
+    const shiftDate = new Date(2000, 0, 1, hours, minutes);
+    return `${shiftDate.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })} IST`;
+  };
+
+  const exportAttendanceByStatus = async (status) => {
+    const currentDate = formatIstApiDate();
+    const response = await getAttendanceTableData({
+      ...buildAttendancePayload(status),
+      fromDate: currentDate,
+      toDate: currentDate,
+      date: currentDate,
+    });
+    const rows = response?.attendance || [];
+
+    if (!rows.length) {
+      alert(`No ${status.toLowerCase()} faculty found`);
+      return;
+    }
+
+    const columns = status === "Not Checked In"
+      ? [
+          ["S.No", (_, index) => index + 1],
+          ["Employee ID", (row) => row.empId],
+          ["Name", (row) => row.employeeName],
+          ["Department", (row) => row.department],
+          ["Designation", (row) => row.designation],
+          ["Category", (row) => row.employeeCategory],
+          ["Date", () => formatIstDate()],
+          ["Shift Start Time", (row) => formatIstShiftTime(row.startTime)],
+          ["Shift End Time", (row) => formatIstShiftTime(row.endTime)],
+          ["Status", (row) => row.status],
+        ]
+      : [
+          ["S.No", (_, index) => index + 1],
+          ["Employee ID", (row) => row.empId],
+          ["Name", (row) => row.employeeName],
+          ["Department", (row) => row.department],
+          ["Designation", (row) => row.designation],
+          ["Category", (row) => row.employeeCategory],
+          ["Date", () => formatIstDate()],
+          ["Shift Start Time", (row) => formatIstShiftTime(row.startTime)],
+          ["Shift End Time", (row) => formatIstShiftTime(row.endTime)],
+          ["Check In Time", (row) => formatIstDateTime(row.inTime)],
+          ["Late Minutes", (row) => row.lateMinutes],
+          ["Status", (row) => row.status],
+        ];
+
+    const groupedRows = rows.reduce((groups, row) => {
+      const departmentName = row.department || "Unknown Department";
+      groups[departmentName] ||= [];
+      groups[departmentName].push(row);
+      return groups;
+    }, {});
+
+    const sheetRows = Object.entries(groupedRows)
+      .sort(([firstDepartment], [secondDepartment]) =>
+        firstDepartment.localeCompare(secondDepartment),
+      )
+      .flatMap(([, departmentRows]) =>
+        departmentRows
+          .sort((firstRow, secondRow) =>
+            String(firstRow.employeeName || "").localeCompare(
+              String(secondRow.employeeName || ""),
+            ),
+          )
+          .map((row) => row),
+      )
+      .map((row, index) =>
+        Object.fromEntries(
+          columns.map(([columnName, getValue]) => [columnName, getValue(row, index)]),
+        ),
+      );
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(sheetRows);
+    worksheet["!cols"] = columns.map(([columnName]) => ({
+      wch: Math.max(columnName.length + 2, 16),
+    }));
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const file = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, `${status.replaceAll(" ", "_")}_${formatApiDate(new Date())}.xlsx`);
   };
 
   const getStatusStyle = (status) => {
@@ -465,7 +605,7 @@ export default function AttendanceTable() {
             className="w-[160px]"
             value={lateCheckIn}
             placeholder="Late Check In"
-            options={["Late Checked In", "Late Punch In"]}
+            options={["Late Checked In"]}
             onChange={setLateCheckIn}
           />
           <div className="flex flex-wrap items-center gap-3">
@@ -484,7 +624,10 @@ export default function AttendanceTable() {
           </div>
 
           <button
-            onClick={handleExportClick}
+            onClick={() => {
+              setExportType("attendance");
+              handleExportClick();
+            }}
             disabled={attendanceData.length === 0}
             className="h-12
                                 px-5
@@ -501,6 +644,30 @@ export default function AttendanceTable() {
           >
             {/* <Download size={16} /> */}
             Export Excel
+          </button>
+
+          <button
+            onClick={() => {
+              setExportType("notCheckedIn");
+              handleExportClick();
+            }}
+            disabled={loading || exportLoading}
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export Not Checked In
+          </button>
+
+          <button
+            onClick={() => {
+              setExportType("lateCheckedIn");
+              handleExportClick();
+            }}
+            disabled={loading || exportLoading}
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={16} />
+            Export Late Checked In
           </button>
 
           {hasFilters && (
@@ -643,7 +810,16 @@ export default function AttendanceTable() {
       <ExportPasswordModal
         isOpen={isExportModalOpen}
         onClose={closeExportModal}
-        onConfirm={(password) => handleConfirmExport(password, exportExcel)}
+        onConfirm={(password) =>
+          handleConfirmExport(
+            password,
+            exportType === "notCheckedIn"
+              ? () => exportAttendanceByStatus("Not Checked In")
+              : exportType === "lateCheckedIn"
+                ? () => exportAttendanceByStatus("Late Checked In")
+                : exportExcel,
+          )
+        }
         loading={exportLoading}
         error={exportError}
       />

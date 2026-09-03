@@ -6,7 +6,7 @@ import CommonHeader from "../../../../components/CommonHeader";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece-hrms-server.onrender.com";
-const summaryColumns = ["P", "A", "OFF", "OD"];
+const summaryColumns = ["P", "A", "CL","LOP", "OD","OFF"];
 const monthOptions = [
   "January",
   "February",
@@ -29,13 +29,14 @@ const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-
 const toolbarInputBase =
   "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
 
-const summaryRightClasses = [
-  "right-[114px]",
-  "right-[76px]",
-  "right-[38px]",
-  "right-0",
-];
-
+  const summaryRightClasses = [
+    "right-[190px]", // P
+    "right-[152px]", // A
+    "right-[114px]", // CL
+    "right-[76px]",  // LOP
+    "right-[38px]",  // OD
+    "right-0",       // OFF
+  ];
 function getMonthDates(year, monthIndex) {
   const dates = [];
   const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -216,7 +217,16 @@ function calculateSummary(attendance) {
       else if (status === "L") summary.L += 1;
       else if (status === "H") summary.H += 1;
       else if (status === "R") summary.R += 1;
-      else if (status === "OD") summary.OD += 1;
+      else if (status === "CL") summary.CL += 1;
+      else if (
+        status === "OD" ||
+        status === "OD-O" ||
+        status === "OD-E" ||
+        status === "OD-R"
+      ) {
+        summary.OD += 1;
+      }
+      else if (status === "LOP") summary.LOP += 1;
       else if (status.includes(":")) {
         status.split(":").forEach((part) => {
           if (summary[part] !== undefined) summary[part] += 0.5;
@@ -227,7 +237,7 @@ function calculateSummary(attendance) {
 
       return summary;
     },
-    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, OD: 0, "?": 0 },
+    { P: 0, L: 0, H: 0, A: 0, OFF: 0, R: 0, CL:0, OD: 0, LOP: 0, "?": 0 },
   );
 }
 
@@ -235,25 +245,23 @@ function normalizeEmployees(payload) {
   return getEmployeeList(payload).map((employee, index) => {
     const attendance = normalizeAttendanceMap(employee);
 
-  return {
-  id: getEmployeeId(employee),
-  name: getEmployeeName(employee),
-  department: getEmployeeDepartmentType(employee),
-  punchId:
-    employee.punchId ||
-    employee.punchID ||
-    employee.facultyId?.punchId ||
-    "",
-  designation: getEmployeeDesignation(employee),
-  attendance,
-  summary:
-    employee.summary ||
-    employee.totals ||
-    employee.counts ||
-    calculateSummary(attendance),
-};
-
-
+    return {
+      id: getEmployeeId(employee),
+      name: getEmployeeName(employee),
+      department: getEmployeeDepartmentType(employee),
+      punchId:
+        employee.punchId ||
+        employee.punchID ||
+        employee.facultyId?.punchId ||
+        "",
+      designation: getEmployeeDesignation(employee),
+      attendance,
+      summary:
+        employee.summary ||
+        employee.totals ||
+        employee.counts ||
+        calculateSummary(attendance),
+    };
   });
 }
 
@@ -371,30 +379,29 @@ export default function AttendanceManagement() {
   }, [employees, searchTerm, selectedDepartment]);
 
   function exportToExcel() {
-   const headerRow = [
-  "Employee ID",
-  "Employee Name",
-  "Department",
-  "Punch ID",
-  ...dates.map((date) => `${date.day}-${date.weekday}`),
-  ...summaryColumns,
-];
+    const headerRow = [
+      "Employee ID",
+      "Employee Name",
+      "Department",
+      "Punch ID",
+      ...dates.map((date) => `${date.day}-${date.weekday}`),
+      ...summaryColumns,
+    ];
 
+    const dataRows = visibleEmployees.map((employee) => {
+      const row = [
+        employee.id,
+        employee.name,
+        employee.department,
+        employee.punchId || "",
+        ...dates.map(
+          (date) => getAttendanceStatus(employee.attendance, date).status,
+        ),
+        ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
+      ];
 
-  const dataRows = visibleEmployees.map((employee) => {
-  const row = [
-    employee.id,
-    employee.name,
-    employee.department,
-    employee.punchId || "",
-    ...dates.map(
-      (date) => getAttendanceStatus(employee.attendance, date).status
-    ),
-    ...summaryColumns.map((column) => employee.summary?.[column] ?? 0),
-  ];
-
-  return row;
-});
+      return row;
+    });
 
     // Place the month title centered across the entire table width
     const worksheet = utils.aoa_to_sheet([
@@ -533,22 +540,22 @@ export default function AttendanceManagement() {
                 <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
                   <span className="sr-only">Role</span>
                   <select
-  value={selectedDepartment}
-  onChange={(e) => setSelectedDepartment(e.target.value)}
-  className={`${toolbarInputBase} pr-10`}
->
-  <option value="">All Departments</option>
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className={`${toolbarInputBase} pr-10`}
+                  >
+                    <option value="">All Departments</option>
 
-  {departmentOptions.map((department) => (
-    <option
-      key={department}
-      value={department}
-      className="bg-[#071425] text-white"
-    >
-      {department}
-    </option>
-  ))}
-</select>
+                    {departmentOptions.map((department) => (
+                      <option
+                        key={department}
+                        value={department}
+                        className="bg-[#071425] text-white"
+                      >
+                        {department}
+                      </option>
+                    ))}
+                  </select>
 
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
                 </label>
