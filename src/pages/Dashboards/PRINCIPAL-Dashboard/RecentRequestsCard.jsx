@@ -110,7 +110,7 @@ const RecentRequestsCard = ({ className = "" }) => {
       });
       const data = await res.json();
       const items = data?.requests || [];
-      setRegularizationRequests(items.filter((r) => r.status === "Pending").slice(0, 10).map((r) => {
+      setRegularizationRequests(items.filter((r) => r.status.toLowerCase() === "pending").slice(0, 10).map((r) => {
         const name = getFacultyName(r?.facultyId);
         return {
           name,
