@@ -200,9 +200,9 @@ export default function AttendanceTable() {
       setAttendanceData(response?.attendance || []);
     } catch (error) {
       console.error("Error:", error);
-      console.error("Message:", error.message);
-      console.error("Response:", error.response);
-      console.error("Request:", error.request);
+      // console.error("Message:", error.message);
+      // console.error("Response:", error.response);
+      // console.error("Request:", error.request);
     } finally {
       setLoading(false);
     }
@@ -215,9 +215,9 @@ export default function AttendanceTable() {
     }
 
     const excelData = attendanceData.map((row) => ({
-      "Record ID": row._id,
-      "Faculty ID": row.facultyId,
-      "Shift ID": row.shiftID,
+      // "Record ID": row._id,
+      // "Faculty ID": row.facultyId,
+      // "Shift ID": row.shiftID,
       "Employee ID": row.empId,
       "Employee Name": row.employeeName,
       "Department": row.department,
@@ -231,9 +231,9 @@ export default function AttendanceTable() {
         : "",
 
       "Shift Name": row.shiftName,
-      "Shift Start Time": row.startTime,
-      "Shift End Time": row.endTime,
-      "Grace Time (mins)": row.graceTime,
+      // "Shift Start Time": row.startTime,
+      // "Shift End Time": row.endTime,
+      // "Grace Time (mins)": row.graceTime,
 
       "In Time": row.inTime
         ? new Date(row.inTime).toLocaleString("en-IN")
@@ -248,9 +248,9 @@ export default function AttendanceTable() {
       "Late Minutes": row.lateMinutes,
 
       "Status": row.status,
-      "Is Late": row.isLate ? "Yes" : "No",
-      "Is Overridden": row.isOverridden ? "Yes" : "No",
-      "Regularization": row.regularization ? "Yes" : "No",
+      // "Is Late": row.isLate ? "Yes" : "No",
+      // "Is Overridden": row.isOverridden ? "Yes" : "No",
+      // "Regularization": row.regularization ? "Yes" : "No",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
