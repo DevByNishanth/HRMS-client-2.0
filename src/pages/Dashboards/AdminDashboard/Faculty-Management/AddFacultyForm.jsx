@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import FacultyDatePicker from "../../../../components/FacultyDatePicker";
 import userImg from "../../../../assets/userImg.svg";
+import { getDepartments } from "../../../../services/department/getDepartmentsService";
+import { getDesignations } from "../../../../services/designation/getDesignationsService";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -68,40 +70,6 @@ const employeeCategories = [
     ],
   },
 ];
-const departments = [
-  "AIML",
-  "AIDS",
-  "CYS",
-  "CSE",
-  "CCE",
-  "CSBS",
-  "ECE",
-  "EEE",
-  "Mech",
-  "S&H",
-  "IT",
-  "HR",
-  "Chemistry",
-  "English",
-  "Maths",
-  "QPT",
-  "CFRD",
-  "IQAC",
-  "College Maintenance",
-  "Innovation",
-  "Electrical and Maintenance",
-  "Student Welfare",
-  "Transport",
-  "PRO",
-  "OFFICE",
-  "Media",
-  "Library",
-  "COE",
-  "IR",
-  "Placement",
-  "PD",
-];
-
 const emptyQualification = {
   degree: "",
   specialization: "",
@@ -784,6 +752,8 @@ const AddFacultyForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [faculties, setFaculties] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [isLoadingLookups, setIsLoadingLookups] = useState(false);
 
   useEffect(() => {
@@ -832,6 +802,39 @@ const AddFacultyForm = ({
 
         setShifts(Array.isArray(shiftData?.data) ? shiftData.data : []);
         setFaculties(facultyList);
+
+        // Departments come from the /api/departments endpoint.
+        try {
+          const departmentResponse = await getDepartments();
+          setDepartments(
+            Array.isArray(departmentResponse?.data)
+              ? departmentResponse.data
+                  .map((department) => department.departmentName)
+                  .filter(Boolean)
+              : [],
+          );
+        } catch {
+          // Departments are optional lookups; keep the form usable
+          // even if this call fails (e.g. dropdown stays empty).
+        }
+
+        // Designations come from the /api/designations endpoint.
+        try {
+          const designationResponse = await getDesignations();
+          const designationList = Array.isArray(designationResponse?.data)
+            ? designationResponse.data
+            : designationResponse?.data
+              ? [designationResponse.data]
+              : [];
+          setDesignations(
+            designationList
+              .map((designation) => designation.designationName)
+              .filter(Boolean),
+          );
+        } catch {
+          // Designations are optional lookups; keep the form usable
+          // even if this call fails (e.g. dropdown stays empty).
+        }
       } catch (error) {
         setSubmitError(error.message || "Unable to load form dropdown data.");
       } finally {
@@ -1317,14 +1320,14 @@ const AddFacultyForm = ({
                   onChange={updateForm}
                   placeholder="30 days"
                 />
-                <Field
+                <DropdownField
                   label="Designation"
-                  name="designation"
                   required
                   value={form.designation}
-                  onChange={updateForm}
+                  onChange={(value) => updateForm("designation", value)}
+                  options={designations}
+                  placeholder="Select designation"
                   error={errors.designation}
-                  placeholder="Assistant Professor"
                 />
                 {/* <Field
                   label="Job Title"

@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
+import AddDepartmentModal from "../../../../components/AddDepartmentModal";
+import AddDesignationModal from "../../../../components/AddDesignationModal";
 import AddFacultyForm from "./AddFacultyForm";
 import EditFacultyCanvas from "./EditFacultyCanvas";
 import { jwtDecode } from "jwt-decode";
@@ -139,6 +141,12 @@ const FacultyManagementPage = () => {
 
   const navigate = useNavigate();
   const [isAddFacultyOpen, setIsAddFacultyOpen] = useState(false);
+  const [isAddDepartmentOpen, setIsAddDepartmentOpen] = useState(false);
+  const [isAddDesignationOpen, setIsAddDesignationOpen] = useState(false);
+  // Mirror of the department list, kept in sync by the modal for future use.
+  const [, setDepartmentList] = useState([]);
+  // Mirror of the designation list, kept in sync by the modal for future use.
+  const [, setDesignationList] = useState([]);
   const [editingFaculty, setEditingFaculty] = useState(null);
   const [deletingFaculty, setDeletingFaculty] = useState(null);
   const [isDeletingFaculty, setIsDeletingFaculty] = useState(false);
@@ -174,8 +182,7 @@ const FacultyManagementPage = () => {
       "Original Department": faculty.originalDepartment || "-",
       "Department": faculty.department || "-",
       "Reporting To": faculty.reportingTo?.facultyId
-        ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${
-            faculty.reportingTo.facultyId.firstName ?? ""
+        ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""
           } ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
         : "-",
       "Punch ID": faculty.punchId || "-",
@@ -282,9 +289,9 @@ const FacultyManagementPage = () => {
   );
 
   const statusOptions = useMemo(
-  () => ["All", "Active", "Inactive"],
-  []
-);
+    () => ["All", "Active", "Inactive"],
+    []
+  );
 
   const filteredFaculty = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -419,14 +426,34 @@ const FacultyManagementPage = () => {
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsAddFacultyOpen(true)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
-              >
-                <Plus size={16} />
-                Add Faculty
-              </button>
+              <div className="btn-container flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddFacultyOpen(true)}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
+                >
+                  <Plus size={16} />
+                  Add Faculty
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddDepartmentOpen(true)}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[#0d2138] px-4 text-sm font-semibold text-white transition hover:border-[#2563EB] hover:bg-[#132b49]"
+                >
+                  <Plus size={16} className="text-[#3984ff]" />
+                  Add department
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddDesignationOpen(true)}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[#0d2138] px-4 text-sm font-semibold text-white transition hover:border-[#2563EB] hover:bg-[#132b49]"
+                >
+                  <Plus size={16} className="text-[#3984ff]" />
+                  Add Designation
+                </button>
+              </div>
+
+
             </div>
 
             <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
@@ -489,7 +516,7 @@ const FacultyManagementPage = () => {
                     Export
                   </button>
                 </div>
-                
+
               </div>
 
               <ExportPasswordModal
@@ -557,12 +584,12 @@ const FacultyManagementPage = () => {
                               <div className="flex flex-row items-center gap-3 pl-4">
                                 <div>
                                   <FacultyAvatar faculty={faculty} name={name} />
-                                  </div>
+                                </div>
                                 <div className="flex flex-col">
                                   <span className="block truncate">{name}</span>
                                   <span>{faculty.empId || "-"}</span>
                                 </div>
-                                
+
                               </div>
                             </td>
                             {/* <td className="px-4 py-3">
@@ -587,9 +614,9 @@ const FacultyManagementPage = () => {
                             </td>
                             <td className="px-4 py-3">
                               <span className="block truncate">
-                               {faculty.reportingTo?.facultyId
-                                ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
-                                : "-"}</span>
+                                {faculty.reportingTo?.facultyId
+                                  ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
+                                  : "-"}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span
@@ -600,8 +627,7 @@ const FacultyManagementPage = () => {
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className={`block truncate font-medium ${
-                                  faculty.isActive ? "text-[#12A38C]" : "text-red-500"
+                              <span className={`block truncate font-medium ${faculty.isActive ? "text-[#12A38C]" : "text-red-500"
                                 }`}>
                                 {faculty.isActive ? "Active" : "Inactive"}
                               </span>
@@ -669,6 +695,20 @@ const FacultyManagementPage = () => {
         <AddFacultyForm
           onClose={() => setIsAddFacultyOpen(false)}
           onCreated={handleFacultyCreated}
+        />
+      )}
+
+      {isAddDepartmentOpen && (
+        <AddDepartmentModal
+          onDepartmentsChange={setDepartmentList}
+          onClose={() => setIsAddDepartmentOpen(false)}
+        />
+      )}
+
+      {isAddDesignationOpen && (
+        <AddDesignationModal
+          onDesignationsChange={setDesignationList}
+          onClose={() => setIsAddDesignationOpen(false)}
         />
       )}
 
