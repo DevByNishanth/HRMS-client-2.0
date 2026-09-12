@@ -10,6 +10,10 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import ExportPasswordModal from "../../../../components/ExportPasswordModal";
 import { usePasswordProtectedExport } from "../../../../hooks/usePasswordProtectedExport";
+import {
+  isFacultyExcluded,
+  loadExcludedFacultyIds,
+} from "../../../../utils/excludedFaculty";
 
 export default function AttendanceTable() {
   const [department, setDepartment] = useState("");
@@ -195,9 +199,20 @@ export default function AttendanceTable() {
 
       const response = await getAttendanceTableData(payload);
 
-      // console.log("Response:", response);
+      let fetchedData = response?.attendance || [];
+      try {
+        if (payload.status === "Late Checked In" || payload.status === "Not Checked In") {
+          const excludedFacultyIds = await loadExcludedFacultyIds();
+          const getEmployeeId = (row) => row.empId || row.employeeId || row.facultyId?.empId || row.facultyId;
+          fetchedData = fetchedData.filter(
+            (row) => !isFacultyExcluded(getEmployeeId(row), excludedFacultyIds)
+          );
+        }
+      } catch (err) {
+        console.error("Failed to filter excluded faculties", err);
+      }
 
-      setAttendanceData(response?.attendance || []);
+      setAttendanceData(fetchedData);
     } catch (error) {
       console.error("Error:", error);
       // console.error("Message:", error.message);
@@ -307,91 +322,280 @@ export default function AttendanceTable() {
   };
 
   const exportAttendanceByStatus = async (status) => {
+  try {
     const currentDate = formatIstApiDate();
+
+    // Get attendance data from API
     const response = await getAttendanceTableData({
       ...buildAttendancePayload(status),
       fromDate: currentDate,
       toDate: currentDate,
       date: currentDate,
     });
+
     const rows = response?.attendance || [];
 
-    if (!rows.length) {
+    console.log("Export API rows:", rows.length);
+
+    // Load excluded faculty IDs from Excel
+    const excludedFacultyIds = await loadExcludedFacultyIds();
+
+    console.log(
+      "Excluded faculty count:",
+      excludedFacultyIds.size
+    );
+
+    /**
+     * Get Employee ID from API response.
+     * Supports:
+     * - row.empId
+     * - row.employeeId
+     * - row.facultyId.empId
+     * - row.facultyId.employeeId
+     * - row.facultyId.facultyId
+     * - row.facultyId
+     */
+    const getEmployeeId = (row) => {
+      if (!row) {
+        return "";
+      }
+
+      // Normal API employee ID
+      if (row.empId) {
+        return row.empId;
+      }
+
+      // Alternative employee ID
+      if (row.employeeId) {
+        return row.employeeId;
+      }
+
+      // facultyId is an object
+      if (
+        row.facultyId &&
+        typeof row.facultyId === "object"
+      ) {
+        return (
+          row.facultyId.empId ||
+          row.facultyId.employeeId ||
+          row.facultyId.facultyId ||
+          ""
+        );
+      }
+
+      // facultyId is directly a string
+      if (row.facultyId) {
+        return row.facultyId;
+      }
+
+      return "";
+    };
+
+    /**
+     * IMPORTANT:
+     * Remove excluded faculty from the export data.
+     *
+     * This was missing in your current code.
+     */
+    const reportRows = rows.filter((row) => {
+      const employeeId = getEmployeeId(row);
+
+      const excluded = isFacultyExcluded(
+        employeeId,
+        excludedFacultyIds
+      );
+
+      if (excluded) {
+        console.log(
+          "Excluded from report:",
+          employeeId,
+          row.employeeName
+        );
+      }
+
+      return !excluded;
+    });
+
+    console.log(
+      "Rows before exclusion:",
+      rows.length
+    );
+
+    console.log(
+      "Rows after exclusion:",
+      reportRows.length
+    );
+
+    // No records after applying exclusion
+    if (!reportRows.length) {
       alert(`No ${status.toLowerCase()} faculty found`);
       return;
     }
 
-    const columns = status === "Not Checked In"
-      ? [
-          ["S.No", (_, index) => index + 1],
-          ["Employee ID", (row) => row.empId],
-          ["Name", (row) => row.employeeName],
-          ["Department", (row) => row.department],
-          ["Designation", (row) => row.designation],
-          ["Category", (row) => row.employeeCategory],
-          ["Date", () => formatIstDate()],
-          ["Shift Start Time", (row) => formatIstShiftTime(row.startTime)],
-          ["Shift End Time", (row) => formatIstShiftTime(row.endTime)],
-          ["Status", (row) => row.status],
-        ]
-      : [
-          ["S.No", (_, index) => index + 1],
-          ["Employee ID", (row) => row.empId],
-          ["Name", (row) => row.employeeName],
-          ["Department", (row) => row.department],
-          ["Designation", (row) => row.designation],
-          ["Category", (row) => row.employeeCategory],
-          ["Date", () => formatIstDate()],
-          ["Shift Start Time", (row) => formatIstShiftTime(row.startTime)],
-          ["Shift End Time", (row) => formatIstShiftTime(row.endTime)],
-          ["Check In Time", (row) => formatIstDateTime(row.inTime)],
-          ["Late Minutes", (row) => row.lateMinutes],
-          ["Status", (row) => row.status],
-        ];
+    /**
+     * Excel columns
+     */
+    const columns =
+      status === "Not Checked In"
+        ? [
+            ["S.No", (_, index) => index + 1],
+            ["Employee ID", (row) => row.empId],
+            ["Name", (row) => row.employeeName],
+            ["Department", (row) => row.department],
+            ["Designation", (row) => row.designation],
+            ["Category", (row) => row.employeeCategory],
+            ["Date", () => formatIstDate()],
+            [
+              "Shift Start Time",
+              (row) => formatIstShiftTime(row.startTime),
+            ],
+            [
+              "Shift End Time",
+              (row) => formatIstShiftTime(row.endTime),
+            ],
+            ["Status", (row) => row.status],
+          ]
+        : [
+            ["S.No", (_, index) => index + 1],
+            ["Employee ID", (row) => row.empId],
+            ["Name", (row) => row.employeeName],
+            ["Department", (row) => row.department],
+            ["Designation", (row) => row.designation],
+            ["Category", (row) => row.employeeCategory],
+            ["Date", () => formatIstDate()],
+            [
+              "Shift Start Time",
+              (row) => formatIstShiftTime(row.startTime),
+            ],
+            [
+              "Shift End Time",
+              (row) => formatIstShiftTime(row.endTime),
+            ],
+            [
+              "Check In Time",
+              (row) => formatIstDateTime(row.inTime),
+            ],
+            ["Late Minutes", (row) => row.lateMinutes],
+            ["Status", (row) => row.status],
+          ];
 
-    const groupedRows = rows.reduce((groups, row) => {
-      const departmentName = row.department || "Unknown Department";
-      groups[departmentName] ||= [];
-      groups[departmentName].push(row);
-      return groups;
-    }, {});
+    /**
+     * Group rows by department
+     */
+    const groupedRows = reportRows.reduce(
+      (groups, row) => {
+        const departmentName =
+          row.department || "Unknown Department";
 
+        if (!groups[departmentName]) {
+          groups[departmentName] = [];
+        }
+
+        groups[departmentName].push(row);
+
+        return groups;
+      },
+      {}
+    );
+
+    /**
+     * Sort:
+     * 1. Department alphabetically
+     * 2. Employee name alphabetically
+     */
     const sheetRows = Object.entries(groupedRows)
-      .sort(([firstDepartment], [secondDepartment]) =>
-        firstDepartment.localeCompare(secondDepartment),
+      .sort(
+        ([firstDepartment], [secondDepartment]) =>
+          firstDepartment.localeCompare(secondDepartment)
       )
       .flatMap(([, departmentRows]) =>
         departmentRows
           .sort((firstRow, secondRow) =>
-            String(firstRow.employeeName || "").localeCompare(
-              String(secondRow.employeeName || ""),
-            ),
+            String(
+              firstRow.employeeName || ""
+            ).localeCompare(
+              String(
+                secondRow.employeeName || ""
+              )
+            )
           )
-          .map((row) => row),
+          .map((row) => row)
       )
       .map((row, index) =>
         Object.fromEntries(
-          columns.map(([columnName, getValue]) => [columnName, getValue(row, index)]),
-        ),
+          columns.map(
+            ([columnName, getValue]) => [
+              columnName,
+              getValue(row, index),
+            ]
+          )
+        )
       );
 
+    /**
+     * Create Excel workbook
+     */
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(sheetRows);
-    worksheet["!cols"] = columns.map(([columnName]) => ({
-      wch: Math.max(columnName.length + 2, 16),
-    }));
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
+    const worksheet =
+      XLSX.utils.json_to_sheet(sheetRows);
+
+    /**
+     * Set Excel column widths
+     */
+    worksheet["!cols"] = columns.map(
+      ([columnName]) => ({
+        wch: Math.max(
+          columnName.length + 2,
+          16
+        ),
+      })
+    );
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Attendance"
+    );
+
+    /**
+     * Generate Excel file
+     */
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
+
     const file = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    saveAs(file, `${status.replaceAll(" ", "_")}_${formatApiDate(new Date())}.xlsx`);
-  };
+    /**
+     * Download Excel
+     */
+    saveAs(
+      file,
+      `${status.replaceAll(
+        " ",
+        "_"
+      )}_${currentDate}.xlsx`
+    );
+
+    console.log(
+      `${status} report downloaded successfully`
+    );
+  } catch (error) {
+    console.error(
+      `Error exporting ${status} report:`,
+      error
+    );
+
+    alert(
+      `Unable to export ${status} report. Please try again.`
+    );
+  }
+};
 
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
