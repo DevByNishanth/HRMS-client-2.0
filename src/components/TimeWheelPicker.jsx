@@ -67,15 +67,7 @@ export default function TimeWheelPicker({
 
     return (
         <div
-        className="
-            bg-[#0A1A2D]
-            border
-            border-blue-900
-            rounded-xl
-            p-4
-            shadow-xl
-            min-w-[220px]
-        "
+        className="bg-[var(--theme-bg-card)] border border-[var(--theme-border)] rounded-xl p-4 shadow-xl min-w-[220px]"
         >
         <div className="flex items-center gap-3">
             {/* Hour */}
@@ -87,37 +79,14 @@ export default function TimeWheelPicker({
                     setMinuteOpen(false);
                     setPeriodOpen(false);
                     }}
-                    className="
-                    w-full
-                    bg-[#132A47]
-                    text-white
-                    rounded-lg
-                    p-2
-                    cursor-pointer
-                    flex
-                    items-center
-                    justify-center
-                    "
+                    className="w-full bg-[var(--theme-bg-input)] text-[var(--theme-text-main)] rounded-lg p-2 cursor-pointer flex items-center justify-center"
                 >
                     {hour}
                 </button>
 
                 {hourOpen && (
                     <div
-                    className="
-                        absolute
-                        top-full
-                        left-0
-                        mt-1
-                        w-full
-                        bg-[#132A47]
-                        border border-blue-900
-                        rounded-lg
-                        max-h-40
-                        overflow-y-auto
-                        scrollbar-hide
-                        z-50
-                    "
+                    className="absolute top-full left-0 mt-1 w-full bg-[var(--theme-bg-input)] border border-[var(--theme-border)] rounded-lg max-h-40 overflow-y-auto scrollbar-hide z-50"
                     >
                     {hours.map((h) => (
                         <div
@@ -128,12 +97,7 @@ export default function TimeWheelPicker({
                             setHourOpen(false);
                             handleApply(nextHour, minute, period);
                         }}
-                        className={`
-                            px-3
-                            py-2
-                            text-white
-                            cursor-pointer
-                            hover:bg-blue-600
+                        className={`px-3 py-2 text-[var(--theme-text-main)] cursor-pointer hover:bg-blue-600
                             ${hour === h ? "bg-blue-600" : ""}
                         `}
                         >
@@ -149,34 +113,14 @@ export default function TimeWheelPicker({
                 <button
                     type="button"
                     onClick={() => setMinuteOpen(!minuteOpen)}
-                    className="
-                    w-full
-                    bg-[#132A47]
-                    text-white
-                    rounded-lg
-                    cursor-pointer
-                    p-2
-                    "
+                    className="w-full bg-[var(--theme-bg-input)] text-[var(--theme-text-main)] rounded-lg cursor-pointer p-2"
                 >
                     {minute}
                 </button>
 
                 {minuteOpen && (
                     <div
-                    className="
-                        absolute
-                        top-full
-                        left-0
-                        mt-1
-                        w-full
-                        bg-[#132A47]
-                        border border-blue-900
-                        rounded-lg
-                        max-h-40
-                        overflow-y-auto
-                        scrollbar-hide
-                        z-50
-                    "
+                    className="absolute top-full left-0 mt-1 w-full bg-[var(--theme-bg-input)] border border-[var(--theme-border)] rounded-lg max-h-40 overflow-y-auto scrollbar-hide z-50"
                     >
                     {minutes.map((m) => (
                         <div
@@ -187,12 +131,7 @@ export default function TimeWheelPicker({
                             setMinuteOpen(false);
                             handleApply(hour, nextMinute, period);
                         }}
-                        className={`
-                            px-3
-                            py-2
-                            text-white
-                            cursor-pointer
-                            hover:bg-blue-600
+                        className={`px-3 py-2 text-[var(--theme-text-main)] cursor-pointer hover:bg-blue-600
                             ${minute === m ? "bg-blue-600" : ""}
                         `}
                         >
@@ -212,35 +151,14 @@ export default function TimeWheelPicker({
                     setHourOpen(false);
                     setMinuteOpen(false);
                     }}
-                    className="
-                    w-full
-                    bg-[#132A47]
-                    text-white
-                    rounded-lg
-                    p-2
-                    cursor-pointer
-                    flex
-                    items-center
-                    justify-center
-                    "
+                    className="w-full bg-[var(--theme-bg-input)] text-[var(--theme-text-main)] rounded-lg p-2 cursor-pointer flex items-center justify-center"
                 >
                     {period}
                 </button>
 
                 {periodOpen && (
                     <div
-                    className="
-                        absolute
-                        top-full
-                        left-0
-                        mt-1
-                        w-full
-                        bg-[#132A47]
-                        border border-blue-900
-                        rounded-lg
-                        overflow-hidden
-                        z-50
-                    "
+                    className="absolute top-full left-0 mt-1 w-full bg-[var(--theme-bg-input)] border border-[var(--theme-border)] rounded-lg overflow-hidden z-50"
                     >
                     {["AM", "PM"].map((p) => (
                         <div
@@ -251,13 +169,7 @@ export default function TimeWheelPicker({
                             setPeriodOpen(false);
                             handleApply(hour, minute, nextPeriod);
                         }}
-                        className="
-                            px-3
-                            py-2
-                            text-white
-                            cursor-pointer
-                            hover:bg-blue-600
-                        "
+                        className="px-3 py-2 text-[var(--theme-text-main)] cursor-pointer hover:bg-blue-600"
                         >
                         {p}
                         </div>
@@ -270,18 +182,12 @@ export default function TimeWheelPicker({
         {/* <button
             type="button"
             onClick={handleApply}
-            className="
-            w-full
-            mt-4
-            py-2
-            rounded-lg
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            "
+            className="w-full mt-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-[var(--theme-text-main)]"
         >
             Apply
         </button> */}
         </div>
     );
 }
+
+

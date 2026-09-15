@@ -75,19 +75,19 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
 
   return (
     <section
-      className="fixed inset-0 z-50 flex justify-end bg-[#020817]/60 backdrop-blur-[4px]"
+      className="fixed inset-0 z-50 flex justify-end bg-[var(--theme-bg-card)]/60 backdrop-blur-[4px]"
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[42%] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[42%] flex-col bg-[var(--theme-bg-body)] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[var(--theme-border)] bg-[var(--theme-bg-card)] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Faculty Setup
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-[var(--theme-text-main)]">
               Edit Faculty
             </h2>
           </div>
@@ -95,7 +95,7 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
             aria-label="Close edit faculty form"
           >
             <X size={17} />
@@ -104,7 +104,7 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
 
         <div className="flex flex-1 items-center justify-center px-5 text-center">
           <div>
-            <p className={`text-[14px] font-semibold ${error ? "text-[#f16868]" : "text-white"}`}>
+            <p className={`text-[14px] font-semibold ${error ? "text-[#f16868]" : "text-[var(--theme-text-main)]"}`}>
               {error || "Loading faculty details..."}
             </p>
             {error && (
@@ -124,3 +124,6 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
 };
 
 export default EditFacultyCanvas;
+
+
+

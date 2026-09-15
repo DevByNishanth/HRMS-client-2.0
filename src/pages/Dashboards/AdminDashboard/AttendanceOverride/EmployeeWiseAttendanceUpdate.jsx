@@ -592,7 +592,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-[var(--theme-text-muted)]
                             "
                         />
                         <input
@@ -604,7 +604,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 )
                             }
                             placeholder="Search Employee"
-                            className="h-10 pl-11 w-[300px] rounded-lg border border-[#244061] bg-[#0d2138] text-white px-4"
+                            className="h-10 pl-11 w-[300px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-main)] px-4"
                         />
 
                         {showDropdown &&
@@ -618,8 +618,8 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     custom-scrollbar
                                     rounded-lg
                                     border
-                                    border-[#244061]
-                                    bg-[#172c46]
+                                    border-[var(--theme-border-input)]
+                                    bg-[var(--theme-bg-table-header)]
                                     shadow-xl"
                                 >
                                     {employeeSuggestions.map(
@@ -633,18 +633,18 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                         employee
                                                     )
                                                 }
-                                                className="cursor-pointer border-b border-[#244061] p-3 hover:bg-[#1f3a5c]"
+                                                className="cursor-pointer border-b border-[var(--theme-border-input)] p-3 hover:bg-[#1f3a5c]"
                                             >
                                                 <div className="flex items-center gap-3">
 
-                                                    <div className="h-10 w-10 rounded-full bg-[#3984ff] flex items-center justify-center text-white font-semibold">
+                                                    <div className="h-10 w-10 rounded-full bg-[#3984ff] flex items-center justify-center text-[var(--theme-text-main)] font-semibold">
                                                         {employee.name?.charAt(
                                                             0
                                                         )}
                                                     </div>
 
                                                     <div>
-                                                        <div className="text-white font-medium">
+                                                        <div className="text-[var(--theme-text-main)] font-medium">
                                                             {
                                                                 employee.name
                                                             }
@@ -683,7 +683,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                         />
                     </div>
 
-                    <span className="text-[#8ca1bd]">
+                    <span className="text-[var(--theme-text-muted)]">
                         to
                     </span>
 
@@ -712,7 +712,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 font-medium
                                 transition
                                 hover:bg-[#3984ff]
-                                hover:text-white
+                                hover:text-[var(--theme-text-main)]
                                 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
@@ -732,9 +732,9 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     px-4
                                     rounded-lg
                                     border
-                                    border-[#244061]
-                                    bg-[#0d2138]
-                                    text-[#8ca1bd]
+                                    border-[var(--theme-border-input)]
+                                    bg-[var(--theme-bg-input)]
+                                    text-[var(--theme-text-muted)]
                                     hover:bg-[#13263d]
                                     cursor-pointer
                                 "
@@ -748,9 +748,9 @@ export default function EmployeeWiseAttendanceUpdate() {
             </div>
 
             {/* {selectedEmployee && (
-                <div className="mx-7 mb-5 rounded-xl border border-[#244061] bg-[#172c46] p-5">
+                <div className="mx-7 mb-5 rounded-xl border border-[var(--theme-border-input)] bg-[var(--theme-bg-table-header)] p-5">
 
-                    <div className="text-xl text-white font-semibold">
+                    <div className="text-xl text-[var(--theme-text-main)] font-semibold">
                         {selectedEmployee.name}
                     </div>
 
@@ -769,11 +769,11 @@ export default function EmployeeWiseAttendanceUpdate() {
 
             <div className="overflow-hidden px-7 pb-24">
 
-                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[var(--theme-bg-card)] scrollbar-thumb-[var(--theme-border-input)]">
 
                     <table className="w-full table-fixed border-collapse">
 
-                        <thead className="sticky top-0 bg-[#172c46] text-[14px] text-[#9aacc7] z-10">
+                        <thead className="sticky top-0 bg-[var(--theme-bg-table-header)] text-[14px] text-[var(--theme-text-table-header)] z-10">
 
                             <tr>
 
@@ -824,7 +824,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                         </thead>
 
-                        <tbody className="text-[#cad7eb] text-[14px]">
+                        <tbody className="text-[var(--theme-text-table-body)] text-[14px]">
                         {
                             loading ? (
                                 <tr>
@@ -958,7 +958,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                 <div className="mt-5 flex justify-end">
                     <button
                         onClick={openOverrideModal}
-                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-white font-medium hover:bg-[#2d73e8] cursor-pointer"
+                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-[var(--theme-text-main)] font-medium hover:bg-[#2d73e8] cursor-pointer"
                     >
                         Override
                     </button>
@@ -1176,7 +1176,7 @@ export default function EmployeeWiseAttendanceUpdate() {
             />
             {/* Fixed Footer */}
 
-            {/* <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#244061] bg-[#0d2138] p-4">
+            {/* <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] p-4">
 
                 <div className="flex justify-end">
 
@@ -1184,7 +1184,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                         onClick={
                             openOverrideModal
                         }
-                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-white font-medium hover:bg-[#2d73e8]"
+                        className="rounded-lg bg-[#3984ff] px-8 py-3 text-[var(--theme-text-main)] font-medium hover:bg-[#2d73e8]"
                     >
                         Override
                     </button>
@@ -1196,3 +1196,4 @@ export default function EmployeeWiseAttendanceUpdate() {
         </>
     );
 }
+

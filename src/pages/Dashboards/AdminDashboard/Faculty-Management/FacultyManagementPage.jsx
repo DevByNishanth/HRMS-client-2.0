@@ -48,8 +48,8 @@ const typeStyles = {
 
 const defaultTypeStyle = {
   row: "hover:bg-[#123250]",
-  stripe: "border-l-[#8ca1bd]",
-  badge: "bg-[#8ca1bd1f] text-[#8ca1bd]",
+  stripe: "border-l-[var(--theme-text-muted)]",
+  badge: "bg-[var(--theme-text-muted)1f] text-[var(--theme-text-muted)]",
 };
 
 const getFacultyList = (payload) => {
@@ -119,7 +119,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-[#244061] bg-[#0d2138] px-3 pr-9 text-[14px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 pr-9 text-[14px] text-[var(--theme-text-main)] outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -408,20 +408,20 @@ const FacultyManagementPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[var(--theme-bg-main)]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[var(--theme-bg-body)] px-4 py-4 text-[var(--theme-text-main)] table-custom-scrollbar">
           <div className="mx-auto">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-[var(--theme-text-main)]">
                   Faculty Management
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-[var(--theme-text-muted)]">
                   Manage faculty records, departments, roles, and staff type.
                 </p>
               </div>
@@ -438,17 +438,17 @@ const FacultyManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddDepartmentOpen(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[#0d2138] px-4 text-sm font-semibold text-white transition hover:border-[#2563EB] hover:bg-[#132b49]"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[var(--theme-bg-input)] px-4 text-sm font-semibold text-[var(--theme-text-main)] transition hover:border-[#2563EB] hover:bg-[var(--theme-bg-hover)]"
                 >
-                  <Plus size={16} className="text-[#3984ff]" />
+                  <Plus size={16} className="text-[#2563EB]" />
                   Add department
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddDesignationOpen(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[#0d2138] px-4 text-sm font-semibold text-white transition hover:border-[#2563EB] hover:bg-[#132b49]"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-[var(--theme-bg-input)] px-4 text-sm font-semibold text-[var(--theme-text-main)] transition hover:border-[#2563EB] hover:bg-[var(--theme-bg-hover)]"
                 >
-                  <Plus size={16} className="text-[#3984ff]" />
+                  <Plus size={16} className="text-[#2563EB]" />
                   Add Designation
                 </button>
               </div>
@@ -456,24 +456,24 @@ const FacultyManagementPage = () => {
 
             </div>
 
-            <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
-              <h2 className="shrink-0 mt-2 ml-4  text-[18px] font-semibold text-white">
+            <section className="mt-5 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)]">
+              <h2 className="shrink-0 mt-2 ml-4  text-[18px] font-semibold text-[var(--theme-text-main)]">
                 Faculty List <span>({filteredFaculty.length})</span>
               </h2>
               <div className="relative z-20 flex flex-col gap-3 px-4 py-3 2xl:flex-row 2xl:items-center ">
                 <div className="grid grid-cols-5 gap-2 ">
                   <div className="relative">
-                    <Search
-                      size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
-                    />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                      placeholder="Search faculty..."
-                      className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
-                    />
+                      <Search
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]"
+                      />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(event) => setSearchQuery(event.target.value)}
+                        placeholder="Search faculty..."
+                        className="h-11 w-full rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 pl-10 text-[14px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] hover:border-[#2563EB] focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+                      />
                   </div>
 
                   <SelectFilter
@@ -510,7 +510,7 @@ const FacultyManagementPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredFaculty.length === 0}
-                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] font-medium text-[var(--theme-text-main)] transition hover:border-[#2563EB] hover:bg-[var(--theme-bg-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -531,7 +531,7 @@ const FacultyManagementPage = () => {
 
               <div className="relative z-0 max-h-[calc(100vh-275px)] overflow-auto table-custom-scrollbar">
                 {facultyError && (
-                  <div className="border-t border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
+                  <div className="border-t border-[var(--theme-border)] px-4 py-3 text-[13px] text-[#f16868]">
                     {facultyError}
                   </div>
                 )}
@@ -544,7 +544,7 @@ const FacultyManagementPage = () => {
                     <col className="w-[10%]" />
                     <col className="w-[12%]" />
                   </colgroup>
-                  <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
+                  <thead className="sticky top-0 z-10 bg-[var(--theme-bg-table-header)] text-[14px] uppercase tracking-wide text-[var(--theme-text-table-header)]">
                     <tr>
                       <th className="py-3 pl-5 pr-4 font-semibold">Name</th>
                       {/* <th className="px-4 py-3 font-semibold">Emp ID</th> */}
@@ -559,12 +559,12 @@ const FacultyManagementPage = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-[14px] text-[#cad7eb]">
+                  <tbody className="text-[14px] text-[var(--theme-text-table-body)]">
                     {isLoadingFaculty ? (
                       <tr>
                         <td
                           colSpan="6"
-                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                          className="px-4 py-8 text-center text-[var(--theme-text-muted)]"
                         >
                           Loading faculty records...
                         </td>
@@ -578,7 +578,7 @@ const FacultyManagementPage = () => {
                         return (
                           <tr
                             key={faculty._id || faculty.empId}
-                            className={`border-b border-[#132944] transition last:border-0 ${styles.row}`}
+                            className={`border-b border-[var(--theme-border)] transition last:border-0 ${styles.row}`}
                           >
                             <td className={``}>
                               <div className="flex flex-row items-center gap-3 pl-4">
@@ -633,14 +633,14 @@ const FacultyManagementPage = () => {
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                                <button
-                                  type="button"
-                                  onClick={() => handleViewFaculty(faculty)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
-                                  aria-label={`View ${name}`}
-                                  title="View"
-                                >
+                              <div className="flex items-center justify-end gap-2 text-[var(--theme-text-muted)]">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleViewFaculty(faculty)}
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--theme-bg-hover)] transition hover:bg-[#2563EB] hover:text-white"
+                                    aria-label={`View ${name}`}
+                                    title="View"
+                                  >
                                   <Eye className="h-4 w-4" />
                                 </button>
                                 {faculty.isActive && (
@@ -648,7 +648,7 @@ const FacultyManagementPage = () => {
                                     <button
                                       type="button"
                                       onClick={() => setEditingFaculty(faculty)}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/60 transition hover:bg-[#3984ff24] hover:text-white"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/60 transition hover:bg-[#3984ff24] hover:text-[var(--theme-text-main)]"
                                       aria-label={`Edit ${name}`}
                                       title="Edit"
                                     >
@@ -660,7 +660,7 @@ const FacultyManagementPage = () => {
                                         setDeleteError("");
                                         setDeletingFaculty(faculty);
                                       }}
-                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-[var(--theme-text-main)]"
                                       aria-label={`Delete ${name}`}
                                       title="Delete"
                                     >
@@ -677,7 +677,7 @@ const FacultyManagementPage = () => {
                       <tr>
                         <td
                           colSpan="6"
-                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                          className="px-4 py-8 text-center text-[var(--theme-text-muted)]"
                         >
                           No faculty records found matching your filters.
                         </td>
@@ -722,18 +722,18 @@ const FacultyManagementPage = () => {
 
       {deletingFaculty && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
-          <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
-            <header className="border-b border-[#183052] py-3 px-4">
+          <div className="w-full max-w-[420px] rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+            <header className="border-b border-[var(--theme-border)] py-3 px-4">
               <p className="text-[14px] font-semibold uppercase tracking-[0.22em] text-[#f16868]">
                 Delete Faculty
               </p>
             </header>
 
             <div classname="">
-              <h3 className="mt-2 text-[18px] font-semibold text-white px-4">
+              <h3 className="mt-2 text-[18px] font-semibold text-[var(--theme-text-main)] px-4">
                 Remove {getFacultyName(deletingFaculty)}?
               </h3>
-              <p className="mt-2 text-[13px] leading-5 text-[#9eb0cc] px-4">
+              <p className="mt-2 text-[13px] leading-5 text-[var(--theme-text-muted)] px-4">
                 This action will permanently delete the faculty record from the
                 system.
               </p>
@@ -750,7 +750,7 @@ const FacultyManagementPage = () => {
                 type="button"
                 onClick={() => setDeletingFaculty(null)}
                 disabled={isDeletingFaculty}
-                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-lg font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-6 text-lg font-medium text-[var(--theme-text-main)] transition hover:border-[#2563EB] hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -771,3 +771,5 @@ const FacultyManagementPage = () => {
 };
 
 export default FacultyManagementPage;
+
+

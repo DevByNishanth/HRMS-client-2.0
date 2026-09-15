@@ -142,7 +142,7 @@ const Sidebar = () => {
         <>
             {/* Sidebar */}
             {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
-            <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
+            <div className="w-[18%] bg-[var(--theme-bg-sidebar)] flex flex-col relative border-r border-[var(--theme-border)] h-screen z-10">
 
                 {/* Logo */}
                 <div className="px-3 py-4 mt-4">
@@ -164,24 +164,24 @@ const Sidebar = () => {
                             <div key={item.label} className="relative group">
                                 <Link
                                     to={item.path}
-                                    className={`relative w-full flex items-center gap-2 text-white text-[18px] px-3 py-2 rounded-md transition font-semibold ${active
-                                        ? 'bg-[#0b2a73]/40 hover:bg-[#0d3a8f]'
-                                        : 'bg-transparent hover:bg-[#0b2a73]'
+                                    className={`relative w-full flex items-center gap-2 text-[var(--theme-text-main)] text-[18px] px-3 py-2 rounded-md transition font-semibold ${active
+                                        ? 'bg-[#2563EB]/10 hover:bg-[#2563EB]/20 text-[#2563EB]'
+                                        : 'bg-transparent hover:bg-[var(--theme-bg-hover)]'
                                         }`}
                                 >
-                                    <Icon size={16} className="text-[#7ea6ff]" />
+                                    <Icon size={16} className={active ? "text-[#2563EB]" : "text-[var(--theme-text-muted)]"} />
                                     <span>{item.label}</span>
                                     {active && (
-                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#5b8cff] rounded-full"></div>
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#2563EB] rounded-full"></div>
                                     )}
                                 </Link>
                                 {hasSubItems && (
-                                    <div className="hidden group-hover:flex absolute left-[95%] top-0 ml-2 flex-col bg-[#0d2643] rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 min-w-[200px] overflow-hidden border border-[#213857]">
+                                    <div className="hidden group-hover:flex absolute left-[95%] top-0 ml-2 flex-col bg-[var(--theme-bg-sidebar)] rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 min-w-[200px] overflow-hidden border border-[var(--theme-border)]">
                                         {item.subItems.map((subItem) => (
                                             <Link
                                                 key={subItem.path}
                                                 to={subItem.path}
-                                                className={`px-4 py-3 text-white hover:bg-[#183052] transition text-[14px] font-medium border-b border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-[#183052] border-l-[3px] border-l-[#5b8cff]' : ''}`}
+                                                className={`px-4 py-3 text-[var(--theme-text-main)] hover:bg-[var(--theme-bg-hover)] transition text-[14px] font-medium border-b border-[var(--theme-border)] last:border-0 ${isActive(subItem.path) ? 'bg-[var(--theme-bg-hover)] border-l-[3px] border-l-[#2563EB]' : ''}`}
                                             >
                                                 {subItem.label}
                                             </Link>
@@ -198,7 +198,7 @@ const Sidebar = () => {
                             logout();
                             navigate('/');
                         }}
-                        className="my-2 px-4 py-2 w-full bg-[#0b2a73] text-white rounded-md hover:bg-[#0d3a8f] flex items-center justify-center gap-2"
+                        className="my-2 px-4 py-2 w-full bg-[#2563EB] text-white rounded-md hover:bg-[#1d4ed8] flex items-center justify-center gap-2 transition"
                     >
                         <LogOut size={16} />
                         Logout

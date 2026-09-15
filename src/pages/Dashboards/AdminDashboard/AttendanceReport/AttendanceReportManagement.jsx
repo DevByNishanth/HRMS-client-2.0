@@ -25,9 +25,9 @@ const yearOptions = [2024, 2025, 2026, 2027, 2028];
 
 const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
-const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
+const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[var(--theme-bg-body)] font-bold text-[var(--theme-text-main)]`;
 const toolbarInputBase =
-  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
+  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[var(--theme-bg-input)] px-4 text-sm font-medium text-[var(--theme-text-main)] outline-none transition-colors placeholder:text-[var(--theme-text-muted)] focus:border-[#3b82f6] focus:ring-0";
 
   const summaryRightClasses = [
     "right-[190px]", // P
@@ -78,8 +78,8 @@ function getCellClass(
   regularization = false,
 ) {
   const normalizedStatus = String(status || "").trim();
-  const baseClass = `${tableCellBase} font-medium text-white`;
-  const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
+  const baseClass = `${tableCellBase} font-medium text-[var(--theme-text-main)]`;
+  const defaultBackground = isAlternateRow ? "bg-[var(--theme-bg-card)]" : "bg-[var(--theme-bg-card)]";
   // Override takes highest priority
   if (isOverridden) {
     return `${baseClass} bg-orange-400`;
@@ -91,10 +91,10 @@ function getCellClass(
   }
   if (normalizedStatus === "A") return `${baseClass} bg-[#85444C]`;
   if (normalizedStatus === "P") return `${baseClass} bg-[#0A5D4D]`;
-  if (normalizedStatus === "OFF") return `${baseClass} bg-[#0f1e36]`;
+  if (normalizedStatus === "OFF") return `${baseClass} bg-[var(--theme-bg-card)]`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":")) return `${baseClass} bg-[#3b82f6]`;
-  return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
+  return `${baseClass} ${isWeekend ? "bg-[var(--theme-bg-card)]" : defaultBackground}`;
 }
 
 function getEmployeeList(payload) {
@@ -477,44 +477,44 @@ export default function AttendanceManagement() {
   }, [effectiveMonth, effectiveYear]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[var(--theme-bg-main)]">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
-          <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-            <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
+          <section className="flex h-full flex-col overflow-hidden rounded bg-[var(--theme-bg-body)] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+            <div className="flex items-center justify-between bg-[var(--theme-bg-body)] px-4 py-3">
               <div>
-                <h1 className="m-0 text-2xl font-black text-white">
+                <h1 className="m-0 text-2xl font-black text-[var(--theme-text-main)]">
                   Attendance Report Management
                 </h1>
               </div>
 
               <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
                   Present
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
                   Absent
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
+                  <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[var(--theme-bg-card)]" />
                   OFF
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
                   OD
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
                   Override
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-yellow-600" />
                   Regularized
                 </span>
@@ -522,10 +522,10 @@ export default function AttendanceManagement() {
             </div>
             <div className="mt-3 flex w-full flex-wrap items-center gap-2">
               <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-5">
-                <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Search</span>
                   <Search
-                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
+                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[var(--theme-text-muted)]"
                     aria-hidden="true"
                   />
                   <input
@@ -537,7 +537,7 @@ export default function AttendanceManagement() {
                   />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
@@ -550,17 +550,17 @@ export default function AttendanceManagement() {
                       <option
                         key={department}
                         value={department}
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                       >
                         {department}
                       </option>
                     ))}
                   </select>
 
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
@@ -571,13 +571,13 @@ export default function AttendanceManagement() {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-white text-[#9ca3af]"
+                      className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)] text-[var(--theme-text-muted)]"
                     >
                       Month
                     </option>
                     {monthOptions.map((month, index) => (
                       <option
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                         value={index}
                         key={month}
                       >
@@ -585,10 +585,10 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
@@ -599,13 +599,13 @@ export default function AttendanceManagement() {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-white text-[#9ca3af]"
+                      className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)] text-[var(--theme-text-muted)]"
                     >
                       Year
                     </option>
                     {yearOptions.map((year) => (
                       <option
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                         value={year}
                         key={year}
                       >
@@ -613,12 +613,12 @@ export default function AttendanceManagement() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
                 <button
                   type="button"
-                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-[var(--theme-text-main)]"
                   onClick={exportToExcel}
                 >
                   Export Excel
@@ -630,8 +630,8 @@ export default function AttendanceManagement() {
                 {errorMessage}
               </div>
             )}
-            <div className="min-h-0  flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
-              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
+            <div className="min-h-0  flex-1 overflow-auto bg-[var(--theme-bg-body)] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-[var(--theme-bg-body)] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
                 <thead>
                   <tr>
                     <th
@@ -643,7 +643,7 @@ export default function AttendanceManagement() {
                     {dates.map((date) => (
                       <th
                         key={date.key}
-                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[var(--theme-bg-body)] font-bold text-[var(--theme-text-main)]`}
                       >
                         <span className="block text-base">{date.day}</span>
                         <small className="block text-[13px] font-bold">
@@ -666,7 +666,7 @@ export default function AttendanceManagement() {
                   {isLoading && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold  text-white`}
+                        className={`${tableCellBase} h-[120px] bg-[var(--theme-bg-card)] text-sm font-bold  text-[var(--theme-text-main)]`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         Loading attendance muster...
@@ -679,15 +679,15 @@ export default function AttendanceManagement() {
                         <th
                           className={`${tableCellBase} sticky   left-0 z-20 w-[270px] min-w-[270px] ${
                             employeeIndex % 2 === 1
-                              ? "bg-[#0a1a2e]"
-                              : "bg-[#071425]"
+                              ? "bg-[var(--theme-bg-card)]"
+                              : "bg-[var(--theme-bg-body)]"
                           } px-2.5 py-1.5 text-left align-middle max-md:w-[240px] max-md:min-w-[240px]`}
                           scope="row"
                         >
-                          <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-white">
+                          <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-[var(--theme-text-main)]">
                             {employee.name} [{employee.id}]
                           </strong>
-                          <span className="mt-0.5 block overflow-hidden text-ellipsis text-xs leading-[1.35] font-bold text-white">
+                          <span className="mt-0.5 block overflow-hidden text-ellipsis text-xs leading-[1.35] font-bold text-[var(--theme-text-main)]">
                             {employee.designation}
                           </span>
                         </th>
@@ -727,9 +727,9 @@ export default function AttendanceManagement() {
                           <td
                             className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-[25]  w-[38px] min-w-[38px] ${
                               employeeIndex % 2 === 1
-                                ? "bg-[#0a1a2e]"
-                                : "bg-[#1a2847]"
-                            } font-bold text-white`}
+                                ? "bg-[var(--theme-bg-card)]"
+                                : "bg-[var(--theme-bg-card)]"
+                            } font-bold text-[var(--theme-text-main)]`}
                             key={`${employee.id}-${column}`}
                           >
                             {employee.summary?.[column] ?? 0}
@@ -740,7 +740,7 @@ export default function AttendanceManagement() {
                   {!isLoading && visibleEmployees.length === 0 && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-[120px] bg-[#1a2847] text-sm font-bold text-white`}
+                        className={`${tableCellBase} h-[120px] bg-[var(--theme-bg-card)] text-sm font-bold text-[var(--theme-text-main)]`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         No attendance records found for {monthTitle}.
@@ -774,7 +774,7 @@ export default function AttendanceManagement() {
             <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setShowPopup(false)}
-                className="rounded bg-red-500 px-4 py-2 text-white"
+                className="rounded bg-red-500 px-4 py-2 text-[var(--theme-text-main)]"
               >
                 Close
               </button>
@@ -785,3 +785,5 @@ export default function AttendanceManagement() {
     </div>
   );
 }
+
+

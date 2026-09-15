@@ -5,7 +5,7 @@ const ProfileCard = ({ title, icon: Icon, children, className = "", canEdit, onE
   return (
     <section className={`rounded-xl border border-gray-800 bg-[#111a2d] p-5 ${className}`}>
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-[15px] font-medium text-white">{title}</h2>
+        <h2 className="text-[15px] font-medium text-[var(--theme-text-main)]">{title}</h2>
         <div className="flex items-center gap-2">
           {canEdit && (
             <button

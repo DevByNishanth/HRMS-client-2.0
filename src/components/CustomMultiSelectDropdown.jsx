@@ -49,7 +49,7 @@ export default function CustomMultiSelectDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {label && (
-        <label className="block text-white mb-2">
+        <label className="block text-[var(--theme-text-main)] mb-2">
           {label}
         </label>
       )}
@@ -58,17 +58,17 @@ export default function CustomMultiSelectDropdown({
         id={id}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between cursor-pointer
+        className={`w-full h-12 px-3 rounded-lg border bg-[var(--theme-bg-input)] flex items-center justify-between cursor-pointer
           ${
             error
               ? "border-red-500"
-              : "border-blue-900"
+              : "border-[var(--theme-border-input)]"
           }`}
       >
         <span
           className={
             selectedValues.length
-              ? "text-white truncate"
+              ? "text-[var(--theme-text-main)] truncate"
               : "text-[#6f839f]"
           }
         >
@@ -86,7 +86,7 @@ export default function CustomMultiSelectDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute z-[9999] mt-2 w-full rounded-lg border border-[#244061] bg-[#0A1A2D] overflow-hidden shadow-lg">
+        <div className="absolute z-[9999] mt-2 w-full rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] overflow-hidden shadow-lg">
           {options.map((option) => {
             const selected =
               selectedValues.includes(option);
@@ -102,7 +102,7 @@ export default function CustomMultiSelectDropdown({
                   ${
                     selected
                       ? "bg-[#2563EB]/20 text-white"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                      : "text-[var(--theme-text-main)] hover:bg-[var(--theme-bg-hover)]"
                   }`}
               >
                 <span>{option}</span>

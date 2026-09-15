@@ -60,7 +60,7 @@ const FieldError = ({ message }) =>
 
 const Field = ({ label, name, value, onChange, error, required, className = "", type = "text", placeholder, disabled = false }) => (
   <label className={className}>
-    <span className="mb-2 block text-[13px] font-semibold text-white">
+    <span className="mb-2 block text-[13px] font-semibold text-[var(--theme-text-main)]">
       {label} {required && <span className="text-[#3984ff]">*</span>}
     </span>
     <input
@@ -70,7 +70,7 @@ const Field = ({ label, name, value, onChange, error, required, className = "", 
       onChange={(event) => onChange(name, event.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className={`h-11 w-full rounded-lg border bg-[#0d2138] px-3 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
+      className={`h-11 w-full rounded-lg border bg-[var(--theme-bg-input)] px-3 text-[13px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[var(--theme-border-input)]"
         } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
     />
     <FieldError message={error} />
@@ -79,7 +79,7 @@ const Field = ({ label, name, value, onChange, error, required, className = "", 
 
 const TextareaField = ({ label, name, value, onChange, error, required, className = "", placeholder }) => (
   <label className={className}>
-    <span className="mb-2 block text-[13px] font-semibold text-white">
+    <span className="mb-2 block text-[13px] font-semibold text-[var(--theme-text-main)]">
       {label} {required && <span className="text-[#3984ff]">*</span>}
     </span>
     <textarea
@@ -88,7 +88,7 @@ const TextareaField = ({ label, name, value, onChange, error, required, classNam
       onChange={(event) => onChange(name, event.target.value)}
       placeholder={placeholder}
       rows={3}
-      className={`h-auto w-full rounded-lg border bg-[#0d2138] px-3 py-2.5 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] resize-none ${error ? "border-[#f16868]" : "border-[#244061]"
+      className={`h-auto w-full rounded-lg border bg-[var(--theme-bg-input)] px-3 py-2.5 text-[13px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] resize-none ${error ? "border-[#f16868]" : "border-[var(--theme-border-input)]"
         }`}
     />
     <FieldError message={error} />
@@ -100,16 +100,16 @@ const DropdownField = ({ label, value, onChange, options, placeholder, required,
 
   return (
     <div className="relative">
-      <span className="mb-2 block text-[13px] font-semibold text-white">
+      <span className="mb-2 block text-[13px] font-semibold text-[var(--theme-text-main)]">
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[#244061]"
+        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-[var(--theme-bg-input)] px-3 text-left text-[13px] text-[var(--theme-text-main)] outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-[var(--theme-border-input)]"
           }`}
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-[var(--theme-text-main)]" : "text-[var(--theme-text-muted)]"}>
           {value || placeholder || `Select ${label.toLowerCase()}`}
         </span>
         <svg
@@ -132,7 +132,7 @@ const DropdownField = ({ label, value, onChange, options, placeholder, required,
             onClick={() => setIsOpen(false)}
             aria-label="Close dropdown"
           />
-          <div className="absolute left-0 right-0 z-40 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] top-[calc(100%+8px)]">
+          <div className="absolute left-0 right-0 z-40 overflow-hidden rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-card)] shadow-[0_18px_45px_rgba(0,0,0,0.35)] top-[calc(100%+8px)]">
             {options.map((option) => (
               <button
                 key={option}
@@ -142,8 +142,8 @@ const DropdownField = ({ label, value, onChange, options, placeholder, required,
                   setIsOpen(false);
                 }}
                 className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option
-                  ? "bg-[#132b49] text-white"
-                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                  ? "bg-[var(--theme-bg-hover)] text-[var(--theme-text-main)]"
+                  : "text-[var(--theme-text-table-body)] hover:bg-[var(--theme-bg-hover)] hover:text-[var(--theme-text-main)]"
                   }`}
               >
                 {option}
@@ -394,15 +394,15 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
 
   return (
     <section
-      className="fixed inset-0 z-50 flex justify-end bg-[#020817]/50 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex justify-end bg-[var(--theme-bg-card)]/50 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <div
-        className="flex h-full w-full flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[90%] md:w-[60%] lg:w-[50%] xl:w-[42%]"
+        className="flex h-full w-full flex-col bg-[var(--theme-bg-body)] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[90%] md:w-[60%] lg:w-[50%] xl:w-[42%]"
         onClick={(event) => event.stopPropagation()}
       >
         {/* ── Header ── */}
-        <div className="shrink-0 border-b border-[#173150] bg-[#08182a] px-5 py-4">
+        <div className="shrink-0 border-b border-[var(--theme-border)] bg-[#08182a] px-5 py-4">
           <div className="flex items-start justify-between gap-5">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a9c7ff]">
@@ -435,7 +435,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                 aria-label="Close profile edit drawer"
               >
                 <X size={17} />
@@ -444,7 +444,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
           </div>
 
           {/* Step description */}
-          <p className="mt-3 flex items-center gap-2 text-[12px] leading-5 text-[#8ca1bd]">
+          <p className="mt-3 flex items-center gap-2 text-[12px] leading-5 text-[var(--theme-text-muted)]">
             <Icon size={14} className="shrink-0 text-[#3984ff]" />
             {steps[activeStep].description}
           </p>
@@ -615,7 +615,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                 <button
                   type="button"
                   onClick={addQualification}
-                  className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[12px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white"
+                  className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[12px] font-semibold text-[var(--theme-text-table-body)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                 >
                   <Plus size={14} />
                   Add Qualification
@@ -626,10 +626,10 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                 {qualifications.map((qualification, index) => (
                   <div
                     key={index}
-                    className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-4"
+                    className="rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4"
                   >
                     <div className="mb-4 flex items-center justify-between">
-                      <h4 className="flex items-center gap-2 text-[13px] font-semibold text-white">
+                      <h4 className="flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                         <GraduationCap size={14} className="text-[#3984ff]" />
                         Qualification {index + 1}
                       </h4>
@@ -710,8 +710,8 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
           {/* Step 4 – Document & Bank Details */}
           {activeStep === 3 && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-4">
-                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <div className="rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4">
+                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                   <UserRound size={14} className="text-[#3984ff]" />
                   Government Identity
                 </h4>
@@ -733,8 +733,8 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-4">
-                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <div className="rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4">
+                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                   <Landmark size={14} className="text-[#3984ff]" />
                   Bank Details
                 </h4>
@@ -775,8 +775,8 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
           {/* Step 5 – Additional Details */}
           {activeStep === 4 && (
             <div className="space-y-4">
-              <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-4">
-                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <div className="rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4">
+                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                   <Building2 size={14} className="text-[#3984ff]" />
                   Employment Details
                 </h4>
@@ -815,8 +815,8 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-4">
-                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <div className="rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4">
+                <h4 className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                   <UserRound size={14} className="text-[#3984ff]" />
                   Reporting Manager
                 </h4>
@@ -853,7 +853,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
         </div>
 
         {/* ── Footer ── */}
-        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--theme-border)] bg-[#08182a] px-5 py-4">
           {/* Error / Success messages */}
           <div className="flex-1">
             {submitError && (
@@ -894,7 +894,7 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                 type="button"
                 onClick={handlePrevious}
                 disabled={isFirstStep || isSubmitting}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#244061] bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-4 text-[13px] font-semibold text-[var(--theme-text-table-body)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)] disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <ArrowLeft size={14} />
                 Previous
@@ -936,3 +936,5 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
 };
 
 export default ProfileEditDrawer;
+
+

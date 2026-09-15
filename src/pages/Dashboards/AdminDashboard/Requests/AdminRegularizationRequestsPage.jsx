@@ -167,34 +167,34 @@ const AdminRegularizationRequestsPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[var(--theme-bg-main)]">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
         
-        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#071425] pb-2 px-4 mt-2">
+        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[var(--theme-bg-body)] pb-2 px-4 mt-2">
           <div>
-            <h1 className="text-xl font-medium leading-tight text-white">
+            <h1 className="text-xl font-medium leading-tight text-[var(--theme-text-main)]">
               Regularization Requests <span className="text-[#3984ff]">({filteredRequests.length})</span>
             </h1>
-            <p className="mt-1 text-[16px] text-[#9eb0cc]">
+            <p className="mt-1 text-[16px] text-[var(--theme-text-muted)]">
               Monitor and track all regularization requests across the institution.
             </p>
           </div>
         </div>
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[var(--theme-bg-body)] px-4 py-4 text-[var(--theme-text-main)] table-custom-scrollbar">
           
           {/* Filter Bar */}
-          <div className="mb-4 flex flex-wrap items-center gap-4 rounded-xl border border-[#183052] bg-[#0a1a2d] p-4">
+          <div className="mb-4 flex flex-wrap items-center gap-4 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-4">
             <div className="relative flex-1 min-w-[200px] max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]" size={16} />
               <input
                 type="text"
                 placeholder="Search by name or emp ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-[38px] w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-10 pr-4 text-[14px] text-white outline-none placeholder:text-[#6f839f] focus:border-[#3984ff]"
+                className="h-[38px] w-full rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] pl-10 pr-4 text-[14px] text-[var(--theme-text-main)] outline-none placeholder:text-[var(--theme-text-muted)] focus:border-[#3984ff]"
               />
             </div>
             
@@ -202,20 +202,20 @@ const AdminRegularizationRequestsPage = () => {
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-muted)] outline-none [color-scheme:dark]"
             />
-            <span className="text-[#9eb0cc]">to</span>
+            <span className="text-[var(--theme-text-muted)]">to</span>
             <input
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-muted)] outline-none [color-scheme:dark]"
             />
             
             <select
               value={filterDepartment}
               onChange={(e) => setFilterDepartment(e.target.value)}
-              className="h-[38px] rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] text-white outline-none"
+              className="h-[38px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-main)] outline-none"
             >
               {departments.map(dept => (
                 <option key={dept} value={dept}>{dept}</option>
@@ -225,7 +225,7 @@ const AdminRegularizationRequestsPage = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="h-[38px] rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] text-white outline-none"
+              className="h-[38px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-main)] outline-none"
             >
               {statuses.map(status => (
                 <option key={status} value={status}>{status}</option>
@@ -235,7 +235,7 @@ const AdminRegularizationRequestsPage = () => {
             <select
               value={filterApprovalLevel}
               onChange={(e) => setFilterApprovalLevel(e.target.value)}
-              className="h-[38px] rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] text-white outline-none"
+              className="h-[38px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-main)] outline-none"
             >
               <option disabled>Current Level</option>
               {approvalLevels.map(level => (
@@ -246,20 +246,20 @@ const AdminRegularizationRequestsPage = () => {
             <button
               onClick={handleExportClick}
               disabled={filteredRequests.length === 0}
-              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:opacity-50"
+              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-4 text-[14px] font-medium text-[var(--theme-text-main)] transition hover:border-[#3984ff] hover:bg-[var(--theme-bg-hover)] disabled:opacity-50"
             >
               <Download size={16} />
               Export
             </button>
           </div>
 
-          <section className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
+          <section className="rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)]">
             <div 
               className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar"
               onScroll={handleScroll}
             >
               <table className="w-full min-w-[900px] border-collapse text-left">
-                <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+                <thead className="sticky top-0 z-10 bg-[var(--theme-bg-table-header)] text-[12px] uppercase tracking-wide text-[var(--theme-text-table-header)]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Employee</th>
                     <th className="px-4 py-3 font-semibold">Department</th>
@@ -271,14 +271,14 @@ const AdminRegularizationRequestsPage = () => {
                     <th className="px-4 py-3 text-right font-semibold">Action</th>
                   </tr>
                 </thead>
-                <tbody className="text-[12px] text-[#cad7eb]">
+                <tbody className="text-[12px] text-[var(--theme-text-table-body)]">
                   {filteredRequests.length > 0 ? (
                     filteredRequests.slice(0, visibleCount).map((req, index) => {
                       const status = req.status || "Pending";
 
                       return (
-                        <tr key={index} className="border-b border-[#132944] last:border-0 hover:bg-[#132944]/50">
-                          <td className="px-4 py-3 font-semibold text-white">
+                        <tr key={index} className="border-b border-[var(--theme-border)] last:border-0 hover:bg-[var(--theme-border)]/50">
+                          <td className="px-4 py-3 font-semibold text-[var(--theme-text-main)]">
                             <div className="flex items-center gap-2">
                               {/* <img src={userImg} alt="" className="h-8 w-8 rounded-full" /> */}
                               <div>
@@ -304,7 +304,7 @@ const AdminRegularizationRequestsPage = () => {
                           <td className="px-4 py-3 text-right">
                             <button
                               onClick={() => setSelectedRequest(req)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] hover:bg-[#183052] hover:text-white"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] hover:bg-[var(--theme-border)] hover:text-[var(--theme-text-main)]"
                             >
                               <Eye className="h-4 w-4" />
                             </button>
@@ -314,12 +314,12 @@ const AdminRegularizationRequestsPage = () => {
                     })
                   ) : !isLoading ? (
                     <tr>
-                      <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">No requests found.</td>
+                      <td colSpan="7" className="px-4 py-8 text-center text-[var(--theme-text-muted)]">No requests found.</td>
                     </tr>
                   ) : null}
                   {isLoading && (
                     <tr>
-                      <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">Loading...</td>
+                      <td colSpan="7" className="px-4 py-8 text-center text-[var(--theme-text-muted)]">Loading...</td>
                     </tr>
                   )}
                 </tbody>
@@ -342,3 +342,5 @@ const AdminRegularizationRequestsPage = () => {
 };
 
 export default AdminRegularizationRequestsPage;
+
+

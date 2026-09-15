@@ -53,7 +53,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-[#244061] bg-[#0d2138] px-3 pr-9 text-[14px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 pr-9 text-[14px] text-[var(--theme-text-main)] outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -191,28 +191,28 @@ const TeamsPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[var(--theme-bg-main)]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[var(--theme-bg-body)] px-4 py-4 text-[var(--theme-text-main)] table-custom-scrollbar">
           <div className="mx-auto">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-[var(--theme-text-main)]">
                   Team Management
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-[var(--theme-text-muted)]">
                   Explore every team within the organization.
                 </p>
               </div>
             </div>
 
-            <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <section className="mt-5 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)]">
               <div className="relative z-20 flex flex-col gap-3 px-4 py-3 2xl:flex-row 2xl:items-center 2xl:justify-between">
-                <h2 className="shrink-0 text-[18px] font-semibold text-white">
+                <h2 className="shrink-0 text-[18px] font-semibold text-[var(--theme-text-main)]">
                   Faculty List{" "}
                   <span>({sortedFaculty.length})</span>
                 </h2>
@@ -222,20 +222,20 @@ const TeamsPage = () => {
                   <div className="relative">
                     <Search
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]"
                     />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search by name, ID, designation, or reporting manager..."
-                      className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 pr-9 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 pl-10 pr-9 text-[14px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f839f] hover:text-white transition"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text-main)] transition"
                         aria-label="Clear search"
                       >
                         <X size={14} />
@@ -257,7 +257,7 @@ const TeamsPage = () => {
                   type="button"
                   onClick={handleExportClick}
                   disabled={sortedFaculty.length === 0}
-                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[14px] font-medium text-[var(--theme-text-main)] transition hover:border-[#3984ff] hover:bg-[var(--theme-bg-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Download size={16} />
                   Export
@@ -274,7 +274,7 @@ const TeamsPage = () => {
 
               <div className="relative z-0 max-h-[calc(100vh-275px)] overflow-auto table-custom-scrollbar">
                 {facultyError && (
-                  <div className="border-t border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
+                  <div className="border-t border-[var(--theme-border)] px-4 py-3 text-[13px] text-[#f16868]">
                     {facultyError}
                   </div>
                 )}
@@ -287,7 +287,7 @@ const TeamsPage = () => {
                     <col className="w-[22%]" />
                     <col className="w-[12%]" />
                   </colgroup> */}
-                  <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
+                  <thead className="sticky top-0 z-10 bg-[var(--theme-bg-table-header)] text-[14px] uppercase tracking-wide text-[var(--theme-text-table-header)]">
                     <tr>
                       <th className="py-3 pl-5 pr-4 font-semibold">Name</th>
                       <th className="px-4 py-3 font-semibold">Emp ID</th>
@@ -296,12 +296,12 @@ const TeamsPage = () => {
                       <th className="px-4 py-3 text-right font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="text-[14px] text-[#cad7eb]">
+                  <tbody className="text-[14px] text-[var(--theme-text-table-body)]">
                     {isLoadingFaculty ? (
                       <tr>
                         <td
                           colSpan="5"
-                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                          className="px-4 py-8 text-center text-[var(--theme-text-muted)]"
                         >
                           Loading faculty records...
                         </td>
@@ -316,7 +316,7 @@ const TeamsPage = () => {
                         return (
                           <tr
                             key={faculty._id || faculty.empId}
-                            className={`border-b border-[#132944] transition last:border-0 ${
+                            className={`border-b border-[var(--theme-border)] transition last:border-0 ${
                               isHod
                                 ? "bg-emerald-700/40 hover:bg-emerald-700/60"
                                 : "hover:bg-[#0a2742]"
@@ -328,7 +328,7 @@ const TeamsPage = () => {
                                   {avatarLetter}
                                 </span>
                                 <div className="min-w-0">
-                                  <span className="block truncate font-medium text-white">
+                                  <span className="block truncate font-medium text-[var(--theme-text-main)]">
                                     {name}
                                     {isHod && (
                                       <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-[#3984ff1f] px-2 py-0.5 text-[10px] font-semibold text-[#3984ff]">
@@ -359,7 +359,7 @@ const TeamsPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleViewProfile(faculty)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#8ca1bd] transition hover:bg-[#183052] hover:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[var(--theme-text-muted)] transition hover:bg-[var(--theme-border)] hover:text-[var(--theme-text-main)]"
                                   aria-label={`View profile for ${name}`}
                                   title="View Profile"
                                 >
@@ -374,7 +374,7 @@ const TeamsPage = () => {
                       <tr>
                         <td
                           colSpan="5"
-                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                          className="px-4 py-8 text-center text-[var(--theme-text-muted)]"
                         >
                           {searchQuery || departmentFilter !== "All"
                             ? "No faculty records found matching your filters."
@@ -394,3 +394,5 @@ const TeamsPage = () => {
 };
 
 export default TeamsPage;
+
+

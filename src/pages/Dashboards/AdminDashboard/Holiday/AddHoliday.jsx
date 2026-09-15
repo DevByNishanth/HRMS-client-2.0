@@ -222,35 +222,35 @@ export default function AddHoliday({
             onClick={onClose}
         />
 
-        <div className="absolute right-0 top-0 h-full w-[500px] bg-[#020817] shadow-2xl flex flex-col">
+        <div className="absolute right-0 top-0 h-full w-[500px] bg-[var(--theme-bg-card)] shadow-2xl flex flex-col">
             {/* Header */}
-            <div className="flex justify-between items-center border-b border-blue-900 px-6 py-5">
+            <div className="flex justify-between items-center border-b border-[var(--theme-border)] px-6 py-5">
                 <div>
                     <p className="text-blue-400 text-xs uppercase tracking-widest">
                     Holiday Management
                     </p>
 
-                    <h2 className="text-white text-xl font-semibold">
+                    <h2 className="text-[var(--theme-text-main)] text-xl font-semibold">
                     {isEdit ? "Edit Holiday" : "Create Holiday"}
                     </h2>
                 </div>
 
                 <button
                     onClick={onClose}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--theme-bg-hover)] text-[var(--theme-text-main)] cursor-pointer"
                 >
                     <X size={20} />
                 </button>
             </div>
-            <div className="px-6 py-4  border-[#183052]">
-                <div className="flex w-full rounded-xl border border-[#183052] bg-[#071a2f] p-1">
+            <div className="px-6 py-4  border-[var(--theme-border)]">
+                <div className="flex w-full rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-header)] p-1">
                     <button
                         type="button"
                         onClick={() => setActiveTab("form")}
                         className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "form"
                                 ? "bg-[#2563EB] text-white"
-                                : "text-[#9eb0cc]"
+                                : "text-[var(--theme-text-muted)]"
                         }`}
                     >
                         Form
@@ -262,7 +262,7 @@ export default function AddHoliday({
                         className={`flex-1 h-11 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "bulk"
                                 ? "bg-[#2563EB] text-white"
-                                : "text-[#9eb0cc]"
+                                : "text-[var(--theme-text-muted)]"
                         }`}
                     >
                         Bulk Upload
@@ -276,7 +276,7 @@ export default function AddHoliday({
                     <div className="space-y-5">
                         {/* Holiday Name */}
                         <div>
-                            <label className="block text-white mb-2">
+                            <label className="block text-[var(--theme-text-main)] mb-2">
                             Holiday Name
                             </label>
 
@@ -286,7 +286,7 @@ export default function AddHoliday({
                             value={formData.holidayName}
                             onChange={handleChange}
                             placeholder="Enter Holiday Name"
-                            className="w-full rounded-lg p-3 text-white bg-[#0D2138] border border-blue-900 outline-none"
+                            className="w-full rounded-lg p-3 text-[var(--theme-text-main)] bg-[var(--theme-bg-input)] border border-[var(--theme-border)] outline-none"
                             />
 
                             <ErrorMsg msg={errors.holidayName} />
@@ -391,7 +391,7 @@ export default function AddHoliday({
                 {activeTab === "bulk" && (
                     <div>
                         <div className="mt-3">
-                            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+                            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                                 <Paperclip
                                     size={15}
                                     className="text-[#3984ff]"
@@ -401,18 +401,18 @@ export default function AddHoliday({
 
                             <label
                                 htmlFor="holiday-upload"
-                                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-[#345276] bg-[#0d2138] px-4 py-8 text-center transition hover:border-[#3984ff] hover:bg-[#102640]"
+                                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-[#345276] bg-[var(--theme-bg-input)] px-4 py-8 text-center transition hover:border-[#3984ff] hover:bg-[var(--theme-bg-hover)]"
                             >
                                 <UploadCloud
                                     size={26}
                                     className="text-[#6ea1ff]"
                                 />
 
-                                <span className="mt-2 text-[13px] font-semibold text-white">
+                                <span className="mt-2 text-[13px] font-semibold text-[var(--theme-text-main)]">
                                     Click to upload holiday file
                                 </span>
 
-                                <span className="mt-1 text-[11px] text-[#8ca1bd]">
+                                <span className="mt-1 text-[11px] text-[var(--theme-text-muted)]">
                                     Excel (.xlsx/.xls) supported
                                 </span>
 
@@ -431,21 +431,21 @@ export default function AddHoliday({
                                         (attachment) => (
                                             <div
                                                 key={attachment.id}
-                                                className="flex items-center gap-3 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-2"
+                                                className="flex items-center gap-3 rounded-lg border border-[#1d395e] bg-[var(--theme-bg-card)] p-2"
                                             >
-                                                <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#132b49] text-[#6ea1ff]">
+                                                <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--theme-bg-hover)] text-[#6ea1ff]">
                                                     <File size={18} />
                                                 </div>
 
                                                 <div className="flex-1">
-                                                    <p className="truncate text-[12px] font-semibold text-white">
+                                                    <p className="truncate text-[12px] font-semibold text-[var(--theme-text-main)]">
                                                         {
                                                             attachment.file
                                                                 .name
                                                         }
                                                     </p>
 
-                                                    <p className="text-[11px] text-[#8ca1bd]">
+                                                    <p className="text-[11px] text-[var(--theme-text-muted)]">
                                                         {formatFileSize(
                                                             attachment
                                                                 .file
@@ -461,7 +461,7 @@ export default function AddHoliday({
                                                             attachment.id
                                                         )
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#8ca1bd] hover:bg-[#183052] hover:text-white"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--theme-text-muted)] hover:bg-[var(--theme-border)] hover:text-[var(--theme-text-main)]"
                                                 >
                                                     <X size={15} />
                                                 </button>
@@ -476,11 +476,11 @@ export default function AddHoliday({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
+            <div className="border-t border-[var(--theme-border)] bg-[var(--theme-bg-header)] p-5 flex justify-between">
                 <button
                     onClick={onClose}
                     disabled={loading}
-                    className="px-5 py-2 rounded-lg border border-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="px-5 py-2 rounded-lg border border-gray-500 text-[var(--theme-text-main)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                     Cancel
                 </button>
@@ -515,3 +515,5 @@ export default function AddHoliday({
         </div>
     );
 }
+
+

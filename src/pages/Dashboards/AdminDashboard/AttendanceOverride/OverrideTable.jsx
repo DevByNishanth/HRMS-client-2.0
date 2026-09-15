@@ -320,7 +320,7 @@ export default function OverrideTable({ data = [] }) {
             {/* Filters */}
 
             <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex flex-wrap items-center justify-between gap-4">
-                <h1 className="text-[18px] font-semibold text-white">
+                <h1 className="text-[18px] font-semibold text-[var(--theme-text-main)]">
                     Override History ({filteredData.length})
                 </h1>
 
@@ -333,7 +333,7 @@ export default function OverrideTable({ data = [] }) {
                         />
                     </div>
 
-                    <span className="text-[#8ca1bd]">
+                    <span className="text-[var(--theme-text-muted)]">
                         to
                     </span>
 
@@ -352,7 +352,7 @@ export default function OverrideTable({ data = [] }) {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-[var(--theme-text-muted)]
                             "
                         />
                         <input
@@ -367,10 +367,10 @@ export default function OverrideTable({ data = [] }) {
                                 px-4
                                 rounded-lg
                                 border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                text-white
-                                placeholder:text-[#8ca1bd]
+                                border-[var(--theme-border-input)]
+                                bg-[var(--theme-bg-input)]
+                                text-[var(--theme-text-main)]
+                                placeholder:text-[var(--theme-text-muted)]
                                 focus:outline-none
                                 focus:border-[#3984ff]
                             "
@@ -439,7 +439,7 @@ export default function OverrideTable({ data = [] }) {
                             border-[#3984ff]
                             text-[#3984ff]
                             hover:bg-[#3984ff]
-                            hover:text-white
+                            hover:text-[var(--theme-text-main)]
                             cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
@@ -455,7 +455,7 @@ export default function OverrideTable({ data = [] }) {
                                 setDepartment("");
                                 setEmployeeCategory("");
                             }}
-                            className="flex items-center gap-2 h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
+                            className="flex items-center gap-2 h-12 px-4 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-muted)] cursor-pointer"
                         >
                             Reset Filter
                             <X size={18} />
@@ -475,11 +475,11 @@ export default function OverrideTable({ data = [] }) {
             {/* Table */}
 
             <div className="overflow-hidden">
-                <div className="max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-track-[var(--theme-bg-card)] scrollbar-thumb-[var(--theme-border-input)]">
 
                     <table className="w-full table-auto border-collapse text-left">
 
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-[var(--theme-bg-table-header)] text-[14px] uppercase tracking-wide text-[var(--theme-text-table-header)]">
 
                             <tr>
                                 <th className="px-5 py-4">
@@ -533,7 +533,7 @@ export default function OverrideTable({ data = [] }) {
 
                         </thead>
 
-                        <tbody className="text-[14px] text-[#cad7eb]">
+                        <tbody className="text-[14px] text-[var(--theme-text-table-body)]">
 
                             {filteredData.length === 0 ? (
                                 <tr>
@@ -548,7 +548,7 @@ export default function OverrideTable({ data = [] }) {
                                 filteredData.map((item, index) => (
                                     <tr
                                         key={index}
-                                        className="border-b border-[#132944]"
+                                        className="border-b border-[var(--theme-border)]"
                                     >
                                         <td className="px-5 py-3">
                                             <input
@@ -564,11 +564,11 @@ export default function OverrideTable({ data = [] }) {
 
                                         <td className="px-5 py-3">
                                             <div className="flex flex-col">
-                                                <span className="font-medium text-white">
+                                                <span className="font-medium text-[var(--theme-text-main)]">
                                                     {item.employeeName || "-"}
                                                 </span>
 
-                                                <span className="text-sm text-[#8ca1bd]">
+                                                <span className="text-sm text-[var(--theme-text-muted)]">
                                                     {item.employeeId || "-"}
                                                 </span>
                                             </div>
@@ -586,7 +586,7 @@ export default function OverrideTable({ data = [] }) {
                                             {item.attendanceDate?.includes(" to ") ? (
                                                 <div className="flex flex-col">
                                                     <span>{formatDate(item.attendanceDate.split(" to ")[0])}</span>
-                                                    <span className="text-xs text-[#8ca1bd]">to</span>
+                                                    <span className="text-xs text-[var(--theme-text-muted)]">to</span>
                                                     <span>{formatDate(item.attendanceDate.split(" to ")[1])}</span>
                                                 </div>
                                             ) : (
@@ -629,7 +629,7 @@ export default function OverrideTable({ data = [] }) {
                                         <td className="px-5 py-3">
                                             <div className="flex flex-col">
                                                 <span>{formatDate(item.overriddenOn)}</span>
-                                                <span className="text-xs text-[#8ca1bd]">
+                                                <span className="text-xs text-[var(--theme-text-muted)]">
                                                     {formatTime(item.overriddenOn)}
                                                 </span>
                                             </div>
@@ -655,3 +655,4 @@ export default function OverrideTable({ data = [] }) {
         </>
     );
 }
+

@@ -12,6 +12,56 @@ body {
     sans-serif;
 }
 
+body.theme-dark {
+  --theme-bg-main: #051424;
+  --theme-bg-body: #071425;
+  --theme-bg-card: #0a1a2d;
+  --theme-bg-header: #0d2643;
+  --theme-bg-sidebar: #0d2643;
+  --theme-bg-table-header: #172c46;
+  --theme-border: #183052;
+  --theme-border-input: #244061;
+  --theme-bg-input: #0d2138;
+  --theme-bg-hover: #132b49;
+  --theme-text-main: #ffffff;
+  --theme-text-muted: #9eb0cc;
+  --theme-text-table-header: #9aacc7;
+  --theme-text-table-body: #cad7eb;
+}
+
+body.theme-light {
+  --theme-bg-main: #f1f5f9;
+  --theme-bg-body: #f8fafc;
+  --theme-bg-card: #ffffff;
+  --theme-bg-header: #ffffff;
+  --theme-bg-sidebar: #ffffff;
+  --theme-bg-table-header: #f1f5f9;
+  --theme-border: #e2e8f0;
+  --theme-border-input: #cbd5e1;
+  --theme-bg-input: #ffffff;
+  --theme-bg-hover: #f1f5f9;
+  --theme-text-main: #0f172a;
+  --theme-text-muted: #64748b;
+  --theme-text-table-header: #475569;
+  --theme-text-table-body: #334155;
+}
+
+body.theme-light table tbody tr:nth-child(odd) {
+  background-color: #f8fafc;
+}
+
+body.theme-light table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+body.theme-dark table tbody tr:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+body.theme-dark table tbody tr:hover {
+  background-color: var(--theme-bg-hover);
+}
+
 .login-gradient {
   background: #172554;
   background: linear-gradient(

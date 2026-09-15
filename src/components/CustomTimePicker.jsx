@@ -49,21 +49,11 @@ export default function CustomTimePicker({
         <button
             type="button"
             onClick={() => setOpen((prev) => !prev)}
-            className={`
-            w-full
-            flex
-            justify-between
-            items-center
-            p-3
-            rounded-lg
-            bg-[#0D2138]
-            text-white
-            cursor-pointer
-            border
+            className={`w-full flex justify-between items-center p-3 rounded-lg bg-[var(--theme-bg-input)] text-[var(--theme-text-main)] cursor-pointer border
             ${
                 error
                 ? "border-red-500"
-                : "border-blue-900"
+                : "border-[var(--theme-border-input)]"
             }
             `}
         >
@@ -92,3 +82,4 @@ export default function CustomTimePicker({
         </div>
     );
 }
+

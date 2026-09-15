@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { UserRound, KeyRound } from "lucide-react";
+import { UserRound, KeyRound, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import ChangePasswordModal from "./ChangePasswordModal";
 import SearchBar from "./SearchBar";
+import { useTheme } from "./ThemeProvider";
 
 const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
@@ -11,12 +12,13 @@ const CommonHeader = () => {
   // console.log(decoded);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
+  const { theme, toggleTheme } = useTheme();
+
   const isAdmin = decoded.role === "admin" || decoded.role === "hr";
 
   return (
     <>
-      {/* <div className="w-full py-2.5 bg-[#001d3b] flex items-center justify-between px-4"> */}
-      <div className="w-full py-3 bg-[#0d2643] flex items-center justify-end px-4">
+      <div className="w-full py-3 bg-[var(--theme-bg-header)] flex items-center justify-end px-4 border-b border-[var(--theme-border)]">
         {/* Search Bar */}
         {/* <div className="relative ml-auto mr-4">
           <Search
@@ -63,18 +65,29 @@ const CommonHeader = () => {
 
           )}
           {isAdmin && (
-            <button
-              type="button"
-              onClick={() => setIsChangePasswordOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#d7e3ff] transition hover:bg-[#ffffff13] hover:text-white"
-              title="Change password"
-              aria-label="Change password"
-            >
-              <KeyRound
-                size={16}
-                className="text-[#d7e3ff] hover:text-white transition"
-              />
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--theme-text-muted)] transition hover:bg-[#ffffff13] hover:text-[var(--theme-text-main)]"
+                title="Toggle Theme"
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsChangePasswordOpen(true)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--theme-text-muted)] transition hover:bg-[#ffffff13] hover:text-[var(--theme-text-main)]"
+                title="Change password"
+                aria-label="Change password"
+              >
+                <KeyRound
+                  size={16}
+                  className="text-[var(--theme-text-muted)] transition"
+                />
+              </button>
+            </>
           )}
         </div>
 

@@ -104,10 +104,10 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
   if (loading) {
     return (
-      <main className="flex min-h-0 flex-1 items-center justify-center bg-[#071425] text-white">
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="animate-spin text-[#3984ff]" />
-          <p className="text-[13px] text-[#8ca1bd]">Loading profile...</p>
+          <p className="text-[13px] text-[var(--theme-text-muted)]">Loading profile...</p>
         </div>
       </main>
     );
@@ -115,7 +115,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
   if (error) {
     return (
-      <main className="flex min-h-0 flex-1 items-center justify-center bg-[#071425] text-white">
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]">
         <div className="flex flex-col items-center gap-3">
           <p className="text-[14px] text-[#f16868]">{error}</p>
         </div>
@@ -128,7 +128,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
 
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-[#071425] text-white">
+    <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]">
       <div className="">
         <ProfileHero canEdit={canEditOwnProfile} onEdit={openFullEdit} faculty={faculty} />
 
@@ -141,8 +141,8 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
                 key={tab.label}
                 onClick={() => setSelectedTab(tab.label)}
                 className={`inline-flex items-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTab === tab.label
-                  ? "bg-[#2163cc] text-white shadow-sm"
-                  : "text-[#8ca1bd] hover:text-white hover:bg-[#1a2942]"
+                  ? "bg-[#2163cc] text-[var(--theme-text-main)] shadow-sm"
+                  : "text-[var(--theme-text-muted)] hover:text-[var(--theme-text-main)] hover:bg-[#1a2942]"
                   }`}
               >
                 <Icon size={16} />
@@ -186,3 +186,4 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 };
 
 export default ProfileBody;
+

@@ -145,19 +145,19 @@ export default function LeaveBalanceBody() {
         <div className="p-6">
             {/* Header */}
             <div className="mb-5">
-                <h1 className="text-xl font-medium text-white">
+                <h1 className="text-xl font-medium text-[var(--theme-text-main)]">
                     Leave Balance Management
                 </h1>
 
-                <p className="text-[16px] text-[#9eb0cc]">
+                <p className="text-[16px] text-[var(--theme-text-muted)]">
                     Manage employee leave balances efficiently.
                 </p>
             </div>
 
             {/* Card */}
-            <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="mt-5 rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)]">
                 <div className="mb-4 flex flex-wrap items-center justify-between px-7 pt-7 pb-3">
-                    <h1 className="text-[18px] font-semibold text-white">
+                    <h1 className="text-[18px] font-semibold text-[var(--theme-text-main)]">
                         Employee Leave Balance ({leaveBalanceData.length})
                     </h1>
 
@@ -171,7 +171,7 @@ export default function LeaveBalanceBody() {
                                         left-4
                                         top-1/2
                                         -translate-y-1/2
-                                        text-[#6f839f]
+                                        text-[var(--theme-text-muted)]
                                     "
                                 />
                                 <input
@@ -184,14 +184,14 @@ export default function LeaveBalanceBody() {
                                         w-[350px]
                                         rounded-lg
                                         border
-                                        border-[#244061]
-                                        bg-[#0d2138]
+                                        border-[var(--theme-border-input)]
+                                        bg-[var(--theme-bg-input)]
                                         pl-11
                                         text-[14px]
-                                        text-white
+                                        text-[var(--theme-text-main)]
                                         outline-none
                                         transition
-                                        placeholder:text-[#6f839f]
+                                        placeholder:text-[var(--theme-text-muted)]
                                         hover:border-[#3984ff]
                                         focus:border-[#3984ff]
                                         focus:ring-2
@@ -209,8 +209,8 @@ export default function LeaveBalanceBody() {
                                         h-[300px]
                                         overflow-y-auto
                                         rounded-lg
-                                        border border-[#244061]
-                                        bg-[#0d2138]
+                                        border border-[var(--theme-border-input)]
+                                        bg-[var(--theme-bg-input)]
                                         shadow-lg
                                     "
                                 >
@@ -228,11 +228,11 @@ export default function LeaveBalanceBody() {
                                                         employee
                                                     )
                                                 }
-                                                className={`flex cursor-pointer items-center gap-3 border-b border-[#244061] px-4 py-3 text-white ${
+                                                className={`flex cursor-pointer items-center gap-3 border-b border-[var(--theme-border-input)] px-4 py-3 text-[var(--theme-text-main)] ${
                                                     highlightedIndex ===
                                                     index
-                                                        ? "bg-[#244061]"
-                                                        : "hover:bg-[#244061]"
+                                                        ? "bg-[var(--theme-border-input)]"
+                                                        : "hover:bg-[var(--theme-border-input)]"
                                                 }`}
                                             >
                                                 <div className="flex-shrink-0">
@@ -247,7 +247,7 @@ export default function LeaveBalanceBody() {
                                                             className="h-12 w-12 rounded-full object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3984ff] text-lg font-semibold text-white">
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3984ff] text-lg font-semibold text-[var(--theme-text-main)]">
                                                             {employee.name
                                                                 ?.charAt(
                                                                     0
@@ -264,7 +264,7 @@ export default function LeaveBalanceBody() {
                                                         }
                                                     </span>
 
-                                                    <span className="text-xs text-[#6f839f]">
+                                                    <span className="text-xs text-[var(--theme-text-muted)]">
                                                         {
                                                             employee.empId
                                                         }
@@ -294,7 +294,7 @@ export default function LeaveBalanceBody() {
                                     border-[#3984ff]
                                     text-[#3984ff]
                                     hover:bg-[#3984ff]
-                                    hover:text-white
+                                    hover:text-[var(--theme-text-main)]
                                     cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                                 "
                             >
@@ -309,9 +309,9 @@ export default function LeaveBalanceBody() {
                                     flex items-center gap-2
                                     h-11 px-4
                                     rounded-lg
-                                    border border-[#244061]
-                                    bg-[#0d2138]
-                                    text-[#8ca1bd]
+                                    border border-[var(--theme-border-input)]
+                                    bg-[var(--theme-bg-input)]
+                                    text-[var(--theme-text-muted)]
                                     cursor-pointer
                                 "
                             >
@@ -339,12 +339,12 @@ export default function LeaveBalanceBody() {
                             setLeaveBalanceData={setLeaveBalanceData}
                         />
                     ) : (
-                        <div className="rounded-xl border border-[#183052] bg-[#071425] p-10 text-center">
-                            <p className="text-[#9eb0cc]">
+                        <div className="rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-body)] p-10 text-center">
+                            <p className="text-[var(--theme-text-muted)]">
                                 No employee selected
                             </p>
 
-                            <p className="mt-2 text-sm text-[#6f839f]">
+                            <p className="mt-2 text-sm text-[var(--theme-text-muted)]">
                                 Search and select an employee
                                 to view leave balance.
                             </p>
@@ -355,3 +355,4 @@ export default function LeaveBalanceBody() {
         </div>
     );
 }
+

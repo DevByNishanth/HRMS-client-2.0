@@ -5,7 +5,7 @@ import AttendanceOverrideBody from './AttendanceOverrideBody'
 
 export default function AttendanceOverrideManagement() {
     return (
-        <div className='flex h-screen overflow-hidden bg-[#051424]'>
+        <div className='flex h-screen overflow-hidden bg-[var(--theme-bg-main)]'>
             <Sidebar/>
             <div className="flex min-w-0 flex-1 flex-col">
                 <CommonHeader />
@@ -14,3 +14,4 @@ export default function AttendanceOverrideManagement() {
         </div>
     )
 }
+

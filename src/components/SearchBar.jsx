@@ -123,15 +123,15 @@ const SearchBar = () => {
 
             {/* Dropdown with the search results */}
             {isOpen && query.trim() !== '' && (
-                <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-80 overflow-y-auto table-custom-scrollbar rounded-xl border border-[#1e3450] bg-[#0a1a2d] shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+                <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-80 overflow-y-auto table-custom-scrollbar rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)] shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
                     {loading ? (
-                        <p className="px-4 py-3 text-sm text-[#8ca1bd]">Searching...</p>
+                        <p className="px-4 py-3 text-sm text-[var(--theme-text-muted)]">Searching...</p>
                     ) : results.length > 0 ? (
                         <div className="p-2 space-y-1">
                             {results.map((faculty) => (
                                 <div
                                     key={faculty.facultyId}
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-[#102640]"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-[var(--theme-bg-hover)]"
                                 >
                                     {/* Profile image, or initials if there is no image */}
                                     <div className="profile-container relative">
@@ -156,13 +156,13 @@ const SearchBar = () => {
                                     </div>
 
                                     <div className="min-w-0">
-                                        <p className="truncate text-[14px] font-semibold text-white">
+                                        <p className="truncate text-[14px] font-semibold text-[var(--theme-text-main)]">
                                             {getFullName(faculty)}
                                         </p>
-                                        <p className="truncate text-[12px] text-[#8ca1bd]">
+                                        <p className="truncate text-[12px] text-[var(--theme-text-muted)]">
                                             {faculty.department} · {faculty.phone}
                                         </p>
-                                        <p className="truncate text-[12px] text-[#8ca1bd]">
+                                        <p className="truncate text-[12px] text-[var(--theme-text-muted)]">
                                             {faculty.email}
                                         </p>
                                     </div>
@@ -170,7 +170,7 @@ const SearchBar = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="px-4 py-3 text-sm text-[#8ca1bd]">
+                        <p className="px-4 py-3 text-sm text-[var(--theme-text-muted)]">
                             No faculty found for &quot;{query}&quot;
                         </p>
                     )}
@@ -181,3 +181,4 @@ const SearchBar = () => {
 }
 
 export default SearchBar
+

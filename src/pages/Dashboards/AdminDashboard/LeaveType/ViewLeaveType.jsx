@@ -8,12 +8,12 @@ export default function ViewLeaveType({
     if (!leaveType) return null;
 
     const DetailRow = ({ label, value }) => (
-        <div className="py-3 border-b border-[#183052]">
-            <p className="text-sm font-medium text-[#8ca1bd]">
+        <div className="py-3 border-b border-[var(--theme-border)]">
+            <p className="text-sm font-medium text-[var(--theme-text-muted)]">
                 {label}
             </p>
 
-            <p className="mt-1 text-white text-[15px]">
+            <p className="mt-1 text-[var(--theme-text-main)] text-[15px]">
                 {value || "-"}
             </p>
         </div>
@@ -26,16 +26,16 @@ export default function ViewLeaveType({
                 onClick={onClose}
             />
 
-            <div className="fixed top-0 right-0 z-50 h-full w-[450px] bg-[#071425] border-l border-[#183052] shadow-xl">
+            <div className="fixed top-0 right-0 z-50 h-full w-[450px] bg-[var(--theme-bg-body)] border-l border-[var(--theme-border)] shadow-xl">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-[#183052]">
-                    <h2 className="text-lg font-semibold text-white">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--theme-border)]">
+                    <h2 className="text-lg font-semibold text-[var(--theme-text-main)]">
                         View Leave Type
                     </h2>
 
                     <button
                         onClick={onClose}
-                        className="text-[#8ca1bd] hover:text-white cursor-pointer"
+                        className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text-main)] cursor-pointer"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -110,3 +110,4 @@ export default function ViewLeaveType({
         </>
     );
 }
+

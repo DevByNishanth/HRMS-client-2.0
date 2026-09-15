@@ -82,22 +82,22 @@ export default function UpdateEmployeeLeaveBalance({
                 onClick={onClose}
             />
 
-            <div className="absolute right-0 top-0 h-full w-[500px] bg-[#020817] shadow-2xl flex flex-col">
+            <div className="absolute right-0 top-0 h-full w-[500px] bg-[var(--theme-bg-card)] shadow-2xl flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-blue-900 px-6 py-5">
+                <div className="flex items-center justify-between border-b border-[var(--theme-border)] px-6 py-5">
                     <div>
                         <p className="text-blue-400 text-xs uppercase tracking-widest">
                             Leave Management
                         </p>
 
-                        <h2 className="text-white text-xl font-semibold">
+                        <h2 className="text-[var(--theme-text-main)] text-xl font-semibold">
                             Update Leave Balance
                         </h2>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--theme-bg-hover)] text-[var(--theme-text-main)] cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -108,7 +108,7 @@ export default function UpdateEmployeeLeaveBalance({
 
                     {/* Leave Type - Read Only */}
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-[var(--theme-text-main)] mb-2">
                             Leave Type
                         </label>
 
@@ -123,9 +123,9 @@ export default function UpdateEmployeeLeaveBalance({
                                 w-full
                                 rounded-lg
                                 p-3
-                                bg-[#091726]
+                                bg-[var(--theme-bg-input)]
                                 border
-                                border-blue-900
+                                border-[var(--theme-border)]
                                 text-gray-400
                                 cursor-not-allowed
                                 outline-none
@@ -134,7 +134,7 @@ export default function UpdateEmployeeLeaveBalance({
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-[var(--theme-text-main)] mb-2">
                             Allocated Days
                         </label>
 
@@ -145,12 +145,12 @@ export default function UpdateEmployeeLeaveBalance({
                                 formData.allocatedDays
                             }
                             onChange={handleChange}
-                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
+                            className="w-full rounded-lg p-3 bg-[var(--theme-bg-input)] border border-[var(--theme-border)] text-[var(--theme-text-main)] outline-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-[var(--theme-text-main)] mb-2">
                             Used Days
                         </label>
 
@@ -163,9 +163,9 @@ export default function UpdateEmployeeLeaveBalance({
                                 w-full
                                 rounded-lg
                                 p-3
-                                bg-[#091726]
+                                bg-[var(--theme-bg-input)]
                                 border
-                                border-blue-900
+                                border-[var(--theme-border)]
                                 text-gray-400
                                 cursor-not-allowed
                                 outline-none
@@ -174,7 +174,7 @@ export default function UpdateEmployeeLeaveBalance({
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-[var(--theme-text-main)] mb-2">
                             Available Days
                         </label>
 
@@ -186,9 +186,9 @@ export default function UpdateEmployeeLeaveBalance({
                                 w-full
                                 rounded-lg
                                 p-3
-                                bg-[#091726]
+                                bg-[var(--theme-bg-input)]
                                 border
-                                border-blue-900
+                                border-[var(--theme-border)]
                                 text-gray-400
                                 cursor-not-allowed
                             "
@@ -203,11 +203,11 @@ export default function UpdateEmployeeLeaveBalance({
                 )}
 
                 {/* Footer */}
-                <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
+                <div className="border-t border-[var(--theme-border)] bg-[var(--theme-bg-header)] p-5 flex justify-between">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white cursor-pointer"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-[var(--theme-text-main)] cursor-pointer"
                     >
                         Cancel
                     </button>
@@ -226,3 +226,4 @@ export default function UpdateEmployeeLeaveBalance({
         </div>
     );
 }
+

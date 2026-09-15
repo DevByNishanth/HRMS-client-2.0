@@ -90,13 +90,13 @@ export default function AttendanceBody() {
 
     return (
         <>
-            <main className="h-[calc(100vh-100px)] overflow-visible bg-[#071425] px-4 py-4 text-white">
+            <main className="h-[calc(100vh-100px)] overflow-visible bg-[var(--theme-bg-body)] px-4 py-4 text-[var(--theme-text-main)]">
                 <div className="mx-auto h-full flex flex-col min-h-0">
                     <div>
-                        <h1 className="text-xl font-medium text-white">
+                        <h1 className="text-xl font-medium text-[var(--theme-text-main)]">
                             Attendance Management
                         </h1>
-                        <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                        <p className="mt-1 text-[16px] text-[var(--theme-text-muted)]">
                             Review employee attendance records.
                         </p>
                     </div>

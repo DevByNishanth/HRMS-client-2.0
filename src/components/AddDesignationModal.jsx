@@ -252,25 +252,25 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
 
   return (
     <section
-      className="fixed inset-0 z-50 flex justify-end bg-[#020817]/60 backdrop-blur-[4px]"
+      className="fixed inset-0 z-50 flex justify-end bg-[var(--theme-bg-card)]/60 backdrop-blur-[4px]"
       onClick={onClose}
     >
       <div
-        className="flex h-full w-full flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[520px]"
+        className="flex h-full w-full flex-col bg-[var(--theme-bg-body)] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[520px]"
         style={{ animation: "slideIn 0.25s ease-out" }}
         onClick={(event) => event.stopPropagation()}
       >
         {/* ============ Header ============ */}
-        <div className="shrink-0 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="shrink-0 border-b border-[var(--theme-border)] bg-[var(--theme-bg-card)] px-5 py-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                 Designation Setup
               </p>
-              <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+              <h2 className="mt-1 text-[18px] font-semibold leading-tight text-[var(--theme-text-main)]">
                 Add Designation
               </h2>
-              <p className="mt-1 text-[12px] text-[#9eb0cc]">
+              <p className="mt-1 text-[12px] text-[var(--theme-text-muted)]">
                 Create, rename, or remove designations used across the system.
               </p>
             </div>
@@ -278,7 +278,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
               aria-label="Close add designation panel"
             >
               <X size={17} />
@@ -287,25 +287,25 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
         </div>
 
         {/* ============ Search + "+" + status filter ============ */}
-        <div className="shrink-0 border-b border-[#173150] px-5 py-4">
+        <div className="shrink-0 border-b border-[var(--theme-border)] px-5 py-4">
           <div className="flex items-center gap-2">
             <div className="relative min-w-0 flex-1">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]"
               />
               <input
                 type="text"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search designations..."
-                className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-10 pr-9 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="h-11 w-full rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] pl-10 pr-9 text-[14px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#8ca1bd] transition hover:bg-[#183052] hover:text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-[var(--theme-text-muted)] transition hover:bg-[var(--theme-border)] hover:text-[var(--theme-text-main)]"
                   aria-label="Clear search"
                 >
                   <X size={14} />
@@ -337,15 +337,15 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                 className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium transition ${
                   statusFilter === option.value
                     ? "bg-[#2563EB] text-white"
-                    : "border border-[#244061] bg-[#0d2138] text-[#8ca1bd] hover:border-[#3984ff] hover:text-white"
+                    : "border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-muted)] hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                 }`}
               >
                 {option.label}
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
                     statusFilter === option.value
-                      ? "bg-white/20 text-white"
-                      : "bg-[#132b49] text-[#9eb0cc]"
+                      ? "bg-white/20 text-[var(--theme-text-main)]"
+                      : "bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)]"
                   }`}
                 >
                   {option.count}
@@ -356,7 +356,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
 
           {/* Inline "add" form revealed by the + button */}
           {showAddForm && (
-            <div className="mt-3 rounded-lg border border-[#244061] bg-[#0a1a2d] p-2.5">
+            <div className="mt-3 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-card)] p-2.5">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -375,7 +375,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                     }
                   }}
                   placeholder="Type new designation name..."
-                  className="h-10 min-w-0 flex-1 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                  className="h-10 min-w-0 flex-1 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[13px] text-[var(--theme-text-main)] outline-none transition placeholder:text-[var(--theme-text-muted)] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 />
                 <button
                   type="button"
@@ -397,7 +397,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                     setNewName("");
                     setError("");
                   }}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                   aria-label="Cancel add designation"
                 >
                   <X size={15} />
@@ -416,14 +416,14 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
 
         {/* ============ Section label ============ */}
         <div className="flex shrink-0 items-center justify-between px-5 pb-2 pt-4">
-          <h3 className="text-[14px] font-semibold text-white">
+          <h3 className="text-[14px] font-semibold text-[var(--theme-text-main)]">
             Designations{" "}
-            <span className="font-medium text-[#8ca1bd]">
+            <span className="font-medium text-[var(--theme-text-muted)]">
               ({designations.length})
             </span>
           </h3>
           {normalizedQuery && (
-            <span className="text-[12px] text-[#8ca1bd]">
+            <span className="text-[12px] text-[var(--theme-text-muted)]">
               {visibleList.length} match{visibleList.length === 1 ? "" : "es"}
             </span>
           )}
@@ -432,21 +432,21 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
         {/* ============ Scrollable list ============ */}
         <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 table-custom-scrollbar">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-[#183052] bg-[#0a1a2d] px-6 py-14 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)] px-6 py-14 text-center">
               <Loader2 size={24} className="animate-spin text-[#3984ff]" />
-              <p className="mt-3 text-[13px] text-[#9eb0cc]">
+              <p className="mt-3 text-[13px] text-[var(--theme-text-muted)]">
                 Loading designations...
               </p>
             </div>
           ) : loadError && designations.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#f1686840] bg-[#0a1a2d] px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#f1686840] bg-[var(--theme-bg-card)] px-6 py-12 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f168681f] text-[#f16868]">
                 <X size={20} />
               </span>
-              <p className="mt-3 text-[14px] font-semibold text-white">
+              <p className="mt-3 text-[14px] font-semibold text-[var(--theme-text-main)]">
                 Failed to load designations
               </p>
-              <p className="mt-1 text-[12px] leading-5 text-[#8ca1bd]">
+              <p className="mt-1 text-[12px] leading-5 text-[var(--theme-text-muted)]">
                 {loadError}
               </p>
               <button
@@ -458,7 +458,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
               </button>
             </div>
           ) : visibleList.length > 0 ? (
-            <div className="overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="overflow-hidden rounded-xl border border-[var(--theme-border)] bg-[var(--theme-bg-card)]">
               {visibleList.map((designation) => {
                 const isEditing = editingId === designation._id;
                 const isAwaitingDelete = deleteId === designation._id;
@@ -466,12 +466,12 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                 return (
                   <div
                     key={designation._id}
-                    className={`flex items-center gap-3 border-b border-[#132944] px-4 py-3 transition last:border-b-0 ${
+                    className={`flex items-center gap-3 border-b border-[var(--theme-border)] px-4 py-3 transition last:border-b-0 ${
                       isAwaitingDelete
                         ? "bg-[#f1686812]"
                         : isEditing
-                          ? "bg-[#132b49]"
-                          : "hover:bg-[#102640]"
+                          ? "bg-[var(--theme-bg-hover)]"
+                          : "hover:bg-[var(--theme-bg-hover)]"
                     }`}
                   >
                     {/* Initial-letter badge (avatar style) */}
@@ -494,18 +494,18 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                             if (event.key === "Enter") handleSaveEdit();
                             if (event.key === "Escape") resetTransientState();
                           }}
-                          className="h-10 w-full rounded-lg border border-[#3984ff] bg-[#0d2138] px-3 text-[14px] text-white outline-none focus:ring-2 focus:ring-[#3984ff33]"
+                          className="h-10 w-full rounded-lg border border-[#3984ff] bg-[var(--theme-bg-input)] px-3 text-[14px] text-[var(--theme-text-main)] outline-none focus:ring-2 focus:ring-[#3984ff33]"
                         />
                       ) : (
                         <div className="min-w-0">
-                          <p className="truncate text-[14px] font-medium text-white">
+                          <p className="truncate text-[14px] font-medium text-[var(--theme-text-main)]">
                             {designation.designationName}
                           </p>
                           <span
                             className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               designation.isActive
                                 ? "bg-[#18d3bf1f] text-[#18d3bf]"
-                                : "bg-[#8ca1bd1f] text-[#8ca1bd]"
+                                : "bg-[var(--theme-text-muted)1f] text-[var(--theme-text-muted)]"
                             }`}
                           >
                             <span className="h-[4px] w-[4px] rounded-full bg-current" />
@@ -524,7 +524,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                           className={`inline-flex h-8 items-center rounded-lg px-2.5 text-[11px] font-semibold transition ${
                             editActive
                               ? "bg-[#18d3bf1f] text-[#18d3bf] hover:bg-[#18d3bf33]"
-                              : "bg-[#8ca1bd1f] text-[#8ca1bd] hover:bg-[#8ca1bd33]"
+                              : "bg-[var(--theme-text-muted)1f] text-[var(--theme-text-muted)] hover:bg-[var(--theme-text-muted)33]"
                           }`}
                           title="Toggle active / inactive"
                         >
@@ -534,7 +534,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                           type="button"
                           onClick={handleSaveEdit}
                           disabled={isSaving}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf1f] text-[#18d3bf] transition hover:bg-[#18d3bf33] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf1f] text-[#18d3bf] transition hover:bg-[#18d3bf33] hover:text-[var(--theme-text-main)] disabled:cursor-not-allowed disabled:opacity-60"
                           aria-label="Save designation name"
                           title="Save"
                         >
@@ -547,7 +547,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                         <button
                           type="button"
                           onClick={resetTransientState}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#8ca1bd] transition hover:bg-[#183052] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[var(--theme-text-muted)] transition hover:bg-[var(--theme-border)] hover:text-[var(--theme-text-main)]"
                           aria-label="Cancel editing"
                           title="Cancel"
                         >
@@ -570,7 +570,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                         <button
                           type="button"
                           onClick={resetTransientState}
-                          className="inline-flex h-8 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[12px] font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white"
+                          className="inline-flex h-8 items-center justify-center rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-[12px] font-medium text-[var(--theme-text-table-body)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                         >
                           Cancel
                         </button>
@@ -580,7 +580,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                         <button
                           type="button"
                           onClick={() => startEditing(designation)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/70 transition hover:bg-[#3984ff24] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/70 transition hover:bg-[#3984ff24] hover:text-[var(--theme-text-main)]"
                           aria-label={`Edit ${designation.designationName}`}
                           title="Edit"
                         >
@@ -592,7 +592,7 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
                             resetTransientState();
                             setDeleteId(designation._id);
                           }}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-[var(--theme-text-main)]"
                           aria-label={`Delete ${designation.designationName}`}
                           title="Delete"
                         >
@@ -606,16 +606,16 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
             </div>
           ) : (
             // Empty states
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#244061] bg-[#0a1a2d] px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--theme-border-input)] bg-[var(--theme-bg-card)] px-6 py-12 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3984ff1f] text-[#3984ff]">
                 <Search size={20} />
               </span>
-              <p className="mt-3 text-[14px] font-semibold text-white">
+              <p className="mt-3 text-[14px] font-semibold text-[var(--theme-text-main)]">
                 {designations.length === 0
                   ? "No designations yet"
                   : "No matching designations"}
               </p>
-              <p className="mt-1 text-[12px] leading-5 text-[#8ca1bd]">
+              <p className="mt-1 text-[12px] leading-5 text-[var(--theme-text-muted)]">
                 {designations.length === 0
                   ? "Click the + button above to add your first designation."
                   : "Try a different search keyword or status filter."}
@@ -629,3 +629,4 @@ const AddDesignationModal = ({ onDesignationsChange, onClose }) => {
 };
 
 export default AddDesignationModal;
+

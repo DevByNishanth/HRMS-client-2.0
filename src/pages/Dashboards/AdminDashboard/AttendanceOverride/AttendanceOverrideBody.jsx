@@ -49,11 +49,11 @@ export default function AttendanceOverrideBody() {
                 {activeView === "history" ? (
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-semibold text-white">
+                            <h1 className="text-2xl font-semibold text-[var(--theme-text-main)]">
                                 Attendance Override
                             </h1>
 
-                            <p className="text-[#9eb0cc] mt-1">
+                            <p className="text-[var(--theme-text-muted)] mt-1">
                                 Manage Attendance efficiently and effectively.
                             </p>
                         </div>
@@ -97,7 +97,7 @@ export default function AttendanceOverrideBody() {
                             className="text-[#ffffff]"
                         />
 
-                        <span className="text-white font-medium ">
+                        <span className="text-[var(--theme-text-main)] font-medium ">
                             {activeView === "employee"
                                 ? "Employee Wise"
                                 : "Date Wise"}
@@ -105,7 +105,7 @@ export default function AttendanceOverrideBody() {
                     </div>
                 )}
             </div>
-            <div className="rounded-xl border border-[#183052]  bg-[#0a1a2d]">
+            <div className="rounded-xl border border-[var(--theme-border)]  bg-[var(--theme-bg-card)]">
                 {renderContent()}
             </div>
         </div>

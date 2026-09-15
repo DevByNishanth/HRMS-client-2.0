@@ -618,7 +618,7 @@ export default function DateWiseAttendanceUpdate() {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-[var(--theme-text-muted)]
                             "
                         />
                         <input
@@ -635,7 +635,7 @@ export default function DateWiseAttendanceUpdate() {
                                 border
                                 border-[#23476f]
                                 px-4
-                                text-white
+                                text-[var(--theme-text-main)]
                             "
                         />
                     </div>
@@ -672,7 +672,7 @@ export default function DateWiseAttendanceUpdate() {
                             font-medium
                             transition
                             hover:bg-[#3984ff]
-                            hover:text-white
+                            hover:text-[var(--theme-text-main)]
                             cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
@@ -689,9 +689,9 @@ export default function DateWiseAttendanceUpdate() {
                                 px-4
                                 rounded-lg
                                 border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                text-[#8ca1bd]
+                                border-[var(--theme-border-input)]
+                                bg-[var(--theme-bg-input)]
+                                text-[var(--theme-text-muted)]
                                 hover:bg-[#13263d]
                                 cursor-pointer
                             "
@@ -704,9 +704,9 @@ export default function DateWiseAttendanceUpdate() {
             </div>
             {/* Table */}
             <div className="overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[var(--theme-bg-card)] scrollbar-thumb-[var(--theme-border-input)]">
                     <table className="w-full table-auto border-collapse text-left">
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-[var(--theme-bg-table-header)] text-[14px] text-[var(--theme-text-table-header)]">
                             <tr>
                                 <th className="px-5 py-4">
                                     <input
@@ -729,7 +729,7 @@ export default function DateWiseAttendanceUpdate() {
                                 <th className="px-5 py-4">Session 2</th>
                             </tr>
                         </thead>
-                        <tbody className="text-[#cad7eb] text-[14px]">
+                        <tbody className="text-[var(--theme-text-table-body)] text-[14px]">
                             {filteredData.length === 0 ? (
                                 <tr>
                                     <td
@@ -786,7 +786,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-[var(--theme-text-main)]">
                                                     P
                                                 </div>
                                             ) : (
@@ -817,7 +817,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-[var(--theme-text-main)]">
                                                     P
                                                 </div>
                                             ) : (
@@ -891,7 +891,7 @@ export default function DateWiseAttendanceUpdate() {
                     className="
                         bg-[#3984ff]
                         hover:bg-[#2f72dd]
-                        text-white
+                        text-[var(--theme-text-main)]
                         px-8
                         h-11
                         rounded-lg
@@ -948,3 +948,4 @@ export default function DateWiseAttendanceUpdate() {
         </>
     );
 }
+

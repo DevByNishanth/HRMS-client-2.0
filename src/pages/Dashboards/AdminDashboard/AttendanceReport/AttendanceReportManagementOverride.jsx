@@ -27,9 +27,9 @@ const yearOptions = [2024, 2025, 2026, 2027, 2028];
 
 const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
-const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#071425] font-bold text-white`;
+const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[var(--theme-bg-body)] font-bold text-[var(--theme-text-main)]`;
 const toolbarInputBase =
-  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
+  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-[var(--theme-bg-input)] px-4 text-sm font-medium text-[var(--theme-text-main)] outline-none transition-colors placeholder:text-[var(--theme-text-muted)] focus:border-[#3b82f6] focus:ring-0";
 
   const summaryRightClasses = [
     "right-[190px]", // P
@@ -116,8 +116,8 @@ function getCellClass(
   regularization = false,
 ) {
   const normalizedStatus = String(status || "").trim();
-  const baseClass = `${tableCellBase} font-medium text-white`;
-  const defaultBackground = isAlternateRow ? "bg-[#0a1a2e]" : "bg-[#1a2847]";
+  const baseClass = `${tableCellBase} font-medium text-[var(--theme-text-main)]`;
+  const defaultBackground = isAlternateRow ? "bg-[var(--theme-bg-card)]" : "bg-[var(--theme-bg-card)]";
   if (isOverridden) {
     return `${baseClass} bg-orange-400`;
   }
@@ -126,10 +126,10 @@ function getCellClass(
   }
   if (normalizedStatus === "A") return `${baseClass} bg-[#85444C]`;
   if (normalizedStatus === "P") return `${baseClass} bg-[#0A5D4D]`;
-  if (normalizedStatus === "OFF") return `${baseClass} bg-[#0f1e36]`;
+  if (normalizedStatus === "OFF") return `${baseClass} bg-[var(--theme-bg-card)]`;
   if (normalizedStatus === "OD") return `${baseClass} bg-[#8b5cf6]`;
   if (normalizedStatus.includes(":")) return `${baseClass} bg-[#3b82f6]`;
-  return `${baseClass} ${isWeekend ? "bg-[#0f1e36]" : defaultBackground}`;
+  return `${baseClass} ${isWeekend ? "bg-[var(--theme-bg-card)]" : defaultBackground}`;
 }
 
 function getEmployeeList(payload) {
@@ -394,11 +394,11 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
         <button
           type="button"
           onClick={toggleMenu}
-          className={`flex w-full items-center justify-between rounded-lg border bg-[#071425] p-2 text-left text-sm text-white outline-none ${
-            error ? "border-[#f87171]" : "border-[#173150]"
+          className={`flex w-full items-center justify-between rounded-lg border bg-[var(--theme-bg-body)] p-2 text-left text-sm text-[var(--theme-text-main)] outline-none ${
+            error ? "border-[#f87171]" : "border-[var(--theme-border)]"
           }`}
         >
-          <span className={`font-bold ${value ? "text-white" : "text-[#8fa3bf]"}`}>
+          <span className={`font-bold ${value ? "text-[var(--theme-text-main)]" : "text-[var(--theme-text-muted)]"}`}>
             {displayValue || value || "Select"}
           </span>
           <ChevronDown
@@ -407,9 +407,9 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
         </button>
 
         {isOpen && (
-          <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+          <div className="absolute z-50 mt-1 w-full rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)] shadow-lg">
             <div
-              className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+              className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
               onClick={() => selectOption("P", null, null)}
             >
               P
@@ -421,16 +421,16 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
               onMouseLeave={() => setShowLeaveMenu(false)}
             >
               <div
-                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[#173150] ${showLeaveMenu ? "bg-[#284472]" : ""}`}
+                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--theme-border)] ${showLeaveMenu ? "bg-[#284472]" : ""}`}
               >
                 <span>A</span>
                 <span>▶</span>
               </div>
 
               {showLeaveMenu && (
-                <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+                <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)] shadow-lg">
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("A", "Medical Leave", null)}
                   >
                     ML
@@ -440,7 +440,7 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
                   </div>
 
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("A", "LOP", null)}
                   >
                     LOP
@@ -450,7 +450,7 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
                   </div>
 
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("A", "CL", null)}
                   >
                     CL
@@ -468,16 +468,16 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
               onMouseLeave={() => setShowODMenu(false)}
             >
               <div
-                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[#173150] ${showODMenu ? "bg-[#284472]" : ""}`}
+                className={`flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-[var(--theme-border)] ${showODMenu ? "bg-[#284472]" : ""}`}
               >
                 <span>OD</span>
                 <span>▶</span>
               </div>
 
               {showODMenu && (
-                <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+                <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)] shadow-lg">
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("OD", null, "Official")}
                   >
                     OD-O
@@ -487,7 +487,7 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
                   </div>
 
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("OD", null, "Exam")}
                   >
                     OD-E
@@ -497,7 +497,7 @@ function SessionDropdown({ label, value, displayValue, onSelect, renderBalance, 
                   </div>
 
                   <div
-                    className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                    className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                     onClick={() => selectOption("OD", null, "Research")}
                   >
                     OD-R
@@ -1209,54 +1209,54 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   // console.log("employees", employees);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[var(--theme-bg-main)]">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
         <main className="min-h-0 flex-1 overflow-hidden">
-          <section className="flex h-full flex-col overflow-hidden rounded bg-[#071425] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
-            <div className="flex items-center justify-between bg-[#071425] px-4 py-3">
+          <section className="flex h-full flex-col overflow-hidden rounded bg-[var(--theme-bg-body)] p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]">
+            <div className="flex items-center justify-between bg-[var(--theme-bg-body)] px-4 py-3">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() =>
                     navigate("/dashboard-admin/attendance-override")
                   }
-                  className="inline-flex items-center  gap-2 rounded-lg  px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:border-[#3b82f6] hover:bg-[#142c46]"
+                  className="inline-flex items-center  gap-2 rounded-lg  px-3 py-2 text-sm font-semibold text-[var(--theme-text-main)] shadow-sm transition-all duration-200 hover:border-[#3b82f6] hover:bg-[var(--theme-bg-table-header)]"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Back</span>
                 </button>
-                <h1 className="m-0 text-2xl font-black text-white">
+                <h1 className="m-0 text-2xl font-black text-[var(--theme-text-main)]">
                   Attendance Report Management (Override)
                 </h1>
               </div>
 
               <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A5D4D]" />
                   Present
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#85444C]" />
                   Absent
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-                  <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[#0f1e36]" />
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
+                  <span className="inline-block h-3.5 w-3.5 rounded-sm bg-[var(--theme-bg-card)]" />
                   OFF
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" />
                   OD
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-orange-400" />
                   Override
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[var(--theme-text-main)]">
                   <span className="inline-block h-2.5 w-2.5 rounded-full bg-yellow-600" />
                   Regularized
                 </span>
@@ -1264,10 +1264,10 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
             </div>
             <div className="mt-3 flex w-full flex-wrap items-center gap-2">
               <div className="grid w-full grid-cols-1 gap-2 md:grid-cols-5">
-                <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full max-w-[320px] min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Search</span>
                   <Search
-                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[#8fa3bf]"
+                    className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-[var(--theme-text-muted)]"
                     aria-hidden="true"
                   />
                   <input
@@ -1279,7 +1279,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                   />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Role</span>
                   <select
                     value={selectedDepartment}
@@ -1293,13 +1293,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       disabled
                       hidden
                       style={{ display: "none" }}
-                      className="bg-[#071425] text-[#9ca3af]"
+                      className="bg-[var(--theme-bg-body)] text-[var(--theme-text-muted)]"
                     >
                       Department
                     </option>
                     {departmentOptions.map((department) => (
                       <option
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                         value={department}
                         key={department}
                       >
@@ -1307,10 +1307,10 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Month</span>
                   <select
                     value={selectedMonth}
@@ -1321,13 +1321,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-[#9ca3af]"
+                      className="bg-[var(--theme-bg-body)] text-[var(--theme-text-muted)]"
                     >
                       Month
                     </option>
                     {monthOptions.map((month, index) => (
                       <option
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                         value={index}
                         key={month}
                       >
@@ -1335,10 +1335,10 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
-                <label className="relative w-full min-w-0 text-xs font-extrabold text-white">
+                <label className="relative w-full min-w-0 text-xs font-extrabold text-[var(--theme-text-main)]">
                   <span className="sr-only">Year</span>
                   <select
                     value={selectedYear}
@@ -1349,13 +1349,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       value=""
                       disabled
                       hidden
-                      className="bg-[#071425] text-[#9ca3af]"
+                      className="bg-[var(--theme-bg-body)] text-[var(--theme-text-muted)]"
                     >
                       Year
                     </option>
                     {yearOptions.map((year) => (
                       <option
-                        className="bg-[#071425] text-white"
+                        className="bg-[var(--theme-bg-body)] text-[var(--theme-text-main)]"
                         value={year}
                         key={year}
                       >
@@ -1363,12 +1363,12 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8fa3bf]" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--theme-text-muted)]" />
                 </label>
 
                 <button
                   type="button"
-                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-[var(--theme-text-main)]"
                   onClick={exportToExcel}
                 >
                   Export Excel
@@ -1380,8 +1380,8 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                 {errorMessage}
               </div>
             )}
-            <div className="min-h-0  flex-1 overflow-auto bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] scrollbar-thin [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
-              <table className="w-max min-w-437.5 border-separate border-spacing-0 bg-[#071425] text-sm text-[#1f2937] max-md:min-w-405 max-md:text-[13px]">
+            <div className="min-h-0  flex-1 overflow-auto bg-[var(--theme-bg-body)] [scrollbar-color:#b7c4d3_#eef2f7] scrollbar-thin [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-437.5 border-separate border-spacing-0 bg-[var(--theme-bg-body)] text-sm text-[#1f2937] max-md:min-w-405 max-md:text-[13px]">
                 <thead>
                   <tr>
                     <th
@@ -1393,7 +1393,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                     {dates.map((date) => (
                       <th
                         key={date.key}
-                        className={`${tableCellBase} sticky top-0 z-15 h-10 w-10 min-w-10 bg-[#071425] font-bold text-white`}
+                        className={`${tableCellBase} sticky top-0 z-15 h-10 w-10 min-w-10 bg-[var(--theme-bg-body)] font-bold text-[var(--theme-text-main)]`}
                       >
                         <span className="block text-base">{date.day}</span>
                         <small className="block text-[13px] font-bold">
@@ -1416,7 +1416,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                   {isLoading && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-30 bg-[#1a2847] text-sm font-bold text-white`}
+                        className={`${tableCellBase} h-30 bg-[var(--theme-bg-card)] text-sm font-bold text-[var(--theme-text-main)]`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         Loading attendance muster...
@@ -1429,15 +1429,15 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                         <th
                           className={`${tableCellBase} sticky left-0 z-20 w-67.5 min-w-67.5 ${
                             employeeIndex % 2 === 1
-                              ? "bg-[#0a1a2e]"
-                              : "bg-[#071425]"
+                              ? "bg-[var(--theme-bg-card)]"
+                              : "bg-[var(--theme-bg-body)]"
                           } px-2.5 py-1.5 text-left align-middle max-md:w-60 max-md:min-w-60`}
                           scope="row"
                         >
-                          <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-white">
+                          <strong className="block overflow-hidden text-ellipsis text-sm leading-tight font-bold text-[var(--theme-text-main)]">
                             {employee.name} [{employee.id}]
                           </strong>
-                          <span className="mt-0.5 block overflow-hidden text-ellipsis text-xs leading-[1.35] font-bold text-white">
+                          <span className="mt-0.5 block overflow-hidden text-ellipsis text-xs leading-[1.35] font-bold text-[var(--theme-text-main)]">
                             {employee.designation}
                           </span>
                         </th>
@@ -1491,9 +1491,9 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                           <td
                             className={`${tableCellBase} sticky ${summaryRightClasses[index]} z-25 w-9.5 min-w-9.5 ${
                               employeeIndex % 2 === 1
-                                ? "bg-[#0a1a2e]"
-                                : "bg-[#1a2847]"
-                            } font-bold text-white`}
+                                ? "bg-[var(--theme-bg-card)]"
+                                : "bg-[var(--theme-bg-card)]"
+                            } font-bold text-[var(--theme-text-main)]`}
                             key={`${employee.id}-${column}`}
                           >
                             {employee.summary?.[column] ?? 0}
@@ -1504,7 +1504,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                   {!isLoading && visibleEmployees.length === 0 && (
                     <tr>
                       <td
-                        className={`${tableCellBase} h-30 bg-[#1a2847] text-sm font-bold text-white`}
+                        className={`${tableCellBase} h-30 bg-[var(--theme-bg-card)] text-sm font-bold text-[var(--theme-text-main)]`}
                         colSpan={dates.length + summaryColumns.length + 1}
                       >
                         No attendance records found for {monthTitle}.
@@ -1519,7 +1519,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
       </div>
       {showPopup && (
         <div className="fixed inset-0 z-50 border-white  flex items-center justify-center bg-[#020817]/60 backdrop-blur-[4px]">
-          <div className="w-[50%] rounded-xl bg-[#071425]/80 text-white shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[#2f4764] ">
+          <div className="w-[50%] rounded-xl bg-[var(--theme-bg-body)]/80 text-[var(--theme-text-main)] shadow-[-18px_0_50px_rgba(0,0,0, 0.35)]  border border-[var(--theme-border)] ">
             <header className="border-b border-gray-700 px-4 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Attendance Details</h2>
              {/* { console.log("selectedAttendance", selectedAttendance)} */}
@@ -1556,7 +1556,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
             </section>
 
             <div className="mt-4 space-y-3 px-4">
-              <div className="rounded-lg border border-[#173150] p-3 text-sm text-white">
+              <div className="rounded-lg border border-[var(--theme-border)] p-3 text-sm text-[var(--theme-text-main)]">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="font-semibold">Current status</span>
                   <span className="font-bold">
@@ -1576,7 +1576,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     <button
       type="button"
       onClick={() => setIsOpen(!isOpen)}
-      className="w-full rounded-lg border border-[#173150] bg-[#071425] p-2 text-left text-white flex justify-between"
+      className="w-full rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)] p-2 text-left text-[var(--theme-text-main)] flex justify-between"
     >
 <span>
   {getOverrideStatusText()}
@@ -1584,10 +1584,10 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     </button>
 
     {isOpen && (
-      <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#173150] bg-[#071425]">
+      <div className="absolute z-50 mt-1 w-full rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)]">
 
         <div
-  className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+  className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
   onClick={() => {
     setEditedStatus("P");
     setLeaveType("");
@@ -1603,16 +1603,16 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
           onMouseEnter={() => setShowLeaveMenu(true)}
           onMouseLeave={() => setShowLeaveMenu(false)}
         >
-          <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[#173150]">
+          <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]">
             <span>Absent (A)</span>
             <span>▶</span>
           </div>
 
           {showLeaveMenu && (
-            <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[#173150] bg-[#071425]">
+            <div className="absolute left-full top-0 ml-1 w-48 rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)]">
 
               <div
-                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                onClick={() => {
   setEditedStatus("A");
   setLeaveType("CL");
@@ -1621,13 +1621,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 }}
               >
                 Casual Leave (CL)
-                <span className="ml-2 text-sm text-white font-semibold">
+                <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
                   {leaveBalanceLoading ? "" : renderRemainingText("CL")}
                 </span>
               </div>
 
               <div
-                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                 onClick={() => {
                   setEditedStatus("A");
                   setLeaveType("LOP");
@@ -1636,13 +1636,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                 }}
               >
                 Loss Of Pay (LOP)
-                <span className="ml-2 text-sm text-white font-semibold">
+                <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
                   {leaveBalanceLoading ? "" : renderRemainingText("LOP")}
                 </span>
               </div>
 
               <div
-                className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+                className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
                onClick={() => {
   setEditedStatus("A");
   setLeaveType("Medical Leave");
@@ -1651,7 +1651,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 }}
               >
                 Medical Leave (ML)
-                <span className="ml-2 text-sm text-white font-semibold">
+                <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
                   {leaveBalanceLoading ? "" : renderRemainingText("Medical Leave")}
                 </span>
               </div>
@@ -1664,16 +1664,16 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
   onMouseEnter={() => setShowODMenu(true)}
   onMouseLeave={() => setShowODMenu(false)}
 >
-  <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[#173150]">
+  <div className="flex justify-between cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]">
     <span>On Duty (OD)</span>
     <span>▶</span>
   </div>
 
   {showODMenu && (
-    <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[#173150] bg-[#071425] shadow-lg">
+    <div className="absolute left-full top-0 ml-1 w-52 rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-body)] shadow-lg">
 
       <div
-        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+        className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
      onClick={() => {
   setEditedStatus("OD");
   setOdType("Research");
@@ -1682,13 +1682,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 }}
       >
         OD Research
-        <span className="ml-2 text-sm text-white font-semibold">
+        <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
           {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Research")}
         </span>
       </div>
 
       <div
-        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+        className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
        onClick={() => {
   setEditedStatus("OD");
   setOdType("Exam");
@@ -1697,13 +1697,13 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 }}
       >
         OD Exam
-        <span className="ml-2 text-sm text-white font-semibold">
+        <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
           {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Exam")}
         </span>
       </div>
 
       <div
-        className="cursor-pointer px-4 py-2 hover:bg-[#173150]"
+        className="cursor-pointer px-4 py-2 hover:bg-[var(--theme-border)]"
      onClick={() => {
   setEditedStatus("OD");
   setOdType("Official");
@@ -1712,7 +1712,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
 }}
       >
         OD Official
-        <span className="ml-2 text-sm text-white font-semibold">
+        <span className="ml-2 text-sm text-[var(--theme-text-main)] font-semibold">
           {leaveBalanceLoading ? "" : renderRemainingText("On Duty - Official")}
         </span>
       </div>
@@ -1776,7 +1776,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                     }
                   }}
                   rows={3}
-                  className="w-full rounded-lg border border-[#173150] outline-none p-4 text-sm text-white bg-[#071425]"
+                  className="w-full rounded-lg border border-[var(--theme-border)] outline-none p-4 text-sm text-[var(--theme-text-main)] bg-[var(--theme-bg-body)]"
                   placeholder="Enter remarks for this override"
                 />
                 {remarksError && (
@@ -1790,7 +1790,7 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
                 <button
                   type="button"
                   onClick={() => setShowPopup(false)}
-                  className="rounded bg-gray-700 px-4 py-2 text-white"
+                  className="rounded bg-gray-700 px-4 py-2 text-[var(--theme-text-main)]"
                 >
                   Close
                 </button>
@@ -1810,3 +1810,5 @@ function getSelectedLeaveTypeId(status, leaveType, odType) {
     </div>
   );
 }
+
+

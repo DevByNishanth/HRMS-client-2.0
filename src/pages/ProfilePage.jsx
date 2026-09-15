@@ -28,7 +28,7 @@ const ProfilePage = () => {
 
     return (
         <>
-            <div className='flex h-screen overflow-hidden bg-[#071425]'>
+            <div className='flex h-screen overflow-hidden bg-[var(--theme-bg-body)]'>
                 <Sidebar />
                 {/* right container  */}
 
@@ -43,3 +43,4 @@ const ProfilePage = () => {
     )
 }
 export default ProfilePage
+
