@@ -446,15 +446,15 @@ export default function AttendanceTable() {
             ["Department", (row) => row.department],
             ["Designation", (row) => row.designation],
             ["Category", (row) => row.employeeCategory],
-            ["Date", () => formatIstDate()],
-            [
-              "Shift Start Time",
-              (row) => formatIstShiftTime(row.startTime),
-            ],
-            [
-              "Shift End Time",
-              (row) => formatIstShiftTime(row.endTime),
-            ],
+            // ["Date", () => formatIstDate()],
+            // [
+            //   "Shift Start Time",
+            //   (row) => formatIstShiftTime(row.startTime),
+            // ],
+            // [
+            //   "Shift End Time",
+            //   (row) => formatIstShiftTime(row.endTime),
+            // ],
             ["Status", (row) => row.status],
           ]
         : [
@@ -466,14 +466,14 @@ export default function AttendanceTable() {
             ["Designation", (row) => row.designation],
             ["Category", (row) => row.employeeCategory],
             ["Date", () => formatIstDate()],
-            [
-              "Shift Start Time",
-              (row) => formatIstShiftTime(row.startTime),
-            ],
-            [
-              "Shift End Time",
-              (row) => formatIstShiftTime(row.endTime),
-            ],
+            // [
+            //   "Shift Start Time",
+            //   (row) => formatIstShiftTime(row.startTime),
+            // ],
+            // [
+            //   "Shift End Time",
+            //   (row) => formatIstShiftTime(row.endTime),
+            // ],
             [
               "Check In Time",
               (row) => formatIstDateTime(row.inTime),
