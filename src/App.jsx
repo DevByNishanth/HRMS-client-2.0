@@ -40,6 +40,11 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import TeamsPage from "./pages/Dashboards/AdminDashboard/Teams/TeamsPage";
 
+import AdminLeaveRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminLeaveRequestsPage";
+import AdminPermissionRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminPermissionRequestsPage";
+import AdminRegularizationRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminRegularizationRequestsPage";
+import AdminCompOffRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminCompOffRequestsPage";
+
 function App() {
   // Role-based default route redirect
   const getRoleBasedDefaultRoute = () => {
@@ -272,6 +277,38 @@ function App() {
         />
 
         {/* Protected Routes - Admin Only */}
+        <Route
+          path="/dashboard-admin/requests/leave"
+          element={
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminLeaveRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/requests/permission"
+          element={
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminPermissionRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/requests/regularization"
+          element={
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminRegularizationRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/requests/compoff"
+          element={
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminCompOffRequestsPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard-admin"
           element={

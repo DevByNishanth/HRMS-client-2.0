@@ -121,9 +121,9 @@ const LeaveDetailsPopup = ({ leave, onClose }) => {
               </div>
 
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase ${leave.statusColor}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[14px] font-semibold uppercase text-blue-500`}
               >
-                <span className="h-[5px] w-[5px] rounded-full bg-current" />
+                <span className="h-[5px] w-[5px] rounded-full bg-current text-blue-500" />
                 {leave.status}
               </span>
             </div>
