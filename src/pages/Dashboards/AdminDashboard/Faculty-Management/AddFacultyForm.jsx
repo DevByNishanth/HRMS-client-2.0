@@ -1113,7 +1113,7 @@ const AddFacultyForm = ({
         onClick={(event) => event.stopPropagation()}
         onSubmit={(event) => event.preventDefault()}
       >
-        <div className="border-b border-[var(--theme-border)] bg-[#08182a] px-5 py-4">
+        <div className="border-b border-[var(--theme-border)] bg-[var(--theme-bg-header)] px-5 py-4">
           <div className="flex items-start justify-between gap-5">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a9c7ff]">
@@ -1134,7 +1134,7 @@ const AddFacultyForm = ({
                     onClick={() => setActiveStep(index)}
                     className={`h-1.5 flex-1 rounded-full transition ${index <= activeStep
                       ? "bg-[#3984ff]"
-                      : "bg-[#354158] hover:bg-[#596782]"
+                      : "bg-[var(--theme-bg-hover)] hover:bg-[var(--theme-border-input)]"
                       }`}
                     aria-label={`Go to ${step.title}`}
                     title={step.title}
@@ -1144,7 +1144,7 @@ const AddFacultyForm = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-hover)] text-[var(--theme-text-muted)] transition hover:border-[#3984ff] hover:text-[var(--theme-text-main)]"
                 aria-label={`Close ${isEditMode ? "edit" : "add"} faculty form`}
               >
                 <X size={17} />
@@ -1662,7 +1662,7 @@ const AddFacultyForm = ({
           )}
         </div>
 
-        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--theme-border)] bg-[#08182a] px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--theme-border)] bg-[var(--theme-bg-header)] px-5 py-4">
           <button
             type="button"
             onClick={() => setActiveStep((current) => Math.max(current - 1, 0))}
@@ -1707,6 +1707,8 @@ const AddFacultyForm = ({
 };
 
 export default AddFacultyForm;
+
+
 
 
 

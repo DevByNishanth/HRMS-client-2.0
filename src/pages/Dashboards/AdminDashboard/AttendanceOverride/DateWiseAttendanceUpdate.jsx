@@ -613,30 +613,14 @@ export default function DateWiseAttendanceUpdate() {
                     <div className="relative">
                         <Search
                             size={18}
-                            className="
-                                absolute
-                                left-4
-                                top-1/2
-                                -translate-y-1/2
-                                text-[var(--theme-text-muted)]
-                            "
+                            className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]"
                         />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search Employee"
-                            className="
-                                h-11
-                                pl-11
-                                w-[250px]
-                                rounded-lg
-                                bg-[#13263d]
-                                border
-                                border-[#23476f]
-                                px-4
-                                text-[var(--theme-text-main)]
-                            "
+                            className="h-11 pl-11 w-[250px] rounded-lg bg-[var(--theme-bg-input)] border border-[var(--theme-border-input)] px-4 text-[var(--theme-text-main)]"
                         />
                     </div>
 
@@ -662,39 +646,14 @@ export default function DateWiseAttendanceUpdate() {
                     <button
                         onClick={handleExportClick}
                         disabled={filteredData.length === 0}
-                        className="
-                            h-11
-                            px-5
-                            rounded-lg
-                            border
-                            border-[#3984ff]
-                            text-[#3984ff]
-                            font-medium
-                            transition
-                            hover:bg-[#3984ff]
-                            hover:text-[var(--theme-text-main)]
-                            cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
-                        "
+                        className="h-11 px-5 rounded-lg border border-[#3984ff] text-[#3984ff] font-medium transition hover:bg-[#3984ff] hover:text-[var(--theme-text-main)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Export Excel
                     </button>
                     {hasFilters && (
                         <button
                             onClick={resetFilters}
-                            className="
-                                flex
-                                items-center
-                                gap-2
-                                h-11
-                                px-4
-                                rounded-lg
-                                border
-                                border-[var(--theme-border-input)]
-                                bg-[var(--theme-bg-input)]
-                                text-[var(--theme-text-muted)]
-                                hover:bg-[#13263d]
-                                cursor-pointer
-                            "
+                            className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-muted)] hover:bg-[var(--theme-bg-input)] cursor-pointer"
                         >
                             Reset Filters
                             <X size={18} />
@@ -743,7 +702,7 @@ export default function DateWiseAttendanceUpdate() {
                                 filteredData.map((row, index) => (
                                     <tr
                                         key={`${row.facultyId}-${index}`}
-                                        className="border-b border-[#1d395d]"
+                                        className="border-b border-[var(--theme-bg-hover)]"
                                     >
                                         <td className="px-5 py-3">
                                             <input
@@ -786,7 +745,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-[var(--theme-text-main)]">
+                                                <div className="rounded border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 py-2 text-[var(--theme-text-main)]">
                                                     P
                                                 </div>
                                             ) : (
@@ -817,7 +776,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-[var(--theme-text-main)]">
+                                                <div className="rounded border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 py-2 text-[var(--theme-text-main)]">
                                                     P
                                                 </div>
                                             ) : (
@@ -854,17 +813,7 @@ export default function DateWiseAttendanceUpdate() {
                 </div>
             </div>
             <div
-                className="
-                    sticky
-                    bottom-0
-                    bg-[#102038]
-                    border-t
-                    border-[#23476f]
-                    p-5
-                    flex
-                    justify-end
-                    z-50
-                "
+                className="sticky bottom-0 bg-[var(--theme-bg-header)] border-t border-[var(--theme-border-input)] p-5 flex justify-end z-50"
             >
                 <button
                      onClick={() => {
@@ -888,15 +837,7 @@ export default function DateWiseAttendanceUpdate() {
                         }
                         setOverrideModal(true);
                     }}
-                    className="
-                        bg-[#3984ff]
-                        hover:bg-[#2f72dd]
-                        text-[var(--theme-text-main)]
-                        px-8
-                        h-11
-                        rounded-lg
-                        font-medium
-                    "
+                    className="bg-[#3984ff] hover:bg-[#2f72dd] text-[var(--theme-text-main)] px-8 h-11 rounded-lg font-medium"
                 >
                     Override
                 </button>
@@ -948,4 +889,6 @@ export default function DateWiseAttendanceUpdate() {
         </>
     );
 }
+
+
 

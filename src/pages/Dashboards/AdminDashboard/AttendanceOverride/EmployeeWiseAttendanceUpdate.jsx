@@ -587,13 +587,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                     <div className="relative">
                         <Search
                             size={18}
-                            className="
-                                absolute
-                                left-4
-                                top-1/2
-                                -translate-y-1/2
-                                text-[var(--theme-text-muted)]
-                            "
+                            className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--theme-text-muted)]"
                         />
                         <input
                             type="text"
@@ -609,18 +603,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                         {showDropdown &&
                             employeeSuggestions.length > 0 && (
-                                <div className="absolute
-                                    top-12
-                                    z-50
-                                    w-[300px]
-                                    max-h-[300px]
-                                    overflow-y-auto
-                                    custom-scrollbar
-                                    rounded-lg
-                                    border
-                                    border-[var(--theme-border-input)]
-                                    bg-[var(--theme-bg-table-header)]
-                                    shadow-xl"
+                                <div className="absolute top-12 z-50 w-[300px] max-h-[300px] overflow-y-auto custom-scrollbar rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-table-header)] shadow-xl"
                                 >
                                     {employeeSuggestions.map(
                                         (employee) => (
@@ -633,7 +616,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                         employee
                                                     )
                                                 }
-                                                className="cursor-pointer border-b border-[var(--theme-border-input)] p-3 hover:bg-[#1f3a5c]"
+                                                className="cursor-pointer border-b border-[var(--theme-border-input)] p-3 hover:bg-[var(--theme-bg-hover)]"
                                             >
                                                 <div className="flex items-center gap-3">
 
@@ -650,13 +633,13 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                             }
                                                         </div>
 
-                                                        <div className="text-xs text-[#9eb3cf]">
+                                                        <div className="text-xs text-[var(--theme-text-muted)]">
                                                             {
                                                                 employee.empId
                                                             }
                                                         </div>
 
-                                                        <div className="text-xs text-[#9eb3cf]">
+                                                        <div className="text-xs text-[var(--theme-text-muted)]">
                                                             {
                                                                 employee.department
                                                             }
@@ -702,19 +685,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                     {filteredAttendance.length > 0 && (
                         <button
                             onClick={handleExportClick}
-                            className="
-                                h-11
-                                px-5
-                                rounded-lg
-                                border
-                                border-[#3984ff]
-                                text-[#3984ff]
-                                font-medium
-                                transition
-                                hover:bg-[#3984ff]
-                                hover:text-[var(--theme-text-main)]
-                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
-                            "
+                            className="h-11 px-5 rounded-lg border border-[#3984ff] text-[#3984ff] font-medium transition hover:bg-[#3984ff] hover:text-[var(--theme-text-main)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Export Excel
                         </button>
@@ -724,20 +695,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                         showResetButton && (
                             <button
                                 onClick={handleReset}
-                                className="
-                                    flex
-                                    items-center
-                                    gap-2
-                                    h-11
-                                    px-4
-                                    rounded-lg
-                                    border
-                                    border-[var(--theme-border-input)]
-                                    bg-[var(--theme-bg-input)]
-                                    text-[var(--theme-text-muted)]
-                                    hover:bg-[#13263d]
-                                    cursor-pointer
-                                "
+                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] text-[var(--theme-text-muted)] hover:bg-[var(--theme-bg-input)] cursor-pointer"
                             >
                                 Reset Filters 
                                 <X size={18} />
@@ -754,12 +712,12 @@ export default function EmployeeWiseAttendanceUpdate() {
                         {selectedEmployee.name}
                     </div>
 
-                    <div className="mt-2 text-[#9eb3cf]">
+                    <div className="mt-2 text-[var(--theme-text-muted)]">
                         Employee ID :
                         {selectedEmployee.empId}
                     </div>
 
-                    <div className="text-[#9eb3cf]">
+                    <div className="text-[var(--theme-text-muted)]">
                         Department :
                         {selectedEmployee.department}
                     </div>
@@ -769,7 +727,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
             <div className="overflow-hidden px-7 pb-24">
 
-                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[var(--theme-bg-card)] scrollbar-thumb-[var(--theme-border-input)]">
+                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[var(--theme-bg-hover)] scrollbar-thin scrollbar-track-[var(--theme-bg-card)] scrollbar-thumb-[var(--theme-border-input)]">
 
                     <table className="w-full table-fixed border-collapse">
 
@@ -830,7 +788,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 <tr>
                                     <td
                                         colSpan="8"
-                                        className="py-10 text-center text-[#9eb3cf]"
+                                        className="py-10 text-center text-[var(--theme-text-muted)]"
                                     >
                                         Loading attendance...
                                     </td>
@@ -839,7 +797,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 <tr>
                                     <td
                                         colSpan="8"
-                                        className="py-10 text-center text-[#9eb3cf]"
+                                        className="py-10 text-center text-[var(--theme-text-muted)]"
                                     >
                                         {/* No Attendance Records Found */}
                                         Search Employe Name to display Attendance Records
@@ -849,7 +807,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 filteredAttendance.map((row) => (
                                     <tr
                                         key={row._id}
-                                        className="border-b border-[#1d3657]"
+                                        className="border-b border-[var(--theme-bg-hover)]"
                                     >
                                         <td className="px-3 py-3 text-center">
                                             <input
@@ -1196,4 +1154,6 @@ export default function EmployeeWiseAttendanceUpdate() {
         </>
     );
 }
+
+
 

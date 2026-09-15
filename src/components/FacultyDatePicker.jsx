@@ -124,9 +124,9 @@ const FacultyDatePicker = ({
         id={id}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-input)] px-3 text-left text-[13px] text-[var(--theme-text-main)] outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-[var(--theme-text-main)]" : "text-[#6f839f]"}>
           {value ? formatDisplayDate(value) : placeholder}
         </span>
         <CalendarDays size={16} className="text-[#3984ff] shrink-0" />
@@ -134,7 +134,7 @@ const FacultyDatePicker = ({
 
       {isOpen && (
         <div
-          className={`absolute top-full z-[9999] w-[300px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${
+          className={`absolute top-full z-[9999] w-[300px] rounded-lg border border-[var(--theme-border-input)] bg-[var(--theme-bg-card)] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${
             popupAlign === "right" ? "right-0" : "left-0"
           }`}
         >
@@ -144,7 +144,7 @@ const FacultyDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-[var(--theme-text-main)] cursor-pointer"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
@@ -158,7 +158,7 @@ const FacultyDatePicker = ({
                   setShowYearPicker(false);
                   setShowMonthPicker((prev) => !prev);
                 }}
-                className="flex w-full items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-white transition hover:bg-[#183052] cursor-pointer"
+                className="flex w-full items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-[var(--theme-text-main)] transition hover:bg-[#183052] cursor-pointer"
               >
                 {MONTH_LABELS[currentMonth]}
                 <ChevronDown
@@ -177,7 +177,7 @@ const FacultyDatePicker = ({
                   />
                   <div
                     ref={monthDropdownRef}
-                    className="absolute left-1/2 z-50 mt-1 w-40 -translate-x-1/2 rounded-lg border border-[#244061] bg-[#071425] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+                    className="absolute left-1/2 z-50 mt-1 w-40 -translate-x-1/2 rounded-lg border border-[var(--theme-border-input)] bg-[#071425] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                   >
                     <div className="grid grid-cols-2 gap-0.5 p-1.5">
                       {MONTH_SHORT.map((label, idx) => (
@@ -188,7 +188,7 @@ const FacultyDatePicker = ({
                           className={`rounded-md px-2 py-2 text-[12px] font-medium transition ${
                             idx === currentMonth
                               ? "bg-[#2563EB] text-white"
-                              : "text-[#cad7eb] hover:bg-[#183052] hover:text-white"
+                              : "text-[#cad7eb] hover:bg-[#183052] hover:text-[var(--theme-text-main)]"
                           }`}
                         >
                           {label}
@@ -208,7 +208,7 @@ const FacultyDatePicker = ({
                   setShowMonthPicker(false);
                   setShowYearPicker((prev) => !prev);
                 }}
-                className="flex items-center gap-1 rounded-md px-2 py-1.5 text-[13px] font-semibold text-white transition hover:bg-[#183052] cursor-pointer"
+                className="flex items-center gap-1 rounded-md px-2 py-1.5 text-[13px] font-semibold text-[var(--theme-text-main)] transition hover:bg-[#183052] cursor-pointer"
               >
                 {currentYear}
                 <ChevronDown
@@ -226,7 +226,7 @@ const FacultyDatePicker = ({
                     aria-label="Close year picker"
                   />                    <div
                       ref={yearDropdownRef}
-                      className="absolute right-0 z-50 mt-1 w-[130px] rounded-lg border border-[#244061] bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
+                      className="absolute right-0 z-50 mt-1 w-[130px] rounded-lg border border-[var(--theme-border-input)] bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                     >
                       <div className="max-h-[220px] overflow-y-auto py-1 table-custom-scrollbar">
                       {YEAR_RANGE.map((year) => (
@@ -237,7 +237,7 @@ const FacultyDatePicker = ({
                           className={`w-full px-3 py-2 text-left text-[12px] font-medium transition ${
                             year === currentYear
                               ? "bg-[#2563EB] text-white"
-                              : "text-[#cad7eb] hover:bg-[#183052] hover:text-white"
+                              : "text-[#cad7eb] hover:bg-[#183052] hover:text-[var(--theme-text-main)]"
                           }`}
                         >
                           {year}
@@ -253,7 +253,7 @@ const FacultyDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-[var(--theme-text-main)] cursor-pointer"
               aria-label="Next month"
             >
               <ChevronRight size={16} />
@@ -289,8 +289,8 @@ const FacultyDatePicker = ({
                     isSelected
                       ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
                       : isToday
-                        ? "text-white ring-1 ring-[#3984ff] hover:bg-[#132b49]"
-                        : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
+                        ? "text-[var(--theme-text-main)] ring-1 ring-[#3984ff] hover:bg-[#132b49]"
+                        : "text-[#cad7eb] hover:bg-[#132b49] hover:text-[var(--theme-text-main)]"
                   } ${
                     isDisabled
                       ? "cursor-not-allowed text-[#4f5f7f] opacity-40"
@@ -326,3 +326,4 @@ const FacultyDatePicker = ({
 };
 
 export default FacultyDatePicker;
+

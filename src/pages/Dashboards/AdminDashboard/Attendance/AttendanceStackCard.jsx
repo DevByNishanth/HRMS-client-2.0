@@ -8,7 +8,7 @@ const AttendanceStatCard = ({
     return (
         <div 
             onClick={onClick}
-            className={`rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)] ${onClick ? "cursor-pointer hover:border-white/20 transition-all hover:bg-[#0c1f36]" : ""}`}
+            className={`rounded-lg border border-[var(--theme-border)] bg-[var(--theme-bg-card)] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)] ${onClick ? "cursor-pointer hover:border-[var(--theme-border-input)] transition-all hover:bg-[var(--theme-bg-hover)]" : ""}`}
         >
             <div className="flex items-center justify-between gap-3">
                 <div
@@ -21,7 +21,7 @@ const AttendanceStatCard = ({
                     <Icon size={15} />
                 </div>
 
-                <p className="bg-white/6 py-1 px-2 rounded-full w-fit text-[11px] text-[var(--theme-text-main)]/40">
+                <p className="bg-[var(--theme-bg-input)] py-1 px-2 rounded-full w-fit text-[11px] text-[var(--theme-text-main)]/40">
                     Today
                 </p>
             </div>
@@ -38,3 +38,4 @@ const AttendanceStatCard = ({
 };
 
 export default AttendanceStatCard;
+
