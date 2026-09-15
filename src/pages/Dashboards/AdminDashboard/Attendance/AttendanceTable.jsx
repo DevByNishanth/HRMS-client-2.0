@@ -235,6 +235,7 @@ export default function AttendanceTable() {
       // "Shift ID": row.shiftID,
       "Employee ID": row.empId,
       "Employee Name": row.employeeName,
+      "Original Department": row.originalDepartment,
       "Department": row.department,
       "Designation": row.designation,
       "Employee Category": row.employeeCategory,
@@ -441,6 +442,7 @@ export default function AttendanceTable() {
             ["S.No", (_, index) => index + 1],
             ["Employee ID", (row) => row.empId],
             ["Name", (row) => row.employeeName],
+            ["Original Department", (row) => row.originalDepartment],
             ["Department", (row) => row.department],
             ["Designation", (row) => row.designation],
             ["Category", (row) => row.employeeCategory],
@@ -459,6 +461,7 @@ export default function AttendanceTable() {
             ["S.No", (_, index) => index + 1],
             ["Employee ID", (row) => row.empId],
             ["Name", (row) => row.employeeName],
+            ["Original Department", (row) => row.originalDepartment],
             ["Department", (row) => row.department],
             ["Designation", (row) => row.designation],
             ["Category", (row) => row.employeeCategory],
@@ -478,6 +481,7 @@ export default function AttendanceTable() {
             ["Late Minutes", (row) => row.lateMinutes],
             ["Status", (row) => row.status],
           ];
+
 
     /**
      * Group rows by department
