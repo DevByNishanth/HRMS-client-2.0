@@ -12,7 +12,7 @@ const headers = [
   "ACTION",
 ];
 
-const AdminPayrollTable = ({ tableData }) => {
+const PrincipalPayrollTable = ({ tableData }) => {
   function getMonth(monthNumber) {
     const months = [
       "Jan",
@@ -103,4 +103,4 @@ const AdminPayrollTable = ({ tableData }) => {
   );
 };
 
-export default AdminPayrollTable;
+export default PrincipalPayrollTable;
