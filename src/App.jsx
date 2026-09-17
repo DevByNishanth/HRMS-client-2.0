@@ -39,6 +39,8 @@ import Attendance from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceM
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import TeamsPage from "./pages/Dashboards/AdminDashboard/Teams/TeamsPage";
+import FacultyPayrollPage from "./pages/Dashboards/FacultyDashboard/FacultyPayrollPage";
+import AdminPayrollPage from "./pages/Dashboards/AdminDashboard/Payroll/AdminPayrollPage";
 
 import AdminLeaveRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminLeaveRequestsPage";
 import AdminPermissionRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminPermissionRequestsPage";
@@ -87,9 +89,7 @@ function App() {
 
   return (
     <>
-      
-        {/* <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />+ */}
-      
+      {/* <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />+ */}
 
       <ToastContainer
         position="top-right"
@@ -120,6 +120,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <LeavePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-faculty/payroll"
+          element={
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
+              <FacultyPayrollPage />
             </ProtectedRoute>
           }
         />
@@ -325,6 +333,15 @@ function App() {
             // <ProtectedRoute requiredRoles={['admin', 'hr']}>
             <ProtectedRoute requiredRoles={["admin", "hr"]}>
               <ShiftManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-admin/payroll"
+          element={
+            // <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminPayrollPage />
             </ProtectedRoute>
           }
         />
