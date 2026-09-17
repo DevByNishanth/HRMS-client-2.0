@@ -102,7 +102,8 @@ const ReqularizationCanvas = ({ log, onClose }) => {
 
             // Extract the date (YYYY-MM-DD) from the checkIn timestamp
             const checkInDate = new Date(log.checkIn);
-            const attendanceDate = checkInDate.toISOString().split("T")[0];
+            // const attendanceDate = checkInDate.toISOString().split("T")[0];
+            const attendanceDate = log.attendanceDate;
 
             const formData = new FormData();
             formData.append("attendanceDate", attendanceDate);

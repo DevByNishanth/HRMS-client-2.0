@@ -20,6 +20,7 @@ import {
   FingerprintPattern,
   UserPen,
   UserCheck,
+  GitPullRequestArrow
 } from "lucide-react";
 import { getRoleFromToken, logout } from "../utils/tokenUtils";
 
@@ -76,52 +77,6 @@ const Sidebar = () => {
     },
   ];
 
-  // Navigation items for Admin
-  const adminNavItems = [
-    { label: "Faculty Management", icon: Users, path: "/dashboard-admin" },
-    {
-      label: "Shift Management",
-      icon: CalendarSync,
-      path: "/dashboard-admin/shifts",
-    },
-    {
-      label: "Holiday Management",
-      icon: CalendarX2,
-      path: "/dashboard-admin/holidays",
-    },
-    {
-      label: "Leave Type Management",
-      icon: CalendarPlus2,
-      path: "/dashboard-admin/leavetype",
-    },
-    {
-      label: "Leave Balance",
-      icon: Hourglass,
-      path: "/dashboard-admin/leavebalance",
-    },
-    {
-      label: "Attendance Report",
-      icon: FingerprintPattern,
-      path: "/dashboard-admin/attendance-report",
-    },
-    {
-      label: "Attendance Override",
-      icon: UserPen,
-      path: "/dashboard-admin/attendance-override",
-    },
-    {
-      label: "Payroll",
-      icon: BadgeIndianRupee,
-      path: "/dashboard-admin/payroll",
-    },
-    {
-      label: "Attendance List",
-      icon: UserCheck,
-      path: "/dashboard-admin/attendance",
-    },
-    { label: "Teams", icon: Network, path: "/dashboard-admin/teams" },
-  ];
-
   // Navigation items for Principal
   const principalNavItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-principal" },
@@ -148,6 +103,35 @@ const Sidebar = () => {
       path: "/dashboard-principal/regularizationList",
     },
   ];
+    // Navigation items for Admin
+    const adminNavItems = [
+        { label: 'Faculty Management', icon: Users, path: '/dashboard-admin' },
+        { label: 'Shift Management', icon: CalendarSync, path: '/dashboard-admin/shifts' },
+        { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
+        { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
+        { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
+        { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
+        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
+        { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
+        { 
+            label: 'Requests', 
+            icon: GitPullRequestArrow, 
+            path: '#',
+            subItems: [
+                { label: 'Leave Requests', path: '/dashboard-admin/requests/leave' },
+                { label: 'Permission Requests', path: '/dashboard-admin/requests/permission' },
+                { label: 'Regularization Requests', path: '/dashboard-admin/requests/regularization' },
+                { label: 'Comp off Requests', path: '/dashboard-admin/requests/compoff' },
+            ]
+        },
+ {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-admin/payroll",
+    },
+        { label: 'Teams', icon: Network , path: '/dashboard-admin/teams' },
+
+    ];
 
   // Navigation items for Non-Teaching (same as Faculty)
   const nonTeachingNavItems = [
