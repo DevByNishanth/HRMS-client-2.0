@@ -20,7 +20,7 @@ import {
   FingerprintPattern,
   UserPen,
   UserCheck,
-  GitPullRequestArrow
+  GitPullRequestArrow,
 } from "lucide-react";
 import { getRoleFromToken, logout } from "../utils/tokenUtils";
 
@@ -108,35 +108,72 @@ const Sidebar = () => {
       path: "/dashboard-principal/payroll",
     },
   ];
-    // Navigation items for Admin
-    const adminNavItems = [
-        { label: 'Faculty Management', icon: Users, path: '/dashboard-admin' },
-        { label: 'Shift Management', icon: CalendarSync, path: '/dashboard-admin/shifts' },
-        { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
-        { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
-        { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
-        { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
-        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
-        { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
-        { 
-            label: 'Requests', 
-            icon: GitPullRequestArrow, 
-            path: '#',
-            subItems: [
-                { label: 'Leave Requests', path: '/dashboard-admin/requests/leave' },
-                { label: 'Permission Requests', path: '/dashboard-admin/requests/permission' },
-                { label: 'Regularization Requests', path: '/dashboard-admin/requests/regularization' },
-                { label: 'Comp off Requests', path: '/dashboard-admin/requests/compoff' },
-            ]
+  // Navigation items for Admin
+  const adminNavItems = [
+    { label: "Faculty Management", icon: Users, path: "/dashboard-admin" },
+    {
+      label: "Shift Management",
+      icon: CalendarSync,
+      path: "/dashboard-admin/shifts",
+    },
+    {
+      label: "Holiday Management",
+      icon: CalendarX2,
+      path: "/dashboard-admin/holidays",
+    },
+    {
+      label: "Leave Management",
+      icon: CalendarPlus2,
+      path: "/dashboard-admin/leavetype",
+    },
+    {
+      label: "Leave Balance",
+      icon: Hourglass,
+      path: "/dashboard-admin/leavebalance",
+    },
+    {
+      label: "Attendance Report",
+      icon: FingerprintPattern,
+      path: "/dashboard-admin/attendance-report",
+    },
+    {
+      label: "Attendance Override",
+      icon: UserPen,
+      path: "/dashboard-admin/attendance-override",
+    },
+    
+    {
+      label: "Requests",
+      icon: GitPullRequestArrow,
+      path: "#",
+      subItems: [
+        { label: "Leave Requests", path: "/dashboard-admin/requests/leave" },
+        {
+          label: "Permission Requests",
+          path: "/dashboard-admin/requests/permission",
         },
- {
+        {
+          label: "Regularization Requests",
+          path: "/dashboard-admin/requests/regularization",
+        },
+        {
+          label: "Comp off Requests",
+          path: "/dashboard-admin/requests/compoff",
+        },
+      ],
+    },
+    {
+      label: "Attendance List",
+      icon: UserCheck,
+      path: "/dashboard-admin/attendance",
+    },
+    {
       label: "Payroll",
       icon: BadgeIndianRupee,
       path: "/dashboard-admin/payroll",
     },
-        { label: 'Teams', icon: Network , path: '/dashboard-admin/teams' },
-
-    ];
+    { label: "Teams", icon: Network, path: "/dashboard-admin/teams" },
+  ];
 
   // Navigation items for Non-Teaching (same as Faculty)
   const nonTeachingNavItems = [
@@ -232,54 +269,76 @@ const Sidebar = () => {
   };
 
   return (
-    <>
-      {/* Sidebar */}
-      {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
-      <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
-        {/* Logo */}
-        <div className="px-3 py-4 mt-4">
-          <img src={logo} alt="logo" className="w-[60%]  object-contain" />
-        </div>
+        <>
+            {/* Sidebar */}
+            {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
+            <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
 
-        {/* Menu */}
-        <div className="mt-6 px-2 flex flex-col gap-2 max-h-[calc(100vh-190px)] overflow-auto table-custom-scrollbar">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`relative w-full flex items-center gap-2 text-white text-md 2xl:text-[18px] px-3 py-2 rounded-md transition font-semibold ${
-                  active
-                    ? "bg-[#0b2a73]/40 hover:bg-[#0d3a8f]"
-                    : "bg-transparent hover:bg-[#0b2a73]"
-                }`}
-              >
-                <Icon size={16} className="text-[#7ea6ff]" />
-                <span>{item.label}</span>
-                {active && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#5b8cff] rounded-full"></div>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-        <div className="btn-container absolute bottom-4 w-full px-4">
-          <button
-            onClick={() => {
-              logout();
-              navigate("/");
-            }}
-            className="my-2 px-4 py-2 w-full bg-[#0b2a73] text-white rounded-md hover:bg-[#0d3a8f] flex items-center justify-center gap-2"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
-        </div>
-      </div>
-    </>
-  );
+                {/* Logo */}
+                <div className="px-3 py-4 mt-4">
+                    <img
+                        src={logo}
+                        alt="logo"
+                        className="w-[60%]  object-contain"
+                    />
+                </div>
+
+                {/* Menu */}
+                <div className="mt-6 px-2 flex flex-col gap-2">
+                    {navItems.map((item) => {
+                        const Icon = item.icon;
+                        const hasSubItems = item.subItems && item.subItems.length > 0;
+                        const active = isActive(item.path) || (hasSubItems && item.subItems.some(sub => isActive(sub.path)));
+                        
+                        return (
+                            <div key={item.label} className="relative group">
+                                <Link
+                                    to={item.path}
+                                    className={`relative w-full flex items-center gap-2 text-white text-[15px] px-3 py-2 rounded-md transition font-semibold ${active
+                                        ? 'bg-[#0b2a73]/40 hover:bg-[#0d3a8f]'
+                                        : 'bg-transparent hover:bg-[#0b2a73]'
+                                        }`}
+                                >
+                                    <Icon size={16} className="text-[#7ea6ff]" />
+                                    <span>{item.label}</span>
+                                    {active && (
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#5b8cff] rounded-full"></div>
+                                    )}
+                                </Link>
+                                {hasSubItems && (
+                                    <div className="hidden group-hover:flex absolute left-[95%] top-0 ml-2 flex-col bg-[#0d2643] rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 min-w-[200px] overflow-hidden border border-[#213857]">
+                                        {item.subItems.map((subItem) => (
+                                            <Link
+                                                key={subItem.path}
+                                                to={subItem.path}
+                                                className={`px-4 py-3 text-white hover:bg-[#183052] transition text-[14px] font-medium border-b border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-[#183052] border-l-[3px] border-l-[#5b8cff]' : ''}`}
+                                            >
+                                                {subItem.label}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="btn-container absolute bottom-4 w-full px-4">
+                    <button
+                        onClick={() => {
+                            logout();
+                            navigate('/');
+                        }}
+                        className="my-2 px-4 py-2 w-full bg-[#0b2a73] text-white rounded-md hover:bg-[#0d3a8f] flex items-center justify-center gap-2"
+                    >
+                        <LogOut size={16} />
+                        Logout
+                    </button>
+                </div>
+
+            </div>
+        </>
+    );
 };
+
 
 export default Sidebar;
