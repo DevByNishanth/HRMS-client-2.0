@@ -102,6 +102,11 @@ const Sidebar = () => {
       icon: RotateCw,
       path: "/dashboard-principal/regularizationList",
     },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-principal/payroll",
+    },
   ];
     // Navigation items for Admin
     const adminNavItems = [

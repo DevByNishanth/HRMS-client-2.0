@@ -41,6 +41,7 @@ import { jwtDecode } from "jwt-decode";
 import TeamsPage from "./pages/Dashboards/AdminDashboard/Teams/TeamsPage";
 import FacultyPayrollPage from "./pages/Dashboards/FacultyDashboard/FacultyPayrollPage";
 import AdminPayrollPage from "./pages/Dashboards/AdminDashboard/Payroll/AdminPayrollPage";
+import PrincipalPayrollPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPayrollPage";
 
 import AdminLeaveRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminLeaveRequestsPage";
 import AdminPermissionRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminPermissionRequestsPage";
@@ -194,6 +195,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalRegularizationListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-principal/payroll"
+          element={
+            <ProtectedRoute requiredRoles={["principal"]}>
+              <PrincipalPayrollPage />
             </ProtectedRoute>
           }
         />
