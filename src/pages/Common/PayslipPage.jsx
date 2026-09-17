@@ -179,7 +179,7 @@ const PayslipPage = () => {
             {/* Logo */}
             <div className="flex items-center">
               <img
-                src="/clg.svg"
+                src="/clg2.png"
                 alt="Sri Eshwar Logo"
                 className="h-14 object-contain"
               />
