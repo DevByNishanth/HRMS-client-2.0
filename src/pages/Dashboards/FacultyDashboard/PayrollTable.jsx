@@ -63,7 +63,7 @@ const PayrollTable = ({ tableData }) => {
                 <td className="pl-6 py-2">
                   <button
                     onClick={() => {
-                      window.open(`/payroll/${item.facultyId}`, "_blank");
+                      window.open(`/payslip/${item.facultyId?._id}`, "_blank");
                     }}
                     className=""
                   >
