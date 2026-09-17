@@ -53,6 +53,7 @@ const PayrollTable = ({ tableData }) => {
 
         <tbody>
           {tableData?.map((item, index) => {
+            console.log("item : ", item);
             return (
               <tr className="">
                 <td className="pl-6">{getMonth(item.payrollMonth)}</td>
