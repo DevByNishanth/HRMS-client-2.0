@@ -44,6 +44,7 @@ import AdminLeaveRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/A
 import AdminPermissionRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminPermissionRequestsPage";
 import AdminRegularizationRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminRegularizationRequestsPage";
 import AdminCompOffRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminCompOffRequestsPage";
+import PayslipPage from "./pages/Common/PayslipPage";
 
 function App() {
   // Role-based default route redirect
@@ -368,6 +369,29 @@ function App() {
               ]}
             >
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Route - Payslip */}
+        <Route
+          path="/payslip/:facultyId"
+          element={
+            <ProtectedRoute
+              requiredRoles={[
+                "faculty",
+                "hod",
+                "principal",
+                "admin",
+                "non-teaching",
+                "dean",
+                "dean-academics",
+                "dean-iqac",
+                "dean-research",
+                "hr",
+              ]}
+            >
+              <PayslipPage />
             </ProtectedRoute>
           }
         />
