@@ -285,7 +285,9 @@ const UploadTile = ({
                   key={doc.publicId}
                   className="mt-3 rounded-lg border border-[#294565] p-3"
                 >
-                  <p className="mb-2 text-xs text-white">Document {index + 1}</p>
+                  <p className="mb-2 text-xs text-white">
+                    Document {index + 1}
+                  </p>
                   <a
                     href={doc.url}
                     target="_blank"
@@ -335,11 +337,11 @@ const UploadTile = ({
 };
 
 const DocumentUploadFormModal = ({ onClose }) => {
-// auth 
-const token = localStorage.getItem("hrms_token")
-    let decoded = jwtDecode(token);
-
-
+  // auth
+  const token = localStorage.getItem("hrms_token");
+  let decoded = jwtDecode(token);
+  const myemail = decoded.email
+// console.log("email : ", email)
   // const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState({});
@@ -347,13 +349,12 @@ const token = localStorage.getItem("hrms_token")
   const StepIcon = currentStep.icon;
   const isFirstStep = activeStep === 0;
   const isLastStep = activeStep === uploadSteps.length - 1;
-//   const facultyId = getUserIdFromToken();
-  const facultyId = decoded?.facultyId
+  //   const facultyId = getUserIdFromToken();
+  const facultyId = decoded?.facultyId;
   const [uploadedDocumentMeta, setUploadedDocumentMeta] = useState({});
   const [profileImageData, setProfileImageData] = useState(null);
   const [uploadingField, setUploadingField] = useState(null);
   // console.log('docs',uploadedDocumentMeta);
-  
 
   // const selectedFileCount = useMemo(
   //     () => Object.values(uploadedFiles).reduce((count, files) => count + (files?.length || 0), 0),
@@ -371,14 +372,10 @@ const token = localStorage.getItem("hrms_token")
       "application/pdf",
     ];
 
-    const invalidFile = files.find(
-      (file) => !allowedTypes.includes(file.type)
-    );
+    const invalidFile = files.find((file) => !allowedTypes.includes(file.type));
 
     if (invalidFile) {
-      alert(
-        "Only PNG, JPG, JPEG, WEBP and PDF files are allowed."
-      );
+      alert("Only PNG, JPG, JPEG, WEBP and PDF files are allowed.");
       return;
     }
 
@@ -444,9 +441,7 @@ const token = localStorage.getItem("hrms_token")
 
         return {
           ...prev,
-          [fieldId]: isMultiFileField
-            ? uploadedDocs
-            : uploadedDocs[0],
+          [fieldId]: isMultiFileField ? uploadedDocs : uploadedDocs[0],
         };
       });
       // console.log("fieldId =", fieldId);
@@ -505,16 +500,12 @@ const token = localStorage.getItem("hrms_token")
         backendField === "relievingLetters" ||
         backendField === "otherDocuments"
       ) {
-        await deleteFacultyDocument(
-          facultyId,
-          backendField,
-          publicId
-        );
+        await deleteFacultyDocument(facultyId, backendField, publicId);
 
         setUploadedDocumentMeta((prev) => ({
           ...prev,
           [fieldId]: (prev[fieldId] || []).filter(
-            (doc) => doc.publicId !== publicId
+            (doc) => doc.publicId !== publicId,
           ),
         }));
 
@@ -522,18 +513,13 @@ const token = localStorage.getItem("hrms_token")
       }
 
       const document = uploadedDocumentMeta[fieldId];
-      await deleteFacultyDocument(
-        facultyId,
-        backendField,
-        document.publicId
-      );
+      await deleteFacultyDocument(facultyId, backendField, document.publicId);
 
       setUploadedDocumentMeta((prev) => {
         const copy = { ...prev };
         delete copy[fieldId];
         return copy;
       });
-
     } catch (error) {
       console.error(error);
     }
@@ -551,21 +537,16 @@ const token = localStorage.getItem("hrms_token")
         // console.log("Decoded New Token:", decoded);
       }
 
-      alert(
-      "Documents uploaded successfully. Please login again."
-    );
+      alert("Documents uploaded successfully. Please login again.");
 
-    // Same logic as Sidebar logout
-    localStorage.removeItem("hrms_token");
+      // Same logic as Sidebar logout
+      localStorage.removeItem("hrms_token");
 
-    window.location.href = "/";
+      window.location.href = "/";
     } catch (error) {
       console.error(error);
 
-      alert(
-        error?.response?.data?.message ||
-        "Failed to complete first login"
-      );
+      alert(error?.response?.data?.message || "Failed to complete first login");
     }
   };
 
@@ -578,148 +559,151 @@ const token = localStorage.getItem("hrms_token")
   };
 
   return (
-    <section className="fixed inset-0 z-50 bg-[#020817]/50 backdrop-blur-[12px]">
-      <form
-        onSubmit={handleSubmit}
-        className="fixed left-1/2 top-1/2 flex h-[89vh] w-[80%] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-gray-600/60 bg-gray-700/15 backdrop-blur-xl shadow-[0_26px_80px_rgba(0,0,0,0.48)]"
-      >
-        <div className="shrink-0 border-b border-[#173150] bg-[#0a1a2d]/10 px-6 py-4">
-          <div className="flex items-start justify-between gap-5">
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#74aaff]">
-                Step {activeStep + 1} of {uploadSteps.length}
-              </p>
-              <h2 className="mt-1 text-[22px] font-semibold leading-tight text-[#d8e3f7]">
-                {currentStep.eyebrow}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <StepProgress activeStep={activeStep} />
-              {onClose && (
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
-                  aria-label="Close document upload form"
-                >
-                  <X size={17} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[260px_1fr]">
-          <aside className="hidden border-r border-[#173150] bg-[#061120] p-4 lg:block">
-            <div className="rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-2">
-              <div className="flex items-start gap-2">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
-                  <FileArchive size={22} />
-                </div>
-                <p className="mt-1 text-[14px] leading-5 text-[#8ca1bd]">
-                  Upload your documents
+    <>
+    {myemail == "nishanth.a@sece.ac.in" ? "" :  <section className="fixed inset-0 z-50 bg-[#020817]/50 backdrop-blur-[12px]">
+        <form
+          onSubmit={handleSubmit}
+          className="fixed left-1/2 top-1/2 flex h-[89vh] w-[80%] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-gray-600/60 bg-gray-700/15 backdrop-blur-xl shadow-[0_26px_80px_rgba(0,0,0,0.48)]"
+        >
+          <div className="shrink-0 border-b border-[#173150] bg-[#0a1a2d]/10 px-6 py-4">
+            <div className="flex items-start justify-between gap-5">
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#74aaff]">
+                  Step {activeStep + 1} of {uploadSteps.length}
                 </p>
+                <h2 className="mt-1 text-[22px] font-semibold leading-tight text-[#d8e3f7]">
+                  {currentStep.eyebrow}
+                </h2>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <StepProgress activeStep={activeStep} />
+                {onClose && (
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                    aria-label="Close document upload form"
+                  >
+                    <X size={17} />
+                  </button>
+                )}
               </div>
             </div>
+          </div>
 
-            <div className="mt-4 space-y-2">
-              {uploadSteps.map((step, index) => {
-                const Icon = step.icon;
-
-                return (
-                  <button
-                    key={step.id}
-                    type="button"
-                    onClick={() => setActiveStep(index)}
-                    className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${
-                      activeStep === index
-                        ? "border-[#3984ff] bg-[#132b49] text-white"
-                        : "border-transparent text-[#8ca1bd] hover:border-[#20385a] hover:bg-[#0b1c31] hover:text-white"
-                    }`}
-                  >
-                    <Icon size={16} className="shrink-0" />
-                    <span className="min-w-0 flex-1 truncate text-[14px] font-medium">
-                      {step.title}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-
-          <div className="min-h-0 overflow-y-auto p-5 table-custom-scrollbar">
-            <div className="mb-5 rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-4">
-              <div className="flex items-start gap-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
-                  <StepIcon size={22} />
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-[20px] font-semibold leading-tight text-white">
-                    {currentStep.title}
-                  </h3>
-                  <p className="mt-1 text-[13px] leading-5 text-[#9eb0cc]">
-                    {currentStep.description}
+          <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[260px_1fr]">
+            <aside className="hidden border-r border-[#173150] bg-[#061120] p-4 lg:block">
+              <div className="rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-2">
+                <div className="flex items-start gap-2">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
+                    <FileArchive size={22} />
+                  </div>
+                  <p className="mt-1 text-[14px] leading-5 text-[#8ca1bd]">
+                    Upload your documents
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {currentStep.fields.map((field) => (
-                <UploadTile
-                  key={field.id}
-                  field={field}
-                  files={uploadedFiles[field.id]}
-                  onChange={handleFileChange}
-                  profileImageData={profileImageData}
-                  uploadedDocumentMeta={uploadedDocumentMeta}
-                  handleDeleteProfileImage={handleDeleteProfileImage}
-                  handleDeleteDocument={handleDeleteDocument}
-                  uploading={uploadingField === field.id}
-                />
-              ))}
+              <div className="mt-4 space-y-2">
+                {uploadSteps.map((step, index) => {
+                  const Icon = step.icon;
+
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => setActiveStep(index)}
+                      className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition ${
+                        activeStep === index
+                          ? "border-[#3984ff] bg-[#132b49] text-white"
+                          : "border-transparent text-[#8ca1bd] hover:border-[#20385a] hover:bg-[#0b1c31] hover:text-white"
+                      }`}
+                    >
+                      <Icon size={16} className="shrink-0" />
+                      <span className="min-w-0 flex-1 truncate text-[14px] font-medium">
+                        {step.title}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+
+            <div className="min-h-0 overflow-y-auto p-5 table-custom-scrollbar">
+              <div className="mb-5 rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-4">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
+                    <StepIcon size={22} />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-[20px] font-semibold leading-tight text-white">
+                      {currentStep.title}
+                    </h3>
+                    <p className="mt-1 text-[13px] leading-5 text-[#9eb0cc]">
+                      {currentStep.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {currentStep.fields.map((field) => (
+                  <UploadTile
+                    key={field.id}
+                    field={field}
+                    files={uploadedFiles[field.id]}
+                    onChange={handleFileChange}
+                    profileImageData={profileImageData}
+                    uploadedDocumentMeta={uploadedDocumentMeta}
+                    handleDeleteProfileImage={handleDeleteProfileImage}
+                    handleDeleteDocument={handleDeleteDocument}
+                    uploading={uploadingField === field.id}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#173150] bg-[#08182a] px-5 py-4">
-          <button
-            type="button"
-            onClick={() => setActiveStep((step) => Math.max(step - 1, 0))}
-            disabled={isFirstStep}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#244061] bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ArrowLeft size={15} />
-            Back
-          </button>
+          <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+            <button
+              type="button"
+              onClick={() => setActiveStep((step) => Math.max(step - 1, 0))}
+              disabled={isFirstStep}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#244061] bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ArrowLeft size={15} />
+              Back
+            </button>
 
-          <button
-            type="button"
-            onClick={async () => {
-              if (!validateCurrentStep()) {
-                alert(
-                  "Please upload all required documents before proceeding.",
-                );
-                return;
-              }
+            <button
+              type="button"
+              onClick={async () => {
+                if (!validateCurrentStep()) {
+                  alert(
+                    "Please upload all required documents before proceeding.",
+                  );
+                  return;
+                }
 
-              if (isLastStep) {
-                await handleFinishUpload();
-              } else {
-                setActiveStep((step) =>
-                  Math.min(step + 1, uploadSteps.length - 1),
-                );
-              }
-            }}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#2563EB] px-5 text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
-          >
-            {isLastStep ? "Finish Upload" : "Next Step"}
-            <ArrowRight size={15} />
-          </button>
-        </div>
-      </form>
-    </section>
+                if (isLastStep) {
+                  await handleFinishUpload();
+                } else {
+                  setActiveStep((step) =>
+                    Math.min(step + 1, uploadSteps.length - 1),
+                  );
+                }
+              }}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#2563EB] px-5 text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#1049c4]"
+            >
+              {isLastStep ? "Finish Upload" : "Next Step"}
+              <ArrowRight size={15} />
+            </button>
+          </div>
+        </form>
+      </section>}
+     
+    </>
   );
 };
 
