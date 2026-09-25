@@ -122,7 +122,7 @@ const DeanRequestsPanel = () => {
             Loading requests...
           </p>
         ) : requests.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-2  max-h-[330px] overflow-auto">
             {requests.map((request, index) => (
               <div
                 key={request._id || `${request.name}-${request.date}-${index}`}
