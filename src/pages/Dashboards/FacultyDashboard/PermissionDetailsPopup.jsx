@@ -47,15 +47,15 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[26%] min-w-[380px] flex-col bg-white dark:bg-[#071425] shadow-lg dark:shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Permission Details
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-gray-900 dark:text-white">
               Review Permission Request
             </h2>
           </div>
@@ -63,7 +63,7 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 dark:border-[#223b5f] bg-white dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-gray-900 dark:hover:text-white"
             aria-label="Close permission details"
           >
             <X size={17} />
@@ -71,18 +71,18 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
-          <p className="text-[12px] leading-5 text-[#b8c7dd]">
+          <p className="text-[12px] leading-5 text-slate-600 dark:text-[#b8c7dd]">
             Review the selected permission request and approval status.
           </p>
 
-          <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+          <div className="mt-2 rounded-lg border border-slate-200 dark:border-[#1d395e] bg-slate-50 dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">
                   <CalendarDays size={13} className="text-[#3984ff]" />
                   Date
                 </div>
-                <p className="mt-1 text-[16px] font-semibold text-white">{permission.date}</p>
+                <p className="mt-1 text-[16px] font-semibold text-gray-900 dark:text-white">{permission.date}</p>
               </div>
 
               <span
@@ -93,50 +93,50 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
               </span>
             </div>
 
-            <div className="my-3 h-px bg-[#1a3556]" />
+            <div className="my-3 h-px bg-slate-200 dark:bg-[#1a3556]" />
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
-                  <SunMedium size={14} className="text-[#b8c7dd]" />
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
+                  <SunMedium size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                   Session
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">{permission.session}</p>
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">{permission.session}</p>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
-                  <Clock3 size={14} className="text-[#b8c7dd]" />
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
+                  <Clock3 size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                   Duration
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">{permission.duration}</p>
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">{permission.duration}</p>
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+            <div className="mt-3 flex items-center justify-between rounded-md bg-white dark:bg-[#132b49] px-3 py-2.5">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#1f4070] text-[#6ea1ff]">
                   <TimerReset size={18} />
                 </div>
-                <p className="text-[13px] font-medium text-[#cad7eb]">Permission Hours</p>
+                <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">Permission Hours</p>
               </div>
-              <p className="text-[15px] font-semibold text-white">{permission.duration}</p>
+              <p className="text-[15px] font-semibold text-gray-900 dark:text-white">{permission.duration}</p>
             </div>
           </div>
 
           <div className="mt-3">
-            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
               <FileText size={15} className="text-[#3984ff]" />
               Reason
             </p>
-            <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+            <div className="rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
               {permission.reason}
             </div>
           </div>
 
           {approvalHistory.length > 0 && (
-            <div className="mt-3 border-t border-gray-400/20 pt-4">
-              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+            <div className="mt-3 border-t border-slate-200 dark:border-gray-400/20 pt-4">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-gray-900 dark:text-white">
                 <ShieldCheck size={15} className="text-[#3984ff]" />
                 Approval Workflow
               </p>
@@ -153,13 +153,13 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
                       {/* Connector line */}
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved ? "bg-[#10b981]" : isRejected ? "bg-[#ef4444]" : "bg-[#444c63]"
+                          className={`absolute left-[19px] top-10 bottom-0 w-[2px] ${isApproved ? "bg-[#10b981]" : isRejected ? "bg-[#ef4444]" : "bg-slate-300 dark:bg-slate-200 dark:bg-[#444c63]"
                             }`}
                         />
                       )}
 
                       {/* Step content */}
-                      <div className="relative flex gap-3 pb-4">
+                      <div className="relative flex gap-3 pb-6">
                         {/* Step circle */}
                         <div className="flex-shrink-0">
                           <div
@@ -167,7 +167,7 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
                               ? `${actionColor.bg} border-emerald-200/20`
                               : isRejected
                                 ? `${actionColor.bg} border-[#ef4444]`
-                                : `${actionColor.light} border-[#444c63]`
+                                : `${actionColor.light} border-slate-300 dark:border-[#444c63]`
                               } text-white`}
                           >
                             {getActionIcon(history.action)}
@@ -178,7 +178,7 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
                         <div className="flex-1 pt-0.5">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                              <p className="text-[13px] font-semibold capitalize text-slate-500 dark:text-[#8ca1bd]">
                                 {history.role}
                               </p>
                             </div>
@@ -194,12 +194,12 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
                             </span>
                           </div>
 
-                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                          <p className="text-[12px] text-slate-600 dark:text-[#cad7eb] mt-1">
                             {history.remarks}
                           </p>
 
                           {history.actionDate && (
-                            <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                            <p className="text-[11px] text-slate-400 dark:text-[#6f839f] mt-1.5 flex items-center gap-1">
                               <Clock size={11} />
                               {new Date(history.actionDate).toLocaleDateString("en-US", {
                                 month: "short",
@@ -220,7 +220,7 @@ const PermissionDetailsPopup = ({ permission, onClose }) => {
           )}
         </div>
 
-        <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+        <div className="shrink-0 border-t border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={onClose}

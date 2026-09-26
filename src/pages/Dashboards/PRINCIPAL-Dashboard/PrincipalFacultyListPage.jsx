@@ -25,7 +25,8 @@ const getFacultyList = (payload) => {
   if (Array.isArray(payload?.faculties)) return payload.faculties;
   if (Array.isArray(payload?.data?.faculties)) return payload.data.faculties;
   if (Array.isArray(payload?.facultyDetails)) return payload.facultyDetails;
-  if (Array.isArray(payload?.data?.facultyDetails)) return payload.data.facultyDetails;
+  if (Array.isArray(payload?.data?.facultyDetails))
+    return payload.data.facultyDetails;
   if (Array.isArray(payload?.employees)) return payload.employees;
   if (Array.isArray(payload?.data?.employees)) return payload.data.employees;
   if (Array.isArray(payload?.results)) return payload.results;
@@ -39,7 +40,32 @@ const getFacultyName = (faculty) =>
   [faculty.salutation, faculty.firstName, faculty.lastName]
     .filter(Boolean)
     .join(" ")
-    .trim() || faculty.empId || "Unnamed Faculty";
+    .trim() ||
+  faculty.empId ||
+  "Unnamed Faculty";
+
+const typeStyles = {
+  Teaching: {
+    row: "hover:bg-slate-50 dark:hover:bg-[#123250]",
+    stripe: "border-l-[#18d3bf]",
+    badge: "bg-[#18d3bf1f] text-[#18d3bf]",
+  },
+  "Non-Teaching": {
+    row: "bg-slate-50/50 dark:bg-[#f0a15f08] hover:bg-slate-50 dark:hover:bg-[#3a2a1f]",
+    stripe: "border-l-[#f0a15f]",
+    badge: "bg-[#f0a15f1f] text-[#f0a15f]",
+  },
+  Driver: {
+    row: "hover:bg-slate-50 dark:hover:bg-[#182f45]",
+    stripe: "border-l-[#78a7ff]",
+    badge: "bg-[#3984ff1f] text-[#78a7ff]",
+  },
+  Housekeeping: {
+    row: "hover:bg-slate-50 dark:hover:bg-[#24303a]",
+    stripe: "border-l-[#c4c6d0]",
+    badge: "bg-[#c4c6d01f] text-[#c4c6d0]",
+  },
+};
 
 const SelectFilter = ({
   label,
@@ -53,7 +79,7 @@ const SelectFilter = ({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -78,8 +104,12 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
         <Icon size={18} />
       </div>
       <div>
-        <span className="text-[14px] font-medium text-slate-500 dark:text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-slate-900 dark:text-white">{value}</p>
+        <span className="text-[14px] font-medium text-slate-500 dark:text-[#8ca1bd]">
+          {label}
+        </span>
+        <p className="text-[16px] font-semibold leading-none text-slate-900 dark:text-white">
+          {value}
+        </p>
       </div>
     </div>
   </div>
@@ -107,8 +137,8 @@ const PrincipalFacultyListPage = () => {
     const rows = filteredFaculty.map((f) => ({
       "Faculty Name": getFacultyName(f),
       "Emp ID": f.empId || "-",
-      "Department": f.department || "-",
-      "Designation": f.designation || "-",
+      Department: f.department || "-",
+      Designation: f.designation || "-",
     }));
     exportToExcel(rows, "Faculty-List.xlsx");
   };
@@ -125,13 +155,18 @@ const PrincipalFacultyListPage = () => {
     setFacultyError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, "")}/api/faculties`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/faculties`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data?.message || data?.error || "Unable to load faculties.");
+        throw new Error(
+          data?.message || data?.error || "Unable to load faculties.",
+        );
       }
 
       const facultyList = getFacultyList(data);
@@ -153,7 +188,9 @@ const PrincipalFacultyListPage = () => {
     () => [
       "All",
       ...Array.from(
-        new Set(facultyMembers.map((faculty) => faculty.department).filter(Boolean)),
+        new Set(
+          facultyMembers.map((faculty) => faculty.department).filter(Boolean),
+        ),
       ),
     ],
     [facultyMembers],
@@ -163,7 +200,9 @@ const PrincipalFacultyListPage = () => {
     () => [
       "All",
       ...Array.from(
-        new Set(facultyMembers.map((faculty) => faculty.designation).filter(Boolean)),
+        new Set(
+          facultyMembers.map((faculty) => faculty.designation).filter(Boolean),
+        ),
       ),
     ],
     [facultyMembers],
@@ -183,7 +222,8 @@ const PrincipalFacultyListPage = () => {
       const matchesDepartment =
         departmentFilter === "All" || faculty.department === departmentFilter;
       const matchesDesignation =
-        designationFilter === "All" || faculty.designation === designationFilter;
+        designationFilter === "All" ||
+        faculty.designation === designationFilter;
 
       return matchesSearch && matchesDepartment && matchesDesignation;
     });
@@ -197,11 +237,11 @@ const PrincipalFacultyListPage = () => {
 
   const statCards = useMemo(() => {
     const total = deptFaculties.length;
-    const asstProf = deptFaculties.filter(
-      (f) => f.designation?.toLowerCase().includes("assistant"),
+    const asstProf = deptFaculties.filter((f) =>
+      f.designation?.toLowerCase().includes("assistant"),
     ).length;
-    const assocProf = deptFaculties.filter(
-      (f) => f.designation?.toLowerCase().includes("associate"),
+    const assocProf = deptFaculties.filter((f) =>
+      f.designation?.toLowerCase().includes("associate"),
     ).length;
     const professor = deptFaculties.filter(
       (f) =>
@@ -212,9 +252,24 @@ const PrincipalFacultyListPage = () => {
 
     return [
       { label: "Total Faculty", value: total, icon: Users, color: "#3984ff" },
-      { label: "Assistant Prof", value: asstProf, icon: GraduationCap, color: "#18d3bf" },
-      { label: "Associate Prof", value: assocProf, icon: BookOpen, color: "#f0a15f" },
-      { label: "Professor", value: professor, icon: Briefcase, color: "#8b7cff" },
+      {
+        label: "Assistant Prof",
+        value: asstProf,
+        icon: GraduationCap,
+        color: "#18d3bf",
+      },
+      {
+        label: "Associate Prof",
+        value: assocProf,
+        icon: BookOpen,
+        color: "#f0a15f",
+      },
+      {
+        label: "Professor",
+        value: professor,
+        icon: Briefcase,
+        color: "#8b7cff",
+      },
     ];
   }, [deptFaculties]);
 
@@ -225,7 +280,7 @@ const PrincipalFacultyListPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -277,7 +332,7 @@ const PrincipalFacultyListPage = () => {
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search faculty..."
-                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -299,7 +354,7 @@ const PrincipalFacultyListPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredFaculty.length === 0}
-                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-blue-600 text-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -310,42 +365,68 @@ const PrincipalFacultyListPage = () => {
               <ExportPasswordModal
                 isOpen={isExportModalOpen}
                 onClose={closeExportModal}
-                onConfirm={(password) => handleConfirmExport(password, exportCurrentFilteredRows)}
+                onConfirm={(password) =>
+                  handleConfirmExport(password, exportCurrentFilteredRows)
+                }
                 loading={exportLoading}
                 error={exportError}
               />
 
-              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
+              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
                 {facultyError && (
                   <div className="border-t border-slate-200 dark:border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
                     {facultyError}
                   </div>
                 )}
-                <table className="w-full min-w-[800px] border-collapse text-left">
-                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
+                <table className="w-full table-fixed border-collapse text-left">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-sm font-semibold text-slate-500 dark:text-[#9aacc7]">
                     <tr>
-                      <th className="px-4 py-3 font-semibold">Faculty Name</th>
-                      <th className="px-4 py-3 font-semibold">Emp ID</th>
-                      <th className="px-4 py-3 font-semibold">Department</th>
-                      <th className="px-4 py-3 font-semibold">Designation</th>
-                      <th className="px-4 py-3 text-right font-semibold">Action</th>
+                      <th className="w-[20%] px-4 py-3 font-semibold">
+                        Faculty Name
+                      </th>
+
+                      <th className="w-[15%] px-4 py-3 font-semibold">
+                        Emp ID
+                      </th>
+
+                      <th className="w-[12%] px-4 py-3 font-semibold">
+                        Department
+                      </th>
+
+                      <th className="w-[20%] px-4 py-3 font-semibold">
+                        Designation
+                      </th>
+
+                      <th className="w-[12%] px-4 py-3 font-semibold">
+                        Category
+                      </th>
+
+                      <th className="w-[5%] px-4 py-3 text-right font-semibold">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-[13px] text-slate-700 dark:text-[#cad7eb]">
                     {isLoadingFaculty ? (
                       <tr>
-                        <td colSpan="5" className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td
+                          colSpan="5"
+                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                        >
                           Loading faculty records...
                         </td>
                       </tr>
                     ) : filteredFaculty.length > 0 ? (
                       filteredFaculty.map((faculty) => {
                         const name = getFacultyName(faculty);
+                        const styleInfo =
+                          typeStyles[faculty.employeeCategory] ||
+                          typeStyles["Non-Teaching"];
 
                         return (
                           <tr
                             key={faculty._id || faculty.empId}
-                            className="border-b border-slate-200 dark:border-[#132944] transition last:border-0 hover:bg-slate-50 dark:hover:bg-[#123250]"
+                            className={`border-b border-slate-200 dark:border-[#132944] transition last:border-0 border-l-4 `}
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
@@ -358,13 +439,26 @@ const PrincipalFacultyListPage = () => {
                               </div>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">{faculty.empId || "-"}</span>
+                              <span className="block truncate">
+                                {faculty.empId || "-"}
+                              </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">{faculty.department || "-"}</span>
+                              <span className="block truncate">
+                                {faculty.department || "-"}
+                              </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">{faculty.designation || "-"}</span>
+                              <span className="block truncate">
+                                {faculty.designation || "-"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${styleInfo.badge}`}
+                              >
+                                {faculty.employeeCategory || "-"}
+                              </span>
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
@@ -384,7 +478,10 @@ const PrincipalFacultyListPage = () => {
                       })
                     ) : (
                       <tr>
-                        <td colSpan="5" className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td
+                          colSpan="5"
+                          className="px-4 py-8 text-center text-[#8ca1bd]"
+                        >
                           No faculty records found matching your filters.
                         </td>
                       </tr>

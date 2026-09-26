@@ -94,11 +94,11 @@ const PrincipalLeavePage = () => {
   }));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-slate-100 dark:bg-[#071425] pb-2 px-4 mt-2 transition-colors duration-200">
+        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#f8fafc] dark:bg-[#071425] pb-2 px-4 mt-2 transition-colors duration-200">
           <div>
             <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Leaves</h1>
             <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
@@ -107,7 +107,7 @@ const PrincipalLeavePage = () => {
           </div>
           <ApplyDropdown label="Apply for Leave" onForMe={handleForMe} onForOthers={handleForOthers} />
         </div>
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto space-y-2">
             <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
               {leaveStatGroups.map((group) => (

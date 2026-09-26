@@ -49,16 +49,16 @@ const ExportPasswordModal = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[420px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[420px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-[#173150] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Export
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
+            <h2 className="mt-1 text-[18px] font-semibold text-gray-900 dark:text-white">
               Confirm Export
             </h2>
           </div>
@@ -66,7 +66,7 @@ const ExportPasswordModal = ({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-300 dark:border-[#223b5f] bg-gary-300 dark:bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff]  disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close export modal"
           >
             <X size={17} />
@@ -75,14 +75,14 @@ const ExportPasswordModal = ({
 
         {/* Body */}
         <div className="px-5 py-4">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">
+          <p className="text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
             Enter your password to export this table.
           </p>
 
           <div className="mt-4">
             <label
               htmlFor="export-verification-secret"
-              className="mb-2 block text-[13px] font-semibold text-white"
+              className="mb-2 block text-[13px] font-semibold text-gray-900 dark:text-white"
             >
               Password
             </label>
@@ -109,7 +109,7 @@ const ExportPasswordModal = ({
                 onKeyDown={handleKeyDown}
                 placeholder="Enter your password..."
                 disabled={loading}
-                className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] pr-10 pl-4 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] pr-10 pl-4 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] disabled:cursor-not-allowed disabled:opacity-50"
               />
               <button
                 type="button"
@@ -133,12 +133,12 @@ const ExportPasswordModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[#173150] px-5 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-[#173150] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-10 rounded-md border border-slate-200 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>

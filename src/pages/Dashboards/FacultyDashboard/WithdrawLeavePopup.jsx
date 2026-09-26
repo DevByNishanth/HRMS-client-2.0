@@ -35,23 +35,23 @@ const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
       onClick={onClose}
     >
       <form
-        className="w-full max-w-[420px] rounded-xl border border-[#1d395e] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]"
+        className="w-full max-w-[420px] rounded-xl border border-slate-200 dark:border-[#1d395e] bg-white dark:bg-[#071425] shadow-lg dark:shadow-[0_24px_70px_rgba(0,0,0,0.45)]"
         onClick={(event) => event.stopPropagation()}
         onSubmit={handleSubmit}
       >
-        <div className="flex items-start justify-between gap-4 border-b rounded-t-xl border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b rounded-t-xl border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Withdraw Leave
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-gray-900 dark:text-white">
               Confirm Request
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 dark:border-[#223b5f] bg-white dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-gray-900 dark:hover:text-white"
             aria-label="Close withdraw leave popup"
           >
             <X size={17} />
@@ -59,15 +59,15 @@ const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
         </div>
 
         <div className="px-5 py-4">
-          <div className="flex gap-3 rounded-lg border border-[#f0a15f40] bg-[#f0a15f12] p-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f0a15f22] text-[#f0a15f]">
+          <div className="flex gap-3 rounded-lg border border-orange-200 dark:border-[#f0a15f40] bg-orange-50 dark:bg-[#f0a15f12] p-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-[#f0a15f22] text-orange-500 dark:text-[#f0a15f]">
               <AlertTriangle size={18} />
             </div>
             <div>
-              <p className="text-[13px] font-semibold text-white">
+              <p className="text-[13px] font-semibold text-gray-900 dark:text-white">
                 Withdraw {leave.type}?
               </p>
-              <p className="mt-1 text-[12px] leading-5 text-[#b8c7dd]">
+              <p className="mt-1 text-[12px] leading-5 text-slate-600 dark:text-[#b8c7dd]">
                 This will cancel the pending leave request from {leave.from} to{" "}
                 {leave.to}.
               </p>
@@ -76,7 +76,7 @@ const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
 
           <label
             htmlFor="withdraw-reason"
-            className="mb-2 mt-4 block text-[13px] font-semibold text-white"
+            className="mb-2 mt-4 block text-[13px] font-semibold text-gray-900 dark:text-white"
           >
             Reason for Withdrawal
           </label>
@@ -84,15 +84,15 @@ const WithdrawLeavePopup = ({ leave, onClose, fetchLeaves }) => {
             id="withdraw-reason"
             rows={4}
             placeholder="Add a short reason..."
-            className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+            className="w-full resize-none rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-gray-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t rounded-b-xl border-[#173150] bg-[#08182a] px-5 py-4">
+        <div className="flex items-center justify-end gap-3 border-t rounded-b-xl border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 items-center justify-center rounded-md border border-[#244061] px-5 text-[13px] font-semibold text-[#b8c7dd] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 dark:border-[#244061] px-5 text-[13px] font-semibold text-slate-500 dark:text-[#b8c7dd] transition hover:border-[#3984ff] hover:text-gray-900 dark:hover:text-white"
           >
             Cancel
           </button>

@@ -41,7 +41,7 @@ const PrincipalPermissionPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
@@ -61,7 +61,7 @@ const PrincipalPermissionPage = () => {
                   <button
                     type="button"
                     onClick={() => setIsDeptOpen(!isDeptOpen)}
-                    className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                    className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                   >
                     <span className={filterDepartment !== "All" ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
                       {filterDepartment !== "All" ? filterDepartment : "Department"}

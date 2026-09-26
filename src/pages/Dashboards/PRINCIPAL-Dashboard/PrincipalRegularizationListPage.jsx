@@ -97,15 +97,15 @@ const RegularizationDetailsPanel = ({
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[26%] min-w-[380px] flex-col bg-white dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.15)] dark:shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Regularization Request
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-gray-900 dark:text-white">
               Review Regularization Request
             </h2>
           </div>
@@ -113,7 +113,7 @@ const RegularizationDetailsPanel = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-white"
             aria-label="Close regularization details"
           >
             <X size={17} />
@@ -121,7 +121,7 @@ const RegularizationDetailsPanel = ({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
-          <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+          <div className="mt-2 rounded-lg border border-slate-200 dark:border-[#1d395e] bg-slate-50 dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <img
@@ -130,7 +130,7 @@ const RegularizationDetailsPanel = ({
                   className="h-11 w-11 shrink-0 rounded-full object-cover"
                 />
                 <div className="min-w-0">
-                  <p className="truncate text-[16px] font-semibold text-white">
+                  <p className="truncate text-[16px] font-semibold text-gray-900 dark:text-white">
                     {request.facultyId?.firstName} {request.facultyId?.lastName}
                   </p>
                   <p className="mt-1 truncate text-[12px] text-[#8ca1bd]">
@@ -147,14 +147,14 @@ const RegularizationDetailsPanel = ({
               </span>
             </div>
 
-            <div className="my-3 h-px bg-[#1a3556]" />
+            <div className="my-3 h-px bg-slate-200 dark:bg-[#1a3556]" />
 
             <div>
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
                 <CalendarDays size={13} className="text-[#3984ff]" />
                 Date
               </div>
-              <p className="mt-1 text-[16px] font-semibold text-white">
+              <p className="mt-1 text-[16px] font-semibold text-gray-900 dark:text-white">
                 {/* {console.log("principal regularization : ", request)} */}
                 {request.date ||
                   formatDateDisplay(
@@ -171,7 +171,7 @@ const RegularizationDetailsPanel = ({
                   <SunMedium size={14} className="text-[#b8c7dd]" />
                   Session
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">
                   {request.session || request.leaveSession || "Full Day"}
                 </p>
               </div>
@@ -181,23 +181,23 @@ const RegularizationDetailsPanel = ({
                   <Clock3 size={14} className="text-[#b8c7dd]" />
                   Duration
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">
                   {calculateDuration(request)}
                 </p>
               </div>
             </div>
 
             {request.currentApprovalLevel && (
-              <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+              <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 dark:bg-[#132b49] px-3 py-2.5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <TimerReset size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                  <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">
                     Approval Level
                   </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">
+                <p className="text-[15px] font-semibold text-gray-900 dark:text-white capitalize">
                   {request.currentApprovalLevel}
                 </p>
               </div>
@@ -205,11 +205,11 @@ const RegularizationDetailsPanel = ({
           </div>
 
           <div className="mt-3">
-            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
               <FileText size={15} className="text-[#3984ff]" />
               Reason
             </p>
-            <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+            <div className="rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
               {request.reason ||
                 request.regularizationReason ||
                 "No reason provided"}
@@ -218,7 +218,7 @@ const RegularizationDetailsPanel = ({
 
           {request.rejectionReason && (
             <div className="mt-3">
-              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
                 <AlertCircle size={15} className="text-[#f16868]" />
                 Rejection Reason
               </p>
@@ -230,7 +230,7 @@ const RegularizationDetailsPanel = ({
 
           {request.approvalHistory && request.approvalHistory.length > 0 && (
             <div className="mt-3 border-t border-gray-400/20 pt-4">
-              <p className="mb-3 flex items-center gap-2 text-[16px] font-semibold text-white">
+              <p className="mb-3 flex items-center gap-2 text-[16px] font-semibold text-gray-900 dark:text-white">
                 <ShieldCheck size={15} className="text-[#3984ff]" />
                 Approval Workflow
               </p>
@@ -247,17 +247,17 @@ const RegularizationDetailsPanel = ({
                     <div key={history._id || index} className="relative">
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                          className={`absolute left-[19px] top-10 bottom-0 w-[2px] ${
                             isApproved
                               ? "bg-[#10b981]"
                               : isRejected
                                 ? "bg-[#ef4444]"
-                                : "bg-[#444c63]"
+                                : "bg-slate-200 dark:bg-[#444c63]"
                           }`}
                         />
                       )}
 
-                      <div className="relative flex gap-3 pb-4">
+                      <div className="relative flex gap-3 pb-6">
                         <div className="flex-shrink-0">
                           <div
                             className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
@@ -408,15 +408,15 @@ const ConfirmationPopup = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-[#173150] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
+            <h2 className="mt-1 text-[18px] font-semibold text-gray-900 dark:text-white">
               {title}
             </h2>
           </div>
@@ -431,13 +431,13 @@ const ConfirmationPopup = ({
         </div>
 
         <div className="px-5 py-4">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">{message}</p>
+          <p className="text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">{message}</p>
 
           {isReject && (
             <div className="mt-4">
               <label
                 htmlFor="regularization-reject-reason"
-                className="mb-2 block text-[13px] font-semibold text-white"
+                className="mb-2 block text-[13px] font-semibold text-gray-900 dark:text-white"
               >
                 Reason for rejection
               </label>
@@ -447,17 +447,17 @@ const ConfirmationPopup = ({
                 onChange={(event) => onReasonChange(event.target.value)}
                 rows={4}
                 placeholder="Type the reason..."
-                className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="w-full resize-none rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-[#173150] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+            className="h-10 rounded-md border border-slate-200 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
           >
             Cancel
           </button>
@@ -495,7 +495,7 @@ const ConfirmationPopup = ({
 
 // ---------- Stat Card ----------
 const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="rounded-xl border border-[#183052] bg-[#0a1a2d] px-4 py-3">
+  <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-4 py-3 shadow-sm dark:shadow-none transition-colors">
     <div className="flex items-start gap-3">
       <div
         className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -505,7 +505,7 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
       </div>
       <div>
         <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-white">
+        <p className="text-[16px] font-semibold leading-none text-slate-900 dark:text-white">
           {value}
         </p>
       </div>
@@ -819,13 +819,13 @@ const PrincipalRegularizationListPage = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto">
             <header className="flex items-center justify-between">
               <div>
@@ -843,7 +843,7 @@ const PrincipalRegularizationListPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsDeptOpen(!isDeptOpen)}
-                  className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                  className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 >
                   <span
                     className={
@@ -915,7 +915,7 @@ const PrincipalRegularizationListPage = () => {
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search by name, ID..."
-                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -925,7 +925,7 @@ const PrincipalRegularizationListPage = () => {
                     <select
                       value={filterStatus}
                       onChange={(event) => setFilterStatus(event.target.value)}
-                      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     >
                       {statuses.map((option) => (
                         <option key={option} value={option}>
@@ -944,7 +944,7 @@ const PrincipalRegularizationListPage = () => {
                     <button
                       type="button"
                       onClick={openBulkApprove}
-                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#18d3bf] px-3 text-[14px] font-medium text-[#071425] transition hover:bg-[#2ce8d4]"
+                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-blue-500 px-3 text-[14px] font-medium text-white transition hover:bg-blue-600"
                     >
                       <CheckCheck size={16} />
                       Bulk Approve ({selectedIds.length})
@@ -961,7 +961,7 @@ const PrincipalRegularizationListPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredRequests.length === 0}
-                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-blue-600 text-white dark:bg-[#0d2138] px-3 text-[14px] font-medium transition hover:border-[#3984ff] hover:bg-blue-700 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -988,11 +988,11 @@ const PrincipalRegularizationListPage = () => {
                 error={exportError}
               />
 
-              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
-                <table className="w-full min-w-[900px] border-collapse text-left">
-                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
+              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
+                <table className="w-full  border-collapse text-left">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-sm font-medium text-slate-500 dark:text-[#9aacc7]">
                     <tr>
-                      <th className="px-4 py-3">
+                      <th className="px-4 py-3 w-[5%]">
                         <input
                           type="checkbox"
                           checked={allSelected}
@@ -1000,16 +1000,16 @@ const PrincipalRegularizationListPage = () => {
                           disabled={selectableRows.length === 0}
                           title="Select first 10 pending requests"
                           aria-label="Select first 10 pending requests"
-                          className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                          className="h-4 w-4 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
                         />
                       </th>
-                      <th className="px-4 py-3 font-semibold">Faculty Name</th>
-                      <th className="px-4 py-3 font-semibold">Date</th>
-                      <th className="px-4 py-3 font-semibold">Session</th>
-                      <th className="px-4 py-3 font-semibold">Duration</th>
-                      <th className="px-4 py-3 font-semibold">Reason</th>
-                      <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 text-right font-semibold">
+                      <th className="px-4 py-3 font-semibold w-[20%]">Faculty Name</th>
+                      <th className="px-4 py-3 font-semibold w-[15%]">Date</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">Session</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">Duration</th>
+                      <th className="px-4 py-3 font-semibold w-[20%]">Reason</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">Status</th>
+                      <th className="px-4 py-3 text-right font-semibold w-[10%]">
                         Action
                       </th>
                     </tr>
@@ -1032,7 +1032,7 @@ const PrincipalRegularizationListPage = () => {
                                   !selectedIds.includes(request._id)
                                 }
                                 aria-label={`Select regularization request of ${request.facultyId?.firstName || "faculty"}`}
-                                className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                                className="h-4 w-4 cursor-pointer accent-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
                               />
                             ) : null}
                           </td>
@@ -1119,7 +1119,7 @@ const PrincipalRegularizationListPage = () => {
                               <button
                                 type="button"
                                 onClick={() => handleView(request)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                                className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
                                 aria-label="View regularization details"
                                 title="View"
                               >

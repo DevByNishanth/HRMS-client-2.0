@@ -94,7 +94,7 @@ const PrincipalLeaveTable = () => {
             type="button"
             onClick={handleExportClick}
             disabled={filteredLeaves.length === 0}
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-blue-600 text-white dark:bg-[#0d2138] px-3 text-[14px] font-medium transition hover:border-[#3984ff] hover:bg-blue-700 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export
@@ -109,18 +109,18 @@ const PrincipalLeaveTable = () => {
           error={exportError}
         />
 
-        <div className="relative z-0 max-h-[calc(100vh-450px)] overflow-auto table-custom-scrollbar">
-          <table className="w-full min-w-[900px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
+        <div className="relative z-0 max-h-[calc(100vh-450px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
+          <table className="w-full table-fixed border-collapse text-left">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-sm font-medium text-slate-500 dark:text-[#9aacc7]">
               <tr>
-                <th className="px-4 py-3 font-semibold">Employee</th>
-                <th className="px-4 py-3 font-semibold">Leave Type</th>
-                <th className="px-4 py-3 font-semibold">Doc</th>
-                <th className="px-4 py-3 font-semibold">From</th>
-                <th className="px-4 py-3 font-semibold">To</th>
-                <th className="px-4 py-3 font-semibold">Duration</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="px-4 py-3 text-right font-semibold">Action</th>
+                <th className="px-4 py-3 font-semibold w-[20%]">Employee</th>
+                <th className="px-4 py-3 font-semibold w-[15%]">Leave Type</th>
+                <th className="px-4 py-3 font-semibold w-[10%]">Doc</th>
+                <th className="px-4 py-3 font-semibold w-[15%]">From</th>
+                <th className="px-4 py-3 font-semibold w-[15%]">To</th>
+                <th className="px-4 py-3 font-semibold w-[10%]">Duration</th>
+                <th className="px-4 py-3 font-semibold w-[10%]">Status</th>
+                <th className="px-4 py-3 text-right font-semibold w-[5%]">Action</th>
               </tr>
             </thead>
             <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
@@ -148,14 +148,14 @@ const PrincipalLeaveTable = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             title="View document"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-[#c4c6d010] text-[#3984ff] transition hover:bg-[#183052] hover:text-white"
                           >
                             <FileText className="h-4 w-4" />
                           </a>
                         ) : (
                           <span
                             title="No document uploaded"
-                            className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-[#c4c6d010] text-[#6f839f] opacity-50"
+                            className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg bg-gray-100 dark:bg-[#c4c6d010] text-[#6f839f] opacity-50"
                           >
                             <FileText className="h-4 w-4" />
                           </span>
@@ -176,7 +176,7 @@ const PrincipalLeaveTable = () => {
                         <button
                           type="button"
                           onClick={() => setSelectedLeave(leave)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
                           aria-label={`View details for ${leave.employee}`}
                         >
                           <Eye className="h-4 w-4" />

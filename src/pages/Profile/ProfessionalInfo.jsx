@@ -16,7 +16,7 @@ const formatDate = (dateStr) => {
 };
 
 const SkillBadge = ({ children }) => (
-  <span className="rounded-full border border-[#465a7a] bg-[#263654] px-3 py-1 text-[10px] font-semibold text-[#c8d7f4]">
+  <span className="rounded-full border border-slate-300 dark:border-[#465a7a] bg-slate-100 dark:bg-[#263654] px-3 py-1 text-[10px] font-semibold text-slate-700 dark:text-[#c8d7f4]">
     {children}
   </span>
 );
@@ -51,10 +51,10 @@ const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
   return (
     <ProfileCard title="Professional Info" icon={BriefcaseBusiness} canEdit={canEdit} onEdit={onEdit}>
       <div className="space-y-4">
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Employee ID</p>
+        <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Employee ID</p>
           <div className="mt-1 flex items-center justify-between gap-3">
-            <p className="text-[14px] font-medium text-white">{empId}</p>
+            <p className="text-[14px] font-medium text-gray-900 dark:text-white">{empId}</p>
             {isActive && (
               <span className="rounded bg-[#0f7e59]/25 px-2 py-1 text-[10px] font-bold uppercase text-[#26d39a]">
                 Active
@@ -63,49 +63,49 @@ const ProfessionalInfo = ({ canEdit, onEdit, faculty }) => {
           </div>
         </div>
 
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Designation</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{designation}</p>
+        <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Designation</p>
+          <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{designation}</p>
         </div>
 
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Department</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{department}</p>
+        <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Department</p>
+          <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{department}</p>
         </div>
 
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Date of Joining</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{doj}</p>
+        <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Date of Joining</p>
+          <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{doj}</p>
         </div>
 
         {!isActive && (
           <>
-            <div className="border-b border-[#26344f] pb-3">
-              <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Date</p>
-              <p className="mt-1 text-[14px] font-medium text-white">{resignationDate}</p>
+            <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+              <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Resignation Date</p>
+              <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{resignationDate}</p>
             </div>
-            <div className="border-b border-[#26344f] pb-3">
-              <p className="text-[12px] font-medium text-[#8a9ab7]">Resignation Reason</p>
-              <p className="mt-1 text-[14px] font-medium text-white">{resignationReason}</p>
+            <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+              <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Resignation Reason</p>
+              <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{resignationReason}</p>
             </div>
           </>
         )}
 
         {workType && (
-          <div className="border-b border-[#26344f] pb-3">
-            <p className="text-[12px] font-medium text-[#8a9ab7]">Work Type</p>
-            <p className="mt-1 text-[14px] font-medium text-white">{workType}</p>
+          <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+            <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Work Type</p>
+            <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{workType}</p>
           </div>
         )}
 
-        <div className="border-b border-[#26344f] pb-3">
-          <p className="text-[12px] font-medium text-[#8a9ab7]">Total Experience</p>
-          <p className="mt-1 text-[14px] font-medium text-white">{totalExperienceStr}</p>
+        <div className="border-b border-slate-200 dark:border-[#26344f] pb-3">
+          <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Total Experience</p>
+          <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">{totalExperienceStr}</p>
         </div>
 
         {specializations.length > 0 && (
           <div>
-            <p className="text-[12px] font-medium text-[#8a9ab7]">Specialization</p>
+            <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">Specialization</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {specializations.map((spec, idx) => (
                 <SkillBadge key={idx}>{spec}</SkillBadge>

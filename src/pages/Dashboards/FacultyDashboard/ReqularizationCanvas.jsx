@@ -182,16 +182,16 @@ const ReqularizationCanvas = ({ log, onClose }) => {
             onClick={() => { onClose(); setFormError(""); setReason("") }}
         >
             <form
-                className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+                className="flex h-full w-[26%] min-w-[380px] flex-col bg-white dark:bg-[#071425] shadow-lg dark:shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
                 onClick={(event) => event.stopPropagation()}
                 onSubmit={handleSubmit}
             >
-                <div className="shrink-0 flex items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+                <div className="shrink-0 flex items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#0a1a2d] px-5 py-4">
                     <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                             Regularization Request
                         </p>
-                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-gray-900 dark:text-white">
                             Review Logged Hours
                         </h2>
                     </div>
@@ -199,7 +199,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                     <button
                         type="button"
                         onClick={() => { onClose(); setFormError(""); setReason(""); setAttachments([]) }}
-                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 dark:border-[#223b5f] bg-white dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-gray-900 dark:hover:text-white"
                         aria-label="Close regularization form"
                     >
                         <X size={17} />
@@ -209,19 +209,19 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                 <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
 
 
-                    <p className="text-[12px] leading-5 text-[#b8c7dd]">
+                    <p className="text-[12px] leading-5 text-slate-600 dark:text-[#b8c7dd]">
                         Please review your logged hours for the selected date to identify any
                         discrepancies before submitting your regularization request.
                     </p>
 
-                    <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+                    <div className="mt-2 rounded-lg border border-slate-200 dark:border-[#1d395e] bg-slate-50 dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
+                                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">
                                     <CalendarDays size={13} className="text-[#3984ff]" />
                                     Date
                                 </div>
-                                <p className="mt-1 text-[16px] font-semibold text-white">{displayDate}</p>
+                                <p className="mt-1 text-[16px] font-semibold text-gray-900 dark:text-white">{displayDate}</p>
                             </div>
 
                             <span
@@ -232,35 +232,35 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                             </span>
                         </div>
 
-                        <div className="my-3 h-px bg-[#1a3556]" />
+                        <div className="my-3 h-px bg-slate-200 dark:bg-[#1a3556]" />
 
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
-                                    <ClockArrowDown size={14} className="text-[#b8c7dd]" />
+                                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
+                                    <ClockArrowDown size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                                     Check-in
                                 </div>
-                                <p className="mt-1 text-[15px] font-medium text-white">{displayCheckIn}</p>
+                                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">{displayCheckIn}</p>
                             </div>
 
                             <div>
-                                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
-                                    <ClockArrowUp size={14} className="text-[#b8c7dd]" />
+                                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
+                                    <ClockArrowUp size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                                     Check-out
                                 </div>
-                                <p className="mt-1 text-[15px] font-medium text-white">{displayCheckOut}</p>
+                                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">{displayCheckOut}</p>
                             </div>
                         </div>
 
-                        <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+                        <div className="mt-3 flex items-center justify-between rounded-md bg-white dark:bg-[#132b49] px-3 py-2.5">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#1f4070] text-[#6ea1ff]">
                                     <TimerReset size={18} />
                                 </div>
-                                <p className="text-[13px] font-medium text-[#cad7eb]">Working Hours</p>
+                                <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">Working Hours</p>
                             </div>
                             <p
-                                className={`text-[15px] font-semibold ${log.workingHours == null ? "text-[#f16868]" : "text-white"}`}
+                                className={`text-[15px] font-semibold ${log.workingHours == null ? "text-[#f16868]" : "text-gray-900 dark:text-white"}`}
                             >
                                 {displayHours}
                             </p>
@@ -270,7 +270,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                     <div className="mt-3">
                         <label
                             htmlFor="regularization-reason"
-                            className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white"
+                            className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white"
                         >
                             <FileText size={15} className="text-[#3984ff]" />
                             Reasong for Regularization
@@ -285,9 +285,9 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                 }
                             }}
                             placeholder="Explain the discrepancy..."
-                            className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:ring-2 ${fieldErrors.reason
-                                ? "border-[#ef4444] bg-[#0d2138] focus:border-[#ef4444] focus:ring-[#ef4444]/20"
-                                : "border-[#244061] bg-[#0d2138] focus:border-[#3984ff] focus:ring-[#3984ff33]"
+                            className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-gray-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:ring-2 ${fieldErrors.reason
+                                ? "border-[#ef4444] bg-white dark:bg-[#0d2138] focus:border-[#ef4444] focus:ring-[#ef4444]/20"
+                                : "border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] focus:border-[#3984ff] focus:ring-[#3984ff33]"
                                 }`}
                         />
                         {fieldErrors.reason && (
@@ -299,19 +299,19 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                     </div>
 
                     <div className="mt-3">
-                        <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+                        <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
                             <Paperclip size={15} className="text-[#3984ff]" />
                             Attach Files
                         </p>
                         <label
                             htmlFor="regularization-files"
-                            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-[#345276] bg-[#0d2138] px-4 py-3 text-center transition hover:border-[#3984ff] hover:bg-[#102640]"
+                            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 dark:border-[#345276] bg-slate-50 dark:bg-[#0d2138] px-4 py-3 text-center transition hover:border-[#3984ff] hover:bg-slate-100 dark:hover:bg-[#102640]"
                         >
                             <UploadCloud size={22} className="text-[#6ea1ff]" />
-                            <span className="mt-2 text-[13px] font-semibold text-white">
+                            <span className="mt-2 text-[13px] font-semibold text-gray-900 dark:text-white">
                                 Click to upload supporting files
                             </span>
-                            <span className="mt-1 text-[11px] text-[#8ca1bd]">
+                            <span className="mt-1 text-[11px] text-slate-500 dark:text-[#8ca1bd]">
                                 Images, PDF, or documents
                             </span>
                             <input
@@ -331,9 +331,9 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                     return (
                                         <div
                                             key={attachment.id}
-                                            className="flex items-center gap-3 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-2"
+                                            className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-[#1d395e] bg-white dark:bg-[#0a1a2d] p-2"
                                         >
-                                            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#132b49] text-[#6ea1ff]">
+                                            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-100 dark:bg-[#132b49] text-[#6ea1ff]">
                                                 {isImage ? (
                                                     <img
                                                         src={attachment.preview}
@@ -345,17 +345,17 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                                                 )}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="truncate text-[12px] font-semibold text-white">
+                                                <p className="truncate text-[12px] font-semibold text-gray-900 dark:text-white">
                                                     {attachment.file.name}
                                                 </p>
-                                                <p className="mt-0.5 text-[11px] text-[#8ca1bd]">
+                                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-[#8ca1bd]">
                                                     {formatFileSize(attachment.file.size)}
                                                 </p>
                                             </div>
                                             <button
                                                 type="button"
                                                 onClick={() => removeAttachment(attachment.id)}
-                                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#8ca1bd] transition hover:bg-[#183052] hover:text-white"
+                                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-200 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
                                                 aria-label={`Remove ${attachment.file.name}`}
                                             >
                                                 <X size={15} />
@@ -369,7 +369,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
 
                 </div>
 
-                <div className="shrink-0 border-t border-[#173150] bg-[#08182a] px-5 py-4">
+                <div className="shrink-0 border-t border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#08182a] px-5 py-4">
                     {formError && (
                         <div className="mb-3  mt-4 flex items-start gap-3 rounded-lg border border-[#ef4444]/40 bg-[#ef4444]/10 px-4 py-3">
                             <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#ef4444]" />

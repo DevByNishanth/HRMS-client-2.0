@@ -63,9 +63,9 @@ const StatusFilter = ({ value, onChange }) => {
       <button
         type="button"
         onClick={() => setIsOpen((currentState) => !currentState)}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[13px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-3 text-left text-[13px] text-gray-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-gray-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || "Status"}
         </span>
         <ChevronDown
@@ -75,7 +75,7 @@ const StatusFilter = ({ value, onChange }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] h-[200px] overflow-auto table-custom-scrollbar">
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-lg dark:shadow-[0_18px_45px_rgba(0,0,0,0.35)] h-[200px] overflow-auto table-custom-scrollbar">
           {statuses.map((status) => (
             <button
               key={status}
@@ -85,8 +85,8 @@ const StatusFilter = ({ value, onChange }) => {
                 setIsOpen(false);
               }}
               className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === status
-                ? "bg-[#132b49] text-white"
-                : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                ? "bg-slate-100 dark:bg-[#132b49] text-gray-900 dark:text-white"
+                : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-50 dark:hover:bg-[#102640] hover:text-gray-900 dark:hover:text-white"
                 }`}
             >
               {status}
@@ -188,11 +188,11 @@ const AttendanceTable = () => {
   };
 
   return (
-    <section className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
       <div className="relative z-20 flex flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h2 className="text-[18px] font-semibold text-white">Attendance Logs</h2>
-          <p className="mt-1 text-[12px] text-[#8ca1bd]">Filter and review daily attendance records.</p>
+          <h2 className="text-[18px] font-semibold text-gray-900 dark:text-white">Attendance Logs</h2>
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#8ca1bd]">Filter and review daily attendance records.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -219,7 +219,7 @@ const AttendanceTable = () => {
             type="button"
             onClick={handleExportClick}
             disabled={records.length === 0}
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-3 text-[14px] font-medium text-gray-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-100 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export
@@ -229,7 +229,7 @@ const AttendanceTable = () => {
             <button
               type="button"
               onClick={resetFilters}
-              className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white"
+              className="h-11 rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-4 text-[12px] font-semibold text-slate-500 dark:text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-gray-900 dark:hover:text-white"
             >
               Reset Filters
             </button>
@@ -248,11 +248,11 @@ const AttendanceTable = () => {
       <div className="relative z-0 max-h-[38vh] min-h-[240px] overflow-auto table-custom-scrollbar">
         {loading ? (
           <div className="flex min-h-[240px] items-center justify-center">
-            <p className="text-[14px] text-[#8ca1bd]">Loading attendance records...</p>
+            <p className="text-[14px] text-slate-500 dark:text-[#8ca1bd]">Loading attendance records...</p>
           </div>
         ) : records.length > 0 ? (
           <table className="w-full min-w-[760px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-4 py-3 font-semibold">Date</th>
                 <th className="px-4 py-3 font-semibold">Check-In</th>
@@ -262,9 +262,9 @@ const AttendanceTable = () => {
                 <th className="px-4 py-3 font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[13px] text-[#cad7eb]">
+            <tbody className="text-[13px] text-slate-700 dark:text-[#cad7eb]">
               {records.map((record) => (
-                <tr key={record.attendanceId || record.checkIn} className="border-b border-[#132944] last:border-0">
+                <tr key={record.attendanceId || record.checkIn} className="border-b border-slate-200 dark:border-[#132944] last:border-0">
                   <td className="px-4 py-4">{formatDateFromISO(record.date)}</td>
                   <td className="px-4 py-4">{formatTime(record.checkIn)}</td>
                   <td className="px-4 py-4">{record.checkIn === record.checkOut ? "--" : formatTime(record.checkOut)}</td>
@@ -290,8 +290,8 @@ const AttendanceTable = () => {
                       title={!canApplyRegularization(record) ? "Regularization is not available for this attendance status." : undefined}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
                         ${canApplyRegularization(record)
-                          ? "bg-[#102640] text-[#a9bddb] hover:bg-[#183052] hover:text-white"
-                          : "bg-[#102640]/30 text-[#6f839f] cursor-not-allowed"
+                          ? "bg-slate-100 dark:bg-[#102640] text-slate-600 dark:text-[#a9bddb] hover:bg-slate-200 dark:hover:bg-[#183052] hover:text-gray-900 dark:hover:text-white"
+                          : "bg-slate-50 dark:bg-[#102640]/30 text-slate-400 dark:text-[#6f839f] cursor-not-allowed"
                         }`}
                       aria-label={`Open regularization form for ${formatDateFromISO(record.checkIn)}`}
                     >
@@ -304,7 +304,7 @@ const AttendanceTable = () => {
           </table>
         ) : (
           <div className="flex min-h-[240px] items-center justify-center">
-            <p className="text-[14px] text-[#8ca1bd]">
+            <p className="text-[14px] text-slate-500 dark:text-[#8ca1bd]">
               {records.length === 0 && !loading
                 ? "No attendance records found."
                 : "No attendance logs found for the selected filters."}

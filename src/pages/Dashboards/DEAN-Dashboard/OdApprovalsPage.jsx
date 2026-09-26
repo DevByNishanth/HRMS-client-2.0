@@ -165,17 +165,17 @@ const OdDetailsPopup = ({ request, onClose }) => {
                       {/* Connector line */}
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${isApproved
+                          className={`absolute left-[19px] top-10 bottom-0 w-[2px] ${isApproved
                             ? "bg-[#10b981]"
                             : isRejected
                               ? "bg-[#ef4444]"
-                              : "bg-[#444c63]"
+                              : "bg-slate-200 dark:bg-[#444c63]"
                             }`}
                         />
                       )}
 
                       {/* Step content */}
-                      <div className="relative flex gap-3 pb-4">
+                      <div className="relative flex gap-3 pb-6">
                         {/* Step circle */}
                         <div className="flex-shrink-0">
                           <div
