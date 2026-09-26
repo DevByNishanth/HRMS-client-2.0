@@ -158,7 +158,7 @@ const RecentRequestsCard = ({ className = "" }) => {
     >
       <div className="flex flex-col gap-2 ">
         {/* Tabs */}
-        <div className="flex gap-2  -mx-4 px-4">
+        <div className="flex gap-2  bg-[#f8fafc] border border-gray-200 dark:border-gray-800 dark:bg-[#071425] w-fit rounded-lg p-1.5">
           {tabs.map((tab) => (
             <button
               key={tab.id}

@@ -297,14 +297,14 @@ const Sidebar = () => {
                                 <Link
                                     to={item.path}
                                     className={`relative w-full flex items-center gap-2 text-[15px] px-3 py-2 rounded-md transition font-semibold ${active
-                                        ? 'bg-blue-50 text-blue-600 dark:bg-[#0b2a73]/40 dark:text-white dark:hover:bg-[#0d3a8f]'
-                                        : 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-white dark:hover:bg-[#0b2a73]'
+                                        ? 'bg-[#4f46e5] text-[#ffffff] font-semibold dark:bg-[#0b2a73]/40 dark:text-white dark:hover:bg-[#0d3a8f]'
+                                        : 'bg-transparent text-[#94a3b8] hover:border hover:border-[#94a3b8] hover:text-[#94a3b8] dark:text-white dark:hover:bg-[#0b2a73]'
                                         }`}
-                                >
-                                    <Icon size={16} className={active ? "text-blue-600 dark:text-[#7ea6ff]" : "text-slate-400 dark:text-[#7ea6ff]"} />
+                                > 
+                                    <Icon size={16} className={active ? "text-white dark:text-[#7ea6ff]" : "text-slate-400 dark:text-[#7ea6ff]"} />
                                     <span>{item.label}</span>
                                     {active && (
-                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#5b8cff] rounded-full"></div>
+                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] dark:bg-[#5b8cff] rounded-full"></div>
                                     )}
                                 </Link>
                                 {hasSubItems && (

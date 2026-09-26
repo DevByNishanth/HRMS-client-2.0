@@ -74,7 +74,7 @@ const StaffDistributionChart = ({ className = "" }) => {
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-9 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-700 dark:text-white outline-none transition hover:border-blue-500 dark:hover:border-[#3984ff]"
+              className="flex h-9 w-full items-center justify-between rounded-lg border border-[#f3f4f6] dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 text-[13px] text-slate-700 dark:text-white outline-none transition hover:border-blue-500 dark:hover:border-[#3984ff]"
             >
               <span>{selectedDepartment}</span>
               <ChevronDown
@@ -119,15 +119,14 @@ const StaffDistributionChart = ({ className = "" }) => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
-              margin={{ top: 12, right: 0, left: -18, bottom: 0 }}
+              margin={{ top: 12, right: 0, left: -18, bottom: -5 }}
             >
               <XAxis
                 dataKey="role"
                 stroke={chartText}
                 tickLine={false}
                 axisLine={false}
-                fontSize={11}
-                interval={0}
+                tick={false}
               />
               <YAxis
                 stroke={chartText}

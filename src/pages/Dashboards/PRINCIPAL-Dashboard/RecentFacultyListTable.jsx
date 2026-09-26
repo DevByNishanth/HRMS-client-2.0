@@ -1,4 +1,4 @@
-import { ArrowUpRight, Users } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PrincipalDashboardCard from "./PrincipalDashboardCard";
@@ -82,11 +82,11 @@ const RecentFacultyListTable = ({ className = "" }) => {
       <div className="button-container  relative">
         <Link
           to="/dashboard-principal/faculty-list"
-          className="text-md flex items-center gap-2 absolute -top-[50px] right-0"
+          className=" flex items-center gap-2 absolute -top-[50px] right-0 text-blue-700 dark:text-white"
         >
           View all{" "}
           <span>
-            <ArrowUpRight size={14} />
+            <ArrowRight size={14} />
           </span>
         </Link>
       </div>
@@ -102,7 +102,7 @@ const RecentFacultyListTable = ({ className = "" }) => {
       ) : (
         <div className="max-h-[240px] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[500px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[11px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-[#f8fafc] dark:bg-[#172c46] text-[14px] font-semibold  text-slate-600 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-3 py-3 font-semibold">Emp ID</th>
                 <th className="px-3 py-2 font-semibold">Name</th>
@@ -128,7 +128,7 @@ const RecentFacultyListTable = ({ className = "" }) => {
                     </td>
                     <td className="px-3 py-3">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-2 text-[11px] font-semibold ${color.bg} ${color.text}`}
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-2 text-[11px] font-semibold  ${color.text}`}
                       >
                         <span className="h-[4px] w-[4px] rounded-full bg-current" />
                         {faculty.designation}
@@ -137,7 +137,7 @@ const RecentFacultyListTable = ({ className = "" }) => {
                     <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd]">
                       {faculty.department}
                     </td>
-                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd]">
+                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd] whitespace-nowrap">
                       {formatDate(faculty.createdAt)}
                     </td>
                   </tr>

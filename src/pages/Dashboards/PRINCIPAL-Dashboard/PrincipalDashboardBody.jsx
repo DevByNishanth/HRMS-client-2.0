@@ -97,7 +97,7 @@ const PrincipalDashboardBody = () => {
   ];
 
   return (
-    <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white transition-colors duration-200">
+    <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white transition-colors duration-200">
       <div className="mx-auto max-w-[1440px] space-y-5">
         {/* // ? ===============================  this is the header ================================  */}
         <PrincipalDashboardHeader totalPending={totalPending} />
