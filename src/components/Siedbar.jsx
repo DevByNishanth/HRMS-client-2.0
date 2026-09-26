@@ -1,144 +1,274 @@
 // Sidebar.jsx
 // import logo from '../assets/logo.svg'
-import logo from '../assets/college_logo.png'
+import logo from "../assets/college_logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Users, FileText, Network, RotateCw, Users2, CalendarPlus, LogOut, CalendarSync, CalendarX2, CalendarPlus2, Hourglass,FingerprintPattern,UserPen,UserCheck, GitPullRequestArrow } from "lucide-react";
-import { getRoleFromToken, logout } from '../utils/tokenUtils';
+import {
+  LayoutDashboard,
+  Calendar,
+  BadgeIndianRupee,
+  Users,
+  FileText,
+  Network,
+  RotateCw,
+  Users2,
+  CalendarPlus,
+  LogOut,
+  CalendarSync,
+  CalendarX2,
+  CalendarPlus2,
+  Hourglass,
+  FingerprintPattern,
+  UserPen,
+  UserCheck,
+  GitPullRequestArrow,
+} from "lucide-react";
+import { getRoleFromToken, logout } from "../utils/tokenUtils";
 
 const Sidebar = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const role = getRoleFromToken()?.toLowerCase();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const role = getRoleFromToken()?.toLowerCase();
 
-    // Navigation items for Faculty
-    const facultyNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
-        { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
-        { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
-        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
-        { label: 'Calender', icon: Calendar, path: '/dashboard-faculty/calender' },
+  // Navigation items for Faculty
+  const facultyNavItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-faculty" },
+    { label: "Leaves", icon: Calendar, path: "/dashboard-faculty/leaves" },
+    { label: "Attendance", icon: Users, path: "/dashboard-faculty/attendance" },
+    {
+      label: "Permission",
+      icon: FileText,
+      path: "/dashboard-faculty/permissions",
+    },
+    {
+      label: "Regularization List",
+      icon: RotateCw,
+      path: "/dashboard/regularizationList",
+    },
+    { label: "Comp off", icon: CalendarPlus, path: "/dashboard/compOff" },
+    { label: "Calender", icon: Calendar, path: "/dashboard-faculty/calender" },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-faculty/payroll",
+    },
+  ];
 
-    ];
+  // Navigation items for HOD (same as Faculty + My Team + Payroll)
+  const hodNavItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-faculty" },
+    { label: "Leaves", icon: Calendar, path: "/dashboard-faculty/leaves" },
+    { label: "Attendance", icon: Users, path: "/dashboard-faculty/attendance" },
+    {
+      label: "Permission",
+      icon: FileText,
+      path: "/dashboard-faculty/permissions",
+    },
+    {
+      label: "Regularization List",
+      icon: RotateCw,
+      path: "/dashboard/regularizationList",
+    },
+    { label: "Comp off", icon: CalendarPlus, path: "/dashboard/compOff" },
+    { label: "My Team", icon: Users2, path: "/dashboard-faculty/my-Team" },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-faculty/payroll",
+    },
+  ];
 
-    // Navigation items for HOD (same as Faculty + My Team)
-    const hodNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
-        { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
-        { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
-        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
-        { label: 'My Team', icon: Users2, path: '/dashboard-faculty/my-Team' },
-        ];
-
-    // Navigation items for Admin
-    const adminNavItems = [
-        { label: 'Faculty Management', icon: Users, path: '/dashboard-admin' },
-        { label: 'Shift Management', icon: CalendarSync, path: '/dashboard-admin/shifts' },
-        { label: 'Holiday Management', icon: CalendarX2, path: '/dashboard-admin/holidays' },
-        { label: 'Leave Type Management', icon: CalendarPlus2, path: '/dashboard-admin/leavetype' },
-        { label: 'Leave Balance', icon: Hourglass, path: '/dashboard-admin/leavebalance' },
-        { label: 'Attendance Report', icon: FingerprintPattern, path: '/dashboard-admin/attendance-report' },
-        { label: 'Attendance Override', icon: UserPen, path: '/dashboard-admin/attendance-override' },
-        { label: 'Attendance List', icon: UserCheck, path: '/dashboard-admin/attendance' },
-        { 
-            label: 'Requests', 
-            icon: GitPullRequestArrow, 
-            path: '#',
-            subItems: [
-                { label: 'Leave Requests', path: '/dashboard-admin/requests/leave' },
-                { label: 'Permission Requests', path: '/dashboard-admin/requests/permission' },
-                { label: 'Regularization Requests', path: '/dashboard-admin/requests/regularization' },
-                { label: 'Comp off Requests', path: '/dashboard-admin/requests/compoff' },
-            ]
+  // Navigation items for Principal
+  const principalNavItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-principal" },
+    {
+      label: "Faculty List",
+      icon: Users,
+      path: "/dashboard-principal/faculty-list",
+    },
+    { label: "Leaves", icon: Calendar, path: "/dashboard-principal/leaves" },
+    // { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
+    {
+      label: "Permission",
+      icon: FileText,
+      path: "/dashboard-principal/permissions",
+    },
+    {
+      label: "Comp off",
+      icon: CalendarPlus,
+      path: "/dashboard-principal/compOff",
+    },
+    {
+      label: "Regularization List",
+      icon: RotateCw,
+      path: "/dashboard-principal/regularizationList",
+    },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-principal/payroll",
+    },
+  ];
+  // Navigation items for Admin
+  const adminNavItems = [
+    { label: "Faculty Management", icon: Users, path: "/dashboard-admin" },
+    {
+      label: "Shift Management",
+      icon: CalendarSync,
+      path: "/dashboard-admin/shifts",
+    },
+    {
+      label: "Holiday Management",
+      icon: CalendarX2,
+      path: "/dashboard-admin/holidays",
+    },
+    {
+      label: "Leave Management",
+      icon: CalendarPlus2,
+      path: "/dashboard-admin/leavetype",
+    },
+    {
+      label: "Leave Balance",
+      icon: Hourglass,
+      path: "/dashboard-admin/leavebalance",
+    },
+    {
+      label: "Attendance Report",
+      icon: FingerprintPattern,
+      path: "/dashboard-admin/attendance-report",
+    },
+    {
+      label: "Attendance Override",
+      icon: UserPen,
+      path: "/dashboard-admin/attendance-override",
+    },
+    
+    {
+      label: "Requests",
+      icon: GitPullRequestArrow,
+      path: "#",
+      subItems: [
+        { label: "Leave Requests", path: "/dashboard-admin/requests/leave" },
+        {
+          label: "Permission Requests",
+          path: "/dashboard-admin/requests/permission",
         },
-        { label: 'Teams', icon: Network , path: '/dashboard-admin/teams' },
+        {
+          label: "Regularization Requests",
+          path: "/dashboard-admin/requests/regularization",
+        },
+        {
+          label: "Comp off Requests",
+          path: "/dashboard-admin/requests/compoff",
+        },
+      ],
+    },
+    {
+      label: "Attendance List",
+      icon: UserCheck,
+      path: "/dashboard-admin/attendance",
+    },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-admin/payroll",
+    },
+    { label: "Teams", icon: Network, path: "/dashboard-admin/teams" },
+  ];
 
-    ];
+  // Navigation items for Non-Teaching (same as Faculty)
+  const nonTeachingNavItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-faculty" },
+    { label: "Leaves", icon: Calendar, path: "/dashboard-faculty/leaves" },
+    { label: "Attendance", icon: Users, path: "/dashboard-faculty/attendance" },
+    {
+      label: "Permission",
+      icon: FileText,
+      path: "/dashboard-faculty/permissions",
+    },
+    {
+      label: "Regularization List",
+      icon: RotateCw,
+      path: "/dashboard/regularizationList",
+    },
+    { label: "Comp off", icon: CalendarPlus, path: "/dashboard/compOff" },
+    {
+      label: "Payroll",
+      icon: BadgeIndianRupee,
+      path: "/dashboard-faculty/payroll",
+    },
+  ];
 
-    // Navigation items for Principal
-    const principalNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-principal' },
-        { label: 'Faculty List', icon: Users, path: '/dashboard-principal/faculty-list' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-principal/leaves' },
-        // { label: 'Attendance', icon: Users, path: '/dashboard-principal/attendance' },
-        { label: 'Permission', icon: FileText, path: '/dashboard-principal/permissions' },
-        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard-principal/compOff' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard-principal/regularizationList' },
-    ];
+  // Navigation items for Dean (same as Faculty + OD Approvals)
+  const deanNavItems = [
+    { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard-dean" },
+    { label: "Leaves", icon: Calendar, path: "/dashboard-dean/leaves" },
+    { label: "Attendance", icon: Users, path: "/dashboard-dean/attendance" },
+    {
+      label: "Permission",
+      icon: FileText,
+      path: "/dashboard-dean/permissions",
+    },
+    {
+      label: "Regularization List",
+      icon: RotateCw,
+      path: "/dashboard/regularizationList",
+    },
+    {
+      label: "OD Approvals",
+      icon: CalendarPlus,
+      path: "/dashboard-dean/od-approvals",
+    },
+    { label: "Comp off", icon: CalendarPlus, path: "/dashboard/compOff" },
+  ];
 
-    // Navigation items for Non-Teaching (same as Faculty)
-    const nonTeachingNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-faculty' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-faculty/leaves' },
-        { label: 'Attendance', icon: Users, path: '/dashboard-faculty/attendance' },
-        { label: 'Permission', icon: FileText, path: '/dashboard-faculty/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
-        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
+  // Determine navigation items based on role
+  let navItems = facultyNavItems;
+  switch (role) {
+    case "hod":
+      navItems = hodNavItems;
+      break;
+    case "hr":
+      navItems = adminNavItems;
+      break;
+    case "admin":
+      navItems = adminNavItems;
+      break;
+    case "principal":
+      navItems = principalNavItems;
+      break;
+    case "non-teaching":
+      navItems = nonTeachingNavItems;
+      break;
+    case "dean":
+      navItems = deanNavItems;
+      break;
+    case "dean-iqac":
+      navItems = deanNavItems;
+      break;
+    case "dean-research":
+      navItems = deanNavItems;
+      break;
+    case "dean-academics":
+      navItems = deanNavItems;
+      break;
+    case "coe":
+      navItems = deanNavItems;
+      break;
+    case "iqac":
+      navItems = deanNavItems;
+      break;
+    default:
+      navItems = facultyNavItems;
+  }
 
-    ];
-
-    // Navigation items for Dean (same as Faculty + OD Approvals)
-    const deanNavItems = [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard-dean' },
-        { label: 'Leaves', icon: Calendar, path: '/dashboard-dean/leaves' },
-        { label: 'Attendance', icon: Users, path: '/dashboard-dean/attendance' },
-        { label: 'Permission', icon: FileText, path: '/dashboard-dean/permissions' },
-        { label: 'Regularization List', icon: RotateCw, path: '/dashboard/regularizationList' },
-        { label: 'OD Approvals', icon: CalendarPlus, path: '/dashboard-dean/od-approvals' },
-        { label: 'Comp off', icon: CalendarPlus, path: '/dashboard/compOff' },
-    ];
-
-    // Determine navigation items based on role
-    let navItems = facultyNavItems;
-    switch (role) {
-        case 'hod':
-            navItems = hodNavItems;
-            break;
-        case 'hr':
-            navItems = adminNavItems;
-            break;
-        case 'admin':
-            navItems = adminNavItems;
-            break;
-        case 'principal':
-            navItems = principalNavItems;
-            break;
-        case 'non-teaching':
-            navItems = nonTeachingNavItems;
-            break;
-        case 'dean':
-            navItems = deanNavItems;
-            break;
-        case 'dean-iqac':
-            navItems = deanNavItems;
-            break;
-        case 'dean-research':
-            navItems = deanNavItems;
-            break;
-        case 'dean-academics':
-            navItems = deanNavItems;
-            break;
-        case 'coe':
-            navItems = deanNavItems;
-            break;
-        case 'iqac':
-            navItems = deanNavItems;
-            break;
-        default:
-            navItems = facultyNavItems;
+  const isActive = (path) => {
+    if (path === "/profile") {
+      return location.pathname.startsWith("/profile");
     }
+    return location.pathname === path;
+  };
 
-    const isActive = (path) => {
-        if (path === '/profile') {
-            return location.pathname.startsWith('/profile');
-        }
-        return location.pathname === path;
-    };
-
-    return (
+  return (
         <>
             {/* Sidebar */}
             {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
@@ -164,7 +294,7 @@ const Sidebar = () => {
                             <div key={item.label} className="relative group">
                                 <Link
                                     to={item.path}
-                                    className={`relative w-full flex items-center gap-2 text-[var(--theme-text-main)] text-[18px] px-3 py-2 rounded-md transition font-semibold ${active
+                                    className={`relative w-full flex items-center gap-2 text-[var(--theme-text-main)] text-[15px] px-3 py-2 rounded-md transition font-semibold ${active
                                         ? 'bg-[#2563EB]/10 hover:bg-[#2563EB]/20 text-[#2563EB]'
                                         : 'bg-transparent hover:bg-[var(--theme-bg-hover)]'
                                         }`}
@@ -209,5 +339,6 @@ const Sidebar = () => {
         </>
     );
 };
+
 
 export default Sidebar;

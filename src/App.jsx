@@ -39,11 +39,15 @@ import Attendance from "./pages/Dashboards/AdminDashboard/Attendance/AttendanceM
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import TeamsPage from "./pages/Dashboards/AdminDashboard/Teams/TeamsPage";
+import FacultyPayrollPage from "./pages/Dashboards/FacultyDashboard/FacultyPayrollPage";
+import AdminPayrollPage from "./pages/Dashboards/AdminDashboard/Payroll/AdminPayrollPage";
+import PrincipalPayrollPage from "./pages/Dashboards/PRINCIPAL-Dashboard/PrincipalPayrollPage";
 
 import AdminLeaveRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminLeaveRequestsPage";
 import AdminPermissionRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminPermissionRequestsPage";
 import AdminRegularizationRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminRegularizationRequestsPage";
 import AdminCompOffRequestsPage from "./pages/Dashboards/AdminDashboard/Requests/AdminCompOffRequestsPage";
+import PayslipPage from "./pages/Common/PayslipPage";
 
 function App() {
   // Role-based default route redirect
@@ -86,9 +90,7 @@ function App() {
 
   return (
     <>
-      
-        {/* <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />+ */}
-      
+      {/* <DoumentUploadFormModal onClose={() => setShowUploadModal(false)} />+ */}
 
       <ToastContainer
         position="top-right"
@@ -119,6 +121,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
               <LeavePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-faculty/payroll"
+          element={
+            <ProtectedRoute requiredRoles={["faculty", "hod", "non-teaching"]}>
+              <FacultyPayrollPage />
             </ProtectedRoute>
           }
         />
@@ -185,6 +195,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={["principal"]}>
               <PrincipalRegularizationListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-principal/payroll"
+          element={
+            <ProtectedRoute requiredRoles={["principal"]}>
+              <PrincipalPayrollPage />
             </ProtectedRoute>
           }
         />
@@ -327,6 +345,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard-admin/payroll"
+          element={
+            // <ProtectedRoute requiredRoles={['admin', 'hr']}>
+            <ProtectedRoute requiredRoles={["admin", "hr"]}>
+              <AdminPayrollPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Routes - Profile (All Authenticated Users) */}
         <Route
@@ -368,6 +395,29 @@ function App() {
               ]}
             >
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Route - Payslip */}
+        <Route
+          path="/payslip/:facultyId"
+          element={
+            <ProtectedRoute
+              requiredRoles={[
+                "faculty",
+                "hod",
+                "principal",
+                "admin",
+                "non-teaching",
+                "dean",
+                "dean-academics",
+                "dean-iqac",
+                "dean-research",
+                "hr",
+              ]}
+            >
+              <PayslipPage />
             </ProtectedRoute>
           }
         />

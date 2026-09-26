@@ -410,21 +410,6 @@ const OdApprovalsPage = () => {
   const rawRole = decodedData?.role || null;
   const normalizedRole = rawRole?.toLowerCase()?.trim() || null;
 
-  // Extract dean sub-type for filtering
-  const deanSubType =
-    normalizedRole?.startsWith("dean-")
-      ? normalizedRole.replace("dean-", "")
-      : normalizedRole === "iqac"
-        ? "iqac"
-        : null;
-
-  const DEAN_LEAVE_FILTER = {
-    research: ["On Duty - Research"],
-    iqac: ["On Duty - Research", "On Duty - Exam"],
-  };
-
-  const allowedLeaveTypes = DEAN_LEAVE_FILTER[deanSubType] || null;
-
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
   // Fetch requests
@@ -486,6 +471,7 @@ const OdApprovalsPage = () => {
               purpose: app.reason || leaveType,
               reason: app.reason || "",
               status: app.status || "Pending",
+              currentApprovalLevel: app.currentApprovalLevel || "",
               approvalHistory: app.approvalHistory || [],
 
               // Dean-specific sub-status — uses normalizedRole to handle role casing/whitespace
@@ -499,8 +485,18 @@ const OdApprovalsPage = () => {
           });
 
           let finalData = mapped.filter((item) => {
-            return item.leaveTypeCategory == "On Duty"
-          })
+            if (item.leaveTypeCategory != "On Duty") return false;
+
+            // Dean sub-roles (e.g. dean-iqac) only see requests waiting at their own approval level
+            if (
+              normalizedRole?.startsWith("dean-") &&
+              item.currentApprovalLevel?.toLowerCase() !== normalizedRole
+            ) {
+              return false;
+            }
+
+            return true;
+          });
           setRequests(finalData);
         }
       } catch (err) {
@@ -519,11 +515,6 @@ const OdApprovalsPage = () => {
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
-      // Role-based filtering: restrict to allowed leave types for dean sub-roles
-      if (allowedLeaveTypes && !allowedLeaveTypes.includes(request.leaveType)) {
-        return false;
-      }
-
       const searchMatch =
         !searchTerm ||
         request.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -533,7 +524,7 @@ const OdApprovalsPage = () => {
       const statusMatch = statusFilter === "All" || (request.approvalStatus || request.status) === statusFilter;
       return searchMatch && statusMatch;
     });
-  }, [requests, searchTerm, statusFilter, allowedLeaveTypes]);
+  }, [requests, searchTerm, statusFilter]);
 
   const handleApprove = async (request) => {
     try {
