@@ -1001,9 +1001,9 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -1013,7 +1013,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
             {options.map((option) => (
               <button
@@ -1024,7 +1024,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                   ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
                   }`}
               >
                 {option}
@@ -1122,9 +1122,9 @@ const FilterDatePicker = ({
         id={id}
         type="button"
         onClick={handleToggle}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value ? formatDate(value) : placeholder}
         </span>
         <CalendarDays size={16} className="text-[#3984ff]" />
@@ -1133,25 +1133,25 @@ const FilterDatePicker = ({
       {isOpen && (
         <div
           className={`absolute ${showAbove ? "bottom" : ""
-            } z-[9999] w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "-left-30"
+            } z-[9999] w-[280px] rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "-left-30"
             }`}
         >
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
             </button>
-            <p className="text-[13px] font-semibold text-white">
+            <p className="text-[13px] font-semibold text-slate-900 dark:text-white">
               {months[viewDate.getMonth()]} {viewDate.getFullYear()}
             </p>
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Next month"
             >
               <ChevronRight size={16} />
@@ -1162,7 +1162,7 @@ const FilterDatePicker = ({
             {days.map((day) => (
               <span
                 key={day}
-                className="py-1 text-[10px] font-semibold text-[#8ca1bd]"
+                className="py-1 text-[10px] font-semibold text-slate-500 dark:text-[#8ca1bd]"
               >
                 {day}
               </span>
@@ -1176,7 +1176,7 @@ const FilterDatePicker = ({
                 onClick={() => handleSelectDate(date)}
                 className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
                   ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                  : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
+                  : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
                   } disabled:pointer-events-none disabled:opacity-0`}
               >
                 {date?.getDate()}
