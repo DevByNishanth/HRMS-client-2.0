@@ -717,9 +717,19 @@ const OdApprovalsPage = () => {
                     <tr>
                       <th className="px-4 py-3 font-semibold">Name</th>
                       <th className="px-4 py-3 font-semibold">Department</th>
-                      <th className="px-4 py-3 font-semibold">Leave Type</th>
-                      <th className="px-4 py-3 font-semibold">Date</th>
-                      <th className="px-4 py-3 font-semibold">Purpose</th>
+                      {normalizedRole === "dean-iqac" ? (
+                        <>
+                          <th className="px-4 py-3 font-semibold">From</th>
+                          <th className="px-4 py-3 font-semibold">To</th>
+                          <th className="px-4 py-3 font-semibold">Days</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="px-4 py-3 font-semibold">Leave Type</th>
+                          <th className="px-4 py-3 font-semibold">Date</th>
+                        </>
+                      )}
+                      <th className={`px-4 py-3 font-semibold ${normalizedRole === "dean-iqac" ? "w-[150px]" : ""}`}>Purpose</th>
                       <th className="px-4 py-3 font-semibold">Status</th>
                       <th className="px-4 py-3 text-right font-semibold">Action</th>
                     </tr>
@@ -727,7 +737,7 @@ const OdApprovalsPage = () => {
                   <tbody className="text-[13px] text-[#cad7eb]">
                     {loading ? (
                       <tr>
-                        <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td colSpan={normalizedRole === "dean-iqac" ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
                           Loading requests...
                         </td>
                       </tr>
@@ -752,9 +762,19 @@ const OdApprovalsPage = () => {
                             </div>
                           </td>
                           <td className="px-4 py-3">{request.department}</td>
-                          <td className="px-4 py-3 font-semibold text-[#3984ff]">{request.leaveType}</td>
-                          <td className="px-4 py-3 font-semibold text-white">{request.date}</td>
-                          <td className="max-w-[260px] truncate px-4 py-3" title={request.purpose}>
+                          {normalizedRole === "dean-iqac" ? (
+                            <>
+                              <td className="px-4 py-3 font-semibold text-white">{request.fromDate}</td>
+                              <td className="px-4 py-3 font-semibold text-white">{request.toDate}</td>
+                              <td className="px-4 py-3 font-semibold text-white">{request.fromDate && request.toDate ? Math.floor((new Date(request.toDate).setHours(0, 0, 0, 0) - new Date(request.fromDate).setHours(0, 0, 0, 0)) / 86400000) + 1 : ""}</td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="px-4 py-3 font-semibold text-[#3984ff]">{request.leaveType}</td>
+                              <td className="px-4 py-3 font-semibold text-white">{request.date}</td>
+                            </>
+                          )}
+                          <td className={`truncate px-4 py-3 ${normalizedRole === "dean-iqac" ? "w-[150px] max-w-[150px]" : "max-w-[260px]"}`} title={request.purpose}>
                             {request.purpose}
                           </td>
                           <td className="px-4 py-3">
@@ -806,7 +826,7 @@ const OdApprovalsPage = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td colSpan={normalizedRole === "dean-iqac" ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
                           {requests.length === 0
                             ? "No requests found."
                             : "No requests found matching your filters."}
