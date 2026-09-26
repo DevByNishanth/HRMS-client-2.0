@@ -37,9 +37,11 @@ export default function UpdateEmployeeLeaveBalance({
             [name]: Number(value),
         };
 
-        updatedData.remainingDays =
-            Number(updatedData.allocatedDays) -
-            Number(formData.usedDays);
+        if (name === "allocatedDays" || name === "usedDays") {
+            updatedData.remainingDays =
+                Number(updatedData.allocatedDays) -
+                Number(updatedData.usedDays);
+        }
 
         setFormData(updatedData);
     };
@@ -158,18 +160,8 @@ export default function UpdateEmployeeLeaveBalance({
                             type="number"
                             name="usedDays"
                             value={formData.usedDays}
-                            readOnly
-                            className="
-                                w-full
-                                rounded-lg
-                                p-3
-                                bg-[#091726]
-                                border
-                                border-blue-900
-                                text-gray-400
-                                cursor-not-allowed
-                                outline-none
-                            "
+                            onChange={handleChange}
+                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
                         />
                     </div>
 
@@ -180,18 +172,10 @@ export default function UpdateEmployeeLeaveBalance({
 
                         <input
                             type="number"
+                            name="remainingDays"
                             value={formData.remainingDays}
-                            disabled
-                            className="
-                                w-full
-                                rounded-lg
-                                p-3
-                                bg-[#091726]
-                                border
-                                border-blue-900
-                                text-gray-400
-                                cursor-not-allowed
-                            "
+                            onChange={handleChange}
+                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
                         />
                     </div>
                 </div>
