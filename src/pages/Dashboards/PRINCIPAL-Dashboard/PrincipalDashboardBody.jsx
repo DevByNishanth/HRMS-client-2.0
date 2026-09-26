@@ -91,9 +91,9 @@ const PrincipalDashboardBody = () => {
     pendingCounts.leave + pendingCounts.permission + pendingCounts.regularize;
 
   const pendingRequests = [
-    { name: "Leave", value: pendingCounts.leave, color: "#1666ba" },
+    { name: "Leave", value: pendingCounts.leave, color: "#10b981" },
     { name: "Permission", value: pendingCounts.permission, color: "#368ce7" },
-    { name: "Regularize", value: pendingCounts.regularize, color: "#7ab3ef" },
+    { name: "Regularize", value: pendingCounts.regularize, color: "#f5930b" },
   ];
 
   return (
@@ -103,9 +103,9 @@ const PrincipalDashboardBody = () => {
         <PrincipalDashboardHeader totalPending={totalPending} />
 
         {/*// ?   ============================== first container / section ============================= */}
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
           <RecentFacultyListTable className="min-h-[300px] xl:col-span-3" />
-          <StaffDistributionChart className="min-h-[300px] xl:col-span-2" />
+          {/* <StaffDistributionChart className="min-h-[300px] xl:col-span-2" /> */}
         </div>
 
         {/*// ?   ============================== second container / section ============================= */}

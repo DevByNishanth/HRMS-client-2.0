@@ -11,7 +11,7 @@ const API_BASE_URL =
 
 const COLORS = {
   "Punched In": "#1666ba",
-  "Not Punched In": "#368ce7",
+  "Not Punched In": "#f59308",
 };
 
 const AttendancePieCard = ({ className = "" }) => {

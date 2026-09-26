@@ -102,7 +102,7 @@ const RecentFacultyListTable = ({ className = "" }) => {
       ) : (
         <div className="max-h-[240px] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[500px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#f8fafc] dark:bg-[#172c46] text-[14px] font-semibold  text-slate-600 dark:text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] font-semibold  text-slate-600 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-3 py-3 font-semibold">Emp ID</th>
                 <th className="px-3 py-2 font-semibold">Name</th>
@@ -134,10 +134,10 @@ const RecentFacultyListTable = ({ className = "" }) => {
                         {faculty.designation}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd]">
+                    <td className="px-3 py-3 font-medium text-slate-600 dark:text-[#8ca1bd]">
                       {faculty.department}
                     </td>
-                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd] whitespace-nowrap">
+                    <td className="px-3 py-3 font-medium text-slate-600 dark:text-[#8ca1bd] whitespace-nowrap">
                       {formatDate(faculty.createdAt)}
                     </td>
                   </tr>
