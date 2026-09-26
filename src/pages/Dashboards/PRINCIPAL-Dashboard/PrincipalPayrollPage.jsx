@@ -145,20 +145,20 @@ const PrincipalPayrollPage = () => {
 
   return (
     <>
-      <div className="flex h-screen overflow-hidden bg-[#051424]">
+      <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
         <Sidebar />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <CommonHeader />
 
-          <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+          <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
             {/* Page Header */}
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Payroll Management
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Manage payroll of faculties.
                 </p>
               </div>

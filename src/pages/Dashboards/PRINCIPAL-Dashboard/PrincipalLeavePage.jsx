@@ -32,7 +32,7 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
   const progressDegree = (percentage / 100) * 360;
 
   return (
-    <div className="flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-[#183052] bg-[#0d2138] px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+    <div className="flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0d2138] px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
       <div className="flex min-w-0 items-center gap-3">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
@@ -41,10 +41,10 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
           <Icon size={16} />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[12px] font- uppercase tracking-wide text-[#8ca1bd]">{title}</p>
-          <p className="mt-1 text-[16px] font-semibold text-white">
+          <p className="truncate text-[12px] font- uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">{title}</p>
+          <p className="mt-1 text-[16px] font-semibold text-slate-900 dark:text-white">
             {used}
-            <span className="text-[16px] font-medium text-[#9eb0cc]"> / {total} Days</span>
+            <span className="text-[16px] font-medium text-slate-400 dark:text-[#9eb0cc]"> / {total} Days</span>
           </p>
         </div>
       </div>
@@ -52,7 +52,7 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
         className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
         style={{ background: `conic-gradient(${color} ${progressDegree}deg, #203755 ${progressDegree}deg 360deg)` }}
       >
-        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[#0d2138]" style={{ color }}>
+        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white dark:bg-[#0d2138]" style={{ color }}>
           <span className="text-[14px] font-bold leading-none">{percentage.toFixed(0)}%</span>
         </div>
       </div>
@@ -94,25 +94,25 @@ const PrincipalLeavePage = () => {
   }));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#071425] pb-2 px-4 mt-2">
+        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-slate-100 dark:bg-[#071425] pb-2 px-4 mt-2 transition-colors duration-200">
           <div>
-            <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
-            <p className="mt-1 text-[16px] text-[#9eb0cc]">
+            <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Leaves</h1>
+            <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
               Review leave balances and track every leave request across the institution.
             </p>
           </div>
           <ApplyDropdown label="Apply for Leave" onForMe={handleForMe} onForOthers={handleForOthers} />
         </div>
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto space-y-2">
             <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
               {leaveStatGroups.map((group) => (
-                <div key={group.title} className="rounded-lg border border-[#213857] bg-[#071a2d] p-3">
-                  <h3 className="mb-3 text-[14px] font-semibold text-[#ffffff]">{group.title}</h3>
+                <div key={group.title} className="rounded-lg border border-slate-200 dark:border-[#213857] bg-white dark:bg-[#071a2d] p-3">
+                  <h3 className="mb-3 text-[14px] font-semibold text-slate-900 dark:text-[#ffffff]">{group.title}</h3>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {group.items.map((item) => (
                       <LeaveStatCard key={item.title} {...item} />

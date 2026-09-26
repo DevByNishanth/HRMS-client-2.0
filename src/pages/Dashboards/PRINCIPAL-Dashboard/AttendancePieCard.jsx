@@ -59,7 +59,7 @@ const AttendancePieCard = ({ className = "" }) => {
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3984ff] border-t-transparent" />
           </div>
         ) : data.length === 0 ? (
-          <div className="text-[13px] text-[#8ca1bd]">No data</div>
+          <div className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">No data</div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -79,7 +79,7 @@ const AttendancePieCard = ({ className = "" }) => {
               <Legend
                 verticalAlign="bottom"
                 iconType="circle"
-                formatter={(value) => <span className="text-[12px] text-[#9eb0cc]">{value}</span>}
+                formatter={(value) => <span className="text-[12px] text-slate-600 dark:text-[#9eb0cc]">{value}</span>}
               />
             </PieChart>
           </ResponsiveContainer>

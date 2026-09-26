@@ -1727,10 +1727,10 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
 
   return (
     <>
-      <section className="rounded-xl border border-[#244061]  min-h-[calc(100vh-160px)] max-h-[calc(100vh-160px)] bg-[#0a1a2d] mt-4 ">
+      <section className="rounded-xl border border-slate-200 dark:border-[#244061] min-h-[calc(100vh-160px)] max-h-[calc(100vh-160px)] bg-white dark:bg-[#0a1a2d] mt-4 ">
         <div className="relative z-20 space-y-3 px-4 py-3 flex items-start justify-between">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-semibold text-white">
+            <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
               Comp-Off Requests <span>({filteredRequests.length})</span>
             </h2>
           </div>
@@ -1738,13 +1738,13 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
           <div className="filter-container">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative flex-shrink-0">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search name, designation..."
-                  className="h-11 w-[200px] rounded-lg border border-[#244061] bg-[#0d2138] pl-9 pr-3 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                  className="h-11 w-[200px] rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-9 pr-3 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 />
               </div>
 
@@ -1772,7 +1772,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="flex-shrink-0 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[12px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+                  className="flex-shrink-0 h-11 px-4 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[12px] font-semibold text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-50 dark:hover:bg-[#132b49] hover:text-slate-700 dark:hover:text-white hover:border-[#3984ff]"
                 >
                   Reset Filters
                 </button>
@@ -1781,7 +1781,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                 type="button"
                 onClick={handleExportClick}
                 disabled={filteredRequests.length === 0}
-                className="flex-shrink-0 inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-shrink-0 inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download size={16} />
                 Export
@@ -1805,7 +1805,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
             <div className="flex items-center justify-center py-12 text-[#f16868]">{error}</div>
           ) : (
             <table className="w-full min-w-[900px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+              <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Name</th>
                   <th className="px-4 py-3 font-semibold">Worked From</th>
@@ -1816,14 +1816,14 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                   <th className="px-4 py-3 text-right font-semibold">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-[12px] text-[#cad7eb]">
+              <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
                 {filteredRequests.length > 0 ? (
                   filteredRequests.map((request, index) => (
                     <tr
                       key={`${request.name}-${request.fromDate}-${index}`}
-                      className="border-b border-[#132944] last:border-0"
+                      className="border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors"
                     >
-                      <td className="px-4 py-2 font-semibold text-white">
+                      <td className="px-4 py-2 font-semibold text-slate-900 dark:text-white">
                         <div className="flex items-center gap-2">
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                             {request.name?.charAt(0)?.toUpperCase() || "U"}

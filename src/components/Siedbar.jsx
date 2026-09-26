@@ -272,16 +272,18 @@ const Sidebar = () => {
         <>
             {/* Sidebar */}
             {/* <div className="w-[18%] bg-[#001d3b] flex flex-col relative"> */}
-            <div className="w-[18%] bg-[#0d2643] flex flex-col relative">
+            <div className="w-[18%] bg-[#0f172a] dark:bg-[#0d2643] border-r border-slate-200 dark:border-transparent flex flex-col relative transition-colors duration-200">
 
                 {/* Logo */}
-                <div className="px-3 py-4 mt-4">
+                <div className="px-3 py-4 mt-4 ">
                     <img
                         src={logo}
                         alt="logo"
                         className="w-[60%]  object-contain"
                     />
                 </div>
+
+                
 
                 {/* Menu */}
                 <div className="mt-6 px-2 flex flex-col gap-2">
@@ -294,24 +296,24 @@ const Sidebar = () => {
                             <div key={item.label} className="relative group">
                                 <Link
                                     to={item.path}
-                                    className={`relative w-full flex items-center gap-2 text-white text-[15px] px-3 py-2 rounded-md transition font-semibold ${active
-                                        ? 'bg-[#0b2a73]/40 hover:bg-[#0d3a8f]'
-                                        : 'bg-transparent hover:bg-[#0b2a73]'
+                                    className={`relative w-full flex items-center gap-2 text-[15px] px-3 py-2 rounded-md transition font-semibold ${active
+                                        ? 'bg-blue-50 text-blue-600 dark:bg-[#0b2a73]/40 dark:text-white dark:hover:bg-[#0d3a8f]'
+                                        : 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-white dark:hover:bg-[#0b2a73]'
                                         }`}
                                 >
-                                    <Icon size={16} className="text-[#7ea6ff]" />
+                                    <Icon size={16} className={active ? "text-blue-600 dark:text-[#7ea6ff]" : "text-slate-400 dark:text-[#7ea6ff]"} />
                                     <span>{item.label}</span>
                                     {active && (
                                         <div className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-[3px] bg-[#5b8cff] rounded-full"></div>
                                     )}
                                 </Link>
                                 {hasSubItems && (
-                                    <div className="hidden group-hover:flex absolute left-[95%] top-0 ml-2 flex-col bg-[#0d2643] rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 min-w-[200px] overflow-hidden border border-[#213857]">
+                                    <div className="hidden group-hover:flex absolute left-[95%] top-0 ml-2 flex-col bg-white dark:bg-[#0d2643] rounded-md shadow-lg dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 min-w-[200px] overflow-hidden border border-slate-200 dark:border-[#213857]">
                                         {item.subItems.map((subItem) => (
                                             <Link
                                                 key={subItem.path}
                                                 to={subItem.path}
-                                                className={`px-4 py-3 text-white hover:bg-[#183052] transition text-[14px] font-medium border-b border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-[#183052] border-l-[3px] border-l-[#5b8cff]' : ''}`}
+                                                className={`px-4 py-3 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-[#183052] transition text-[14px] font-medium border-b border-slate-100 dark:border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-slate-50 dark:bg-[#183052] border-l-[3px] border-l-blue-600 dark:border-l-[#5b8cff]' : ''}`}
                                             >
                                                 {subItem.label}
                                             </Link>

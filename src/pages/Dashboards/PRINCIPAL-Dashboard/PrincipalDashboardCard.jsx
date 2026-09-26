@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 const PrincipalDashboardCard = ({ title, subtitle, icon: Icon, action, onAction, children, className = "" }) => (
   <section
-    className={`flex min-h-0 flex-col overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d] shadow-[0_12px_36px_rgba(0,0,0,0.18)] ${className}`}
+    className={`flex min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm dark:shadow-[0_12px_36px_rgba(0,0,0,0.18)] transition-colors duration-200 ${className}`}
   >
     <div className="flex items-start justify-between gap-3 px-4 py-3">
       <div className="flex min-w-0 items-start gap-2.5">
@@ -10,8 +10,8 @@ const PrincipalDashboardCard = ({ title, subtitle, icon: Icon, action, onAction,
           <Icon size={16} />
         </span>
         <div className="min-w-0">
-          <h2 className="truncate text-[16px] font-semibold leading-5 text-white">{title}</h2>
-          {subtitle && <p className="mt-1 truncate text-[12px] text-[#8ca1bd]">{subtitle}</p>}
+          <h2 className="truncate text-[16px] font-semibold leading-5 text-slate-800 dark:text-white">{title}</h2>
+          {subtitle && <p className="mt-1 truncate text-[12px] text-slate-500 dark:text-[#8ca1bd]">{subtitle}</p>}
         </div>
       </div>
 
@@ -19,7 +19,7 @@ const PrincipalDashboardCard = ({ title, subtitle, icon: Icon, action, onAction,
         <button
           type="button"
           onClick={onAction}
-          className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-[#3984ff] transition hover:text-white"
+          className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-blue-600 dark:text-[#3984ff] transition hover:text-blue-800 dark:hover:text-white"
         >
           {action}
           <ArrowRight size={14} />

@@ -74,7 +74,7 @@ const StaffDistributionChart = ({ className = "" }) => {
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="flex h-9 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[13px] text-white outline-none transition hover:border-[#3984ff]"
+              className="flex h-9 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-700 dark:text-white outline-none transition hover:border-blue-500 dark:hover:border-[#3984ff]"
             >
               <span>{selectedDepartment}</span>
               <ChevronDown
@@ -83,7 +83,7 @@ const StaffDistributionChart = ({ className = "" }) => {
               />
             </button>
             {isOpen && (
-              <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-lg h-[200px] table-custom-scrollbar overflow-auto ">
+              <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-lg h-[200px] table-custom-scrollbar overflow-auto ">
                 {departments.map((dept) => (
                   <button
                     key={dept}
@@ -94,8 +94,8 @@ const StaffDistributionChart = ({ className = "" }) => {
                     }}
                     className={`w-full px-3 py-2 text-left text-[12px] transition ${
                       selectedDepartment === dept
-                        ? "bg-[#2563EB] text-white"
-                        : "text-[#cad7eb] hover:bg-[#132b49]"
+                        ? "bg-blue-600 dark:bg-[#2563EB] text-white"
+                        : "text-slate-600 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
                     }`}
                   >
                     {dept}
@@ -112,7 +112,7 @@ const StaffDistributionChart = ({ className = "" }) => {
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3984ff] border-t-transparent" />
           </div>
         ) : data.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-[13px] text-[#8ca1bd]">
+          <div className="flex h-full items-center justify-center text-[13px] text-slate-500 dark:text-[#8ca1bd]">
             No data
           </div>
         ) : (

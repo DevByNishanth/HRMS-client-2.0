@@ -165,7 +165,7 @@ const RecentRequestsCard = ({ className = "" }) => {
               onClick={() => setActiveTab(tab.id)}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition ${activeTab === tab.id
                 ? "border-[#2563eb] bg-[#2563eb] text-white"
-                : "border-transparent text-[#8ca1bd] hover:text-white"
+                : "border-transparent text-slate-600 dark:text-[#8ca1bd] hover:text-slate-900 dark:hover:text-white"
                 }`}
             >
               {tab.label}
@@ -182,12 +182,12 @@ const RecentRequestsCard = ({ className = "" }) => {
           ) : hasError ? (
             <p className="mt-8 text-center text-[11px] text-[#f16868]">{hasError}</p>
           ) : currentRequests.length === 0 ? (
-            <p className="mt-8 text-center text-[11px] text-[#8ca1bd]">No pending {activeTab} requests.</p>
+            <p className="mt-8 text-center text-[11px] text-slate-500 dark:text-[#8ca1bd]">No pending {activeTab} requests.</p>
           ) : (
             currentRequests.map((request, index) => (
               <div
                 key={`${request.name}-${index}`}
-                className="flex items-center justify-between gap-3 rounded-lg border border-[#1c3658] bg-[#071425] px-3 py-2 hover:border-[#2563eb] transition"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-[#1c3658] bg-slate-50 dark:bg-[#071425] px-3 py-2 hover:border-blue-500 dark:hover:border-[#2563eb] transition"
               >
                 {/* Avatar and Info */}
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -195,7 +195,7 @@ const RecentRequestsCard = ({ className = "" }) => {
                     {request.initials}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[12px] font-semibold text-white">{request.name}</p>
+                    <p className="truncate text-[12px] font-semibold text-slate-800 dark:text-white">{request.name}</p>
                     <p className="mt-0.5 truncate text-[11px] text-[#60a5fa]">{request.type}</p>
                   </div>
                 </div>

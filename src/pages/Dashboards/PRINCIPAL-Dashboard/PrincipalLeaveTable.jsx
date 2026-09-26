@@ -59,7 +59,7 @@ const PrincipalLeaveTable = () => {
 
   return (
     <>
-      <div className="tab-container mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138] px-4 py-2">
+      <div className="tab-container mt-4 w-full rounded-lg border border-slate-200 dark:border-[#213857] bg-white dark:bg-[#0d2138] px-4 py-2">
         <div className="flex items-center gap-2">
           {tabs.map((tab) => (
             <button
@@ -68,7 +68,7 @@ const PrincipalLeaveTable = () => {
               key={tab}
               className={`px-6 py-2 text-sm font-medium transition ${tab === activeTab
                 ? "rounded-md bg-[#2563EB] text-white"
-                : "rounded-md hover:bg-slate-600/20"
+                : "rounded-md text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600/20"
                 }`}
             >
               {tab}
@@ -85,16 +85,16 @@ const PrincipalLeaveTable = () => {
         </div>
       </div>
 
-      <section className="rounded-xl border border-[#183052] bg-[#0a1a2d] mt-4">
+      <section className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] mt-4">
         <div className="relative z-20 flex items-center justify-between px-4 py-3">
-          <h2 className="text-[18px] font-semibold text-white">
+          <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
             All  Leave Requests <span>({filteredLeaves.length})</span>
           </h2>
           <button
             type="button"
             onClick={handleExportClick}
             disabled={filteredLeaves.length === 0}
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export
@@ -111,7 +111,7 @@ const PrincipalLeaveTable = () => {
 
         <div className="relative z-0 max-h-[calc(100vh-450px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[900px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-4 py-3 font-semibold">Employee</th>
                 <th className="px-4 py-3 font-semibold">Leave Type</th>
@@ -123,7 +123,7 @@ const PrincipalLeaveTable = () => {
                 <th className="px-4 py-3 text-right font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[12px] text-[#cad7eb]">
+            <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
               {filteredLeaves.length > 0 ? (
                 filteredLeaves.map((leave, index) => {
                   const requiresFile = isFileUploadRequired(leave?.leaveTypeId?.leaveName);
@@ -131,9 +131,9 @@ const PrincipalLeaveTable = () => {
                   return (
                     <tr
                       key={`${leave.empid}-${leave.from}-${index}`}
-                      className="border-b border-[#132944] last:border-0"
+                      className="border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors"
                     >
-                    <td className="px-4 py-3 font-semibold text-white">
+                    <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                       <div>
                         <p className="truncate">{leave.employee}</p>
                         <p className="text-[11px] font-normal text-[#3984ff]">{leave.empid}</p>

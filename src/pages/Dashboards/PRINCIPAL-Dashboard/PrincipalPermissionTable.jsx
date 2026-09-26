@@ -85,9 +85,9 @@ const CustomDropdown = ({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -97,7 +97,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
             {options.map((option) => (
               <button
@@ -108,7 +108,7 @@ const CustomDropdown = ({
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                   ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                   }`}
               >
                 {option}
@@ -562,7 +562,7 @@ const ConfirmationPopup = ({
 
 // ---------- Stat Card ----------
 const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="rounded-xl border border-[#183052] bg-[#0a1a2d] px-4 py-3">
+  <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-4 py-3">
     <div className="flex items-start gap-3">
       <div
         className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -571,8 +571,8 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
         <Icon size={18} />
       </div>
       <div>
-        <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-white">
+        <span className="text-[14px] font-medium text-slate-500 dark:text-[#8ca1bd]">{label}</span>
+        <p className="text-[16px] font-semibold leading-none text-slate-900 dark:text-white">
           {value}
         </p>
       </div>
@@ -903,9 +903,9 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
       </div>
 
       {/* Table Section */}
-      <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+      <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
         <div className="relative z-20 flex flex-col gap-3 px-4 py-3 xl:flex-row xl:items-center xl:justify-between">
-          <h2 className="shrink-0 text-[18px] font-semibold text-white">
+          <h2 className="shrink-0 text-[18px] font-semibold text-slate-900 dark:text-white">
             All Permission Requests <span>({filteredPermissions.length})</span>
           </h2>
 
@@ -914,14 +914,14 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
             <div className="relative min-w-0 w-[220px]">
               <Search
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
               />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search by name, ID..."
-                className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
             </div>
 
@@ -950,7 +950,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
               <button
                 type="button"
                 onClick={resetFilters}
-                className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white"
+                className="h-11 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[12px] font-semibold text-slate-500 dark:text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] hover:text-slate-700 dark:hover:text-white"
               >
                 Reset Filters
               </button>
@@ -975,7 +975,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
               type="button"
               onClick={handleExportClick}
               disabled={filteredPermissions.length === 0}
-              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Download size={16} />
               Export
@@ -993,7 +993,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
 
         <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[900px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-4 py-3">
                   <input
@@ -1015,12 +1015,12 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
                 <th className="px-4 py-3 text-right font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[12px] text-[#cad7eb]">
+            <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
               {filteredPermissions.length > 0 ? (
                 filteredPermissions.map((permission, index) => (
                   <tr
                     key={`${permission._id}-${index}`}
-                    className="border-b border-[#132944] last:border-0"
+                    className="border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors"
                   >
                     <td className="px-4 py-3">
                       {permission.status === "Pending" ? (
@@ -1037,7 +1037,7 @@ const PrincipalPermissionTable = ({ filterDepartment = "All", onDepartmentOption
                         />
                       ) : null}
                     </td>
-                    <td className="px-4 py-3 font-semibold text-white">
+                    <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-2">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                           {permission.facultyId?.firstName?.charAt(0)?.toUpperCase() || "U"}

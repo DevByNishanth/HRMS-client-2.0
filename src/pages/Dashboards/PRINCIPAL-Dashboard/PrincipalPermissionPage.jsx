@@ -41,16 +41,16 @@ const PrincipalPermissionPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <main className="h-[calc(100vh-64px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="h-[calc(100vh-64px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">Permissions</h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Permissions</h1>
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Track monthly permission usage and request status across the institution.
                 </p>
               </div>
@@ -61,9 +61,9 @@ const PrincipalPermissionPage = () => {
                   <button
                     type="button"
                     onClick={() => setIsDeptOpen(!isDeptOpen)}
-                    className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                    className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                   >
-                    <span className={filterDepartment !== "All" ? "text-white" : "text-[#6f839f]"}>
+                    <span className={filterDepartment !== "All" ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
                       {filterDepartment !== "All" ? filterDepartment : "Department"}
                     </span>
                     <ChevronDown
@@ -73,7 +73,7 @@ const PrincipalPermissionPage = () => {
                   </button>
 
                   {isDeptOpen && (
-                    <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+                    <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                       <div className="max-h-[220px] overflow-y-auto table-custom-scrollbar">
                         {departmentOptions.map((dept) => (
                           <button
@@ -86,7 +86,7 @@ const PrincipalPermissionPage = () => {
                             className={`w-full px-3 py-2.5 text-left text-[12px] transition ${
                               filterDepartment === dept
                                 ? "bg-[#2563EB] text-white"
-                                : "text-[#cad7eb] hover:bg-[#132b49]"
+                                : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                             }`}
                           >
                             {dept}

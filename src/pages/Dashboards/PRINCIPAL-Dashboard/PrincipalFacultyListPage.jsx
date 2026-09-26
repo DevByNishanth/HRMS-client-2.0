@@ -53,7 +53,7 @@ const SelectFilter = ({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-[#244061] bg-[#0d2138] px-3 pr-9 text-[14px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -69,7 +69,7 @@ const SelectFilter = ({
 );
 
 const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="rounded-xl border border-[#183052] bg-[#0a1a2d] px-4 py-3">
+  <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-4 py-3">
     <div className="flex items-start gap-3">
       <div
         className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -78,8 +78,8 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
         <Icon size={18} />
       </div>
       <div>
-        <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className="text-[16px] font-semibold leading-none text-white">{value}</p>
+        <span className="text-[14px] font-medium text-slate-500 dark:text-[#8ca1bd]">{label}</span>
+        <p className="text-[16px] font-semibold leading-none text-slate-900 dark:text-white">{value}</p>
       </div>
     </div>
   </div>
@@ -225,20 +225,20 @@ const PrincipalFacultyListPage = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto ">
             <header className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Faculty List
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   View and manage all faculty members across departments.
                 </p>
               </div>
@@ -260,9 +260,9 @@ const PrincipalFacultyListPage = () => {
             </div>
 
             {/* Faculty Table */}
-            <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d] ">
+            <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] ">
               <div className="relative z-20 flex  gap-3 px-4 py-3 items-center  justify-between ">
-                <h2 className="shrink-0 text-[18px] font-semibold text-white">
+                <h2 className="shrink-0 text-[18px] font-semibold text-slate-900 dark:text-white">
                   Faculty List <span>({filteredFaculty.length})</span>
                 </h2>
 
@@ -277,7 +277,7 @@ const PrincipalFacultyListPage = () => {
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search faculty..."
-                      className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -299,7 +299,7 @@ const PrincipalFacultyListPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredFaculty.length === 0}
-                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -317,12 +317,12 @@ const PrincipalFacultyListPage = () => {
 
               <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
                 {facultyError && (
-                  <div className="border-t border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
+                  <div className="border-t border-slate-200 dark:border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
                     {facultyError}
                   </div>
                 )}
                 <table className="w-full min-w-[800px] border-collapse text-left">
-                  <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
                     <tr>
                       <th className="px-4 py-3 font-semibold">Faculty Name</th>
                       <th className="px-4 py-3 font-semibold">Emp ID</th>
@@ -331,7 +331,7 @@ const PrincipalFacultyListPage = () => {
                       <th className="px-4 py-3 text-right font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="text-[13px] text-[#cad7eb]">
+                  <tbody className="text-[13px] text-slate-700 dark:text-[#cad7eb]">
                     {isLoadingFaculty ? (
                       <tr>
                         <td colSpan="5" className="px-4 py-8 text-center text-[#8ca1bd]">
@@ -345,14 +345,14 @@ const PrincipalFacultyListPage = () => {
                         return (
                           <tr
                             key={faculty._id || faculty.empId}
-                            className="border-b border-[#132944] transition last:border-0 hover:bg-[#123250]"
+                            className="border-b border-slate-200 dark:border-[#132944] transition last:border-0 hover:bg-slate-50 dark:hover:bg-[#123250]"
                           >
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
                                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                                   {name?.charAt(0)?.toUpperCase() || "U"}
                                 </span>
-                                <span className="block truncate font-semibold text-white">
+                                <span className="block truncate font-semibold text-slate-900 dark:text-white">
                                   {name}
                                 </span>
                               </div>

@@ -96,13 +96,13 @@ const RecentFacultyListTable = ({ className = "" }) => {
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3984ff] border-t-transparent" />
         </div>
       ) : faculties.length === 0 ? (
-        <div className="flex h-full items-center justify-center text-[13px] text-[#8ca1bd]">
+        <div className="flex h-full items-center justify-center text-[13px] text-slate-500 dark:text-[#8ca1bd]">
           No data
         </div>
       ) : (
         <div className="max-h-[240px] overflow-auto table-custom-scrollbar">
           <table className="w-full min-w-[500px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#172c46] text-[11px] uppercase tracking-wide text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[11px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-3 py-3 font-semibold">Emp ID</th>
                 <th className="px-3 py-2 font-semibold">Name</th>
@@ -111,18 +111,18 @@ const RecentFacultyListTable = ({ className = "" }) => {
                 <th className="px-3 py-2 font-semibold">Joined</th>
               </tr>
             </thead>
-            <tbody className="text-[12px] text-[#cad7eb]">
+            <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
               {faculties.map((faculty) => {
                 const color = getDesignationColor(faculty.designation);
                 return (
                   <tr
                     key={faculty._id}
-                    className="border-b border-[#132944] last:border-0"
+                    className="border-b border-slate-200 dark:border-[#132944] last:border-0"
                   >
-                    <td className="px-3 py-3 font-medium text-[#8ca1bd]">
+                    <td className="px-3 py-3 font-medium text-slate-600 dark:text-[#8ca1bd]">
                       {faculty.empId}
                     </td>
-                    <td className="px-3 py-3 font-medium text-white">
+                    <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
                       {faculty.salutation && `${faculty.salutation}. `}
                       {faculty.firstName} {faculty.lastName}
                     </td>
@@ -134,10 +134,10 @@ const RecentFacultyListTable = ({ className = "" }) => {
                         {faculty.designation}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-[#8ca1bd]">
+                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd]">
                       {faculty.department}
                     </td>
-                    <td className="px-3 py-3 text-[#8ca1bd]">
+                    <td className="px-3 py-3 text-slate-600 dark:text-[#8ca1bd]">
                       {formatDate(faculty.createdAt)}
                     </td>
                   </tr>

@@ -4,6 +4,7 @@ import { UserRound, KeyRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import ChangePasswordModal from "./ChangePasswordModal";
 import SearchBar from "./SearchBar";
+import ThemeToggle from "./ThemeToggle";
 
 const CommonHeader = () => {
   const token = localStorage.getItem("hrms_token");
@@ -16,7 +17,7 @@ const CommonHeader = () => {
   return (
     <>
       {/* <div className="w-full py-2.5 bg-[#001d3b] flex items-center justify-between px-4"> */}
-      <div className="w-full py-3 bg-[#0d2643] flex items-center justify-end px-4">
+      <div className="w-full py-3 bg-white dark:bg-[#0d2643] border-b border-slate-200 dark:border-transparent flex items-center justify-end px-4 transition-colors duration-200">
         {/* Search Bar */}
         {/* <div className="relative ml-auto mr-4">
           <Search
@@ -33,6 +34,7 @@ const CommonHeader = () => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {/* <button className="text-[#d7e3ff] hover:text-white transition">
             <Calendar size={14} />
           </button>
@@ -52,11 +54,11 @@ const CommonHeader = () => {
               </div>
               <Link
                 to={`/profile/${decoded?.facultyId}`}
-                className="text-[#d7e3ff] hover:text-white transition"
+                className="text-slate-500 dark:text-[#d7e3ff] hover:text-slate-900 dark:hover:text-white transition"
               >
                 <UserRound
                   size={14}
-                  className="text-[#d7e3ff] hover:text-white transition"
+                  className="text-slate-500 dark:text-[#d7e3ff] hover:text-slate-900 dark:hover:text-white transition"
                 />
               </Link>
             </div>
@@ -66,13 +68,13 @@ const CommonHeader = () => {
             <button
               type="button"
               onClick={() => setIsChangePasswordOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#d7e3ff] transition hover:bg-[#ffffff13] hover:text-white"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 dark:text-[#d7e3ff] transition hover:bg-slate-100 dark:hover:bg-[#ffffff13] hover:text-slate-900 dark:hover:text-white"
               title="Change password"
               aria-label="Change password"
             >
               <KeyRound
                 size={16}
-                className="text-[#d7e3ff] hover:text-white transition"
+                className="text-slate-500 dark:text-[#d7e3ff] hover:text-slate-900 dark:hover:text-white transition"
               />
             </button>
           )}

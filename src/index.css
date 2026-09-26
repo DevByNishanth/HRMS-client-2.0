@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+
 
 body {
   font-family:
@@ -10,6 +12,7 @@ body {
     Helvetica,
     Arial,
     sans-serif;
+  @apply bg-slate-50 text-slate-900 dark:bg-[#051424] dark:text-white transition-colors duration-200;
 }
 
 .login-gradient {

@@ -819,20 +819,20 @@ const PrincipalRegularizationListPage = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-slate-100 dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto">
             <header className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Regularization Requests
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Review and manage attendance regularization requests from
                   faculty.
                 </p>
@@ -843,13 +843,13 @@ const PrincipalRegularizationListPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsDeptOpen(!isDeptOpen)}
-                  className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                  className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 >
                   <span
                     className={
                       filterDepartment !== "All"
-                        ? "text-white"
-                        : "text-[#6f839f]"
+                        ? "text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-[#6f839f]"
                     }
                   >
                     {filterDepartment !== "All"
@@ -863,7 +863,7 @@ const PrincipalRegularizationListPage = () => {
                 </button>
 
                 {isDeptOpen && (
-                  <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+                  <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                     <div className="max-h-[220px] overflow-y-auto table-custom-scrollbar">
                       {departmentOptions.map((dept) => (
                         <button
@@ -876,7 +876,7 @@ const PrincipalRegularizationListPage = () => {
                           className={`w-full px-3 py-2.5 text-left text-[12px] transition ${
                             filterDepartment === dept
                               ? "bg-[#2563EB] text-white"
-                              : "text-[#cad7eb] hover:bg-[#132b49]"
+                              : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                           }`}
                         >
                           {dept}
@@ -896,9 +896,9 @@ const PrincipalRegularizationListPage = () => {
             </div>
 
             {/* Table */}
-            <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
               <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-3">
-                <h2 className="shrink-0 text-[18px] font-semibold text-white">
+                <h2 className="shrink-0 text-[18px] font-semibold text-slate-900 dark:text-white">
                   Regularization Requests{" "}
                   <span>({filteredRequests.length})</span>
                 </h2>
@@ -908,14 +908,14 @@ const PrincipalRegularizationListPage = () => {
                   <div className="relative min-w-0 w-[240px]">
                     <Search
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                     />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search by name, ID..."
-                      className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -925,7 +925,7 @@ const PrincipalRegularizationListPage = () => {
                     <select
                       value={filterStatus}
                       onChange={(event) => setFilterStatus(event.target.value)}
-                      className="h-11 w-full appearance-none rounded-lg border border-[#244061] bg-[#0d2138] px-3 pr-9 text-[14px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     >
                       {statuses.map((option) => (
                         <option key={option} value={option}>
@@ -961,7 +961,7 @@ const PrincipalRegularizationListPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredRequests.length === 0}
-                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -972,7 +972,7 @@ const PrincipalRegularizationListPage = () => {
                     <button
                       type="button"
                       onClick={resetFilters}
-                      className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white"
+                      className="h-11 rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[12px] font-semibold text-slate-500 dark:text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] hover:text-slate-700 dark:hover:text-white"
                     >
                       Reset Filters
                     </button>
@@ -990,7 +990,7 @@ const PrincipalRegularizationListPage = () => {
 
               <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
                 <table className="w-full min-w-[900px] border-collapse text-left">
-                  <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9aacc7]">
                     <tr>
                       <th className="px-4 py-3">
                         <input
@@ -1014,12 +1014,12 @@ const PrincipalRegularizationListPage = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-[12px] text-[#cad7eb]">
+                  <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
                     {filteredRequests.length > 0 ? (
                       filteredRequests.map((request, index) => (
                         <tr
                           key={`${request._id}-${index}`}
-                          className="border-b border-[#132944] last:border-0"
+                          className="border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors"
                         >
                           <td className="px-4 py-3">
                             {request.status === "Pending" ? (
@@ -1036,7 +1036,7 @@ const PrincipalRegularizationListPage = () => {
                               />
                             ) : null}
                           </td>
-                          <td className="px-4 py-3 font-semibold text-white">
+                          <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                             <div className="flex items-center gap-2">
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                                 {request.facultyId?.firstName?.charAt(0)?.toUpperCase() || "U"}
