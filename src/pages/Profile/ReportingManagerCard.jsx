@@ -57,7 +57,7 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[12px] font-semibold text-[#8a9ab7]">Organization Email</p>
-            <p className="truncate text-[14px] font-medium text-white">{email}</p>
+            <p className="truncate text-[14px] font-medium text-slate-900 dark:text-white">{email}</p>
           </div>
         </div> */}
 

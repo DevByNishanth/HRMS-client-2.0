@@ -79,15 +79,15 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[42%] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[42%] flex-col bg-[#f8fafc] dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Faculty Setup
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
               Edit Faculty
             </h2>
           </div>
@@ -95,7 +95,7 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-gray-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
             aria-label="Close edit faculty form"
           >
             <X size={17} />
@@ -104,7 +104,7 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
 
         <div className="flex flex-1 items-center justify-center px-5 text-center">
           <div>
-            <p className={`text-[14px] font-semibold ${error ? "text-[#f16868]" : "text-white"}`}>
+            <p className={`text-[14px] font-semibold ${error ? "text-[#f16868]" : "text-slate-900 dark:text-white"}`}>
               {error || "Loading faculty details..."}
             </p>
             {error && (
