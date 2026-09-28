@@ -28,7 +28,7 @@ const ProfilePage = () => {
 
     return (
         <>
-            <div className='flex h-screen overflow-hidden bg-[#071425]'>
+            <div className='flex h-screen overflow-hidden bg-slate-50 dark:bg-[#071425]'>
                 <Sidebar />
                 {/* right container  */}
 
