@@ -291,12 +291,12 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                 onClick={(event) => event.stopPropagation()}
                 onSubmit={handleSubmit}
             >
-                <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+                <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] px-5 py-4">
                     <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                             Leave Request
                         </p>
-                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
                             {employee ? `Apply Leave for ${employee.name}` : 'Apply Leave'}
                         </h2>
                     </div>
@@ -304,7 +304,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                         aria-label="Close leave form"
                     >
                         <X size={17} />
@@ -315,16 +315,16 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
 
                     {/* Employee Details Banner */}
                     {employee && (
-                        <div className="mb-4 rounded-lg border border-[#1e3a5f] bg-[#0d2138] p-3">
+                        <div className="mb-4 rounded-lg border border-[#1e3a5f] bg-white dark:bg-[#0d2138] p-3">
                             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#3984ff]">
                                 Employee Details
                             </p>
                             <div className="mt-2 flex items-center gap-3">
-                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-[#9eb0cc]">
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#172c46] text-slate-500 dark:text-[#9eb0cc]">
                                     <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239eb0cc' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' /><circle cx='12' cy='7' r='4' /></svg>
                                 </span>
                                 <div>
-                                    <p className="text-[14px] font-semibold text-white">{employee.name}</p>
+                                    <p className="text-[14px] font-semibold text-slate-900 dark:text-white">{employee.name}</p>
                                     <p className="text-[12px] text-[#8ca1bd]">{employee.role}</p>
                                     <p className="text-[11px] text-[#3984ff]">{employee.empid}</p>
                                 </div>
@@ -378,9 +378,9 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                         {fromDate && toDate && (
                             <div className={`rounded-lg border px-3 py-2 text-[13px] ${showCasualLeaveLimitMessage
                                 ? "border-[#f16868] bg-[#f168681f] text-[#f16868]"
-                                : "border-[#244061] bg-[#0d2138] text-[#cad7eb]"
+                                : "border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[#cad7eb]"
                                 }`}>
-                                Total Leave Days: <span className="font-semibold text-white">{totalLeaveDays}</span>
+                                Total Leave Days: <span className="font-semibold text-slate-900 dark:text-white">{totalLeaveDays}</span>
                                 {showCasualLeaveLimitMessage && (
                                     <p className="mt-1 text-[12px] text-[#f16868]">
                                         Casual leave is not applicable for more than 3 leaves. Apply LOP for remaining days.
@@ -390,7 +390,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                         )}
 
                         <div className="relative">
-                            <label htmlFor="leave-type" className="mb-2 block text-[13px] font-semibold text-white">
+                            <label htmlFor="leave-type" className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
                                 Select Leave Type {validationErrors.leaveType && <span className="text-[#f16868]">*</span>}
                             </label>
                             <button
@@ -399,7 +399,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                 onClick={() => setIsLeaveTypeOpen((currentState) => !currentState)}
                                 className={`flex h-11 w-full items-center justify-between rounded-lg border px-3 text-left text-[13px] outline-none transition ${validationErrors.leaveType
                                     ? "border-[#f16868] bg-[#f168681f]"
-                                    : "border-[#244061] bg-[#0d2138] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                    : "border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                                     } text-white`}
                             >
                                 <span className={leaveType ? "text-white" : "text-[#6f839f]"}>
@@ -413,7 +413,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                             )}
 
                             {isLeaveTypeOpen && (
-                                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+                                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
                                     {leaveTypes.length === 0 ? (
                                         <div className="px-4 py-3 text-[13px] text-[#6f839f]">
                                             No leave types available
@@ -442,10 +442,10 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                                         }
                                                     }}
                                                     className={`flex items-center justify-between w-full px-4 py-3 text-left text-[13px] transition ${isDisabled
-                                                        ? "cursor-not-allowed bg-[#0a1a2d] text-[#4f5f7f] opacity-50"
+                                                        ? "cursor-not-allowed bg-white dark:bg-[#0A1A2D] text-[#4f5f7f] opacity-50"
                                                         : leaveTypeId === typeId
                                                             ? "bg-[#132b49] text-white"
-                                                            : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                                                            : "text-[#cad7eb] hover:bg-slate-100 dark:bg-[#102640] hover:text-white"
                                                         }`}
                                                 >
                                                     {leaveName}  <span className="bg-gray-700/20 px-1.5 py-[2px] rounded">{remainingDays}
@@ -462,7 +462,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                 <p className={`mb-2 text-[13px] font-semibold ${validationErrors.dayType ? "text-[#f16868]" : "text-white"}`}>
                                     Day Type {validationErrors.dayType && <span>*</span>}
                                 </p>
-                                <div className="grid grid-cols-3 gap-2 rounded-lg border border-[#244061] bg-[#0d2138] p-1.5">
+                                <div className="grid grid-cols-3 gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] p-1.5">
                                     {dayOptions.map((option) => (
                                         <button
                                             key={option}
@@ -473,7 +473,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                             }}
                                             className={`h-9 rounded-md text-[12px] font-semibold transition ${dayType === option
                                                 ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                                : "text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
+                                                : "text-slate-500 dark:text-[#9eb0cc] hover:bg-[#132b49] hover:text-white"
                                                 }`}
                                         >
                                             {option}
@@ -505,7 +505,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                 placeholder="Add reason for your leave request..."
                                 className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] ${validationErrors.reason
                                     ? "border-[#f16868] bg-[#f168681f]"
-                                    : "border-[#244061] bg-[#0d2138] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                    : "border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                                     }`}
                             />
                             {validationErrors.reason && (
@@ -522,7 +522,7 @@ const ApplyLeaveForm = ({ onClose, employee }) => {
                                 </label>
                                 <div className={`relative rounded-lg border-2 border-dashed px-4 py-6 text-center transition ${validationErrors.file
                                     ? "border-[#f16868] bg-[#f168681f]"
-                                    : "border-[#244061] bg-[#0d2138] hover:border-[#3984ff]"
+                                    : "border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] hover:border-[#3984ff]"
                                     }`}>
                                     <input
                                         type="file"

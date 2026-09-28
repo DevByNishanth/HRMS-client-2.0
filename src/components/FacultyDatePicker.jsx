@@ -144,7 +144,7 @@ const FacultyDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
@@ -158,7 +158,7 @@ const FacultyDatePicker = ({
                   setShowYearPicker(false);
                   setShowMonthPicker((prev) => !prev);
                 }}
-                className="flex w-full items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-slate-100 dark:hover:bg-[#183052] cursor-pointer"
+                className="flex w-full items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] cursor-pointer"
               >
                 {MONTH_LABELS[currentMonth]}
                 <ChevronDown
@@ -188,7 +188,7 @@ const FacultyDatePicker = ({
                           className={`rounded-md px-2 py-2 text-[12px] font-medium transition ${
                             idx === currentMonth
                               ? "bg-[#2563EB] text-white"
-                              : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white"
+                              : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                           }`}
                         >
                           {label}
@@ -208,7 +208,7 @@ const FacultyDatePicker = ({
                   setShowMonthPicker(false);
                   setShowYearPicker((prev) => !prev);
                 }}
-                className="flex items-center gap-1 rounded-md px-2 py-1.5 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-slate-100 dark:hover:bg-[#183052] cursor-pointer"
+                className="flex items-center gap-1 rounded-md px-2 py-1.5 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] cursor-pointer"
               >
                 {currentYear}
                 <ChevronDown
@@ -237,7 +237,7 @@ const FacultyDatePicker = ({
                           className={`w-full px-3 py-2 text-left text-[12px] font-medium transition ${
                             year === currentYear
                               ? "bg-[#2563EB] text-white"
-                              : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white"
+                              : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                           }`}
                         >
                           {year}
@@ -253,7 +253,7 @@ const FacultyDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
               aria-label="Next month"
             >
               <ChevronRight size={16} />
@@ -314,7 +314,7 @@ const FacultyDatePicker = ({
                 onChange(today);
                 setIsOpen(false);
               }}
-              className="rounded-md px-3 py-1.5 text-[11px] font-semibold text-[#3984ff] transition hover:bg-slate-100 dark:hover:bg-[#183052] cursor-pointer"
+              className="rounded-md px-3 py-1.5 text-[11px] font-semibold text-[#3984ff] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] cursor-pointer"
             >
               Today
             </button>

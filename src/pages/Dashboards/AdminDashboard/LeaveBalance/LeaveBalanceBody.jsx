@@ -145,19 +145,19 @@ export default function LeaveBalanceBody() {
         <div className="p-6">
             {/* Header */}
             <div className="mb-5">
-                <h1 className="text-xl font-medium text-white">
+                <h1 className="text-xl font-medium text-slate-900 dark:text-white">
                     Leave Balance Management
                 </h1>
 
-                <p className="text-[16px] text-[#9eb0cc]">
+                <p className="text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                     Manage employee leave balances efficiently.
                 </p>
             </div>
 
             {/* Card */}
-            <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
                 <div className="mb-4 flex flex-wrap items-center justify-between px-7 pt-7 pb-3">
-                    <h1 className="text-[18px] font-semibold text-white">
+                    <h1 className="text-[18px] font-semibold text-slate-900 dark:text-white">
                         Employee Leave Balance ({leaveBalanceData.length})
                     </h1>
 
@@ -171,7 +171,7 @@ export default function LeaveBalanceBody() {
                                         left-4
                                         top-1/2
                                         -translate-y-1/2
-                                        text-[#6f839f]
+                                        text-slate-400 dark:text-[#6f839f]
                                     "
                                 />
                                 <input
@@ -184,14 +184,14 @@ export default function LeaveBalanceBody() {
                                         w-[350px]
                                         rounded-lg
                                         border
-                                        border-[#244061]
-                                        bg-[#0d2138]
+                                        border-slate-300 dark:border-[#244061]
+                                        bg-white dark:bg-[#0d2138]
                                         pl-11
                                         text-[14px]
-                                        text-white
+                                        text-slate-900 dark:text-white
                                         outline-none
                                         transition
-                                        placeholder:text-[#6f839f]
+                                        placeholder:text-slate-400 dark:text-[#6f839f]
                                         hover:border-[#3984ff]
                                         focus:border-[#3984ff]
                                         focus:ring-2
@@ -209,8 +209,8 @@ export default function LeaveBalanceBody() {
                                         h-[300px]
                                         overflow-y-auto
                                         rounded-lg
-                                        border border-[#244061]
-                                        bg-[#0d2138]
+                                        border border-slate-300 dark:border-[#244061]
+                                        bg-white dark:bg-[#0d2138]
                                         shadow-lg
                                     "
                                 >
@@ -228,7 +228,7 @@ export default function LeaveBalanceBody() {
                                                         employee
                                                     )
                                                 }
-                                                className={`flex cursor-pointer items-center gap-3 border-b border-[#244061] px-4 py-3 text-white ${
+                                                className={`flex cursor-pointer items-center gap-3 border-b border-slate-300 dark:border-[#244061] px-4 py-3 text-white ${
                                                     highlightedIndex ===
                                                     index
                                                         ? "bg-[#244061]"
@@ -264,7 +264,7 @@ export default function LeaveBalanceBody() {
                                                         }
                                                     </span>
 
-                                                    <span className="text-xs text-[#6f839f]">
+                                                    <span className="text-xs text-slate-400 dark:text-[#6f839f]">
                                                         {
                                                             employee.empId
                                                         }
@@ -309,9 +309,9 @@ export default function LeaveBalanceBody() {
                                     flex items-center gap-2
                                     h-11 px-4
                                     rounded-lg
-                                    border border-[#244061]
-                                    bg-[#0d2138]
-                                    text-[#8ca1bd]
+                                    border border-slate-300 dark:border-[#244061]
+                                    bg-white dark:bg-[#0d2138]
+                                    text-slate-600 dark:text-[#8ca1bd]
                                     cursor-pointer
                                 "
                             >
@@ -339,12 +339,12 @@ export default function LeaveBalanceBody() {
                             setLeaveBalanceData={setLeaveBalanceData}
                         />
                     ) : (
-                        <div className="rounded-xl border border-[#183052] bg-[#071425] p-10 text-center">
-                            <p className="text-[#9eb0cc]">
+                        <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-[#f8fafc] dark:bg-[#071425] p-10 text-center">
+                            <p className="text-slate-500 dark:text-[#9eb0cc]">
                                 No employee selected
                             </p>
 
-                            <p className="mt-2 text-sm text-[#6f839f]">
+                            <p className="mt-2 text-sm text-slate-400 dark:text-[#6f839f]">
                                 Search and select an employee
                                 to view leave balance.
                             </p>

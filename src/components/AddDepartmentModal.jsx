@@ -290,7 +290,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                   aria-label="Clear search"
                 >
                   <X size={14} />
@@ -456,7 +456,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                         ? "bg-[#f1686812]"
                         : isEditing
                           ? "bg-[#132b49]"
-                          : "hover:bg-slate-100 dark:hover:bg-[#102640]"
+                          : "hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#102640]"
                     }`}
                   >
                     {/* Initial-letter badge (avatar style) */}
@@ -532,7 +532,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                         <button
                           type="button"
                           onClick={resetTransientState}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                           aria-label="Cancel editing"
                           title="Cancel"
                         >

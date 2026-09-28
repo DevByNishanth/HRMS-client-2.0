@@ -116,10 +116,10 @@ const Celebrations = () => {
       : celebrations.filter((celebration) => celebration.type === filter);
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0A1A2D]">
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between px-5 py-4">
-        <h1 className="text-[18px] font-semibold text-white">Celebrations</h1>
+        <h1 className="text-[18px] font-semibold text-slate-900 dark:text-white">Celebrations</h1>
 
         <div className="relative" ref={dropdownRef}>
           <button
@@ -127,7 +127,7 @@ const Celebrations = () => {
             onClick={() => setIsOpen((prev) => !prev)}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
-            className="flex items-center gap-3 rounded-lg border border-[#183052] px-4 py-1.5 text-sm transition hover:border-[#244061]"
+            className="flex items-center gap-3 rounded-lg border border-slate-200 dark:border-[#183052] px-4 py-1.5 text-sm transition hover:border-slate-300 dark:border-[#244061]"
           >
             <span className="text-gray-100">{filter}</span>
             <ChevronDown
@@ -139,7 +139,7 @@ const Celebrations = () => {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+            <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
               {filterOptions.map((option) => (
                 <button
                   key={option}
@@ -224,7 +224,7 @@ const Celebrations = () => {
                           <Icon size={16} />
                         </div>
 
-                        <span className="truncate text-white/60 text-[12px]">
+                        <span className="truncate text-slate-900 dark:text-white/60 text-[12px]">
                           {celebration.type}
                           {departmentLabel}
                         </span>

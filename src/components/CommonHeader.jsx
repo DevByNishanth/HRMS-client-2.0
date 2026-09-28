@@ -28,20 +28,20 @@ const CommonHeader = () => {
           <input
             type="text"
             placeholder="Search records..."
-            className="w-[300px] h-[33px] rounded-full bg-[#ffffff13] border border-gray-800 pl-8 pr-3  text-[14px] text-white placeholder:text-[#6d84b5] outline-none"
+            className="w-[300px] h-[33px] rounded-full bg-[#ffffff13] border border-gray-800 pl-8 pr-3  text-[14px] text-slate-900 dark:text-white placeholder:text-[#6d84b5] outline-none"
           />
         </div> */}
 
         {/* Right Icons */}
         <div className="flex items-center gap-3">
-          {/* <button className="text-[#d7e3ff] hover:text-white transition">
+          {/* <button className="text-[#d7e3ff] hover:text-slate-900 dark:text-white transition">
             <Calendar size={14} />
           </button>
-          <button className="text-[#d7e3ff] hover:text-white transition">
+          <button className="text-[#d7e3ff] hover:text-slate-900 dark:text-white transition">
             <Bell size={14} />
           </button>
 
-          <button className="text-[#d7e3ff] hover:text-white transition">
+          <button className="text-[#d7e3ff] hover:text-slate-900 dark:text-white transition">
             <Settings size={14} />
           </button> */}
           {decoded.role == "admin" || decoded.role == "principal" ? (

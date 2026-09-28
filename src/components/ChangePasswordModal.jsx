@@ -151,7 +151,7 @@ const ChangePasswordModal = ({ onClose }) => {
               <button
                 type="button"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-slate-900 dark:text-white"
                 aria-label="Toggle new password visibility"
               >
                 {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -188,7 +188,7 @@ const ChangePasswordModal = ({ onClose }) => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-slate-900 dark:text-white"
                 aria-label="Toggle confirm password visibility"
               >
                 {showConfirmPassword ? (

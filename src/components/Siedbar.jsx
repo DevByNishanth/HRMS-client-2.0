@@ -313,7 +313,7 @@ const Sidebar = () => {
                                             <Link
                                                 key={subItem.path}
                                                 to={subItem.path}
-                                                className={`px-4 py-3 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-[#183052] transition text-[14px] font-medium border-b border-slate-100 dark:border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-slate-50 dark:bg-[#183052] border-l-[3px] border-l-blue-600 dark:border-l-[#5b8cff]' : ''}`}
+                                                className={`px-4 py-3 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-100 dark:bg-[#183052] transition text-[14px] font-medium border-b border-slate-100 dark:border-[#183052] last:border-0 ${isActive(subItem.path) ? 'bg-slate-50 dark:bg-[#183052] border-l-[3px] border-l-blue-600 dark:border-l-[#5b8cff]' : ''}`}
                                             >
                                                 {subItem.label}
                                             </Link>

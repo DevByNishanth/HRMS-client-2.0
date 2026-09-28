@@ -66,7 +66,7 @@ const ExportPasswordModal = ({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-300 dark:border-[#223b5f] bg-gary-300 dark:bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff]  disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-300 dark:border-[#223b5f] bg-gary-300 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff]  disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close export modal"
           >
             <X size={17} />
@@ -114,7 +114,7 @@ const ExportPasswordModal = ({
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ca1bd] transition hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ca1bd] transition hover:text-slate-900 dark:text-white"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
@@ -138,7 +138,7 @@ const ExportPasswordModal = ({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="h-10 rounded-md border border-slate-200 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-10 rounded-md border border-slate-200 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>

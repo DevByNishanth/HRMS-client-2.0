@@ -549,7 +549,7 @@ const ObjectDropdownField = ({
                 );
               })
             ) : (
-              <p className="px-4 py-3 text-[13px] text-[#8ca1bd]">
+              <p className="px-4 py-3 text-[13px] text-slate-600 dark:text-[#8ca1bd]">
                 {isLoading ? "Loading..." : "No options found."}
               </p>
             )}
@@ -682,7 +682,7 @@ const FacultySearchDropdown = ({
                         <span className="block truncate text-[13px] font-semibold">
                           {name || faculty.empId}
                         </span>
-                        <span className="mt-0.5 block truncate text-[11px] text-[#8ca1bd]">
+                        <span className="mt-0.5 block truncate text-[11px] text-slate-600 dark:text-[#8ca1bd]">
                           {faculty.empId} {faculty.designation ? `- ${faculty.designation}` : ""}
                         </span>
                       </div>
@@ -690,7 +690,7 @@ const FacultySearchDropdown = ({
                   );
                 })
               ) : (
-                <p className="px-4 py-3 text-[13px] text-[#8ca1bd]">
+                <p className="px-4 py-3 text-[13px] text-slate-600 dark:text-[#8ca1bd]">
                   {isLoading ? "Loading employees..." : "No employees found."}
                 </p>
               )}
@@ -723,7 +723,7 @@ const DateField = ({ id, label, required, value, onChange, placeholder, popupAli
 const SectionTitle = ({ title, description }) => (
   <div className="mb-4">
     <h3 className="text-[15px] font-semibold text-slate-900 dark:text-white">{title}</h3>
-    <p className="mt-1 text-[12px] leading-5 text-[#8ca1bd]">{description}</p>
+    <p className="mt-1 text-[12px] leading-5 text-slate-600 dark:text-[#8ca1bd]">{description}</p>
   </div>
 );
 

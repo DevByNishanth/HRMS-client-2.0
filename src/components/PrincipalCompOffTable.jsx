@@ -1140,7 +1140,7 @@ const FilterDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
@@ -1151,7 +1151,7 @@ const FilterDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Next month"
             >
               <ChevronRight size={16} />
@@ -1236,7 +1236,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-slate-900 dark:text-white"
             aria-label="Close comp-off details"
           >
             <X size={17} />
@@ -1282,7 +1282,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
 
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <CalendarDays size={14} className="text-[#b8c7dd]" />
                   Worked From
                 </div>
@@ -1290,7 +1290,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <TimerReset size={14} className="text-[#b8c7dd]" />
                   Worked To
                 </div>
@@ -1461,7 +1461,7 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
             aria-label="Close confirmation"
           >
             <X size={17} />
@@ -1473,7 +1473,7 @@ const ConfirmationPopup = ({
             <div className="">
               <label
                 htmlFor="reject-reason"
-                className="mb-2 block text-[13px] font-semibold text-white"
+                className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white"
               >
                 Reason for rejection
               </label>
@@ -1491,7 +1491,7 @@ const ConfirmationPopup = ({
 
         <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-[#173150] px-5 py-4">
           <button
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white"
           >
             Cancel
           </button>
@@ -1798,7 +1798,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
 
         <div className="relative z-0 max-h-[calc(100vh-240px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-[#9eb0cc]">Loading...</div>
+            <div className="flex items-center justify-center py-12 text-slate-500 dark:text-[#9eb0cc]">Loading...</div>
           ) : error ? (
             <div className="flex items-center justify-center py-12 text-[#f16868]">{error}</div>
           ) : (
@@ -1858,7 +1858,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                                 <button
                                   type="button"
                                   onClick={() => handleApprove(request)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-slate-900 dark:text-white"
                                   aria-label="Approve request"
                                   title="Approve"
                                 >
@@ -1879,7 +1879,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                           <button
                             type="button"
                             onClick={() => handleView(request)}
-                            className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                            className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                             aria-label="View request details"
                             title="View"
                           >

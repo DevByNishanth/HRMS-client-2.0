@@ -82,7 +82,7 @@ const EditFacultyCanvas = ({ faculty, onClose, onSaved }) => {
         className="flex h-full w-[42%] flex-col bg-[#f8fafc] dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] bg-white dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Faculty Setup

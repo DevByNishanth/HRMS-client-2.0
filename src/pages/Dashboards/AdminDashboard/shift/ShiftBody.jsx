@@ -111,21 +111,21 @@ export default function ShiftBody() {
         <div className="p-6">
             <div className="flex justify-between items-center mb-5">
                 <div className="flex flex-col">
-                    <h1 className="text-xl font-medium leading-tight text-white">Shift Management</h1>
-                    <p className="text-[16px] text-[#9eb0cc]">Manage your shifts efficiently and effectively.</p>
+                    <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Shift Management</h1>
+                    <p className="text-[16px] text-slate-500 dark:text-[#9eb0cc]">Manage your shifts efficiently and effectively.</p>
                 </div>
 
                 <button
                     onClick={() => setShowDrawer(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2 cursor pointer"
                 >
-                <span><Plus className='w-4'/></span>
+                <span><Plus className="w-4"/></span>
                 Add Shift
                 </button>
             </div>
-            <div className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
                 <div className="mb-4 pl-7 pr-7 pt-7 pb-3 flex items-center justify-between gap-4">
-                    <h1 className="shrink-0 text-[18px] font-semibold text-white">Shift List ({shifts.length})</h1>
+                    <h1 className="shrink-0 text-[18px] font-semibold text-slate-900 dark:text-white">Shift List ({shifts.length})</h1>
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Search
@@ -135,14 +135,14 @@ export default function ShiftBody() {
                                     left-4
                                     top-1/2
                                     -translate-y-1/2
-                                    text-[#6f839f]
+                                    text-slate-400 dark:text-[#6f839f]
                                 "
                             />
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="h-11 w-[330px] rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] pl-11 text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                className="h-11 w-[330px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[14px] pl-11 text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                                 placeholder="Search Shift Name"
                             />
                         </div>
@@ -166,7 +166,7 @@ export default function ShiftBody() {
                         {searchTerm.trim() !== "" && (
                             <button
                                 onClick={handleResetFilter}
-                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[#8ca1bd] cursor-pointer"
+                                className="flex items-center gap-2 h-11 px-4 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-600 dark:text-[#8ca1bd] cursor-pointer"
                             >
                                 Reset Filter
                                 <X size={18} />
@@ -184,7 +184,7 @@ export default function ShiftBody() {
                         hover:scrollbar-thumb-[#3984ff]
                     ">
                         <table className="w-full table-auto border-collapse text-left"> 
-                            <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
+                            <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
                                 <tr>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Shift Name</th>
                                     <th className="px-5 py-4 font-semibold w-[20%]">Start Time</th>
@@ -194,7 +194,7 @@ export default function ShiftBody() {
                                     <th className="px-5 py-4 font-semibold w-[20%]">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="text-[14px] text-[#cad7eb]">
+                            <tbody className="text-[14px] text-slate-700 dark:text-[#cad7eb]">
                                 {loading ? (
                                     <tr>
                                         <td colSpan="6" className="text-center py-4">
@@ -211,7 +211,7 @@ export default function ShiftBody() {
                                     filteredShifts.map((shift) => (
                                         <tr
                                         key={shift._id}
-                                        className="border-b border-[#132944] last:border-0"
+                                        className="border-b border-slate-200 dark:border-[#132944] last:border-0"
                                         >
                                             <td className="px-5 py-3">{shift.shiftName}</td>
                                             <td className="px-5 py-3">{shift.startTime}</td>
@@ -221,7 +221,7 @@ export default function ShiftBody() {
                                                 {(shift.workingHours ??
                                                     (shift.workingMinutes / 60).toFixed(2))} hours
                                             </td>
-                                            <td className="px-5 py-3 text-[#8ca1bd]">
+                                            <td className="px-5 py-3 text-slate-600 dark:text-[#8ca1bd]">
                                                 <div className="flex items-center justify-center gap-3">
                                                     <button
                                                         type="button"
@@ -229,7 +229,7 @@ export default function ShiftBody() {
                                                             setSelectedShift(shift);
                                                             setShowDrawer(true);
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </button>
@@ -239,7 +239,7 @@ export default function ShiftBody() {
                                                             setDeletingShift(shift);
                                                             setDeleteError("");
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#183052] hover:text-white cursor-pointer"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
@@ -272,21 +272,21 @@ export default function ShiftBody() {
                 error={exportError}
             />
             {deletingShift && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
-                    <div className="w-full max-w-[420px] rounded-xl border border-[#183052] bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 px-4 backdrop-blur-[4px]">
+                    <div className="w-full max-w-[420px] rounded-xl border border-slate-200 dark:border-[#183052] bg-[#f8fafc] dark:bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
 
-                        <header className="border-b border-[#183052] py-3 px-4">
+                        <header className="border-b border-slate-200 dark:border-[#183052] py-3 px-4">
                             <p className="text-[14px] font-semibold uppercase tracking-[0.22em] text-[#f16868]">
                                 Delete Shift
                             </p>
                         </header>
 
                         <div className="px-4 py-3">
-                            <h3 className="mt-2 text-[18px] font-semibold text-white">
+                            <h3 className="mt-2 text-[18px] font-semibold text-slate-900 dark:text-white">
                                 Remove {deletingShift.shiftName}?
                             </h3>
 
-                            <p className="mt-2 text-[13px] leading-5 text-[#9eb0cc]">
+                            <p className="mt-2 text-[13px] leading-5 text-slate-500 dark:text-[#9eb0cc]">
                                 This action will permanently delete the shift from the system.
                             </p>
                         </div>
@@ -304,7 +304,7 @@ export default function ShiftBody() {
                                 type="button"
                                 onClick={() => setDeletingShift(null)}
                                 disabled={isDeletingShift}
-                                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#244061] bg-[#0d2138] px-6 text-sm font-medium text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-6 text-sm font-medium text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                             >
                                 Cancel
                             </button>

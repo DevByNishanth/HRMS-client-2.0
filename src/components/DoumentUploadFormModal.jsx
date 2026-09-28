@@ -194,18 +194,18 @@ const UploadTile = ({
           className="hidden"
         />
 
-        <UploadCloud size={18} className="text-white" />
-        <span className="ml-2 text-sm text-white">Choose File</span>
+        <UploadCloud size={18} className="text-slate-900 dark:text-white" />
+        <span className="ml-2 text-sm text-slate-900 dark:text-white">Choose File</span>
       </label>
 
       <div className="flex items-start gap-3 mt-4">
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#28466f] bg-[#071425] text-[#5d9bff] transition group-hover:border-[#3984ff] group-hover:text-white">
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#28466f] bg-[#071425] text-[#5d9bff] transition group-hover:border-[#3984ff] group-hover:text-slate-900 dark:text-white">
           <UploadCloud size={21} />
         </span>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
-            <p className="truncate text-[14px] font-semibold text-white">
+            <p className="truncate text-[14px] font-semibold text-slate-900 dark:text-white">
               {field.label}
             </p>
 
@@ -213,7 +213,7 @@ const UploadTile = ({
               className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold ${
                 field.required
                   ? "bg-[#3984ff24] text-[#74aaff]"
-                  : "bg-[#8ca1bd1f] text-[#9eb0cc]"
+                  : "bg-[#8ca1bd1f] text-slate-500 dark:text-[#9eb0cc]"
               }`}
             >
               <Icon size={12} />
@@ -285,7 +285,7 @@ const UploadTile = ({
                   key={doc.publicId}
                   className="mt-3 rounded-lg border border-[#294565] p-3"
                 >
-                  <p className="mb-2 text-xs text-white">
+                  <p className="mb-2 text-xs text-slate-900 dark:text-white">
                     Document {index + 1}
                   </p>
                   <a
@@ -565,7 +565,7 @@ const DocumentUploadFormModal = ({ onClose }) => {
           onSubmit={handleSubmit}
           className="fixed left-1/2 top-1/2 flex h-[89vh] w-[80%] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-gray-600/60 bg-gray-700/15 backdrop-blur-xl shadow-[0_26px_80px_rgba(0,0,0,0.48)]"
         >
-          <div className="shrink-0 border-b border-[#173150] bg-[#0a1a2d]/10 px-6 py-4">
+          <div className="shrink-0 border-b border-[#173150] bg-white dark:bg-[#0A1A2D]/10 px-6 py-4">
             <div className="flex items-start justify-between gap-5">
               <div className="min-w-0">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#74aaff]">
@@ -582,7 +582,7 @@ const DocumentUploadFormModal = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={onClose}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                     aria-label="Close document upload form"
                   >
                     <X size={17} />
@@ -594,7 +594,7 @@ const DocumentUploadFormModal = ({ onClose }) => {
 
           <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[260px_1fr]">
             <aside className="hidden border-r border-[#173150] bg-[#061120] p-4 lg:block">
-              <div className="rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-2">
+              <div className="rounded-xl border border-[#1b3352] bg-white dark:bg-[#0A1A2D] p-2">
                 <div className="flex items-start gap-2">
                   <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
                     <FileArchive size={22} />
@@ -631,16 +631,16 @@ const DocumentUploadFormModal = ({ onClose }) => {
             </aside>
 
             <div className="min-h-0 overflow-y-auto p-5 table-custom-scrollbar">
-              <div className="mb-5 rounded-xl border border-[#1b3352] bg-[#0a1a2d] p-4">
+              <div className="mb-5 rounded-xl border border-[#1b3352] bg-white dark:bg-[#0A1A2D] p-4">
                 <div className="flex items-start gap-3">
                   <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#2563eb24] text-[#74aaff]">
                     <StepIcon size={22} />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-[20px] font-semibold leading-tight text-white">
+                    <h3 className="text-[20px] font-semibold leading-tight text-slate-900 dark:text-white">
                       {currentStep.title}
                     </h3>
-                    <p className="mt-1 text-[13px] leading-5 text-[#9eb0cc]">
+                    <p className="mt-1 text-[13px] leading-5 text-slate-500 dark:text-[#9eb0cc]">
                       {currentStep.description}
                     </p>
                   </div>
@@ -670,7 +670,7 @@ const DocumentUploadFormModal = ({ onClose }) => {
               type="button"
               onClick={() => setActiveStep((step) => Math.max(step - 1, 0))}
               disabled={isFirstStep}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-[#244061] bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ArrowLeft size={15} />
               Back

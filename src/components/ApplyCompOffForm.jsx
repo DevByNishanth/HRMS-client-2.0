@@ -151,19 +151,19 @@ const ApplyCompOffForm = ({ onClose, onSuccess }) => {
                 onClick={(event) => event.stopPropagation()}
                 onSubmit={handleSubmit}
             >
-                <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+                <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] px-5 py-4">
                     <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                             Comp Off Request
                         </p>
-                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+                        <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
                             Apply Comp Off</h2>
                     </div>
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                         aria-label="Close comp off form"
                     >
                         <X size={17} />
@@ -222,12 +222,12 @@ const ApplyCompOffForm = ({ onClose, onSuccess }) => {
 
                         {/* No of Days - Display Only */}
                         {fromDate && toDate && (
-                            <div className="flex items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-3">
+                            <div className="flex items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-3">
                                 <div className="flex items-center gap-2">
                                     <CalendarDays size={15} className="text-[#3984ff]" />
                                     <span className="text-[13px] text-[#cad7eb]">No of Days</span>
                                 </div>
-                                <span className="text-[15px] font-semibold text-white">{noOfDays} day{noOfDays !== 1 ? "s" : ""}</span>
+                                <span className="text-[15px] font-semibold text-slate-900 dark:text-white">{noOfDays} day{noOfDays !== 1 ? "s" : ""}</span>
                             </div>
                         )}
 
@@ -250,7 +250,7 @@ const ApplyCompOffForm = ({ onClose, onSuccess }) => {
                                 placeholder="Add reason for your comp off request..."
                                 className={`w-full resize-none rounded-lg border px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] ${validationErrors.reason
                                     ? "border-[#f16868] bg-[#f168681f]"
-                                    : "border-[#244061] bg-[#0d2138] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                    : "border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                                     }`}
                             />
                             {validationErrors.reason && (
@@ -260,11 +260,11 @@ const ApplyCompOffForm = ({ onClose, onSuccess }) => {
 
                         {/* File Upload - Always visible */}
                         <div>
-                            <label className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+                            <label className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-slate-900 dark:text-white">
                                 <Upload size={15} className="text-[#3984ff]" />
                                 Upload Document
                             </label>
-                            <div className="relative rounded-lg border-2 border-dashed border-[#244061] bg-[#0d2138] px-4 py-6 text-center transition hover:border-[#3984ff]">
+                            <div className="relative rounded-lg border-2 border-dashed border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-6 text-center transition hover:border-[#3984ff]">
                                 <input
                                     type="file"
                                     onChange={handleFileUpload}
@@ -279,8 +279,8 @@ const ApplyCompOffForm = ({ onClose, onSuccess }) => {
 
                             {uploadedFile && <div className="preview-container mt-2 py-2 px-3 bg-blue-800/30 rounded-lg flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <File className="text-white" />
-                                    <p className="text-[12px] text-white">
+                                    <File className="text-slate-900 dark:text-white" />
+                                    <p className="text-[12px] text-slate-900 dark:text-white">
                                         {uploadedFile ? uploadedFile.name : "Click to upload or drag and drop"}
                                     </p>
                                 </div>

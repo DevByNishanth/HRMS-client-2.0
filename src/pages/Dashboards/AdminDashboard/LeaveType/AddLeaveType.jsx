@@ -219,21 +219,21 @@ export default function AddLeaveType({
     );
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 px-4 backdrop-blur-[4px]">
             <div
                 className="absolute inset-0"
                 onClick={onClose}
             />
 
-            <div className="absolute right-0 top-0 h-full w-[500px] bg-[#020817] shadow-2xl flex flex-col">
+            <div className="absolute right-0 top-0 h-full w-[500px] bg-white dark:bg-[#020817] shadow-2xl flex flex-col">
                 {/* Header */}
-                <div className="flex justify-between items-center border-b border-blue-900 px-6 py-5">
+                <div className="flex justify-between items-center border-b border-slate-300 dark:border-blue-900 px-6 py-5">
                     <div>
                         <p className="text-blue-400 text-xs uppercase tracking-widest">
                             Leave Management
                         </p>
 
-                        <h2 className="text-white text-xl font-semibold">
+                        <h2 className="text-slate-900 dark:text-white text-xl font-semibold">
                             {isEdit
                                 ? "Edit Leave Type"
                                 : "Create Leave Type"}
@@ -242,7 +242,7 @@ export default function AddLeaveType({
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-[#0f2749] text-slate-900 dark:text-white cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -340,7 +340,7 @@ export default function AddLeaveType({
                     <ErrorMsg msg={errors.resetFrequency} />
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Number of Days
                         </label>
 
@@ -351,7 +351,7 @@ export default function AddLeaveType({
                             value={formData.daysPerYear}
                             onChange={handleChange}
                             placeholder="Enter Number of Days"
-                            className="w-full rounded-lg p-3 text-white bg-[#0D2138] border border-blue-900 outline-none"
+                            className="w-full rounded-lg p-3 text-slate-900 dark:text-white bg-white dark:bg-[#0d2138] border border-blue-900 outline-none"
                         />
 
                         <ErrorMsg msg={errors.daysPerYear} />
@@ -377,7 +377,7 @@ export default function AddLeaveType({
 
                     {formData.carryForwardAllowed && (
                         <div>
-                            <label className="block text-white mb-2">
+                            <label className="block text-slate-900 dark:text-white mb-2">
                                 Maximum Carry Forward Allowed
                             </label>
 
@@ -390,7 +390,7 @@ export default function AddLeaveType({
                                 }
                                 onChange={handleChange}
                                 placeholder="Enter Days"
-                                className="w-full rounded-lg p-3 text-white bg-[#0D2138] border border-blue-900 outline-none"
+                                className="w-full rounded-lg p-3 text-slate-900 dark:text-white bg-white dark:bg-[#0d2138] border border-blue-900 outline-none"
                             />
 
                             <ErrorMsg
@@ -418,11 +418,11 @@ export default function AddLeaveType({
                 )}
 
                 {/* Footer */}
-                <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
+                <div className="border-t border-slate-300 dark:border-blue-900 bg-slate-50 dark:bg-[#071a35] p-5 flex justify-between">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white cursor-pointer"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-slate-900 dark:text-white cursor-pointer"
                     >
                         Cancel
                     </button>

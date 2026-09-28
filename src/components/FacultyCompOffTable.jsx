@@ -114,7 +114,7 @@ const FilterDatePicker = ({
         id={id}
         type="button"
         onClick={handleToggle}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value ? "text-white" : "text-[#6f839f]"}>
           {value ? formatDate(value) : placeholder}
@@ -123,23 +123,23 @@ const FilterDatePicker = ({
       </button>
       {isOpen && (
         <div
-          className={`absolute ${showAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"} z-[9999]  w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "left-0"}`}
+          className={`absolute ${showAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"} z-[9999]  w-[280px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "left-0"}`}
         >
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
             >
               <ChevronLeft size={16} />
             </button>
-            <p className="text-[13px] font-semibold text-white">
+            <p className="text-[13px] font-semibold text-slate-900 dark:text-white">
               {months[viewDate.getMonth()]} {viewDate.getFullYear()}
             </p>
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
             >
               <ChevronRight size={16} />
             </button>
@@ -178,7 +178,7 @@ const StatusDropdownFilter = ({ value, onChange, options, placeholder }) => {
       <button
         type="button"
         onClick={() => setIsOpen((s) => !s)}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value !== "All" ? "text-white" : "text-[#6f839f]"}>
           {value || placeholder}
@@ -189,7 +189,7 @@ const StatusDropdownFilter = ({ value, onChange, options, placeholder }) => {
         />
       </button>
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           {options.map((option) => (
             <button
               key={option}
@@ -198,7 +198,7 @@ const StatusDropdownFilter = ({ value, onChange, options, placeholder }) => {
                 onChange(option);
                 setIsOpen(false);
               }}
-              className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option ? "bg-[#132b49] text-white" : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"}`}
+              className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === option ? "bg-[#132b49] text-white" : "text-[#cad7eb] hover:bg-slate-100 dark:bg-[#102640] hover:text-white"}`}
             >
               {option}
             </button>
@@ -228,19 +228,19 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
         className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Comp Off Details
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
               Review Comp Off
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
           >
             <X size={17} />
           </button>
@@ -249,13 +249,13 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
           <p className="text-[12px] leading-5 text-[#b8c7dd]">
             Review the selected comp off request and its approval status.
           </p>
-          <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+          <div className="mt-2 rounded-lg border border-[#1d395e] bg-white dark:bg-[#0A1A2D] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
                   <Layers size={13} className="text-[#3984ff]" /> Comp Off
                 </div>
-                <p className="mt-1 text-[16px] font-semibold text-white">
+                <p className="mt-1 text-[16px] font-semibold text-slate-900 dark:text-white">
                   Compensation Leave
                 </p>
               </div>
@@ -269,20 +269,20 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
             <div className="my-3 h-px bg-[#1a3556]" />
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <CalendarDays size={14} className="text-[#b8c7dd]" /> Worked
                   From
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-slate-900 dark:text-white">
                   {formatDate(compOff.fromDate)}
                 </p>
               </div>
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <CalendarDays size={14} className="text-[#b8c7dd]" /> Worked
                   To
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-slate-900 dark:text-white">
                   {formatDate(compOff.toDate)}
                 </p>
               </div>
@@ -296,25 +296,25 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
                   No of Days
                 </p>
               </div>
-              <p className="text-[15px] font-semibold text-white">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                 {compOff.noOfDays} {compOff.noOfDays === 1 ? "Day" : "Days"}
               </p>
             </div>
           </div>
           <div className="mt-3">
-            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-slate-900 dark:text-white">
               <FileText size={15} className="text-[#3984ff]" /> Reason
             </p>
-            <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+            <div className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
               {compOff.Reason || compOff.reason || "No reason provided"}
             </div>
           </div>
           {compOff.documentUrl && (
             <div className="mt-3">
-              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-slate-900 dark:text-white">
                 <FileText size={15} className="text-[#3984ff]" /> Document
               </p>
-              <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3">
+              <div className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3">
                 <p
                   onClick={() => window.open(compOff.documentUrl, "_blank")}
                   className="inline-flex cursor-pointer items-center gap-2 text-[13px] font-medium text-[#3984ff] underline transition hover:text-[#6ea1ff]"
@@ -327,7 +327,7 @@ const CompOffDetailsCanvas = ({ compOff, onClose }) => {
 
           {compOff.approvalHistory && compOff.approvalHistory.length > 0 && (
             <div className="mt-4 border-t border-gray-400/20 pt-4">
-              <p className="mb-3 flex items-center gap-2 text-[16px] text-white">
+              <p className="mb-3 flex items-center gap-2 text-[16px] text-slate-900 dark:text-white">
                 <ShieldCheck size={15} className="text-[#3984ff]" />
                 Approval Workflow
               </p>
@@ -628,9 +628,9 @@ const FacultyCompOffTable = () => {
 
   return (
     <>
-      <section className="rounded-xl border border-[#183052] max-h-[calc(100vh-210px)] min-h-[calc(100vh-210px)] bg-[#0a1a2d] mt-3 ">
+      <section className="rounded-xl border border-slate-200 dark:border-[#183052] max-h-[calc(100vh-210px)] min-h-[calc(100vh-210px)] bg-white dark:bg-[#0A1A2D] mt-3 ">
         <div className="relative z-20 flex flex-col gap-3 px-4 py-3 xl:flex-row xl:items-center xl:justify-between">
-          <h2 className="text-[18px] font-semibold text-white">
+          <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
             Comp off list <span>({filteredData.length})</span>
           </h2>
           <div className="flex flex-wrap items-center gap-3">
@@ -644,7 +644,7 @@ const FacultyCompOffTable = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
             </div>
             <div className="flex-shrink-0">
@@ -682,7 +682,7 @@ const FacultyCompOffTable = () => {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white"
+                className="h-11 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-slate-900 dark:text-white"
               >
                 Reset Filters
               </button>
@@ -691,7 +691,7 @@ const FacultyCompOffTable = () => {
               type="button"
               onClick={handleExportClick}
               disabled={filteredData.length === 0}
-              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Download size={16} />
               Export
@@ -709,7 +709,7 @@ const FacultyCompOffTable = () => {
         />
         <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-[#9eb0cc]">
+            <div className="flex items-center justify-center py-12 text-slate-500 dark:text-[#9eb0cc]">
               Loading...
             </div>
           ) : error ? (
@@ -792,7 +792,7 @@ const FacultyCompOffTable = () => {
                             <button
                               type="button"
                               onClick={() => setSelectedCompOff(iwc)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                             >
                               <Eye className="h-4 w-4" />
                             </button>
@@ -833,12 +833,12 @@ const FacultyCompOffTable = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* HEADER */}
-            <div className="flex items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] rounded-t-xl px-5 py-4">
+            <div className="flex items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] rounded-t-xl px-5 py-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                   Revoke Comp-Off
                 </p>
-                <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+                <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
                   Confirm Request
                 </h2>
               </div>
@@ -848,7 +848,7 @@ const FacultyCompOffTable = () => {
                   setRevokeTarget(null);
                   setRevokeReason("");
                 }}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                 aria-label="Close"
               >
                 <X size={17} />
@@ -862,7 +862,7 @@ const FacultyCompOffTable = () => {
                   <AlertTriangle size={18} />
                 </div>
                 <div>
-                  <p className="text-[13px] font-semibold text-white">
+                  <p className="text-[13px] font-semibold text-slate-900 dark:text-white">
                     Revoke this comp-off request?
                   </p>
                   <p className="mt-1 text-[12px] leading-5 text-[#b8c7dd]">
@@ -887,7 +887,7 @@ const FacultyCompOffTable = () => {
 
               <label
                 htmlFor="revoke-reason"
-                className="mb-2 mt-4 block text-[13px] font-semibold text-white"
+                className="mb-2 mt-4 block text-[13px] font-semibold text-slate-900 dark:text-white"
               >
                 Reason for Withdrawal
               </label>
@@ -897,7 +897,7 @@ const FacultyCompOffTable = () => {
                 onChange={(e) => setRevokeReason(e.target.value)}
                 rows={4}
                 placeholder="Add a short reason..."
-                className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="w-full resize-none rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-900 dark:text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
             </div>
 
@@ -909,7 +909,7 @@ const FacultyCompOffTable = () => {
                   setRevokeTarget(null);
                   setRevokeReason("");
                 }}
-                className="inline-flex h-10 items-center justify-center rounded-md border border-[#244061] px-5 text-[13px] font-semibold text-[#b8c7dd] transition hover:border-[#3984ff] hover:text-white"
+                className="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 dark:border-[#244061] px-5 text-[13px] font-semibold text-[#b8c7dd] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
               >
                 Cancel
               </button>

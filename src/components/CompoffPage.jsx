@@ -37,13 +37,13 @@ const CompoffPage = () => {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <CommonHeader />
-                    <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+                    <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-xl font-medium leading-tight text-white">
+                                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                                     Comp Off
                                 </h1>
-                                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                                     Review comp off history and track approvals.
                                 </p>
                             </div>
@@ -61,7 +61,7 @@ const CompoffPage = () => {
                         <div className="mt-4 w-full ">
 
                             {/* tabs  */}
-                            {role == "hod" && <div className="flex items-center gap-2 mt-2  bg-[#0d2138] w-full py-2 px-4 rounded-lg border border-[#213857]">
+                            {role == "hod" && <div className="flex items-center gap-2 mt-2  bg-white dark:bg-[#0d2138] w-full py-2 px-4 rounded-lg border border-[#213857]">
                                 {tabs.map((tab) => {
                                     const count = tab === "Approvals" ? approvalCount : null
                                     return <button

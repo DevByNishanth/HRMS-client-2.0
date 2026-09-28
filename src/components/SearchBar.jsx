@@ -131,7 +131,7 @@ const SearchBar = () => {
                             {results.map((faculty) => (
                                 <div
                                     key={faculty.facultyId}
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-[#102640] transition-colors duration-150"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-slate-100 dark:bg-[#102640] transition-colors duration-150"
                                 >
                                     {/* Profile image, or initials if there is no image */}
                                     <div className="profile-container relative">

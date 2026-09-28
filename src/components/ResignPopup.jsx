@@ -61,7 +61,7 @@ export default function ResignPopup({ facultyId, onClose }) {
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-white">Confirm Resignation</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Confirm Resignation</h2>
             <p className="mt-1 text-sm text-[#8fa3bf]">Enter resignation details below.</p>
           </div>
           <button

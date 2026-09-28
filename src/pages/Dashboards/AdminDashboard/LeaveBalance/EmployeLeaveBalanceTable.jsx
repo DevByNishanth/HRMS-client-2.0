@@ -51,7 +51,7 @@ export default function EmployeLeaveBalanceTable({
 
     if (loading) {
         return (
-            <div className="mt-4 text-white">
+            <div className="mt-4 text-slate-900 dark:text-white">
                 Loading...
             </div>
         );
@@ -64,9 +64,9 @@ export default function EmployeLeaveBalanceTable({
 
     return (
         <div className="mt-4">
-            <div className="rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
                 {/* <div className="px-7 pt-7 pb-3"> */}
-                    {/* <h1 className="text-[18px] font-semibold text-white">
+                    {/* <h1 className="text-[18px] font-semibold text-slate-900 dark:text-white">
                         Leave Balance
                     </h1> */}
                 {/* </div> */}
@@ -81,7 +81,7 @@ export default function EmployeLeaveBalanceTable({
                     "
                 >
                     <table className="w-full table-auto border-collapse text-left">
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] uppercase tracking-wide text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
                             <tr>
                                 <th className="px-5 py-4 rounded-tl-xl">
                                     Leave Type
@@ -105,12 +105,12 @@ export default function EmployeLeaveBalanceTable({
                             </tr>
                         </thead>
 
-                        <tbody className="text-[14px] text-[#cad7eb]">
+                        <tbody className="text-[14px] text-slate-700 dark:text-[#cad7eb]">
                             {leaveBalance.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan="5"
-                                        className="py-10 text-center text-[#9eb0cc]"
+                                        className="py-10 text-center text-slate-500 dark:text-[#9eb0cc]"
                                     >
                                         No leave balance found
                                     </td>
@@ -123,7 +123,7 @@ export default function EmployeLeaveBalanceTable({
                                     .map((leave) => (
                                     <tr
                                         key={leave._id}
-                                        className="border-b border-[#132944] last:border-0"
+                                        className="border-b border-slate-200 dark:border-[#132944] last:border-0"
                                     >
                                         <td className="px-5 py-3">
                                             {leave.leaveTypeId?.leaveName}
@@ -147,7 +147,7 @@ export default function EmployeLeaveBalanceTable({
                                                     onClick={() =>
                                                         handleEdit(leave)
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#0D213B] text-green-400/60 transition hover:bg-[#183052] hover:text-white cursor-pointer"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </button>

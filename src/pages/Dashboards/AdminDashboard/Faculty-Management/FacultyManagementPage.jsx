@@ -510,7 +510,7 @@ const FacultyManagementPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredFaculty.length === 0}
-                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-700 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-700 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -637,7 +637,7 @@ const FacultyManagementPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleViewFaculty(faculty)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-slate-200 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-slate-200 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
                                   aria-label={`View ${name}`}
                                   title="View"
                                 >
@@ -721,7 +721,7 @@ const FacultyManagementPage = () => {
       )}
 
       {deletingFaculty && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 px-4 backdrop-blur-[4px]">
           <div className="w-full max-w-[420px] rounded-xl border border-slate-200 dark:border-[#183052] bg-[#f8fafc] dark:bg-[#071425] shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
             <header className="border-b border-slate-200 dark:border-[#183052] py-3 px-4">
               <p className="text-[14px] font-semibold uppercase tracking-[0.22em] text-[#f16868]">
