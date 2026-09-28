@@ -76,7 +76,7 @@ const LoginPage = () => {
     import.meta.env.VITE_API_BASE_URL ||
     "https://sece_hrms_server.onrender.com";
 
-    console.log("vite api : ",  API_BASE_URL)
+    // console.log("vite api : ",  API_BASE_URL)
 
     
   useEffect(() => {
