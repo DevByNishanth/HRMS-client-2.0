@@ -430,7 +430,7 @@ const FacultyManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddFacultyOpen(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 text-sm font-semibold text-white transition hover:bg-blue-500"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg dark:bg-[#2563EB] bg-[#4F46E5] px-4 text-sm font-semibold text-white transition "
                 >
                   <Plus size={16} />
                   Add Faculty
@@ -438,17 +438,17 @@ const FacultyManagementPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddDepartmentOpen(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-white dark:bg-[#0d2138] px-4 text-sm font-semibold text-slate-900 dark:text-white transition hover:border-[#2563EB] hover:bg-slate-100 dark:hover:bg-[#132b49]"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg dark:bg-[#2563EB] bg-[#4F46E5] px-4 text-sm font-semibold text-white transition "
                 >
-                  <Plus size={16} className="text-[#3984ff]" />
+                  <Plus size={16} />
                   Add department
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddDesignationOpen(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#2563EB] bg-white dark:bg-[#0d2138] px-4 text-sm font-semibold text-slate-900 dark:text-white transition hover:border-[#2563EB] hover:bg-slate-100 dark:hover:bg-[#132b49]"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg dark:bg-[#2563EB] bg-[#4F46E5] px-4 text-sm font-semibold text-white transition "
                 >
-                  <Plus size={16} className="text-[#3984ff]" />
+                  <Plus size={16} />
                   Add Designation
                 </button>
               </div>

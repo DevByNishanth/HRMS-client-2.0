@@ -263,7 +263,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] dark:bg-[#102640] bg-[#4F46E5] text-slate-500  transition hover:border-[#3984ff] hover:text-slate-900 text-white"
               aria-label="Close add department panel"
             >
               <X size={17} />
