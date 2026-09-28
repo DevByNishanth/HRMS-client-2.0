@@ -12,7 +12,7 @@ const CommonHeader = () => {
   // console.log(decoded);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
-  const isAdmin = decoded.role === "admin" || decoded.role === "hr";
+  const isAdmin = decoded.role === "admin" || decoded.role === "hr" || decoded.role === "principal";
 
   return (
     <>
@@ -20,10 +20,10 @@ const CommonHeader = () => {
       <div className="w-full py-3 bg-white dark:bg-[#0d2643] border-b border-slate-200 dark:border-transparent flex items-center justify-end px-4 transition-colors duration-200">
         {/* Search Bar */}
         {/* <div className="relative ml-auto mr-4">
-          <Search
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#ffffff]"
-          />
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#ffffff]"
+            />
 
           <input
             type="text"
