@@ -88,22 +88,22 @@ const ChangePasswordModal = ({ onClose }) => {
       onClick={closePasswordModal}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-[#31415d] bg-[#07142580] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+        className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-[#31415d] bg-white dark:bg-[#071425] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Change Password
             </h2>
-            <p className="mt-1 text-sm text-[#8fa3bf]">
+            <p className="mt-1 text-sm text-gray-500 dark:text-[#8fa3bf]">
               Set a new password for your account.
             </p>
           </div>
           <button
             type="button"
             onClick={closePasswordModal}
-            className="rounded-full p-2 text-[#8fa3bf] transition hover:bg-[#0f1b2e] hover:text-white"
+            className="rounded-full p-2 text-gray-400 dark:text-[#8fa3bf] transition hover:bg-gray-100 dark:hover:bg-[#0f1b2e] hover:text-gray-700 dark:hover:text-white"
           >
             <X size={18} />
           </button>
@@ -123,13 +123,13 @@ const ChangePasswordModal = ({ onClose }) => {
           ) : null}
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#c9d7f2]">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-[#c9d7f2]">
               Enter a New Password
             </label>
             <div className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-[#8b9bb8]"
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-gray-400 dark:text-[#8b9bb8]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -146,12 +146,12 @@ const ChangePasswordModal = ({ onClose }) => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="h-11 w-full rounded-xl border border-[#31415d] bg-[#0f1b2e] py-2 pl-10 pr-11 text-sm text-white outline-none placeholder:text-[#64748b] focus:border-[#2563EB]"
+                className="h-11 w-full rounded-xl border border-gray-200 dark:border-[#31415d] bg-gray-50 dark:bg-[#0f1b2e] py-2 pl-10 pr-11 text-sm text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-[#64748b] focus:border-[#2563EB] focus:ring-0 transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-white"
                 aria-label="Toggle new password visibility"
               >
                 {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -160,13 +160,13 @@ const ChangePasswordModal = ({ onClose }) => {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#c9d7f2]">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-[#c9d7f2]">
               Re-Enter New Password
             </label>
             <div className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-[#8b9bb8]"
+                className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 shrink-0 text-gray-400 dark:text-[#8b9bb8]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -183,12 +183,12 @@ const ChangePasswordModal = ({ onClose }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                className="h-11 w-full rounded-xl border border-[#31415d] bg-[#0f1b2e] py-2 pl-10 pr-11 text-sm text-white outline-none placeholder:text-[#64748b] focus:border-[#2563EB]"
+                className="h-11 w-full rounded-xl border border-gray-200 dark:border-[#31415d] bg-gray-50 dark:bg-[#0f1b2e] py-2 pl-10 pr-11 text-sm text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-[#64748b] focus:border-[#2563EB] focus:ring-0 transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8b9bb8] transition hover:text-gray-700 dark:hover:text-white"
                 aria-label="Toggle confirm password visibility"
               >
                 {showConfirmPassword ? (
@@ -205,7 +205,7 @@ const ChangePasswordModal = ({ onClose }) => {
           <button
             type="button"
             onClick={closePasswordModal}
-            className="rounded-xl border border-[#31415d] px-4 py-2 text-sm font-semibold text-[#c9d7f2] transition hover:bg-[#0f1b2e]"
+            className="rounded-xl border border-gray-200 dark:border-[#31415d] px-4 py-2 text-sm font-semibold text-gray-700 dark:text-[#c9d7f2] transition hover:bg-gray-100 dark:hover:bg-[#0f1b2e]"
           >
             Cancel
           </button>
