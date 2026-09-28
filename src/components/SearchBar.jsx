@@ -107,8 +107,8 @@ const SearchBar = () => {
 
     return (
         <div className="relative">
-            <div className="search-container border w-[340px] border-white/20 px-4 py-1.5 rounded-full flex items-center gap-2">
-                <Search size={18} className="text-gray-300" />
+            <div className="search-container bg-[#f8f4fc] dark:bg-transparent border w-[340px] dark:border-white/20 border-gray-300 px-4 py-1.5 rounded-full flex items-center gap-2">
+                <Search size={18} className="text-gray-500 dark:text-gray-300" />
                 <input
                     type="text"
                     placeholder="Search"
@@ -116,22 +116,22 @@ const SearchBar = () => {
                     onFocus={() => setIsOpen(true)}
                     onBlur={() => setTimeout(() => setIsOpen(false), 150)}
                     onChange={handleChange}
-                    className="bg-transparent outline-none text-sm text-gray-300 w-full"
+                    className="bg-transparent outline-none text-sm text-gray-800 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 w-full"
                 />
                 {loading && <Loader2 size={14} className="animate-spin text-gray-300" />}
             </div>
 
             {/* Dropdown with the search results */}
             {isOpen && query.trim() !== '' && (
-                <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-80 overflow-y-auto table-custom-scrollbar rounded-xl border border-[#1e3450] bg-[#0a1a2d] shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
+                <div className="absolute left-0 right-0 top-full mt-2 z-50 max-h-80 overflow-y-auto table-custom-scrollbar rounded-xl border border-gray-200 dark:border-[#1e3450] bg-white dark:bg-[#0a1a2d] shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
                     {loading ? (
-                        <p className="px-4 py-3 text-sm text-[#8ca1bd]">Searching...</p>
+                        <p className="px-4 py-3 text-sm text-gray-500 dark:text-[#8ca1bd]">Searching...</p>
                     ) : results.length > 0 ? (
                         <div className="p-2 space-y-1">
                             {results.map((faculty) => (
                                 <div
                                     key={faculty.facultyId}
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-[#102640]"
+                                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-[#102640] transition-colors duration-150"
                                 >
                                     {/* Profile image, or initials if there is no image */}
                                     <div className="profile-container relative">
@@ -156,13 +156,13 @@ const SearchBar = () => {
                                     </div>
 
                                     <div className="min-w-0">
-                                        <p className="truncate text-[14px] font-semibold text-white">
+                                        <p className="truncate text-[14px] font-semibold text-gray-900 dark:text-white">
                                             {getFullName(faculty)}
                                         </p>
-                                        <p className="truncate text-[12px] text-[#8ca1bd]">
+                                        <p className="truncate text-[12px] text-gray-500 dark:text-[#8ca1bd]">
                                             {faculty.department} · {faculty.phone}
                                         </p>
-                                        <p className="truncate text-[12px] text-[#8ca1bd]">
+                                        <p className="truncate text-[12px] text-gray-500 dark:text-[#8ca1bd]">
                                             {faculty.email}
                                         </p>
                                     </div>
@@ -170,7 +170,7 @@ const SearchBar = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="px-4 py-3 text-sm text-[#8ca1bd]">
+                        <p className="px-4 py-3 text-sm text-gray-500 dark:text-[#8ca1bd]">
                             No faculty found for &quot;{query}&quot;
                         </p>
                     )}

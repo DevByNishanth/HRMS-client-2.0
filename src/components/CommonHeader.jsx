@@ -34,7 +34,6 @@ const CommonHeader = () => {
 
         {/* Right Icons */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           {/* <button className="text-[#d7e3ff] hover:text-white transition">
             <Calendar size={14} />
           </button>
@@ -46,7 +45,11 @@ const CommonHeader = () => {
             <Settings size={14} />
           </button> */}
           {decoded.role == "admin" || decoded.role == "principal" ? (
-            ""
+            <>
+            <div className="">
+                <SearchBar />
+              </div>
+            </>
           ) : (
             <div className="flex items-center gap-6">
               <div className="">
@@ -81,6 +84,11 @@ const CommonHeader = () => {
         </div>
 
         {/* Profile */}
+        <div className="ml-2">
+          <ThemeToggle />
+
+        </div>
+
       </div>
 
       {isChangePasswordOpen && (
