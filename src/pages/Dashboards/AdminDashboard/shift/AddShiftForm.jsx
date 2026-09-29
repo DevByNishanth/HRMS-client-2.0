@@ -207,7 +207,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-[#0f2749] text-white hover:bg-[#183a6b] cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-300 dark:bg-[#0f2749] text-black dark:text-white cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -227,7 +227,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             value={formData.shiftName}
                             onChange={handleChange}
                             placeholder="Enter Shift Name"
-                            className={`w-full rounded-lg p-3 text-white outline-none border bg-white dark:bg-[#0d2138] cursor-pointer
+                            className={`w-full rounded-lg p-3 dark:text-white outline-none border bg-white dark:bg-[#0d2138] cursor-pointer
                             ${
                                 errors.shiftName
                                 ? "border-red-500"
@@ -314,7 +314,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.graceTime}
                                 onChange={handleChange}
                                 placeholder="Enter Minutes"
-                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 dark:text-white outline-none
                                 ${
                                     errors.graceTime
                                     ? "border-red-500"
@@ -333,7 +333,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.workingMinutes}
                                 readOnly
                                 placeholder="Enter Hours"
-                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 dark:text-white outline-none
                                 ${
                                     errors.workingMinutes
                                     ? "border-red-500"
@@ -350,7 +350,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-slate-900 dark:text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-slate-900 dark:text-white dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Cancel
                     </button>

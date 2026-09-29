@@ -184,18 +184,13 @@ export default function LeaveBalanceBody() {
                                         w-[350px]
                                         rounded-lg
                                         border
-                                        border-slate-300 dark:border-[#244061]
-                                        bg-white dark:bg-[#0d2138]
+                                        border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138]
                                         pl-11
                                         text-[14px]
                                         text-slate-900 dark:text-white
                                         outline-none
                                         transition
                                         placeholder:text-slate-400 dark:text-[#6f839f]
-                                        hover:border-[#3984ff]
-                                        focus:border-[#3984ff]
-                                        focus:ring-2
-                                        focus:ring-[#3984ff33]
                                     "
                                     placeholder="Search Employee Name or Employee ID..."
                                 />
@@ -204,7 +199,7 @@ export default function LeaveBalanceBody() {
                             {showDropdown && employees.length > 0 && (
                                 <div
                                     className="
-                                        custom-scrollbar
+                                        dark:custom-scrollbar
                                         absolute z-50 mt-1 w-[350px]
                                         h-[300px]
                                         overflow-y-auto
@@ -228,11 +223,10 @@ export default function LeaveBalanceBody() {
                                                         employee
                                                     )
                                                 }
-                                                className={`flex cursor-pointer items-center gap-3 border-b border-slate-300 dark:border-[#244061] px-4 py-3 text-white ${
-                                                    highlightedIndex ===
-                                                    index
-                                                        ? "bg-[#244061]"
-                                                        : "hover:bg-[#244061]"
+                                                className={`flex cursor-pointer items-center gap-3 border-b border-slate-200 dark:border-[#244061] px-4 py-3 text-slate-900 dark:text-white transition ${
+                                                    highlightedIndex === index
+                                                        ? "bg-blue-50 dark:bg-[#244061]"
+                                                        : "hover:bg-slate-50 dark:hover:bg-[#244061]"
                                                 }`}
                                             >
                                                 <div className="flex-shrink-0">
@@ -271,7 +265,7 @@ export default function LeaveBalanceBody() {
                                                     </span>
                                                 </div>
 
-                                                <span className="ml-auto text-xs text-[#9caec8]">
+                                                <span className="ml-auto text-xs text-slate-500 dark:text-[#9caec8]">
                                                     {
                                                         employee.department
                                                     }
@@ -287,15 +281,15 @@ export default function LeaveBalanceBody() {
                             <button
                                 onClick={handleExportClick}
                                 className="
-                                    h-11
-                                    px-5
-                                    rounded-lg
-                                    border
-                                    border-[#3984ff]
-                                    text-[#3984ff]
-                                    hover:bg-[#3984ff]
-                                    hover:text-white
-                                    cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+                                h-12
+                                px-5
+                                rounded-lg
+                                border border-slate-300 dark:border-[#244061] bg-[#155DFC] dark:bg-[#0d2138]
+                                text-white
+                                text-[14px]
+                                font-semibold
+                                transition
+                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                                 "
                             >
                                 Export Excel

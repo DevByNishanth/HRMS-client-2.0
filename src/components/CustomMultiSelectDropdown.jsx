@@ -68,8 +68,8 @@ export default function CustomMultiSelectDropdown({
         <span
           className={
             selectedValues.length
-              ? "text-white truncate"
-              : "text-[#6f839f]"
+              ? "text-slate-900 dark:text-white truncate"
+              : "text-slate-400 dark:text-[#6f839f]"
           }
         >
           {selectedValues.length
@@ -101,8 +101,8 @@ export default function CustomMultiSelectDropdown({
                 className={`w-full flex items-center justify-between px-4 py-3 text-left transition cursor-pointer
                   ${
                     selected
-                      ? "bg-[#2563EB]/20 text-white"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                      ? "bg-blue-50 dark:bg-[#2563EB]/20 text-blue-700 dark:text-white"
+                      : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
                   }`}
               >
                 <span>{option}</span>

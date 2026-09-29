@@ -125,7 +125,7 @@ export default function EmployeLeaveBalanceTable({
                                         key={leave._id}
                                         className="border-b border-slate-200 dark:border-[#132944] last:border-0"
                                     >
-                                        <td className="px-5 py-3">
+                                        <td className="px-5 py-3 font-semibold">
                                             {leave.leaveTypeId?.leaveName}
                                         </td>
 
@@ -147,7 +147,7 @@ export default function EmployeLeaveBalanceTable({
                                                     onClick={() =>
                                                         handleEdit(leave)
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </button>

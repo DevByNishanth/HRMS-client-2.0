@@ -26,23 +26,23 @@ const API_BASE_URL =
 const typeStyles = {
   Teaching: {
     row: "hover:bg-slate-50 dark:hover:bg-[#123250]",
-    stripe: "border-l-[#18d3bf]",
-    badge: "bg-[#18d3bf1f] text-[#18d3bf]",
+    stripe: "dark:border-l-[#18d3bf]",
+    badge: "dark:bg-[#18d3bf1f] text-[#18d3bf] ",
   },
   "Non-Teaching": {
     row: "bg-slate-50/50 dark:bg-[#f0a15f08] hover:bg-slate-50 dark:hover:bg-[#3a2a1f]",
-    stripe: "border-l-[#f0a15f]",
-    badge: "bg-[#f0a15f1f] text-[#f0a15f]",
+    stripe: "dark:border-l-[#f0a15f]",
+    badge: "dark:bg-[#f0a15f1f] dark:text-[#f0a15f] text-[#ffb704]",
   },
   Driver: {
     row: "hover:bg-slate-50 dark:hover:bg-[#182f45]",
     stripe: "border-l-[#78a7ff]",
-    badge: "bg-[#3984ff1f] text-[#78a7ff]",
+    badge: "dark:bg-[#3984ff1f] dark:text-[#78a7ff] text-[#78a7ff]",
   },
   Housekeeping: {
     row: "hover:bg-slate-50 dark:hover:bg-[#24303a]",
     stripe: "border-l-[#c4c6d0]",
-    badge: "bg-[#c4c6d01f] text-[#c4c6d0]",
+    badge: "dark:bg-[#c4c6d01f] dark:text-[#c4c6d0] text-blue-500 ",
   },
 };
 
@@ -119,7 +119,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -472,7 +472,7 @@ const FacultyManagementPage = () => {
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search faculty..."
-                      className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -510,7 +510,7 @@ const FacultyManagementPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredFaculty.length === 0}
-                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-700 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:hover:bg-slate-50 dark:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 w-[100px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-[#4F46E5] dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-700 dark:text-white text-white transition hover:border-[#3984ff] dark:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -598,29 +598,29 @@ const FacultyManagementPage = () => {
                               </span>
                             </td> */}
                             <td className="px-4 py-3">
-                              <span className="block truncate">
+                              <span className="block truncate font-Medium  dark:text-white">
                                 {faculty.designation || "-"}
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">
+                              <span className="block truncate font-Medium  dark:text-white">
                                 {faculty.department || "-"}
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">
+                              <span className="block truncate font-Medium  dark:text-white">
                                 {faculty.originalDepartment || "-"}
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className="block truncate">
+                              <span className="block truncate font-Medium  dark:text-white">
                                 {faculty.reportingTo?.facultyId
                                   ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""} ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
                                   : "-"}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-semibold ${styles.badge}`}
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-bold ${styles.badge}`}
                               >
                                 <span className="h-[4px] w-[4px] rounded-full bg-current" />
                                 {type}
@@ -637,7 +637,7 @@ const FacultyManagementPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleViewFaculty(faculty)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-slate-200 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#F3F4F6] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
                                   aria-label={`View ${name}`}
                                   title="View"
                                 >

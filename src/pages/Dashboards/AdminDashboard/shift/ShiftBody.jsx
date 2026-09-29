@@ -142,7 +142,7 @@ export default function ShiftBody() {
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="h-11 w-[330px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[14px] pl-11 text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                                className="h-11 w-[330px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] text-[14px] pl-11 text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                                 placeholder="Search Shift Name"
                             />
                         </div>
@@ -156,8 +156,8 @@ export default function ShiftBody() {
                                 border
                                 border-[#3984ff]
                                 text-[#3984ff]
-                                hover:bg-[#3984ff]
-                                hover:text-white
+                                bg-[#155DFC]
+                                text-white
                                 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
@@ -178,10 +178,10 @@ export default function ShiftBody() {
                     <div className="
                         max-h-[420px]
                         overflow-y-auto
-                        scrollbar-thin
-                        scrollbar-track-[#0a1a2d]
-                        scrollbar-thumb-[#244061]
-                        hover:scrollbar-thumb-[#3984ff]
+                        dark:scrollbar-thin
+                        dark:scrollbar-track-[#0a1a2d]
+                        dark:scrollbar-thumb-[#244061]
+                        dark:hover:scrollbar-thumb-[#3984ff]
                     ">
                         <table className="w-full table-auto border-collapse text-left"> 
                             <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
@@ -213,7 +213,7 @@ export default function ShiftBody() {
                                         key={shift._id}
                                         className="border-b border-slate-200 dark:border-[#132944] last:border-0"
                                         >
-                                            <td className="px-5 py-3">{shift.shiftName}</td>
+                                            <td className="px-5 py-3 font-semibold">{shift.shiftName}</td>
                                             <td className="px-5 py-3">{shift.startTime}</td>
                                             <td className="px-5 py-3">{shift.endTime}</td>
                                             <td className="px-5 py-3">{shift.graceTime} minutes</td>
@@ -229,7 +229,7 @@ export default function ShiftBody() {
                                                             setSelectedShift(shift);
                                                             setShowDrawer(true);
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#0D213B] text-green-400/60 transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                     >
                                                         <Pencil className="h-4 w-4" />
                                                     </button>
@@ -239,7 +239,7 @@ export default function ShiftBody() {
                                                             setDeletingShift(shift);
                                                             setDeleteError("");
                                                         }}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
