@@ -68,7 +68,7 @@ function SelectDropdown({ label, value, options, onChange, placeholder }) {
                 className={`w-full rounded-md px-3 py-2 text-left text-[13px] transition hover:bg-slate-100 dark:bg-[#183052]/40 ${
                   isSelected
                     ? "bg-[#0b50b1] font-medium text-white"
-                    : "text-[#cad7eb]"
+                    : "dark:text-[#cad7eb]"
                 }`}
               >
                 {optLabel}
@@ -239,7 +239,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
 
         {/* Body */}
         <div className="px-5 py-5">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">
+          <p className="text-[13px] leading-5  dark:text-[#cad7eb]">
             Upload an Excel or CSV file containing payroll data. The file should
             include employee IDs and salary details.
           </p>
@@ -370,7 +370,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-black dark:text-[#cad7eb]  dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>

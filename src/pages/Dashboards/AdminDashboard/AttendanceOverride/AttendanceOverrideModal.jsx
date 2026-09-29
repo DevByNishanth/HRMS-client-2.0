@@ -70,7 +70,7 @@ export default function AttendanceOverrideModal({
                         className={`
                             text-xl
                             text-slate-600 dark:text-[#8ca1bd]
-                            hover:text-white
+                            dark:hover:text-white
                             cursor-pointer
                             ${loading ? "opacity-50 cursor-not-allowed" : ""}
                         `}

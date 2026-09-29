@@ -122,12 +122,12 @@ const CustomDatePicker = ({
                 id={id}
                 type="button"
                 onClick={() => setIsOpen((currentState) => !currentState)}
-                className="flex h-12 w-full items-center justify-between rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition  focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
+                className="flex h-12 w-full items-center justify-between rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] px-3 text-left text-[16px] text-black dark:text-white outline-none transition  focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
             >
-                <span className={value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
+                <span className={value ? "text-black dark:text-white" : "text-black dark:text-[#6f839f]"}>
                     {value ? formatDate(value) : placeholder}
                 </span>
-                <CalendarDays size={16} className="text-[#9ca3af]dark:text-[#3984ff]" />
+                <CalendarDays size={16} className="text-[#9ca3af] dark:text-[#3984ff]" />
             </button>
 
             {isOpen && (

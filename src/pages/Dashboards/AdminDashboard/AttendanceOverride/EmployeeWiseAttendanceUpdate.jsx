@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-import { X, Search } from "lucide-react";
+import { X, Search, Download } from "lucide-react";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
@@ -604,7 +604,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 )
                             }
                             placeholder="Search Employee"
-                            className="h-10 pl-11 w-[300px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-900 dark:text-white px-4"
+                            className="h-10 pl-11 w-[300px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] text-slate-900 dark:text-white px-4"
                         />
 
                         {showDropdown &&
@@ -615,7 +615,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     w-[300px]
                                     max-h-[300px]
                                     overflow-y-auto
-                                    custom-scrollbar
+                                    dark:custom-scrollbar
                                     rounded-lg
                                     border
                                     border-slate-300 dark:border-[#244061]
@@ -703,19 +703,19 @@ export default function EmployeeWiseAttendanceUpdate() {
                         <button
                             onClick={handleExportClick}
                             className="
-                                h-11
-                                px-5
-                                rounded-lg
-                                border
-                                border-[#3984ff]
-                                text-[#3984ff]
-                                font-medium
-                                transition
-                                hover:bg-[#3984ff]
-                                hover:text-white
-                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+                                flex items-center justify-center gap-2
+                            h-12
+                            px-5
+                            rounded-lg
+                            border border-[#155DFC] dark:border-[#3b82f6] bg-[#155DFC] dark:bg-transparent
+                            text-white dark:text-[#3b82f6]
+                            text-[14px]
+                            font-semibold
+                            transition
+                            cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
+                            <Download size={16} />
                             Export Excel
                         </button>
                     )}
@@ -769,7 +769,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
             <div className="overflow-hidden px-7 pb-24">
 
-                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-slate-200 dark:border-[#1d3657] dark:scrollbar-thin dark:scrollbar-track-[#0a1a2d] dark:scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-fixed border-collapse">
 
@@ -849,7 +849,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 filteredAttendance.map((row) => (
                                     <tr
                                         key={row._id}
-                                        className="border-b border-[#1d3657]"
+                                        className="border-b border-slate-100 dark:border-[#1d3657]"
                                     >
                                         <td className="px-3 py-3 text-center">
                                             <input

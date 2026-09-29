@@ -669,8 +669,7 @@ export default function AttendanceTable() {
                                 w-[300px]
                                 rounded-lg
                                 border
-                                border-slate-300 dark:border-[#244061]
-                                bg-white dark:bg-[#0d2138]
+                                 border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138]
                                 text-slate-900 dark:text-white
                                 px-4
                             "
@@ -837,20 +836,17 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={attendanceData.length === 0}
-            className="h-12
-                                px-5
-                                rounded-lg
-                                border
-                                border-[#3984ff]
-                                text-[#3984ff]
-                                text-[14px]
-                                font-semibold
-                                transition
-                                hover:bg-[#3984ff]
-                                hover:text-white
-                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-12 w-40 flex items-center justify-center gap-2
+              px-5
+              rounded-lg
+              border border-slate-300 dark:border-[#244061] bg-[#155DFC] dark:bg-[#0d2138]
+              text-white
+              text-[14px]
+              font-semibold
+              transition
+              cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {/* <Download size={16} /> */}
+            <Download size={16} />
             Export Excel
           </button>
 
@@ -860,7 +856,7 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={loading || exportLoading}
-            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold bg-[#F5B041] text-white dark:bg-transparent dark:text-[#F5B041] transition dark:hover:bg-[#F5B041] dark:hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export Not Checked In
@@ -872,7 +868,7 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={loading || exportLoading}
-            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold bg-[#F5B041] text-white dark:bg-transparent dark:text-[#F5B041] transition dark:hover:bg-[#F5B041] dark:hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export Late Checked In

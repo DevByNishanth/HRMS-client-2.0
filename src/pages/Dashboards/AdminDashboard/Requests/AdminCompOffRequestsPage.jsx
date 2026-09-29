@@ -182,7 +182,7 @@ const AdminCompOffRequestsPage = () => {
                 placeholder="Search by name or emp ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-[38px] w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-10 pr-4 text-[14px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
+                className="h-[38px] w-full rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] pl-10 pr-4 text-[14px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
               />
             </div>
             
@@ -190,20 +190,20 @@ const AdminCompOffRequestsPage = () => {
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-500 dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-black dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
             />
-            <span className="text-slate-500 dark:text-[#9eb0cc]">to</span>
+            <span className="text-black dark:text-[#9eb0cc]">to</span>
             <input
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-500 dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-black dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
             />
             
             <select
               value={filterDepartment}
               onChange={(e) => setFilterDepartment(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               <option disabled>Department</option>
               {departments.map(dept => (
@@ -214,7 +214,7 @@ const AdminCompOffRequestsPage = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               <option disabled>Status</option>
               {statuses.map(status => (
@@ -225,7 +225,7 @@ const AdminCompOffRequestsPage = () => {
             <select
               value={filterApprovalLevel}
               onChange={(e) => setFilterApprovalLevel(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               <option disabled>Current Level</option>
               {approvalLevels.map(level => (
@@ -236,7 +236,7 @@ const AdminCompOffRequestsPage = () => {
             <button
               onClick={handleExportClick}
               disabled={filteredRequests.length === 0}
-              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:bg-[#132b49] disabled:opacity-50"
+              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061]  bg-[#4F46E5] text-white dark:bg-[#0d2138] px-4 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] dark:bg-[#132b49] disabled:opacity-50"
             >
               <Download size={16} />
               Export
@@ -249,7 +249,7 @@ const AdminCompOffRequestsPage = () => {
               onScroll={handleScroll}
             >
               <table className="w-full min-w-[900px] border-collapse text-left">
-                <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
+                <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-black dark:text-[#9aacc7]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Employee</th>
                     <th className="px-4 py-3 font-semibold">Department</th>

@@ -57,7 +57,7 @@ const CustomDropdown = ({
       >
         <span
           className={
-            value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"
+            value ? "text-black dark:text-white" : "text-black dark:text-[#6f839f]"
           }
         >
           {value || placeholder}

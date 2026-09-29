@@ -53,7 +53,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none  focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -229,7 +229,7 @@ const TeamsPage = () => {
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search by name, ID, designation, or reporting manager..."
-                      className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 pl-10 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f]"
                     />
                     {searchQuery && (
                       <button
@@ -257,7 +257,16 @@ const TeamsPage = () => {
                   type="button"
                   onClick={handleExportClick}
                   disabled={sortedFaculty.length === 0}
-                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg border border border-slate-300 dark:border-[#244061] bg-[#155DFC] dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 text-white dark:text-white transition hover:border-[#3984ff]  dark:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                  // className="h-12
+                  //               px-5
+                  //               rounded-lg
+                  //               border border-slate-300 dark:border-[#244061] bg-[#155DFC] dark:bg-[#0d2138]
+                  //               text-white
+                  //               text-[14px]
+                  //               font-semibold
+                  //               transition
+                  //               cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Download size={16} />
                   Export

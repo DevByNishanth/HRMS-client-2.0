@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Download } from "lucide-react";
 import { utils, writeFile } from "xlsx";
 import Sidebar from "../../../../components/Siedbar";
 import CommonHeader from "../../../../components/CommonHeader";
@@ -27,7 +27,7 @@ const tableCellBase =
   "h-[42px] whitespace-nowrap border-r border-r-[rgba(255,255,255,0.12)] [border-right-style:dotted] border-b border-b-[rgba(255,255,255,0.12)] p-0 text-center";
 const tableHeadCellBase = `${tableCellBase} sticky top-0 z-10 bg-[#f8fafc] dark:bg-[#071425] font-bold text-slate-900 dark:text-white`;
 const toolbarInputBase =
-  "h-11 w-full appearance-none rounded-2xl border border-[#2c4a75] bg-white dark:bg-[#0c2038] px-4 text-sm font-medium text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
+  "h-11 w-full appearance-none rounded-2xl border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-4 text-sm font-medium dark:text-white outline-none transition-colors placeholder:text-[#8fa3bf] focus:border-[#3b82f6] focus:ring-0";
 
   const summaryRightClasses = [
     "right-[190px]", // P
@@ -618,9 +618,10 @@ export default function AttendanceManagement() {
 
                 <button
                   type="button"
-                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-[#3b82f6] bg-transparent px-5 text-sm font-bold text-[#3b82f6] transition-all duration-300 hover:bg-[#3b82f6] hover:text-white"
+                  className="inline-flex gap-2 h-11 w-full items-center justify-center rounded-2xl border border-[#155DFC] dark:border-[#3b82f6] bg-[#155DFC] text-white dark:bg-transparent px-5 text-sm font-bold dark:text-[#3b82f6] transition-all duration-300 dark:hover:bg-[#3b82f6] dark:hover:text-white hover:bg-blue-600"
                   onClick={exportToExcel}
                 >
+                  <Download size={16} />
                   Export Excel
                 </button>
               </div>
@@ -630,12 +631,12 @@ export default function AttendanceManagement() {
                 {errorMessage}
               </div>
             )}
-            <div className="min-h-0  flex-1 overflow-auto bg-[#f8fafc] dark:bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
-              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-[#f8fafc] dark:bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
+            <div className="min-h-0  flex-1 overflow-auto mt-5 bg-white dark:bg-[#071425] [scrollbar-color:#b7c4d3_#eef2f7] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#b7c4d3] [&::-webkit-scrollbar-track]:bg-[#eef2f7]">
+              <table className="w-max min-w-[1750px]  border-separate border-spacing-0  bg-white dark:bg-[#071425] text-sm text-[#1f2937] max-md:min-w-[1620px] max-md:text-[13px]">
                 <thead>
                   <tr>
                     <th
-                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] text-base`}
+                      className={`${tableHeadCellBase} left-0 z-30 w-[270px] min-w-[270px] !bg-[#F3F4F6] dark:!bg-[#071425] text-base`}
                     >
                       Employee
                     </th>
@@ -643,7 +644,7 @@ export default function AttendanceManagement() {
                     {dates.map((date) => (
                       <th
                         key={date.key}
-                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#f8fafc] dark:bg-[#071425] font-bold text-slate-900 dark:text-white`}
+                        className={`${tableCellBase}  sticky top-0 z-[15] h-10 w-10 min-w-10 bg-[#F3F4F6] dark:bg-[#071425] font-bold text-slate-900 dark:text-white`}
                       >
                         <span className="block text-base">{date.day}</span>
                         <small className="block text-[13px] font-bold">
@@ -655,7 +656,7 @@ export default function AttendanceManagement() {
                     {summaryColumns.map((column, index) => (
                       <th
                         key={column}
-                        className={`${tableHeadCellBase}  ${summaryRightClasses[index]} z-[35] w-[38px]  min-w-[38px]`}
+                        className={`${tableHeadCellBase}  ${summaryRightClasses[index]} z-[35] w-[38px] !bg-[#F3F4F6] dark:!bg-[#071425] min-w-[38px]`}
                       >
                         {column}
                       </th>
@@ -679,8 +680,8 @@ export default function AttendanceManagement() {
                         <th
                           className={`${tableCellBase} sticky   left-0 z-20 w-[270px] min-w-[270px] ${
                             employeeIndex % 2 === 1
-                              ? "bg-[#f8fafc] dark:bg-[#0a1a2e]"
-                              : "bg-[#f8fafc] dark:bg-[#071425]"
+                              ? "!bg-[#f8fafc] dark:!bg-[#0a1a2e]"
+                              : "!bg-white dark:!bg-[#071425]"
                           } px-2.5 py-1.5 text-left align-middle max-md:w-[240px] max-md:min-w-[240px]`}
                           scope="row"
                         >

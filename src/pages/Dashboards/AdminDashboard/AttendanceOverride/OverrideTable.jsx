@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CustomDropdown from "../../../../components/CustomDropdown";
-import { X,Search } from "lucide-react";
+import { X,Search, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
@@ -367,8 +367,7 @@ export default function OverrideTable({ data = [] }) {
                                 px-4
                                 rounded-lg
                                 border
-                                border-slate-300 dark:border-[#244061]
-                                bg-white dark:bg-[#0d2138]
+                                 border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138]
                                 text-slate-900 dark:text-white
                                 placeholder:text-slate-600 dark:text-[#8ca1bd]
                                 focus:outline-none
@@ -432,17 +431,19 @@ export default function OverrideTable({ data = [] }) {
                     <button
                         onClick={handleExportClick}
                         className="
+                            flex items-center justify-center gap-2
                             h-12
                             px-5
                             rounded-lg
-                            border
-                            border-[#3984ff]
-                            text-[#3984ff]
-                            hover:bg-[#3984ff]
-                            hover:text-white
+                            border border-[#155DFC] dark:border-[#3b82f6] bg-[#155DFC] dark:bg-transparent
+                            text-white dark:text-[#3b82f6]
+                            text-[14px]
+                            font-semibold
+                            transition
                             cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
+                        <Download size={16} />
                         Export Excel
                     </button>
                     {hasActiveFilters && (
@@ -475,7 +476,7 @@ export default function OverrideTable({ data = [] }) {
             {/* Table */}
 
             <div className="overflow-hidden">
-                <div className="max-h-[55vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[55vh] overflow-y-auto dark:scrollbar-thin dark:scrollbar-track-[#0a1a2d] dark:scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-auto border-collapse text-left">
 

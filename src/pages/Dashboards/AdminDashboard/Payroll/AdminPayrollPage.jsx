@@ -32,7 +32,7 @@ function CustomDropdown({ value, options, onChange }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0d2138] px-4 py-2.5 text-sm font-medium text-slate-900 dark:text-white shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052]/30"
+        className="flex w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#183052] bg-[#F8FAFC] dark:bg-[#0d2138] px-4 py-2.5 text-sm font-medium text-slate-900 dark:text-white shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052]/30"
       >
         <span>{value}</span>
         <svg
@@ -176,7 +176,7 @@ const AdminPayrollPage = () => {
             </div>
 
             {/* Table Container */}
-            <div className="mt-4 min-h-[calc(100vh-200px)] rounded-lg border border-slate-200 dark:border-[#183052]">
+            <div className="mt-4 min-h-[calc(100vh-200px)] rounded-lg border border-slate-200 bg-white dark:bg-[#071425] dark:border-[#183052]">
               {/* Table Header / Controls */}
               <div className="flex items-center justify-between p-3">
                 <h1 className="text-lg font-medium">
@@ -199,7 +199,7 @@ const AdminPayrollPage = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search by name..."
-                      className="h-11 w-64 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-10 pr-4 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f]"
                     />
                   </div>
 

@@ -94,7 +94,7 @@ export default function AttendanceOverrideBody() {
 
                         <ChevronRight
                             size={18}
-                            className="text-[#ffffff]"
+                            className="dark:text-[#ffffff]"
                         />
 
                         <span className="text-slate-900 dark:text-white font-medium ">

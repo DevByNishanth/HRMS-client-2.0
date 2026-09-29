@@ -140,7 +140,7 @@ const AdminLeaveRequestsPage = () => {
                 placeholder="Search by name or emp ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-[38px] w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-10 pr-4 text-[14px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
+                className="h-[38px] w-full rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] pl-10 pr-4 text-[14px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
               />
             </div>
             
@@ -148,20 +148,20 @@ const AdminLeaveRequestsPage = () => {
               type="date"
               value={filterStartDate}
               onChange={(e) => setFilterStartDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-500 dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-black dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
             />
-            <span className="text-slate-500 dark:text-[#9eb0cc]">to</span>
+            <span className="text-black dark:text-[#9eb0cc]">to</span>
             <input
               type="date"
               value={filterEndDate}
               onChange={(e) => setFilterEndDate(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-500 dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-black dark:text-[#9eb0cc] outline-none [color-scheme:dark]"
             />
             
             <select
               value={filterDepartment}
               onChange={(e) => setFilterDepartment(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               {departments.map(dept => (
                 <option key={dept} value={dept}>{dept}</option>
@@ -171,7 +171,7 @@ const AdminLeaveRequestsPage = () => {
             <select
               value={filterLeaveType}
               onChange={(e) => setFilterLeaveType(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               {leaveTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -181,7 +181,7 @@ const AdminLeaveRequestsPage = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               {statuses.map(status => (
                 <option key={status} value={status}>{status}</option>
@@ -191,7 +191,7 @@ const AdminLeaveRequestsPage = () => {
             <select
               value={filterApprovalLevel}
               onChange={(e) => setFilterApprovalLevel(e.target.value)}
-              className="h-[38px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
+              className="h-[38px] rounded-lg border  border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none"
             >
               <option disabled>Current Level</option>
               {approvalLevels.map(level => (
@@ -202,7 +202,7 @@ const AdminLeaveRequestsPage = () => {
             <button
               onClick={handleExportClick}
               disabled={filteredLeaves.length === 0}
-              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:bg-[#132b49] disabled:opacity-50"
+              className="inline-flex h-[38px] items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-[#4F46E5] text-white dark:bg-[#0d2138] px-4 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-slate-50 dark:bg-[#132b49] disabled:opacity-50"
             >
               <Download size={16} />
               Export
@@ -212,7 +212,7 @@ const AdminLeaveRequestsPage = () => {
           <section className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
             <div className="relative z-0 max-h-[calc(100vh-280px)] overflow-auto table-custom-scrollbar">
               <table className="w-full min-w-[900px] border-collapse text-left">
-                <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
+                <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-black dark:text-[#9aacc7]">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Employee</th>
                     <th className="px-4 py-3 font-semibold">Department</th>

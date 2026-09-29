@@ -8,7 +8,7 @@ const AttendanceStatCard = ({
     return (
         <div 
             onClick={onClick}
-            className={`rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)] ${onClick ? "cursor-pointer hover:border-white/20 transition-all hover:bg-white dark:bg-[#0c1f36]" : ""}`}
+            className={`rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-3  ${onClick ? "cursor-pointer hover:border-white/20 transition-all hover:bg-white dark:bg-[#0c1f36]" : ""}`}
         >
             <div className="flex items-center justify-between gap-3">
                 <div
