@@ -379,7 +379,7 @@ const ReqularizationCanvas = ({ log, onClose }) => {
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55] disabled:cursor-not-allowed disabled:opacity-60"
+                        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[13px] font-semibold text-white shadow-[0_5px_20px_rgba(25,118,255,0.2)] transition hover:bg-[#172554] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {submitting ? (
                             <>

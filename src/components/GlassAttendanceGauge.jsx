@@ -12,7 +12,7 @@ const GlassAttendanceGauge = () => {
     >
         
       <div className="mb-7 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-white">
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
           Overall Attendance
         </h2>
         <button className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-[14px] text-[#a9bddb] shadow-inner shadow-black/10 backdrop-blur-md transition hover:bg-white/15">
@@ -29,7 +29,7 @@ const GlassAttendanceGauge = () => {
             style={{ transform: "rotate(-45deg)" }}
           />
           <div className="absolute inset-x-0 top-[42px] text-center">
-            <p className="text-[28px] font-bold leading-none text-white">94%</p>
+            <p className="text-[28px] font-bold leading-none text-slate-900 dark:text-white">94%</p>
             <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-[#8ca1bd]">
               Excellent
             </p>
@@ -39,7 +39,7 @@ const GlassAttendanceGauge = () => {
 
       <div className="mt-auto grid grid-cols-3 text-center">
         <div>
-          <p className="text-[13px] font-bold text-white">186</p>
+          <p className="text-[13px] font-bold text-slate-900 dark:text-white">186</p>
           <p className="mt-1 text-[12px] font-medium uppercase text-[#8ca1bd]">
             Working
           </p>

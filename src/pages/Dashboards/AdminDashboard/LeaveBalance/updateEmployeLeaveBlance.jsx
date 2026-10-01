@@ -78,28 +78,28 @@ export default function UpdateEmployeeLeaveBalance({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 backdrop-blur-[4px]">
             <div
                 className="absolute inset-0"
                 onClick={onClose}
             />
 
-            <div className="absolute right-0 top-0 h-full w-[500px] bg-[#020817] shadow-2xl flex flex-col">
+            <div className="absolute right-0 top-0 h-full w-[500px] bg-white dark:bg-[#020817] shadow-2xl flex flex-col">
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-blue-900 px-6 py-5">
+                <div className="flex items-center justify-between border-b border-slate-300 dark:border-blue-900 px-6 py-5">
                     <div>
                         <p className="text-blue-400 text-xs uppercase tracking-widest">
                             Leave Management
                         </p>
 
-                        <h2 className="text-white text-xl font-semibold">
+                        <h2 className="text-slate-900 dark:text-white text-xl font-semibold">
                             Update Leave Balance
                         </h2>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-[#0f2749] text-slate-900 dark:text-white cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -110,7 +110,7 @@ export default function UpdateEmployeeLeaveBalance({
 
                     {/* Leave Type - Read Only */}
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Leave Type
                         </label>
 
@@ -125,9 +125,9 @@ export default function UpdateEmployeeLeaveBalance({
                                 w-full
                                 rounded-lg
                                 p-3
-                                bg-[#091726]
+                                bg-slate-50 dark:bg-[#091726]
                                 border
-                                border-blue-900
+                                border-slate-300 dark:border-blue-900
                                 text-gray-400
                                 cursor-not-allowed
                                 outline-none
@@ -136,7 +136,7 @@ export default function UpdateEmployeeLeaveBalance({
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Allocated Days
                         </label>
 
@@ -147,12 +147,12 @@ export default function UpdateEmployeeLeaveBalance({
                                 formData.allocatedDays
                             }
                             onChange={handleChange}
-                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
+                            className="w-full rounded-lg p-3 bg-white dark:bg-[#0d2138] border border-blue-900 text-slate-900 dark:text-white outline-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Used Days
                         </label>
 
@@ -161,12 +161,12 @@ export default function UpdateEmployeeLeaveBalance({
                             name="usedDays"
                             value={formData.usedDays}
                             onChange={handleChange}
-                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
+                            className="w-full rounded-lg p-3 bg-white dark:bg-[#0d2138] border border-blue-900 text-slate-900 dark:text-white outline-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Available Days
                         </label>
 
@@ -175,7 +175,7 @@ export default function UpdateEmployeeLeaveBalance({
                             name="remainingDays"
                             value={formData.remainingDays}
                             onChange={handleChange}
-                            className="w-full rounded-lg p-3 bg-[#0D2138] border border-blue-900 text-white outline-none"
+                            className="w-full rounded-lg p-3 bg-white dark:bg-[#0d2138] border border-blue-900 text-slate-900 dark:text-white outline-none"
                         />
                     </div>
                 </div>
@@ -187,11 +187,11 @@ export default function UpdateEmployeeLeaveBalance({
                 )}
 
                 {/* Footer */}
-                <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between">
+                <div className="border-t border-slate-300 dark:border-blue-900 bg-slate-50 dark:bg-[#071a35] p-5 flex justify-between">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white cursor-pointer"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-slate-900 dark:text-white cursor-pointer"
                     >
                         Cancel
                     </button>

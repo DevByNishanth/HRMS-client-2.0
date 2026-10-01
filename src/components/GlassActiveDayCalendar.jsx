@@ -61,7 +61,7 @@ const GlassActiveDayCalendar = () => {
       <div className="absolute -top-20 -left-20 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
 
       <div className="mb-5 flex items-center justify-between">
-        {/* <h2 className="text-[16px] font-semibold text-white">
+        {/* <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
           Your Active Day
         </h2> */}
         <button className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-[14px] text-[#a9bddb] shadow-inner shadow-black/10 backdrop-blur-md transition hover:bg-white/15">

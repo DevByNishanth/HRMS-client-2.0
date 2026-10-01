@@ -37,7 +37,7 @@ const BulkApproveModal = ({
           <button
             type="button"
             onClick={handleClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 dark:border-[#223b5f] bg-gary-300 dark:bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] "
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 dark:border-[#223b5f] bg-gary-300 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] "
             aria-label="Close bulk approval"
           >
             <X size={17} />

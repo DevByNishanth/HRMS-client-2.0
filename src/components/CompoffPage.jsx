@@ -32,24 +32,24 @@ const CompoffPage = () => {
 
     return (
         <>
-            <div className="flex h-screen overflow-hidden bg-[#051424]">
+            <div className="flex h-screen overflow-hidden bg-[#f8fafc] transition-colors duration-200 dark:bg-[#051424]">
                 <Sidebar />
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <CommonHeader />
-                    <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+                    <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-xl font-medium leading-tight text-white">
+                                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                                     Comp Off
                                 </h1>
-                                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                                     Review comp off history and track approvals.
                                 </p>
                             </div>
                             <button
                                 onClick={() => setShowCompOffForm(true)}
-                                className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+                                className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
                             >
                                 <Plus size={14} />
                                 Apply comp off
@@ -61,7 +61,7 @@ const CompoffPage = () => {
                         <div className="mt-4 w-full ">
 
                             {/* tabs  */}
-                            {role == "hod" && <div className="flex items-center gap-2 mt-2  bg-[#0d2138] w-full py-2 px-4 rounded-lg border border-[#213857]">
+                            {role == "hod" && <div className="mt-2 flex w-full items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 dark:border-[#213857] dark:bg-[#0d2138]">
                                 {tabs.map((tab) => {
                                     const count = tab === "Approvals" ? approvalCount : null
                                     return <button
@@ -70,14 +70,14 @@ const CompoffPage = () => {
                                         key={tab}
                                         className={`inline-flex items-center gap-2 px-6 py-2 text-sm font-medium transition ${tab === selectedTab
                                             ? "rounded-md bg-[#2563EB] text-white"
-                                            : "rounded-md hover:bg-slate-600/20"
+                                            : "rounded-md text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600/20"
                                             }`}
                                     >
                                         {tab}
                                         {count !== null && (
                                             <span className={`inline-flex items-center justify-center min-w-[20px] h-5 rounded-md px-1.5 text-[11px] font-semibold ${tab === selectedTab
                                                 ? "bg-white text-black"
-                                                : "bg-[#ffffff] text-[#000000]"
+                                                : "bg-slate-100 text-slate-700 dark:bg-[#ffffff] dark:text-[#000000]"
                                                 }`}>
                                                 {count}
                                             </span>

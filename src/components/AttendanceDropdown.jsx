@@ -146,9 +146,9 @@ export default function AttendanceDropdown({
           px-3
           rounded-lg
           border
-          border-[#244061]
-          bg-[#172c46]
-          text-white
+          border-slate-300 dark:border-[#244061]
+          bg-white dark:bg-[#172c46]
+          text-slate-900 dark:text-white
           flex
           justify-between
           items-center
@@ -185,12 +185,12 @@ export default function AttendanceDropdown({
               minWidth: menuPos.width,
               zIndex: 9999,
             }}
-            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl overflow-visible"
+            className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#172c46] shadow-xl overflow-visible"
           >
             {/* Present */}
             <div
               onClick={() => handleSelect({ value: "P" })}
-              className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+              className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-[#3984ff] cursor-pointer text-slate-900 dark:text-white"
             >
               P
             </div>
@@ -199,7 +199,7 @@ export default function AttendanceDropdown({
             {!hideAbsent && (
               <div
                 onMouseEnter={(e) => openSubMenu("A", e)}
-                className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
+                className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-slate-900 dark:text-white"
               >
                 <span>A</span>
                 <span>▶</span>
@@ -210,7 +210,7 @@ export default function AttendanceDropdown({
             <div
               onMouseEnter={(e) => openSubMenu("OD", e)}
               // onMouseLeave={() => setTimeout(() => setHoverMenu(null), 150)}
-              className="px-4 py-2 hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-white"
+              className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-[#1f3a5c] cursor-pointer flex justify-between items-center text-slate-900 dark:text-white"
             >
               <span>OD</span>
               <span>▶</span>
@@ -232,7 +232,7 @@ export default function AttendanceDropdown({
               overflowY: "auto",
               zIndex: 10000,
             }}
-            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"
+            className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#172c46] shadow-xl"
             onMouseEnter={() => setHoverMenu("A")}
           >
             {leaveOptions.length > 0 ? (
@@ -243,7 +243,7 @@ export default function AttendanceDropdown({
                     console.log("MouseDown:", item);
                     handleSelect(item);
                   }}
-                  className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+                  className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-[#3984ff] cursor-pointer text-slate-900 dark:text-white"
                 >
                   {item.label}
                 </div>
@@ -270,7 +270,7 @@ export default function AttendanceDropdown({
               overflowY: "auto",
               zIndex: 10000,
             }}
-            className="rounded-lg border border-[#244061] bg-[#172c46] shadow-xl"
+            className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#172c46] shadow-xl"
             onMouseEnter={() => setHoverMenu("OD")}
           >
             {odOptions.length > 0 ? (
@@ -281,7 +281,7 @@ export default function AttendanceDropdown({
                     console.log("MouseDown:", item);
                     handleSelect(item);
                   }}
-                  className="px-4 py-2 hover:bg-[#3984ff] cursor-pointer text-white"
+                  className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-[#3984ff] cursor-pointer text-slate-900 dark:text-white"
                 >
                   {item.label}
                 </div>

@@ -290,7 +290,7 @@ const AttendanceTable = () => {
                       title={!canApplyRegularization(record) ? "Regularization is not available for this attendance status." : undefined}
                       className={`flex items-center gap-1 rounded-md px-3 py-2 text-[10px] transition
                         ${canApplyRegularization(record)
-                          ? "bg-slate-100 dark:bg-[#102640] text-slate-600 dark:text-[#a9bddb] hover:bg-slate-200 dark:hover:bg-[#183052] hover:text-gray-900 dark:hover:text-white"
+                          ? "bg-[#1e3a8a] text-white hover:bg-[#172554]"
                           : "bg-slate-50 dark:bg-[#102640]/30 text-slate-400 dark:text-[#6f839f] cursor-not-allowed"
                         }`}
                       aria-label={`Open regularization form for ${formatDateFromISO(record.checkIn)}`}

@@ -153,22 +153,36 @@ const TimeTracker = () => {
 
   // jsx 
   return (
+<<<<<<< HEAD
     <section className="flex h-full flex-col rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-5 transition-colors duration-200">
       <div className="mb-8 flex items-center justify-between">
         <h2 className="text-[16px] font-semibold text-slate-800 dark:text-white">Time Tracker</h2>
+=======
+    <section className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition-colors duration-200 dark:border-[#183052] dark:bg-[#0a1a2d]">
+      <div className="mb-8 flex items-center justify-between">
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">Time Tracker</h2>
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
 
         {/* Day Filter Dropdown */}
         <div className="relative">
           <button
             onClick={() => setIsOpen(!isOpen)}
+<<<<<<< HEAD
             className="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-[#102640] px-3 py-1 text-[14px] text-slate-600 dark:text-[#a9bddb] outline-none transition hover:bg-slate-200 dark:hover:bg-[#183052]"
+=======
+            className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-[14px] text-slate-700 outline-none transition hover:bg-slate-200 dark:bg-[#102640] dark:text-[#a9bddb] dark:hover:bg-[#183052]"
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
           >
             {selectedDay}
             <ChevronDown size={12} className={`transition ${isOpen ? "rotate-180" : ""}`} />
           </button>
 
           {isOpen && (
+<<<<<<< HEAD
             <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.15)] dark:shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+=======
+            <div className="absolute right-0 top-[calc(100%+4px)] z-50 w-[140px] rounded-lg border border-slate-200 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] dark:border-[#244061] dark:bg-[#0a1a2d] dark:shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
               {daysOfWeek.map((day) => (
                 <button
                   key={day}
@@ -178,7 +192,11 @@ const TimeTracker = () => {
                   }}
                   className={`w-full px-3 py-2 text-left text-[13px] transition ${selectedDay === day
                     ? "bg-[#2563EB] text-white font-semibold"
+<<<<<<< HEAD
                     : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
+=======
+                    : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
                     }`}
                 >
                   {day}
@@ -208,8 +226,12 @@ const TimeTracker = () => {
               cx={CENTER}
               cy={CENTER}
               r={RADIUS}
+<<<<<<< HEAD
               stroke="currentColor"
               className="text-slate-200 dark:text-[#1c3049]"
+=======
+              className="stroke-slate-200 dark:stroke-[#1c3049]"
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
               strokeWidth={STROKE_WIDTH}
             />
             {/* Foreground progress arc */}
@@ -231,7 +253,11 @@ const TimeTracker = () => {
 
           {/* Center text */}
           <div className="relative text-center">
+<<<<<<< HEAD
             <p className="text-[27px] font-bold leading-none text-slate-800 dark:text-white">{workingTime}</p>
+=======
+            <p className="text-[27px] font-bold leading-none text-slate-900 dark:text-white">{workingTime}</p>
+>>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
             <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">
               Working Time
             </p>

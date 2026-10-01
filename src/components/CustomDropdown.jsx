@@ -38,7 +38,7 @@ const CustomDropdown = ({
       {label && (
         <label
           htmlFor={id}
-          className="block text-white mb-2"
+          className="block text-slate-900 dark:text-white mb-2"
         >
           {label}
         </label>
@@ -48,16 +48,16 @@ const CustomDropdown = ({
         id={id}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between text-left cursor-pointer
+        className={`w-full h-12 px-3 rounded-lg border  dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] flex items-center justify-between text-left cursor-pointer
           ${
             error
               ? "border-red-500"
-              : "border-blue-900"
+              : "border-[#E2E8F0]"
           }`}
       >
         <span
           className={
-            value ? "text-white" : "text-white"
+            value ? "text-black dark:text-white" : "text-black dark:text-[#6f839f]"
           }
         >
           {value || placeholder}
@@ -72,7 +72,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-[9999] mt-2 w-full max-h-60 overflow-y-auto rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg table-custom-scrollbar">
+        <div className="absolute z-[9999] mt-2 w-full max-h-60 overflow-y-auto rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-lg table-custom-scrollbar">
           {options.map((option) => (
             <button
               key={option}
@@ -85,7 +85,7 @@ const CustomDropdown = ({
                 ${
                   value === option
                     ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
                 }`}
             >
               {option}

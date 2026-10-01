@@ -49,7 +49,7 @@ export default function CustomMultiSelectDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {label && (
-        <label className="block text-white mb-2">
+        <label className="block text-slate-900 dark:text-white mb-2">
           {label}
         </label>
       )}
@@ -58,7 +58,7 @@ export default function CustomMultiSelectDropdown({
         id={id}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full h-12 px-3 rounded-lg border bg-[#0D2138] flex items-center justify-between cursor-pointer
+        className={`w-full h-12 px-3 rounded-lg border bg-white dark:bg-[#0d2138] flex items-center justify-between cursor-pointer
           ${
             error
               ? "border-red-500"
@@ -68,8 +68,8 @@ export default function CustomMultiSelectDropdown({
         <span
           className={
             selectedValues.length
-              ? "text-white truncate"
-              : "text-[#6f839f]"
+              ? "text-slate-900 dark:text-white truncate"
+              : "text-slate-400 dark:text-[#6f839f]"
           }
         >
           {selectedValues.length
@@ -86,7 +86,7 @@ export default function CustomMultiSelectDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute z-[9999] mt-2 w-full rounded-lg border border-[#244061] bg-[#0A1A2D] overflow-hidden shadow-lg">
+        <div className="absolute z-[9999] mt-2 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] overflow-hidden shadow-lg">
           {options.map((option) => {
             const selected =
               selectedValues.includes(option);
@@ -101,8 +101,8 @@ export default function CustomMultiSelectDropdown({
                 className={`w-full flex items-center justify-between px-4 py-3 text-left transition cursor-pointer
                   ${
                     selected
-                      ? "bg-[#2563EB]/20 text-white"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                      ? "bg-blue-50 dark:bg-[#2563EB]/20 text-blue-700 dark:text-white"
+                      : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
                   }`}
               >
                 <span>{option}</span>

@@ -168,17 +168,17 @@ const AttendanceGauge = () => {
   const progress = (percentage / 100) * circumference;
   if (loading) {
     return (
-      <section className="flex h-full items-center justify-center rounded-xl border border-[#183052] bg-[#0a1a2d] p-5">
-        <p className="text-white">Loading...</p>
+      <section className="flex h-full items-center justify-center rounded-xl border border-slate-200 bg-white p-5 dark:border-[#183052] dark:bg-[#0a1a2d]">
+        <p className="text-slate-600 dark:text-white">Loading...</p>
       </section>
     );
   }
 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-[#183052] bg-[#0a1a2d] p-5">
+    <section className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition-colors duration-200 dark:border-[#183052] dark:bg-[#0a1a2d]">
       {/* Header */}
       <div className="mb-7 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-white">
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">
           Overall Attendance
         </h2>
 
@@ -188,7 +188,7 @@ const AttendanceGauge = () => {
             onClick={() =>
               setMonthDropdownOpen(!monthDropdownOpen)
             }
-            className="flex items-center gap-1 rounded-full bg-[#102640] px-3 py-1 text-[14px] text-[#a9bddb] transition hover:bg-[#1a3556]"
+            className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-[14px] text-slate-700 transition hover:bg-slate-200 dark:bg-[#102640] dark:text-[#a9bddb] dark:hover:bg-[#1a3556]"
           >
             {MONTHS[selectedMonth]} {selectedYear}
 
@@ -200,7 +200,7 @@ const AttendanceGauge = () => {
           </button>
 
           {monthDropdownOpen && (
-            <div className="table-custom-scrollbar absolute right-0 top-full z-50 mt-1 h-[260px] w-40 overflow-auto rounded-lg border border-[#244061] bg-[#0A1A2D] shadow-lg">
+            <div className="table-custom-scrollbar absolute right-0 top-full z-50 mt-1 h-[260px] w-40 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg dark:border-[#244061] dark:bg-[#0A1A2D]">
               {MONTHS.map((month, idx) => (
                 <button
                   key={month}
@@ -211,7 +211,7 @@ const AttendanceGauge = () => {
                   }}
                   className={`w-full px-4 py-2 text-left text-[13px] transition ${idx === selectedMonth
                     ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                     }`}
                 >
                   {month} {selectedYear}
@@ -230,7 +230,7 @@ const AttendanceGauge = () => {
             <path
               d="M 30 90 A 70 70 0 0 1 170 90"
               fill="none"
-              stroke="#18314e"
+              className="stroke-slate-200 dark:stroke-[#18314e]"
               strokeWidth="15"
               strokeLinecap="round"
             />
@@ -247,11 +247,11 @@ const AttendanceGauge = () => {
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pt-8 ">
-            <p className="text-[28px] font-bold text-white">
+            <p className="text-[28px] font-bold text-slate-900 dark:text-white">
               {percentage.toFixed(1)}%
             </p>
 
-            <p className="text-[10px] font-bold uppercase text-[#8ca1bd]">
+            <p className="text-[10px] font-bold uppercase text-slate-500 dark:text-[#8ca1bd]">
               {status}
             </p>
           </div>
@@ -261,10 +261,10 @@ const AttendanceGauge = () => {
       {/* Stats */}
       <div className="mt-auto grid grid-cols-3 text-center">
         <div>
-          <p className="text-[13px] font-bold text-white">
+          <p className="text-[13px] font-bold text-slate-900 dark:text-white">
             {attendance.workingDays}
           </p>
-          <p className="mt-1 text-[12px] font-medium uppercase text-[#8ca1bd]">
+          <p className="mt-1 text-[12px] font-medium uppercase text-slate-500 dark:text-[#8ca1bd]">
             Working
           </p>
         </div>
@@ -273,7 +273,7 @@ const AttendanceGauge = () => {
           <p className="text-[13px] font-bold text-[#19cfba]">
             {attendance.presentDays}
           </p>
-          <p className="mt-1 text-[12px] font-medium uppercase text-[#8ca1bd]">
+          <p className="mt-1 text-[12px] font-medium uppercase text-slate-500 dark:text-[#8ca1bd]">
             Present
           </p>
         </div>
@@ -282,7 +282,7 @@ const AttendanceGauge = () => {
           <p className="text-[13px] font-bold text-[#e0474f]">
             {attendance.absentDays}
           </p>
-          <p className="mt-1 text-[12px] font-medium uppercase text-[#8ca1bd]">
+          <p className="mt-1 text-[12px] font-medium uppercase text-slate-500 dark:text-[#8ca1bd]">
             Absent
           </p>
         </div>

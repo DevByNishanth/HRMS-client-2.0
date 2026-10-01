@@ -5,6 +5,16 @@ import loginImage from "../assets/blur4.svg";
 import thunderIcon from "../assets/thunderIcon.svg";
 import { getRoleBasedRoute } from "../utils/tokenUtils";
 
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+
+const getDeviceId = async () => {
+  const fp = await FingerprintJS.load();
+  const result = await fp.get();
+
+  return result.visitorId;
+};
+
+
 const slides = [
   {
     title: "A Unified Hub for Workforce Management",
@@ -66,7 +76,7 @@ const LoginPage = () => {
     import.meta.env.VITE_API_BASE_URL ||
     "https://sece_hrms_server.onrender.com";
 
-    console.log("vite api : ",  API_BASE_URL)
+    // console.log("vite api : ",  API_BASE_URL)
 
     
   useEffect(() => {
@@ -144,6 +154,9 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
+      const deviceId = await getDeviceId();
+      console.log("Device ID:", deviceId);
+
       const response = await fetch(
         `${API_BASE_URL.replace(/\/$/, "")}/api/auth/login`,
         {
@@ -154,6 +167,7 @@ const LoginPage = () => {
           body: JSON.stringify({
             email: email.trim().toLowerCase(),
             password,
+            deviceId,
           }),
         },
       );

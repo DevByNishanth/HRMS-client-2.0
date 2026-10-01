@@ -172,7 +172,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 px-4 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 px-4 backdrop-blur-[4px]">
 
         {/* Backdrop */}
             <div className="absolute inset-0 " onClick={onClose} />
@@ -185,7 +185,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 top-0
                 h-full
                 w-[500px]
-                bg-[#020817]
+                bg-white dark:bg-[#020817]
                 backdrop-blur-[4px]
                 shadow-2xl
                 flex
@@ -194,20 +194,20 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 "
             >
                 {/* Header */}
-                <div className="flex justify-between items-center border-b border-blue-900 px-6 py-5">
+                <div className="flex justify-between items-center border-b border-slate-300 dark:border-blue-900 px-6 py-5">
                     <div>
                         <p className="text-blue-400 text-xs uppercase tracking-widest">
                         Shift Management
                         </p>
 
-                        <h2 className="text-white text-xl font-semibold">
+                        <h2 className="text-slate-900 dark:text-white text-xl font-semibold">
                             {isEdit ? "Edit Shift" : "Create Shift"}
                         </h2>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#0f2749] text-white hover:bg-[#183a6b] cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-300 dark:bg-[#0f2749] text-black dark:text-white cursor-pointer"
                     >
                         <X size={20} />
                     </button>
@@ -217,7 +217,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 <div className="flex-1 overflow-y-auto p-6 space-y-5 min-w-[380px]">
                     {/* Shift Name */}
                     <div>
-                        <label className="block text-white mb-2">
+                        <label className="block text-slate-900 dark:text-white mb-2">
                             Shift Name
                         </label>
 
@@ -227,7 +227,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                             value={formData.shiftName}
                             onChange={handleChange}
                             placeholder="Enter Shift Name"
-                            className={`w-full rounded-lg p-3 text-white outline-none border bg-[#0D2138] cursor-pointer
+                            className={`w-full rounded-lg p-3 dark:text-white outline-none border bg-white dark:bg-[#0d2138] cursor-pointer
                             ${
                                 errors.shiftName
                                 ? "border-red-500"
@@ -241,14 +241,14 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     {/* Start Time & End Time */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-white mb-2">Start Time</label>
+                            <label className="block text-slate-900 dark:text-white mb-2">Start Time</label>
 
                             {/* <input
                                 type="time"
                                 name="startTime"
                                 value={formData.startTime}
                                 onChange={handleChange}
-                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none"
+                                className={`w-full bg-white dark:bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none"
                                 ${
                                     errors.startTime
                                     ? "border-red-500"
@@ -272,14 +272,14 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                         </div>
 
                         <div>
-                            <label className="block text-white mb-2">End Time</label>
+                            <label className="block text-slate-900 dark:text-white mb-2">End Time</label>
 
                             {/* <input
                                 type="time"
                                 name="endTime"
                                 value={formData.endTime}
                                 onChange={handleChange}
-                                className={`w-full bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-white dark:bg-[#0f2749] border border-blue-900 rounded-lg p-3 text-white outline-none
                                 ${
                                     errors.endTime
                                     ? "border-red-500"
@@ -306,7 +306,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                     {/* Grace Time & Working Hours */}
                     <div className="grid grid-cols-2 gap-4 min-w-[380px]">
                         <div>
-                            <label className="block text-white mb-2">Grace Time (Min)</label>
+                            <label className="block text-slate-900 dark:text-white mb-2">Grace Time (Min)</label>
 
                             <input
                                 type="number"
@@ -314,7 +314,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.graceTime}
                                 onChange={handleChange}
                                 placeholder="Enter Minutes"
-                                className={`w-full bg-[#0D2138] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 dark:text-white outline-none
                                 ${
                                     errors.graceTime
                                     ? "border-red-500"
@@ -325,7 +325,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                         </div>
 
                         <div>
-                            <label className="block text-white mb-2">Working Hours</label>
+                            <label className="block text-slate-900 dark:text-white mb-2">Working Hours</label>
 
                             <input
                                 type="number"
@@ -333,7 +333,7 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                                 value={formData.workingMinutes}
                                 readOnly
                                 placeholder="Enter Hours"
-                                className={`w-full bg-[#0D2138] border border-blue-900 rounded-lg p-3 text-white outline-none
+                                className={`w-full bg-white dark:bg-[#0d2138] border border-blue-900 rounded-lg p-3 dark:text-white outline-none
                                 ${
                                     errors.workingMinutes
                                     ? "border-red-500"
@@ -346,11 +346,11 @@ export default function AddShiftForm({ onClose,shiftData,refreshShifts }) {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-blue-900 bg-[#071a35] p-5 flex justify-between gap-3">
+                <div className="border-t border-slate-300 dark:border-blue-900 bg-slate-50 dark:bg-[#071a35] p-5 flex justify-between gap-3">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-5 py-2 rounded-lg border border-gray-500 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        className="px-5 py-2 rounded-lg border border-gray-500 text-slate-900 dark:text-white dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Cancel
                     </button>

@@ -1001,9 +1001,9 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -1013,7 +1013,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
             {options.map((option) => (
               <button
@@ -1024,7 +1024,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                   ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
                   }`}
               >
                 {option}
@@ -1122,9 +1122,9 @@ const FilterDatePicker = ({
         id={id}
         type="button"
         onClick={handleToggle}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value ? formatDate(value) : placeholder}
         </span>
         <CalendarDays size={16} className="text-[#3984ff]" />
@@ -1133,25 +1133,25 @@ const FilterDatePicker = ({
       {isOpen && (
         <div
           className={`absolute ${showAbove ? "bottom" : ""
-            } z-[9999] w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "-left-30"
+            } z-[9999] w-[280px] rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "-left-30"
             }`}
         >
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
             </button>
-            <p className="text-[13px] font-semibold text-white">
+            <p className="text-[13px] font-semibold text-slate-900 dark:text-white">
               {months[viewDate.getMonth()]} {viewDate.getFullYear()}
             </p>
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
               aria-label="Next month"
             >
               <ChevronRight size={16} />
@@ -1162,7 +1162,7 @@ const FilterDatePicker = ({
             {days.map((day) => (
               <span
                 key={day}
-                className="py-1 text-[10px] font-semibold text-[#8ca1bd]"
+                className="py-1 text-[10px] font-semibold text-slate-500 dark:text-[#8ca1bd]"
               >
                 {day}
               </span>
@@ -1176,7 +1176,7 @@ const FilterDatePicker = ({
                 onClick={() => handleSelectDate(date)}
                 className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
                   ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                  : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
+                  : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
                   } disabled:pointer-events-none disabled:opacity-0`}
               >
                 {date?.getDate()}
@@ -1236,7 +1236,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-slate-900 dark:text-white"
             aria-label="Close comp-off details"
           >
             <X size={17} />
@@ -1282,7 +1282,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
 
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <CalendarDays size={14} className="text-[#b8c7dd]" />
                   Worked From
                 </div>
@@ -1290,7 +1290,7 @@ const PrincipalCompOffDetailsCanvas = ({ request, onClose }) => {
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-[12px] font-medium text-[#9eb0cc]">
+                <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
                   <TimerReset size={14} className="text-[#b8c7dd]" />
                   Worked To
                 </div>
@@ -1461,7 +1461,7 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
             aria-label="Close confirmation"
           >
             <X size={17} />
@@ -1473,7 +1473,7 @@ const ConfirmationPopup = ({
             <div className="">
               <label
                 htmlFor="reject-reason"
-                className="mb-2 block text-[13px] font-semibold text-white"
+                className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white"
               >
                 Reason for rejection
               </label>
@@ -1491,7 +1491,7 @@ const ConfirmationPopup = ({
 
         <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-[#173150] px-5 py-4">
           <button
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white"
           >
             Cancel
           </button>
@@ -1798,7 +1798,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
 
         <div className="relative z-0 max-h-[calc(100vh-240px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-[#9eb0cc]">Loading...</div>
+            <div className="flex items-center justify-center py-12 text-slate-500 dark:text-[#9eb0cc]">Loading...</div>
           ) : error ? (
             <div className="flex items-center justify-center py-12 text-[#f16868]">{error}</div>
           ) : (
@@ -1858,7 +1858,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                                 <button
                                   type="button"
                                   onClick={() => handleApprove(request)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-slate-900 dark:text-white"
                                   aria-label="Approve request"
                                   title="Approve"
                                 >
@@ -1879,7 +1879,7 @@ const PrincipalCompOffTable = ({ filterDepartment, onDepartmentOptionsChange }) 
                           <button
                             type="button"
                             onClick={() => handleView(request)}
-                            className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                            className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
                             aria-label="View request details"
                             title="View"
                           >

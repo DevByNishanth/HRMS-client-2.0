@@ -68,7 +68,7 @@ export default function TimeWheelPicker({
     return (
         <div
         className="
-            bg-[#0A1A2D]
+            bg-white dark:bg-[#0A1A2D]
             border
             border-blue-900
             rounded-xl
@@ -89,7 +89,7 @@ export default function TimeWheelPicker({
                     }}
                     className="
                     w-full
-                    bg-[#132A47]
+                    bg-slate-50 dark:bg-[#132A47]
                     text-white
                     rounded-lg
                     p-2
@@ -110,7 +110,7 @@ export default function TimeWheelPicker({
                         left-0
                         mt-1
                         w-full
-                        bg-[#132A47]
+                        bg-slate-50 dark:bg-[#132A47]
                         border border-blue-900
                         rounded-lg
                         max-h-40
@@ -151,7 +151,7 @@ export default function TimeWheelPicker({
                     onClick={() => setMinuteOpen(!minuteOpen)}
                     className="
                     w-full
-                    bg-[#132A47]
+                    bg-slate-50 dark:bg-[#132A47]
                     text-white
                     rounded-lg
                     cursor-pointer
@@ -169,7 +169,7 @@ export default function TimeWheelPicker({
                         left-0
                         mt-1
                         w-full
-                        bg-[#132A47]
+                        bg-slate-50 dark:bg-[#132A47]
                         border border-blue-900
                         rounded-lg
                         max-h-40
@@ -214,7 +214,7 @@ export default function TimeWheelPicker({
                     }}
                     className="
                     w-full
-                    bg-[#132A47]
+                    bg-slate-50 dark:bg-[#132A47]
                     text-white
                     rounded-lg
                     p-2
@@ -235,7 +235,7 @@ export default function TimeWheelPicker({
                         left-0
                         mt-1
                         w-full
-                        bg-[#132A47]
+                        bg-slate-50 dark:bg-[#132A47]
                         border border-blue-900
                         rounded-lg
                         overflow-hidden

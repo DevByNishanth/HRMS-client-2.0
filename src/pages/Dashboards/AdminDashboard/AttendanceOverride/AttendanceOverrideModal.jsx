@@ -54,11 +54,11 @@ export default function AttendanceOverrideModal({
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60">
-            <div className="w-full max-w-lg rounded-xl border border-[#244061] bg-[#0d2138] shadow-2xl">
+            <div className="w-full max-w-lg rounded-xl border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] shadow-2xl">
 
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-[#244061] px-6 py-4">
-                    <h2 className="text-lg font-semibold text-white">
+                <div className="flex items-center justify-between border-b border-slate-300 dark:border-[#244061] px-6 py-4">
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                         {mode === "single"
                             ? "Attendance Override"
                             : "Bulk Attendance Override"}
@@ -69,8 +69,8 @@ export default function AttendanceOverrideModal({
                         disabled={loading}
                         className={`
                             text-xl
-                            text-[#8ca1bd]
-                            hover:text-white
+                            text-slate-600 dark:text-[#8ca1bd]
+                            dark:hover:text-white
                             cursor-pointer
                             ${loading ? "opacity-50 cursor-not-allowed" : ""}
                         `}
@@ -85,7 +85,7 @@ export default function AttendanceOverrideModal({
                     {mode === "bulk-selected" && (
                         <>
                             <div>
-                                <label className="mb-2 block text-sm text-[#8ca1bd]">
+                                <label className="mb-2 block text-sm text-slate-600 dark:text-[#8ca1bd]">
                                     Session 1
                                 </label>
 
@@ -101,7 +101,7 @@ export default function AttendanceOverrideModal({
                                                 remainingDays: null,
                                             })
                                         }
-                                        className="w-full h-10 px-3 rounded-lg border border-[#244061] bg-[#172c46] text-white"
+                                        className="w-full h-10 px-3 rounded-lg border border-slate-300 dark:border-[#244061] bg-gray-100 dark:bg-[#172c46] text-slate-900 dark:text-white"
                                     >
                                         <option value="P">P</option>
                                     </select>
@@ -118,7 +118,7 @@ export default function AttendanceOverrideModal({
                             </div>
 
                             <div>
-                                <label className="mb-2 block text-sm text-[#8ca1bd]">
+                                <label className="mb-2 block text-sm text-slate-600 dark:text-[#8ca1bd]">
                                     Session 2
                                 </label>
 
@@ -134,7 +134,7 @@ export default function AttendanceOverrideModal({
                                                 remainingDays: null,
                                             })
                                         }
-                                        className="w-full h-10 px-3 rounded-lg border border-[#244061] bg-[#172c46] text-white"
+                                        className="w-full h-10 px-3 rounded-lg border border-slate-300 dark:border-[#244061] bg-gray-100 dark:bg-[#172c46] text-slate-900 dark:text-white"
                                     >
                                         <option value="P">P</option>
                                     </select>
@@ -153,7 +153,7 @@ export default function AttendanceOverrideModal({
                     )}
 
                     <div>
-                        <label className="mb-2 block text-sm text-[#8ca1bd]">
+                        <label className="mb-2 block text-sm text-slate-600 dark:text-[#8ca1bd]">
                             Remarks
                         </label>
 
@@ -162,21 +162,21 @@ export default function AttendanceOverrideModal({
                             value={remarks}
                             onChange={(e) => setRemarks(e.target.value)}
                             placeholder="Enter remarks"
-                            className="w-full rounded-lg border border-[#244061] bg-[#172c46] p-3 text-white"
+                            className="w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-gray-100 dark:bg-[#172c46] p-3 text-slate-900 dark:text-white"
                         />
                     </div>
 
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-3 border-t border-[#244061] p-5">
+                <div className="flex justify-end gap-3 border-t border-slate-300 dark:border-[#244061] p-5">
 
                     <button
                         onClick={onClose}
                         disabled={loading}
                         className={`
                             rounded-lg
-                            bg-[#223d5f]
+                            bg-white dark:bg-[#223d5f]
                             px-6
                             py-2
                             text-white
