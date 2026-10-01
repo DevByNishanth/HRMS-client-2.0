@@ -158,6 +158,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_25%,#52627f_0%,#1f2b3e_32%,#101827_72%)]">
                 <span className="text-[48px] font-bold text-slate-900 dark:text-white">
+                <span className="text-[48px] font-bold text-slate-900 dark:text-white">
                   {(faculty?.firstName || "U").charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -169,6 +170,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(true)}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ef4444] text-slate-900 dark:text-white shadow-lg transition hover:bg-[#dc2626]"
                     className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ef4444] text-slate-900 dark:text-white shadow-lg transition hover:bg-[#dc2626]"
                     title="Delete photo"
                   >
@@ -213,6 +215,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                     >
                       <Pen
                         size={16}
+                        className="text-slate-500 dark:text-[#8ca1bd] transition hover:text-slate-900 dark:text-white"
                         className="text-slate-500 dark:text-[#8ca1bd] transition hover:text-slate-900 dark:text-white"
                       />
                     </button>
@@ -306,6 +309,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                 onClick={handleDeleteImage}
                 disabled={deleting}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {deleting ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -391,6 +395,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                     type="button"
                     onClick={() => setShowNewPassword((prev) => !prev)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
                     aria-label="Toggle new password visibility"
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -427,6 +432,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
                     aria-label="Toggle confirm password visibility"
                   >
