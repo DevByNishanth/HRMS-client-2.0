@@ -42,7 +42,7 @@ const PermissionStatCard = ({
   color,
 }) => {
   return (
-    <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
+    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-[#183052] dark:bg-[#0a1a2d] dark:shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
       <div className="flex items-center justify-between gap-3">
         <div
           className="mb-2  flex h-8 w-8 items-center justify-center rounded-md"
@@ -50,16 +50,16 @@ const PermissionStatCard = ({
         >
           <Icon size={15} />
         </div>
-        <p className="bg-white/6 py-1 px-2 rounded-full w-fit text-[11px] text-white/40">
+        <p className="w-fit rounded-full bg-slate-100 px-2 py-1 text-[11px] text-slate-500 dark:bg-white/6 dark:text-white/60">
           This month
         </p>
       </div>
 
-      <h3 className="text-[12px]  uppercase tracking-wide text-white">
+      <h3 className="text-[12px] uppercase tracking-wide text-slate-600 dark:text-white">
         {title} ({code})
       </h3>
 
-      <p className="mt-1 text-[12px] font-semibold text-white">
+      <p className="mt-1 text-[12px] font-semibold text-slate-900 dark:text-white">
         {total} Hours
       </p>
 
@@ -142,20 +142,20 @@ const PermissionPage = () => {
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] transition-colors duration-200 dark:bg-[#051424]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
           <div className="mx-auto">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Permissions
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Track monthly permission usage and request status.
                 </p>
               </div>
@@ -163,7 +163,7 @@ const PermissionPage = () => {
               <button
                 onClick={() => setIsPermissionApplyModal(true)}
                 type="submit"
-                className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+                className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
               >
                 <Plus size={14} />
                 Apply for Permission

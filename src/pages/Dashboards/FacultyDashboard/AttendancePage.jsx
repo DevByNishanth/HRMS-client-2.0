@@ -7,16 +7,16 @@ import TimeTracker from "./TimeTracker";
 
 const AttendancePage = () => {
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[#f7fafc] transition-colors duration-200 dark:bg-[#051424]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f7fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
           <div className="mx-auto space-y-3">
             <div>
-              <h1 className="text-xl font-medium leading-tight text-white">Attendance</h1>
+              <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Attendance</h1>
 
             </div>
 

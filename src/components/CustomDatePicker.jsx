@@ -139,7 +139,7 @@ const CustomDatePicker = ({
                         <button
                             type="button"
                             onClick={() => moveMonth(-1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#9eb0cc] dark:hover:bg-[#183052] dark:hover:text-white cursor-pointer"
                             aria-label="Previous month"
                         >
                             <ChevronLeft size={16} />
@@ -150,7 +150,7 @@ const CustomDatePicker = ({
                         <button
                             type="button"
                             onClick={() => moveMonth(1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white cursor-pointer"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#9eb0cc] dark:hover:bg-[#183052] dark:hover:text-white cursor-pointer"
                             aria-label="Next month"
                         >
                             <ChevronRight size={16} />
@@ -159,7 +159,7 @@ const CustomDatePicker = ({
 
                     <div className="grid grid-cols-7 gap-1 text-center">
                         {days.map((day) => (
-                            <span key={day} className="py-1 text-[10px] font-semibold text-[#8ca1bd]">
+                            <span key={day} className="py-1 text-[10px] font-semibold text-slate-500 dark:text-[#8ca1bd]">
                                 {day}
                             </span>
                         ))}

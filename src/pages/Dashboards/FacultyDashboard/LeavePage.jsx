@@ -30,7 +30,7 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
   const progressDegree = (usedPercentage / 100) * 360;
 
   return (
-    <div className="flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-[#183052] bg-[#0d2138] px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+    <div className="flex min-h-[76px] items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-[#183052] dark:bg-[#0d2138] dark:shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
       <div className="flex min-w-0 items-center gap-3">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
@@ -40,24 +40,24 @@ const LeaveStatCard = ({ icon: Icon, title, code, used, total, color }) => {
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-[12px] font- uppercase tracking-wide text-[#8ca1bd]">
+          <p className="truncate text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">
             {title}
           </p>
-          <p className="mt-1 text-[16px] font-semibold text-white">
+          <p className="mt-1 text-[16px] font-semibold text-slate-900 dark:text-white">
             {used}
-            <span className="text-[16px] font-medium text-[#9eb0cc]"> / {total} Days</span>
+            <span className="text-[16px] font-medium text-slate-500 dark:text-[#9eb0cc]"> / {total} Days</span>
           </p>
         </div>
       </div>
 
       <div
-        className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+        className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#203755]"
         style={{
-          background: `conic-gradient(${color} ${progressDegree}deg, #203755 ${progressDegree}deg 360deg)`,
+          backgroundImage: `conic-gradient(${color} ${progressDegree}deg, transparent ${progressDegree}deg 360deg)`,
         }}
       >
         <div
-          className="flex h-[39px] w-[39px] items-center justify-center rounded-full bg-[#0d2138]"
+          className="flex h-[39px] w-[39px] items-center justify-center rounded-full bg-white dark:bg-[#0d2138]"
           style={{ color }}
         >
           <span className="text-[12px] font-bold leading-none">{usedPercentage}%</span>
@@ -112,41 +112,41 @@ const LeavePage = () => {
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] transition-colors duration-200 dark:bg-[#051424]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
-        <div className="flex items-center justify-between gap-4 sticky top-0 z-10 bg-[#071425] pb-2 px-4 mt-2">
+        <div className="sticky top-0 z-10 mt-2 flex items-center justify-between gap-4 bg-[#f8fafc] px-4 pb-2 transition-colors duration-200 dark:bg-[#071425]">
           <div>
-            <h1 className="text-xl font-medium leading-tight text-white">Leaves</h1>
-            <p className="mt-1 text-[16px] text-[#9eb0cc]">
+            <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">Leaves</h1>
+            <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
               Review leave balances and track every leave request.
             </p>
           </div>
           <button
             onClick={() => setIsLeaveApplyForm(true)}
             type="submit"
-            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563EB] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+            className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
           >
             <Plus size={14} />
             Apply for Leave
           </button>
         </div>
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
           <div className="mx-auto space-y-2">
             {/* Leave Balance Cards */}
             <div className="">
               {/* <h3 className="mb-3 text-[14px] font-semibold text-[#ffffff]">General Leaves</h3> */}
 
               {isLoadingBalances && (
-                <div className="flex items-center justify-center py-6 text-sm text-[#8ca1bd]">
+                <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-[#8ca1bd]">
                   Loading leave balances...
                 </div>
               )}
 
               {balanceError && (
-                <div className="flex items-center justify-center py-6 text-sm text-red-400">
+                <div className="flex items-center justify-center py-6 text-sm text-red-600 dark:text-red-400">
                   Error: {balanceError}
                 </div>
               )}

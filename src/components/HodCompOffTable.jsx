@@ -29,9 +29,9 @@ import { exportToExcel } from "../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../hooks/usePasswordProtectedExport";
 
 const statusStyles = {
-  Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
-  Rejected: "text-[#f16868] bg-[#f168681f]",
-  Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
+  Approved: "text-emerald-700 bg-emerald-100 dark:text-[#18d3bf] dark:bg-[#18d3bf1f]",
+  Rejected: "text-red-700 bg-red-100 dark:text-[#f16868] dark:bg-[#f168681f]",
+  Pending: "text-amber-700 bg-amber-100 dark:text-[#f0a15f] dark:bg-[#f0a15f1f]",
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
@@ -73,7 +73,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
         onClick={() => setIsOpen(!isOpen)}
         className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -94,7 +94,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                   ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                   }`}
               >
                 {option}
@@ -194,7 +194,7 @@ const FilterDatePicker = ({
         onClick={handleToggle}
         className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value ? formatDate(value) : placeholder}
         </span>
         <CalendarDays size={16} className="text-[#3984ff]" />
@@ -210,7 +210,7 @@ const FilterDatePicker = ({
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 dark:text-[#9eb0cc] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#9eb0cc] dark:hover:bg-[#183052] dark:hover:text-white"
               aria-label="Previous month"
             >
               <ChevronLeft size={16} />
@@ -232,7 +232,7 @@ const FilterDatePicker = ({
             {days.map((day) => (
               <span
                 key={day}
-                className="py-1 text-[10px] font-semibold text-[#8ca1bd]"
+                className="py-1 text-[10px] font-semibold text-slate-500 dark:text-[#8ca1bd]"
               >
                 {day}
               </span>
@@ -246,7 +246,7 @@ const FilterDatePicker = ({
                 onClick={() => handleSelectDate(date)}
                 className={`h-8 rounded-md text-[12px] font-semibold transition ${isSelectedDate(date)
                   ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                  : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
+                  : "text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-[#cad7eb] dark:hover:bg-[#132b49] dark:hover:text-white"
                   } disabled:pointer-events-none disabled:opacity-0`}
               >
                 {date?.getDate()}
@@ -266,11 +266,11 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
 
   const getActionColor = (action) => {
     if (action?.toLowerCase() === "approved") {
-      return { bg: "bg-emerald-800", text: "text-[#10b981]", light: "bg-[#10b98115]" };
+      return { bg: "bg-emerald-800 text-white", text: "text-[#10b981]", light: "bg-emerald-100 text-emerald-700 dark:bg-[#10b98115] dark:text-[#10b981]" };
     } else if (action?.toLowerCase() === "rejected") {
-      return { bg: "bg-[#ef4444]", text: "text-[#ef4444]", light: "bg-[#ef444415]" };
+      return { bg: "bg-[#ef4444] text-white", text: "text-[#ef4444]", light: "bg-red-100 text-red-700 dark:bg-[#ef444415] dark:text-[#ef4444]" };
     }
-    return { bg: "bg-[#f59e0b]", text: "text-[#f59e0b]", light: "bg-[#f59e0b15]" };
+    return { bg: "bg-[#f59e0b] text-[#071425]", text: "text-[#f59e0b]", light: "bg-amber-100 text-amber-700 dark:bg-[#f59e0b15] dark:text-[#f59e0b]" };
   };
 
   const getActionIcon = (action) => {
@@ -292,10 +292,10 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[26%] min-w-[380px] flex-col bg-white text-slate-900 shadow-[-18px_0_50px_rgba(0,0,0,0.18)] dark:bg-[#071425] dark:text-white dark:shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 dark:border-[#173150] dark:bg-[#0A1A2D]">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Comp-Off Request
@@ -308,7 +308,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 transition hover:border-[#3984ff] hover:text-slate-900 dark:border-[#223b5f] dark:bg-[#102640] dark:text-[#9eb0cc] dark:hover:text-white"
             aria-label="Close comp-off details"
           >
             <X size={17} />
@@ -316,17 +316,17 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
-          <p className="text-[12px] leading-5 text-[#b8c7dd]">
+          <p className="text-[12px] leading-5 text-slate-600 dark:text-[#b8c7dd]">
             Review the request details, current status, and reason before taking an action.
           </p>
 
-          <div className="mt-2 rounded-lg border border-[#1d395e] bg-white dark:bg-[#0A1A2D] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+          <div className="mt-2 rounded-lg border border-slate-200 bg-white p-3 shadow-[0_12px_26px_rgba(0,0,0,0.08)] dark:border-[#1d395e] dark:bg-[#0A1A2D] dark:shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <img src={userImg} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
                 <div className="min-w-0">
                   <p className="truncate text-[16px] font-semibold text-slate-900 dark:text-white">{request.name}</p>
-                  <p className="mt-1 truncate text-[12px] text-[#8ca1bd]">
+                  <p className="mt-1 truncate text-[12px] text-slate-500 dark:text-[#8ca1bd]">
                     {request.designation}
                   </p>
                 </div>
@@ -340,10 +340,10 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
               </span>
             </div>
 
-            <div className="my-3 h-px bg-[#1a3556]" />
+            <div className="my-3 h-px bg-slate-200 dark:bg-[#1a3556]" />
 
             <div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-[#8ca1bd]">
                 <Layers size={13} className="text-[#3984ff]" />
                 Comp-Off Details
               </div>
@@ -355,7 +355,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div>
                 <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
-                  <CalendarDays size={14} className="text-[#b8c7dd]" />
+                  <CalendarDays size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                   Worked From
                 </div>
                 <p className="mt-1 text-[15px] font-medium text-slate-900 dark:text-white">{request.fromDate ? new Date(request.fromDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : ""}</p>
@@ -363,7 +363,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
 
               <div>
                 <div className="flex items-center gap-2 text-[12px] font-medium text-slate-500 dark:text-[#9eb0cc]">
-                  <TimerReset size={14} className="text-[#b8c7dd]" />
+                  <TimerReset size={14} className="text-slate-400 dark:text-[#b8c7dd]" />
                   Worked To
                 </div>
                 <p className="mt-1 text-[15px] font-medium text-slate-900 dark:text-white">{request.toDate ? new Date(request.toDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : ""}</p>
@@ -376,7 +376,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
               <FileText size={15} className="text-[#3984ff]" />
               Reason
             </p>
-            <div className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+            <div className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-[13px] leading-5 text-slate-700 dark:border-[#244061] dark:bg-[#0d2138] dark:text-[#cad7eb]">
               {request.reason}
             </div>
           </div>
@@ -387,7 +387,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
                 <FileText size={15} className="text-[#3984ff]" />
                 Document
               </p>
-              <div className="rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-3">
+              <div className="rounded-lg border border-slate-300 bg-white px-4 py-3 dark:border-[#244061] dark:bg-[#0d2138]">
                 <p onClick={() => window.open(request.documentUrl, "_blank")} className="inline-flex cursor-pointer items-center gap-2 text-[13px] font-medium text-[#3984ff] underline transition hover:text-[#6ea1ff]">{request.documentName || "View Document"}</p>
               </div>
             </div>
@@ -399,7 +399,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
                 <FileText size={15} className="text-[#f16868]" />
                 Rejection Reason
               </p>
-              <div className="rounded-lg border border-[#f1686833] bg-[#f1686812] px-4 py-3 text-[13px] leading-5 text-[#ffd1d1]">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] leading-5 text-red-700 dark:border-[#f1686833] dark:bg-[#f1686812] dark:text-[#ffd1d1]">
                 {request.rejectionReason}
               </div>
             </div>
@@ -436,7 +436,7 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
                               : isRejected
                                 ? `${actionColor.bg} border-[#ef4444]`
                                 : `${actionColor.light} border-[#444c63]`
-                              } text-white`}
+                              }`}
                           >
                             {getActionIcon(history.action)}
                           </div>
@@ -445,27 +445,27 @@ const HodCompOffDetailsCanvas = ({ request, onClose, onRevoke }) => {
                         <div className="flex-1 pt-0.5">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="text-[13px] font-semibold capitalize text-[#8ca1bd]">
+                              <p className="text-[13px] font-semibold capitalize text-slate-500 dark:text-[#8ca1bd]">
                                 {history.role}
                               </p>
                             </div>
                             <span
                               className={`text-[10px] font-semibold uppercase px-2 py-1 rounded-full whitespace-nowrap ${isApproved
-                                ? "bg-[#10b98120] text-[#10b981]"
+                                ? "bg-emerald-100 text-emerald-700 dark:bg-[#10b98120] dark:text-[#10b981]"
                                 : isRejected
-                                  ? "bg-[#ef444420] text-[#ef4444]"
-                                  : "bg-[#f59e0b20] text-[#f59e0b]"
+                                  ? "bg-red-100 text-red-700 dark:bg-[#ef444420] dark:text-[#ef4444]"
+                                  : "bg-amber-100 text-amber-700 dark:bg-[#f59e0b20] dark:text-[#f59e0b]"
                                 }`}
                             >
                               {history.action}
                             </span>
                           </div>
 
-                          <p className="text-[12px] text-[#cad7eb] mt-1">
+                          <p className="mt-1 text-[12px] text-slate-700 dark:text-[#cad7eb]">
                             {history.remarks}
                           </p>
 
-                          <p className="text-[11px] text-[#6f839f] mt-1.5 flex items-center gap-1">
+                          <p className="mt-1.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-[#6f839f]">
                             <Clock size={11} />
                             {new Date(history.actionDate).toLocaleDateString("en-US", {
                               month: "short",
@@ -533,10 +533,10 @@ const ConfirmationPopup = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0A1A2D] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[440px] rounded-xl border border-slate-200 bg-white shadow-[0_22px_70px_rgba(0,0,0,0.2)] dark:border-[#1d395e] dark:bg-[#0A1A2D] dark:shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4 dark:border-[#173150]">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
@@ -546,7 +546,7 @@ const ConfirmationPopup = ({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 transition hover:border-[#3984ff] hover:text-slate-900 dark:border-[#223b5f] dark:bg-[#102640] dark:text-[#9eb0cc] dark:hover:text-white"
             aria-label="Close confirmation"
           >
             <X size={17} />
@@ -574,11 +574,11 @@ const ConfirmationPopup = ({
           )}
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-slate-200 px-5 py-4 dark:border-[#173150]">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white"
+            className="h-10 rounded-md border border-slate-300 px-4 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-900 dark:border-[#244061] dark:text-[#cad7eb] dark:hover:bg-[#132b49] dark:hover:text-white"
           >
             Cancel
           </button>
@@ -680,7 +680,16 @@ const HodCompOffTable = ({ onCountChange }) => {
         }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch comp-off requests");
+        const errorBody = await response.json().catch(() => ({}));
+        const message =
+          errorBody?.message ||
+          errorBody?.error ||
+          `Failed to fetch comp-off requests (HTTP ${response.status})`;
+        throw new Error(
+          response.status === 401
+            ? "Your session is unauthorized. Sign in again and retry."
+            : message,
+        );
       }
       const result = await response.json();
       if (result.success && Array.isArray(result.formattedRequests)) {
@@ -861,7 +870,7 @@ const HodCompOffTable = ({ onCountChange }) => {
 
   return (
     <>
-      <section className="rounded-xl border border-slate-300 dark:border-[#244061]  bg-white dark:bg-[#0A1A2D] mt-4">
+      <section className="mt-4 rounded-xl border border-slate-300 bg-white dark:border-[#244061] dark:bg-[#0A1A2D]">
         <div className="relative z-20 space-y-3 px-4 py-3 flex items-start justify-between">
           <div className="flex items-center justify-between">
             <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
@@ -905,7 +914,7 @@ const HodCompOffTable = ({ onCountChange }) => {
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="flex-shrink-0 h-11 px-4 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[12px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white hover:border-[#3984ff]"
+                  className="flex-shrink-0 h-11 rounded-lg border border-slate-300 bg-white px-4 text-[12px] font-semibold text-slate-600 transition hover:border-[#3984ff] hover:bg-slate-100 hover:text-slate-900 dark:border-[#244061] dark:bg-[#0d2138] dark:text-[#8ca1bd] dark:hover:bg-[#132b49] dark:hover:text-white"
                 >
                   Reset Filters
                 </button>
@@ -914,7 +923,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                 type="button"
                 onClick={handleExportClick}
                 disabled={filteredRequests.length === 0}
-                className="flex-shrink-0 inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[14px] font-medium text-slate-900 dark:text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-shrink-0 inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-[14px] font-medium text-slate-900 transition hover:border-[#3984ff] hover:bg-slate-100 dark:border-[#244061] dark:bg-[#0d2138] dark:text-white dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download size={16} />
                 Export
@@ -938,7 +947,7 @@ const HodCompOffTable = ({ onCountChange }) => {
             <div className="flex items-center justify-center py-12 text-[#f16868]">{error}</div>
           ) : (
             <table className="w-full min-w-[900px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+              <thead className="sticky top-0 z-10 bg-slate-100 text-[12px] uppercase tracking-wide text-slate-600 dark:bg-[#172c46] dark:text-[#9aacc7]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Name</th>
                   <th className="px-4 py-3 font-semibold">Worked From</th>
@@ -949,12 +958,12 @@ const HodCompOffTable = ({ onCountChange }) => {
                   <th className="px-4 py-3 text-right font-semibold">Action</th>
                 </tr>
               </thead>
-              <tbody className="text-[12px] text-[#cad7eb]">
+              <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
                 {filteredRequests.length > 0 ? (
                   filteredRequests.map((request, index) => (
                     <tr
                       key={`${request.name}-${request.fromDate}-${index}`}
-                      className="border-b border-[#132944] last:border-0"
+                      className="border-b border-slate-200 last:border-0 dark:border-[#132944]"
                     >
                       <td className="px-4 py-2 font-semibold text-slate-900 dark:text-white">
                         <div className="flex items-center gap-2">
@@ -963,7 +972,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                           </span>
                           <div className="flex flex-col">
                             {request.name}
-                            <p className="text-[#8ca1bd]">{request.designation}</p>
+                            <p className="text-slate-500 dark:text-[#8ca1bd]">{request.designation}</p>
                           </div>
                         </div>
                       </td>
@@ -984,7 +993,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                       </td>
 
                       <td className="px-4 py-4">
-                        <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
+                        <div className="flex items-center justify-end gap-2 text-slate-500 dark:text-[#8ca1bd]">
                           {request.currentApprovalLevel === "hod" && request.status === "Pending" ? (
                             <>
                               {approvingId === request.id ? (
@@ -993,7 +1002,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                                 <button
                                   type="button"
                                   onClick={() => handleApprove(request)}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf12] text-[#18d3bf] transition hover:bg-[#18d3bf24] hover:text-slate-900 dark:text-white"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 transition hover:bg-emerald-200 hover:text-emerald-900 dark:bg-[#18d3bf12] dark:text-[#18d3bf] dark:hover:bg-[#18d3bf24] dark:hover:text-white"
                                   aria-label="Approve request"
                                   title="Approve"
                                 >
@@ -1003,7 +1012,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                               <button
                                 type="button"
                                 onClick={() => handleReject(request)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 text-red-700 transition hover:bg-red-200 hover:text-red-900 dark:bg-[#f1686812] dark:text-[#f16868] dark:hover:bg-[#f1686824] dark:hover:text-white"
                                 aria-label="Reject request"
                                 title="Reject"
                               >
@@ -1014,7 +1023,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                             <button
                               type="button"
                               onClick={() => handleRevoke(request)}
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0a15f12] text-[#f0a15f] transition hover:bg-[#f0a15f24] hover:text-slate-900 dark:text-white"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700 transition hover:bg-amber-200 hover:text-amber-900 dark:bg-[#f0a15f12] dark:text-[#f0a15f] dark:hover:bg-[#f0a15f24] dark:hover:text-white"
                               aria-label="Revoke comp-off decision"
                               title={`Revoke ${request.approvalStatus?.hodStatus || "Pending"}`}
                             >
@@ -1024,7 +1033,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                           <button
                             type="button"
                             onClick={() => handleView(request)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-slate-100 dark:bg-[#183052] hover:text-slate-900 dark:text-white"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-[#c4c6d010] dark:text-[#8ca1bd] dark:hover:bg-[#183052] dark:hover:text-white"
                             aria-label="View request details"
                             title="View"
                           >
@@ -1036,7 +1045,7 @@ const HodCompOffTable = ({ onCountChange }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="px-4 py-8 text-center text-[#8ca1bd]">
+                    <td colSpan="7" className="px-4 py-8 text-center text-slate-500 dark:text-[#8ca1bd]">
                       No comp-off requests found matching your filters.
                     </td>
                   </tr>

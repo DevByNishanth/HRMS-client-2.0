@@ -34,7 +34,7 @@ function CustomDropdown({ value, options, onChange }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between rounded-lg border border-[#183052] bg- px-4 py-2.5 text-sm font-medium text-white-700 shadow-sm hover:bg-[#183052]/30"
+        className="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:border-blue-400 hover:bg-slate-50 dark:border-[#183052] dark:bg-[#0d2138] dark:text-white dark:hover:bg-[#183052]/30"
       >
         <span>{value}</span>
 
@@ -45,7 +45,7 @@ function CustomDropdown({ value, options, onChange }) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-lg  bg-[#183052] p-1 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-[#244061] dark:bg-[#0a1a2d]">
           {options.map((option) => (
             <button
               key={option}
@@ -54,10 +54,10 @@ function CustomDropdown({ value, options, onChange }) {
                 onChange(option);
                 setOpen(false);
               }}
-              className={`w-full rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 ${
+              className={`w-full rounded-md px-3 py-2 text-left text-sm transition ${
                 value === option
-                  ? "bg-[#0b50b1] font-medium text-white"
-                  : "text-gray-600"
+                  ? "bg-blue-50 font-medium text-blue-700 dark:bg-[#0b50b1] dark:text-white"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#132b49]"
               }`}
             >
               {option}
@@ -128,25 +128,25 @@ const FacultyPayrollPage = () => {
 
   return (
     <>
-      <div className="flex h-screen overflow-hidden bg-[#051424]">
+      <div className="flex h-screen overflow-hidden bg-[#f8fafc] transition-colors duration-200 dark:bg-[#051424]">
         <Sidebar />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <CommonHeader />
 
-          <main className="max-h-[calc(100vh-56px] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+          <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
             {/* header  */}
 
             <div className="header">
-              <h1 className="font-semibold text-2xl">Payroll</h1>
-              <h1 className="mt-1 text-[16px] text-[#9eb0cc]">
+              <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Payroll</h1>
+              <h1 className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                 View and manage faculty salary and payroll information.
               </h1>
             </div>
 
             {/* table container  */}
 
-            <div className="table-container border border-[#183052] mt-4 rounded-lg  min-h-[calc(100vh-170px)]">
+            <div className="table-container mt-4 min-h-[calc(100vh-170px)] rounded-lg border border-slate-200 bg-white dark:border-[#183052] dark:bg-[#0a1a2d]">
               {/* table header  */}
               <div className="header-container p-3 flex items-center justify-between">
                 <h1 className="text-xl font-medium">

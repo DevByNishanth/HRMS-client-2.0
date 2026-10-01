@@ -39,11 +39,11 @@ const PayrollTable = ({ tableData }) => {
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-[#193252]">
+          <tr className="bg-slate-100 dark:bg-[#193252]">
             {headers.map((header) => (
               <th
                 key={header}
-                className="px-5 py-2.5 text-left text-xs font-medium tracking-wide text-[#9db9dc]"
+                className="px-5 py-2.5 text-left text-xs font-medium tracking-wide text-slate-600 dark:text-[#9db9dc]"
               >
                 {header}
               </th>
@@ -56,11 +56,11 @@ const PayrollTable = ({ tableData }) => {
             console.log("item : ", item);
             return (
               <tr className="">
-                <td className="pl-6">{getMonth(item.payrollMonth)}</td>
-                <td className="pl-6 py-2">{item.earnings?.grossSalary}</td>
-                <td className="pl-6 py-2">{item?.attendance?.lopDays}</td>
-                <td className="pl-6 py-2">{item?.totalDeduction}</td>
-                <td className="pl-6 py-2">{item?.netSalary}</td>
+                <td className="border-b border-slate-100 py-2 pl-6 text-slate-900 dark:border-[#183052] dark:text-white">{getMonth(item.payrollMonth)}</td>
+                <td className="border-b border-slate-100 py-2 pl-6 text-slate-700 dark:border-[#183052] dark:text-[#cad7eb]">{item.earnings?.grossSalary}</td>
+                <td className="border-b border-slate-100 py-2 pl-6 text-slate-700 dark:border-[#183052] dark:text-[#cad7eb]">{item?.attendance?.lopDays}</td>
+                <td className="border-b border-slate-100 py-2 pl-6 text-slate-700 dark:border-[#183052] dark:text-[#cad7eb]">{item?.totalDeduction}</td>
+                <td className="border-b border-slate-100 py-2 pl-6 font-semibold text-slate-900 dark:border-[#183052] dark:text-white">{item?.netSalary}</td>
                 <td className="pl-6 py-2">
                   <button
                     onClick={() => {
@@ -70,7 +70,7 @@ const PayrollTable = ({ tableData }) => {
                   >
                     <Download
                       size={16}
-                      className=" text-gray-500 cursor-pointer hover:text-white"
+                      className="cursor-pointer text-slate-500 transition hover:text-blue-700 dark:text-slate-400 dark:hover:text-white"
                     />
                   </button>
                 </td>
