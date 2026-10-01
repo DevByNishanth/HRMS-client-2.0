@@ -332,7 +332,7 @@ const OdApprovalsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("Pending");
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -859,3 +859,4 @@ const OdApprovalsPage = () => {
 };
 
 export default OdApprovalsPage;
+
