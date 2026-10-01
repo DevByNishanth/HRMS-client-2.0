@@ -146,6 +146,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
   return (
     <>
       <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-slate-50 dark:bg-[#071425] px-4 py-4">
+      <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-slate-50 dark:bg-[#071425] px-4 py-4">
         <div className="flex items-center gap-4">
           <div className="relative flex h-[120px] w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-lg border-3 border-[#31415d] bg-[#18243a] shadow-[0_18px_35px_rgba(0,0,0,0.25)]">
             {faculty?.profileImage?.url ? (
@@ -156,7 +157,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_25%,#52627f_0%,#1f2b3e_32%,#101827_72%)]">
-                <span className="text-[48px] font-bold text-white">
+                <span className="text-[48px] font-bold text-slate-900 dark:text-white">
                   {(faculty?.firstName || "U").charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -168,7 +169,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                   <button
                     type="button"
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ef4444] text-white shadow-lg transition hover:bg-[#dc2626]"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ef4444] text-slate-900 dark:text-white shadow-lg transition hover:bg-[#dc2626]"
                     title="Delete photo"
                   >
                     <Trash2 size={14} />
@@ -212,7 +213,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                     >
                       <Pen
                         size={16}
-                        className="text-[#8ca1bd] transition hover:text-white"
+                        className="text-slate-500 dark:text-[#8ca1bd] transition hover:text-slate-900 dark:text-white"
                       />
                     </button>
                   )}
@@ -268,6 +269,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] px-5 py-4">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] px-5 py-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
                   Confirmation
@@ -286,6 +288,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
             </div>
             <div className="px-5 py-4">
               <p className="text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
+              <p className="text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
                 Are you sure you want to delete your profile photo? This action
                 cannot be undone.
               </p>
@@ -302,7 +305,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                 type="button"
                 onClick={handleDeleteImage}
                 disabled={deleting}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[#ef4444] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {deleting ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -387,7 +390,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                   <button
                     type="button"
                     onClick={() => setShowNewPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
                     aria-label="Toggle new password visibility"
                   >
                     {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -424,7 +427,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b9bb8] transition hover:text-slate-900 dark:text-white"
                     aria-label="Toggle confirm password visibility"
                   >
                     {showConfirmPassword ? (

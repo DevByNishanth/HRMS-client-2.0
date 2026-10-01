@@ -242,10 +242,12 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
     >
       <div
         className="flex h-full w-full flex-col bg-slate-50 dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[520px]"
+        className="flex h-full w-full flex-col bg-slate-50 dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)] sm:w-[520px]"
         style={{ animation: "slideIn 0.25s ease-out" }}
         onClick={(event) => event.stopPropagation()}
       >
         {/* ============ Header ============ */}
+        <div className="shrink-0 border-b border-slate-200 dark:border-[#173150] bg-white dark:bg-[#0a1a2d] px-5 py-4">
         <div className="shrink-0 border-b border-slate-200 dark:border-[#173150] bg-white dark:bg-[#0a1a2d] px-5 py-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -253,8 +255,10 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                 Department Setup
               </p>
               <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
+              <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
                 Add Department
               </h2>
+              <p className="mt-1 text-[12px] text-slate-500 dark:text-[#9eb0cc]">
               <p className="mt-1 text-[12px] text-slate-500 dark:text-[#9eb0cc]">
                 Create, rename, or remove departments used across the system.
               </p>
@@ -273,10 +277,12 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
 
         {/* ============ Search + "+" + status filter ============ */}
         <div className="shrink-0 border-b border-slate-200 dark:border-[#173150] px-5 py-4">
+        <div className="shrink-0 border-b border-slate-200 dark:border-[#173150] px-5 py-4">
           <div className="flex items-center gap-2">
             <div className="relative min-w-0 flex-1">
               <Search
                 size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
               />
               <input
@@ -284,6 +290,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search departments..."
+                className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-10 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-10 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
               {query && (
@@ -323,12 +330,15 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                   statusFilter === option.value
                     ? "bg-[#2563EB] text-white"
                     : "border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-500 dark:text-[#8ca1bd] hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+                    : "border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-500 dark:text-[#8ca1bd] hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                 }`}
               >
                 {option.label}
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
                     statusFilter === option.value
+                      ? "bg-white/20 text-slate-900 dark:text-white"
+                      : "bg-[#132b49] text-slate-500 dark:text-[#9eb0cc]"
                       ? "bg-white/20 text-slate-900 dark:text-white"
                       : "bg-[#132b49] text-slate-500 dark:text-[#9eb0cc]"
                   }`}
@@ -341,6 +351,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
 
           {/* Inline "add" form revealed by the + button */}
           {showAddForm && (
+            <div className="mt-3 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-2.5">
             <div className="mt-3 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-2.5">
               <div className="flex items-center gap-2">
                 <input
@@ -360,6 +371,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                     }
                   }}
                   placeholder="Type new department name..."
+                  className="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                   className="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                 />
                 <button
@@ -383,6 +395,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                     setError("");
                   }}
                   className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                   aria-label="Cancel add department"
                 >
                   <X size={15} />
@@ -402,12 +415,15 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
         {/* ============ Section label ============ */}
         <div className="flex shrink-0 items-center justify-between px-5 pb-2 pt-4">
           <h3 className="text-[14px] font-semibold text-slate-900 dark:text-white">
+          <h3 className="text-[14px] font-semibold text-slate-900 dark:text-white">
             Departments{" "}
+            <span className="font-medium text-slate-500 dark:text-[#8ca1bd]">
             <span className="font-medium text-slate-500 dark:text-[#8ca1bd]">
               ({departments.length})
             </span>
           </h3>
           {normalizedQuery && (
+            <span className="text-[12px] text-slate-500 dark:text-[#8ca1bd]">
             <span className="text-[12px] text-slate-500 dark:text-[#8ca1bd]">
               {visibleList.length} match{visibleList.length === 1 ? "" : "es"}
             </span>
@@ -418,19 +434,24 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
         <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 table-custom-scrollbar">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-6 py-14 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-6 py-14 text-center">
               <Loader2 size={24} className="animate-spin text-[#3984ff]" />
+              <p className="mt-3 text-[13px] text-slate-500 dark:text-[#9eb0cc]">
               <p className="mt-3 text-[13px] text-slate-500 dark:text-[#9eb0cc]">
                 Loading departments...
               </p>
             </div>
           ) : loadError && departments.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#f1686840] bg-white dark:bg-[#0a1a2d] px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#f1686840] bg-white dark:bg-[#0a1a2d] px-6 py-12 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f168681f] text-[#f16868]">
                 <X size={20} />
               </span>
               <p className="mt-3 text-[14px] font-semibold text-slate-900 dark:text-white">
+              <p className="mt-3 text-[14px] font-semibold text-slate-900 dark:text-white">
                 Failed to load departments
               </p>
+              <p className="mt-1 text-[12px] leading-5 text-slate-500 dark:text-[#8ca1bd]">
               <p className="mt-1 text-[12px] leading-5 text-slate-500 dark:text-[#8ca1bd]">
                 {loadError}
               </p>
@@ -444,6 +465,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
             </div>
           ) : visibleList.length > 0 ? (
             <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
+            <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
               {visibleList.map((department) => {
                 const isEditing = editingId === department._id;
                 const isAwaitingDelete = deleteId === department._id;
@@ -451,6 +473,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                 return (
                   <div
                     key={department._id}
+                    className={`flex items-center gap-3 border-b border-slate-200 dark:border-[#132944] px-4 py-3 transition last:border-b-0 ${
                     className={`flex items-center gap-3 border-b border-slate-200 dark:border-[#132944] px-4 py-3 transition last:border-b-0 ${
                       isAwaitingDelete
                         ? "bg-[#f1686812]"
@@ -480,9 +503,11 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                             if (event.key === "Escape") resetTransientState();
                           }}
                           className="h-10 w-full rounded-lg border border-[#3984ff] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3984ff33]"
+                          className="h-10 w-full rounded-lg border border-[#3984ff] bg-white dark:bg-[#0d2138] px-3 text-[14px] text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3984ff33]"
                         />
                       ) : (
                         <div className="min-w-0">
+                          <p className="truncate text-[14px] font-medium text-slate-900 dark:text-white">
                           <p className="truncate text-[14px] font-medium text-slate-900 dark:text-white">
                             {department.departmentName}
                           </p>
@@ -490,6 +515,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                             className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                               department.isActive
                                 ? "bg-[#18d3bf1f] text-[#18d3bf]"
+                                : "bg-[#8ca1bd1f] text-slate-500 dark:text-[#8ca1bd]"
                                 : "bg-[#8ca1bd1f] text-slate-500 dark:text-[#8ca1bd]"
                             }`}
                           >
@@ -510,6 +536,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                             editActive
                               ? "bg-[#18d3bf1f] text-[#18d3bf] hover:bg-[#18d3bf33]"
                               : "bg-[#8ca1bd1f] text-slate-500 dark:text-[#8ca1bd] hover:bg-[#8ca1bd33]"
+                              : "bg-[#8ca1bd1f] text-slate-500 dark:text-[#8ca1bd] hover:bg-[#8ca1bd33]"
                           }`}
                           title="Toggle active / inactive"
                         >
@@ -519,6 +546,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                           type="button"
                           onClick={handleSaveEdit}
                           disabled={isSaving}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf1f] text-[#18d3bf] transition hover:bg-[#18d3bf33] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-60"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#18d3bf1f] text-[#18d3bf] transition hover:bg-[#18d3bf33] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-60"
                           aria-label="Save department name"
                           title="Save"
@@ -546,6 +574,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                           onClick={handleDelete}
                           disabled={isDeleting}
                           className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#f16868] px-3 text-[12px] font-semibold text-slate-900 dark:text-white transition hover:bg-[#c94a4a] disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#f16868] px-3 text-[12px] font-semibold text-slate-900 dark:text-white transition hover:bg-[#c94a4a] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {isDeleting && (
                             <Loader2 size={13} className="animate-spin" />
@@ -556,6 +585,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                           type="button"
                           onClick={resetTransientState}
                           className="inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-medium text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+                          className="inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-medium text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                         >
                           Cancel
                         </button>
@@ -565,6 +595,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                         <button
                           type="button"
                           onClick={() => startEditing(department)}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/70 transition hover:bg-[#3984ff24] hover:text-slate-900 dark:text-white"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-400/70 transition hover:bg-[#3984ff24] hover:text-slate-900 dark:text-white"
                           aria-label={`Edit ${department.departmentName}`}
                           title="Edit"
@@ -577,6 +608,7 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
                             resetTransientState();
                             setDeleteId(department._id);
                           }}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                           aria-label={`Delete ${department.departmentName}`}
                           title="Delete"
@@ -592,14 +624,17 @@ const AddDepartmentModal = ({ onDepartmentsChange, onClose }) => {
           ) : (
             // Empty states
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] px-6 py-12 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3984ff1f] text-[#3984ff]">
                 <Search size={20} />
               </span>
+              <p className="mt-3 text-[14px] font-semibold text-slate-900 dark:text-white">
               <p className="mt-3 text-[14px] font-semibold text-slate-900 dark:text-white">
                 {departments.length === 0
                   ? "No departments yet"
                   : "No matching departments"}
               </p>
+              <p className="mt-1 text-[12px] leading-5 text-slate-500 dark:text-[#8ca1bd]">
               <p className="mt-1 text-[12px] leading-5 text-slate-500 dark:text-[#8ca1bd]">
                 {departments.length === 0
                   ? "Click the + button above to add your first department."

@@ -105,8 +105,10 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
   if (loading) {
     return (
       <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="animate-spin text-[#3984ff]" />
+          <p className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">Loading profile...</p>
           <p className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">Loading profile...</p>
         </div>
       </main>
@@ -115,6 +117,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
   if (error) {
     return (
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
       <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
         <div className="flex flex-col items-center gap-3">
           <p className="text-[14px] text-[#f16868]">{error}</p>
@@ -128,6 +131,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
 
   return (
+    <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
     <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
       <div className="">
         <ProfileHero canEdit={canEditOwnProfile} onEdit={openFullEdit} faculty={faculty} />

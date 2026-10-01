@@ -258,6 +258,7 @@ const FieldError = ({ message }) =>
 const Field = ({ label, name, value, onChange, error, required, className = "", ...props }) => (
   <label className={className}>
     <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
+    <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
       {label} {required && <span className="text-[#3984ff]">*</span>}
     </span>
     <input
@@ -265,6 +266,7 @@ const Field = ({ label, name, value, onChange, error, required, className = "", 
       name={name}
       value={value}
       onChange={(event) => onChange(name, event.target.value)}
+      className={`h-11 w-full rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
       className={`h-11 w-full rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
         }`}
     />
@@ -335,6 +337,7 @@ const DropdownField = ({
   return (
     <div className="relative" ref={wrapperRef}>
       <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white ">
+      <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white ">
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
@@ -342,8 +345,10 @@ const DropdownField = ({
         type="button"
         onClick={() => updateOpenState(!isOpen)}
         className={`flex h-11 w-full items-center justify-between rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
+        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
           }`}
       >
+        <span className={getDisplayValue() ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
         <span className={getDisplayValue() ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
           {getDisplayValue() || placeholder || `Select ${label.toLowerCase()}`}
         </span>
@@ -364,6 +369,7 @@ const DropdownField = ({
           />
 
           <div
+            className={`absolute left-0 right-0 z-40 max-h-[220px]  overflow-y-auto rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
             className={`absolute left-0 right-0 z-40 max-h-[220px]  overflow-y-auto rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
               }`}
           >
@@ -405,6 +411,8 @@ const DropdownField = ({
                     className={`flex items-center justify-between w-full px-4 py-3 text-left text-[13px] transition ${value === displayValue || isNestedSelected
                       ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
                       : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
+                      ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
+                      : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                       } ${hasSubmenu ? "cursor-pointer" : ""}`}
                     aria-expanded={hasSubmenu ? isExpanded : undefined}
                   >
@@ -430,6 +438,7 @@ const DropdownField = ({
                 width: submenuPosition.width,
               }}
               className="z-[60] rounded-lg border border-slate-300 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+              className="z-[60] rounded-lg border border-slate-300 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
             >
               {expandedOptionData.submenu.map((subOption) => (
                 <button
@@ -440,6 +449,8 @@ const DropdownField = ({
                     updateOpenState(false);
                   }}
                   className={`block w-full px-4 py-2.5 text-left text-[13px] transition ${value === subOption.value
+                    ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
+                    : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                     ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
                     : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                     }`}
@@ -495,6 +506,7 @@ const ObjectDropdownField = ({
   return (
     <div className="relative">
       <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
+      <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
         {label} {required && <span className="text-[#3984ff]">*</span>}
       </span>
       <button
@@ -502,8 +514,10 @@ const ObjectDropdownField = ({
         type="button"
         onClick={() => updateOpenState(!isOpen)}
         className={`flex h-11 w-full items-center justify-between rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
+        className={`flex h-11 w-full items-center justify-between rounded-lg border bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] ${error ? "border-[#f16868]" : "border-slate-300 dark:border-[#244061]"
           }`}
       >
+        <span className={selectedOption ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
         <span className={selectedOption ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
           {isLoading
             ? "Loading..."
@@ -527,6 +541,7 @@ const ObjectDropdownField = ({
             aria-label="Close dropdown"
           />
           <div className={`absolute left-0 right-0 z-40 max-h-[220px] overflow-y-auto rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
+          <div className={`absolute left-0 right-0 z-40 max-h-[220px] overflow-y-auto rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.35)] table-custom-scrollbar ${positionAbove ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
             }`}>
             {options.length > 0 ? (
               options.map((option) => {
@@ -540,6 +555,8 @@ const ObjectDropdownField = ({
                       updateOpenState(false);
                     }}
                     className={`block w-full px-4 py-3 text-left text-[13px] transition ${value === optionValue
+                      ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
+                      : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                       ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
                       : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                       }`}
@@ -608,6 +625,7 @@ const FacultySearchDropdown = ({
   return (
     <div className="relative col-span-2 mb-2">
       <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
+      <span className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
         Reporting Manager
       </span>
       <button
@@ -615,7 +633,9 @@ const FacultySearchDropdown = ({
         type="button"
         onClick={() => updateOpenState(!isOpen)}
         className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
         <span className={value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
           {isLoading
             ? "Loading employees..."
@@ -639,19 +659,23 @@ const FacultySearchDropdown = ({
           />
           <div
             className={`absolute left-0 right-0 z-40 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${positionAbove
+            className={`absolute left-0 right-0 z-40 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${positionAbove
               ? "bottom-[calc(100%+8px)]"
               : "top-[calc(100%+8px)]"
               }`}
           >
             <div className="relative border-b border-slate-200 dark:border-[#183052] p-2">
+            <div className="relative border-b border-slate-200 dark:border-[#183052] p-2">
               <Search
                 size={15}
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                 className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
               />
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search employee..."
+                className="h-10 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-9 pr-3 text-[13px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
                 className="h-10 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-9 pr-3 text-[13px] text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:text-[#6f839f] focus:border-[#3984ff]"
               />
             </div>
@@ -669,6 +693,8 @@ const FacultySearchDropdown = ({
                         setQuery("");
                       }}
                       className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${value?._id === faculty._id
+                        ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
+                        : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                         ? "bg-slate-100 dark:bg-[#132b49] text-slate-900 dark:text-white"
                         : "text-slate-700 dark:text-[#cad7eb] hover:bg-gray-100 dark:bg-[#102640] hover:text-slate-900 dark:text-white"
                         }`}
@@ -704,6 +730,7 @@ const FacultySearchDropdown = ({
 
 const DateField = ({ id, label, required, value, onChange, placeholder, popupAlign, error }) => (
   <div>
+    <div className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
     <div className="mb-2 block text-[13px] font-semibold text-slate-900 dark:text-white">
       {label} {required && <span className="text-[#3984ff]">*</span>}
     </div>
@@ -1110,15 +1137,19 @@ const AddFacultyForm = ({
     >
       <form
         className="flex h-full w-[60%] xl:w-[42%] flex-col bg-[#f8fafc] dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[60%] xl:w-[42%] flex-col bg-[#f8fafc] dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
         onSubmit={(event) => event.preventDefault()}
       >
         <div className="border-b border-slate-200 dark:border-[#173150] bg-white dark:bg-[#08182a] px-5 py-4">
+        <div className="border-b border-slate-200 dark:border-[#173150] bg-white dark:bg-[#08182a] px-5 py-4">
           <div className="flex items-start justify-between gap-5">
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-[#a9c7ff]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-[#a9c7ff]">
                 Step {activeStep + 1} of {steps.length}
               </p>
+              <h3 className="mt-2 text-lg font-semibold leading-tight text-slate-900 dark:text-[#e4e9ff]">
               <h3 className="mt-2 text-lg font-semibold leading-tight text-slate-900 dark:text-[#e4e9ff]">
                 {steps[activeStep].title}
               </h3>
@@ -1135,6 +1166,7 @@ const AddFacultyForm = ({
                     className={`h-1.5 flex-1 rounded-full transition ${index <= activeStep
                       ? "bg-[#3984ff]"
                       : "bg-slate-200 dark:bg-[#354158] hover:bg-slate-300 dark:hover:bg-[#596782]"
+                      : "bg-slate-200 dark:bg-[#354158] hover:bg-slate-300 dark:hover:bg-[#596782]"
                       }`}
                     aria-label={`Go to ${step.title}`}
                     title={step.title}
@@ -1144,6 +1176,7 @@ const AddFacultyForm = ({
               <button
                 type="button"
                 onClick={onClose}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-gray-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#223b5f] bg-gray-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                 aria-label={`Close ${isEditMode ? "edit" : "add"} faculty form`}
               >
@@ -1400,6 +1433,7 @@ const AddFacultyForm = ({
                       setQualifications((current) => [...current, { ...emptyQualification }])
                     }
                     className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+                    className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                   >
                     <Plus size={14} />
                     Add
@@ -1411,8 +1445,10 @@ const AddFacultyForm = ({
                     <div
                       key={`qualification-${index + 1}`}
                       className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-4"
+                      className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-4"
                     >
                       <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-[13px] font-semibold text-slate-900 dark:text-white">
                         <h4 className="text-[13px] font-semibold text-slate-900 dark:text-white">
                           Qualification {index + 1}
                         </h4>
@@ -1424,6 +1460,7 @@ const AddFacultyForm = ({
                                 current.filter((_, itemIndex) => itemIndex !== index),
                               )
                             }
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                             aria-label={`Remove qualification ${index + 1}`}
                           >
@@ -1519,6 +1556,7 @@ const AddFacultyForm = ({
                       setExperiences((current) => [...current, { ...emptyExperience }])
                     }
                     className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
+                    className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-[12px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
                   >
                     <Plus size={14} />
                     Add
@@ -1530,8 +1568,10 @@ const AddFacultyForm = ({
                     <div
                       key={`experience-${index + 1}`}
                       className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-4"
+                      className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-4"
                     >
                       <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-[13px] font-semibold text-slate-900 dark:text-white">
                         <h4 className="text-[13px] font-semibold text-slate-900 dark:text-white">
                           Experience {index + 1}
                         </h4>
@@ -1543,6 +1583,7 @@ const AddFacultyForm = ({
                                 current.filter((_, itemIndex) => itemIndex !== index),
                               )
                             }
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                             className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-[#f16868] transition hover:bg-[#f1686824] hover:text-slate-900 dark:text-white"
                             aria-label={`Remove experience ${index + 1}`}
                           >
@@ -1663,10 +1704,12 @@ const AddFacultyForm = ({
         </div>
 
         <div className="flex shrink-0 items-center justify-between gap-3 border-t border-slate-200 dark:border-[#173150] bg-white dark:bg-[#08182a] px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t border-slate-200 dark:border-[#173150] bg-white dark:bg-[#08182a] px-5 py-4">
           <button
             type="button"
             onClick={() => setActiveStep((current) => Math.max(current - 1, 0))}
             disabled={activeStep === 0 || isSubmitting}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[13px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-45"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 text-[13px] font-semibold text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-45"
           >
             <ArrowLeft size={14} />

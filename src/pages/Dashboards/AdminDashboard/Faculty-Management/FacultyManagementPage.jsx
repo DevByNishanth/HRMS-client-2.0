@@ -36,10 +36,12 @@ const typeStyles = {
   },
   Driver: {
     row: "hover:bg-slate-50 dark:hover:bg-[#182f45]",
+    row: "hover:bg-slate-50 dark:hover:bg-[#182f45]",
     stripe: "border-l-[#78a7ff]",
     badge: "dark:bg-[#3984ff1f] dark:text-[#78a7ff] text-[#78a7ff]",
   },
   Housekeeping: {
+    row: "hover:bg-slate-50 dark:hover:bg-[#24303a]",
     row: "hover:bg-slate-50 dark:hover:bg-[#24303a]",
     stripe: "border-l-[#c4c6d0]",
     badge: "dark:bg-[#c4c6d01f] dark:text-[#c4c6d0] text-blue-500 ",
@@ -47,6 +49,7 @@ const typeStyles = {
 };
 
 const defaultTypeStyle = {
+  row: "hover:bg-slate-50 dark:hover:bg-[#123250]",
   row: "hover:bg-slate-50 dark:hover:bg-[#123250]",
   stripe: "border-l-[#8ca1bd]",
   badge: "bg-[#8ca1bd1f] text-[#8ca1bd]",
@@ -409,18 +412,22 @@ const FacultyManagementPage = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-white dark:bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-[#051424]">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
         <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar">
           <div className="mx-auto">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Faculty Management
                 </h1>
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                 <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Manage faculty records, departments, roles, and staff type.
                 </p>
@@ -458,6 +465,8 @@ const FacultyManagementPage = () => {
 
             <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm">
               <h2 className="shrink-0 mt-2 ml-4  text-[18px] font-semibold text-slate-900 dark:text-white">
+            <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm">
+              <h2 className="shrink-0 mt-2 ml-4  text-[18px] font-semibold text-slate-900 dark:text-white">
                 Faculty List <span>({filteredFaculty.length})</span>
               </h2>
               <div className="relative z-20 flex flex-col gap-3 px-4 py-3 2xl:flex-row 2xl:items-center ">
@@ -465,6 +474,7 @@ const FacultyManagementPage = () => {
                   <div className="relative">
                     <Search
                       size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                       className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                     />
                     <input
@@ -532,6 +542,7 @@ const FacultyManagementPage = () => {
               <div className="relative z-0 max-h-[calc(100vh-275px)] overflow-auto table-custom-scrollbar">
                 {facultyError && (
                   <div className="border-t border-slate-200 dark:border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
+                  <div className="border-t border-slate-200 dark:border-[#183052] px-4 py-3 text-[13px] text-[#f16868]">
                     {facultyError}
                   </div>
                 )}
@@ -544,6 +555,7 @@ const FacultyManagementPage = () => {
                     <col className="w-[10%]" />
                     <col className="w-[12%]" />
                   </colgroup>
+                  <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] font-semibold text-slate-600 dark:text-[#9aacc7]">
                   <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] font-semibold text-slate-600 dark:text-[#9aacc7]">
                     <tr>
                       <th className="py-3 pl-5 pr-4 font-semibold">Name</th>
@@ -560,10 +572,12 @@ const FacultyManagementPage = () => {
                     </tr>
                   </thead>
                   <tbody className="text-[14px] text-slate-700 dark:text-slate-700 dark:text-[#cad7eb]">
+                  <tbody className="text-[14px] text-slate-700 dark:text-slate-700 dark:text-[#cad7eb]">
                     {isLoadingFaculty ? (
                       <tr>
                         <td
                           colSpan="6"
+                          className="px-4 py-8 text-center text-slate-600 dark:text-[#8ca1bd]"
                           className="px-4 py-8 text-center text-slate-600 dark:text-[#8ca1bd]"
                         >
                           Loading faculty records...
@@ -579,6 +593,7 @@ const FacultyManagementPage = () => {
                           <tr
                             key={faculty._id || faculty.empId}
                             className={`border-b border-slate-200 dark:border-[#132944] transition last:border-0 ${styles.row}`}
+                            className={`border-b border-slate-200 dark:border-[#132944] transition last:border-0 ${styles.row}`}
                           >
                             <td className={``}>
                               <div className="flex flex-row items-center gap-3 pl-4">
@@ -586,6 +601,8 @@ const FacultyManagementPage = () => {
                                   <FacultyAvatar faculty={faculty} name={name} />
                                 </div>
                                 <div className="flex flex-col">
+                                  <span className="block truncate font-medium text-slate-900 dark:text-white">{name}</span>
+                                  <span className="text-slate-500 dark:text-[#8ca1bd]">{faculty.empId || "-"}</span>
                                   <span className="block truncate font-medium text-slate-900 dark:text-white">{name}</span>
                                   <span className="text-slate-500 dark:text-[#8ca1bd]">{faculty.empId || "-"}</span>
                                 </div>
@@ -634,6 +651,7 @@ const FacultyManagementPage = () => {
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center justify-end gap-2 text-slate-600 dark:text-[#8ca1bd]">
+                              <div className="flex items-center justify-end gap-2 text-slate-600 dark:text-[#8ca1bd]">
                                 <button
                                   type="button"
                                   onClick={() => handleViewFaculty(faculty)}
@@ -649,6 +667,7 @@ const FacultyManagementPage = () => {
                                       type="button"
                                       onClick={() => setEditingFaculty(faculty)}
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-600 dark:text-green-400/60 transition hover:bg-green-100 dark:hover:bg-[#3984ff24] hover:text-green-700 dark:hover:text-white"
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#3984ff12] text-green-600 dark:text-green-400/60 transition hover:bg-green-100 dark:hover:bg-[#3984ff24] hover:text-green-700 dark:hover:text-white"
                                       aria-label={`Edit ${name}`}
                                       title="Edit"
                                     >
@@ -660,6 +679,7 @@ const FacultyManagementPage = () => {
                                         setDeleteError("");
                                         setDeletingFaculty(faculty);
                                       }}
+                                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-red-600 dark:text-[#f16868] transition hover:bg-red-100 dark:hover:bg-[#f1686824] hover:text-red-700 dark:hover:text-white"
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f1686812] text-red-600 dark:text-[#f16868] transition hover:bg-red-100 dark:hover:bg-[#f1686824] hover:text-red-700 dark:hover:text-white"
                                       aria-label={`Delete ${name}`}
                                       title="Delete"
@@ -677,6 +697,7 @@ const FacultyManagementPage = () => {
                       <tr>
                         <td
                           colSpan="6"
+                          className="px-4 py-8 text-center text-slate-600 dark:text-[#8ca1bd]"
                           className="px-4 py-8 text-center text-slate-600 dark:text-[#8ca1bd]"
                         >
                           No faculty records found matching your filters.
@@ -731,8 +752,10 @@ const FacultyManagementPage = () => {
 
             <div classname="">
               <h3 className="mt-2 text-[18px] font-semibold text-slate-900 dark:text-white px-4">
+              <h3 className="mt-2 text-[18px] font-semibold text-slate-900 dark:text-white px-4">
                 Remove {getFacultyName(deletingFaculty)}?
               </h3>
+              <p className="mt-2 text-[13px] leading-5 text-slate-500 dark:text-[#9eb0cc] px-4">
               <p className="mt-2 text-[13px] leading-5 text-slate-500 dark:text-[#9eb0cc] px-4">
                 This action will permanently delete the faculty record from the
                 system.
@@ -751,6 +774,7 @@ const FacultyManagementPage = () => {
                 onClick={() => setDeletingFaculty(null)}
                 disabled={isDeletingFaculty}
                 className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-6 text-lg font-medium text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-6 text-lg font-medium text-slate-700 dark:text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -758,6 +782,7 @@ const FacultyManagementPage = () => {
                 type="button"
                 onClick={handleDeleteFaculty}
                 disabled={isDeletingFaculty}
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-lg font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-[#FF4B4B] px-6 text-lg font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isDeletingFaculty ? "Deleting..." : "Delete"}
