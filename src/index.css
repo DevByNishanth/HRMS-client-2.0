@@ -17,12 +17,10 @@ body {
 
 .login-gradient {
   background: #172554;
-  background: linear-gradient(
-    133deg,
-    rgba(23, 37, 84, 1) 0%,
-    rgba(10, 30, 54, 1) 50%,
-    rgba(2, 6, 23, 1) 100%  
-  );
+  background: linear-gradient(133deg,
+      rgba(23, 37, 84, 1) 0%,
+      rgba(10, 30, 54, 1) 50%,
+      rgba(2, 6, 23, 1) 100%);
 }
 
 .table-custom-scrollbar {
@@ -54,7 +52,8 @@ body {
     transform: translateX(0);
   }
 }
-input::-webkit-inner-spin-button{
+
+input::-webkit-inner-spin-button {
   display: none;
 }
 
@@ -74,23 +73,31 @@ input::-webkit-inner-spin-button{
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #3b82f6;
 }
+
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
+  /* Chrome, Safari */
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
+  /* Chrome, Safari */
 }
+
 input::-webkit-inner-spin-button {
   display: none;
 }
@@ -109,13 +116,15 @@ input::-webkit-inner-spin-button {
   mask-composite: subtract;
   animation: l3 1s infinite linear;
 }
+
 @keyframes l3 {
   to {
     transform: rotate(1turn);
   }
 }
+
 .holiday-date-filter::-webkit-calendar-picker-indicator {
-    filter: brightness(0) invert(1);
-    opacity: 1;
-    cursor: pointer;
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
 }
