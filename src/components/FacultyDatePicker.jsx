@@ -125,9 +125,7 @@ const FacultyDatePicker = ({
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 text-left text-[13px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
       >
-        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
         <span className={value ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
           {value ? formatDisplayDate(value) : placeholder}
         </span>
@@ -136,7 +134,6 @@ const FacultyDatePicker = ({
 
       {isOpen && (
         <div
-          className={`absolute top-full z-[9999] w-[300px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${
           className={`absolute top-full z-[9999] w-[300px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] p-4 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${
             popupAlign === "right" ? "right-0" : "left-0"
           }`}
@@ -167,7 +164,6 @@ const FacultyDatePicker = ({
                 <ChevronDown
                   size={14}
                   className={`text-slate-400 dark:text-[#6f839f] transition ${showMonthPicker ? "rotate-180" : ""}`}
-                  className={`text-slate-400 dark:text-[#6f839f] transition ${showMonthPicker ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -181,7 +177,6 @@ const FacultyDatePicker = ({
                   />
                   <div
                     ref={monthDropdownRef}
-                    className="absolute left-1/2 z-50 mt-1 w-40 -translate-x-1/2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#071425] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                     className="absolute left-1/2 z-50 mt-1 w-40 -translate-x-1/2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#071425] py-1 shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                   >
                     <div className="grid grid-cols-2 gap-0.5 p-1.5">
@@ -219,7 +214,6 @@ const FacultyDatePicker = ({
                 <ChevronDown
                   size={14}
                   className={`text-slate-400 dark:text-[#6f839f] transition ${showYearPicker ? "rotate-180" : ""}`}
-                  className={`text-slate-400 dark:text-[#6f839f] transition ${showYearPicker ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -232,7 +226,6 @@ const FacultyDatePicker = ({
                     aria-label="Close year picker"
                   />                    <div
                       ref={yearDropdownRef}
-                      className="absolute right-0 z-50 mt-1 w-[130px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                       className="absolute right-0 z-50 mt-1 w-[130px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#071425] shadow-[0_18px_45px_rgba(0,0,0,0.45)]"
                     >
                       <div className="max-h-[220px] overflow-y-auto py-1 table-custom-scrollbar">
@@ -315,7 +308,6 @@ const FacultyDatePicker = ({
           </div>
 
           {/* Today quick-select */}
-          <div className="mt-3 border-t border-slate-200 dark:border-[#183052] pt-2 text-center">
           <div className="mt-3 border-t border-slate-200 dark:border-[#183052] pt-2 text-center">
             <button
               type="button"

@@ -196,11 +196,7 @@ const FacultyRequestsPanel = () => {
   const currentList = requestLists[selectedRequestType];
 
   return (
-<<<<<<< HEAD
-    <section className="flex h-[410px] flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm dark:shadow-[0_12px_36px_rgba(0,0,0,0.18)] transition-colors duration-200">
-=======
     <section className="flex h-[410px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#183052] dark:bg-[#0a1a2d]">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
           <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#2563eb24] text-[#3984ff]">
@@ -214,22 +210,14 @@ const FacultyRequestsPanel = () => {
         <button
           type="button"
           onClick={handleViewAll}
-<<<<<<< HEAD
-          className="flex shrink-0 items-center gap-1 text-[14px] font-medium text-blue-600 dark:text-[#3984ff] transition hover:text-blue-800 dark:hover:text-white"
-=======
           className="flex shrink-0 items-center gap-1 text-[14px] font-medium text-blue-600 transition hover:text-blue-800 dark:text-[#3984ff] dark:hover:text-white"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
         >
           View All
           <ArrowRight size={15} />
         </button>
       </div>
 
-<<<<<<< HEAD
-      <div className="mx-4 mb-3 grid grid-cols-3 gap-1 rounded-lg border border-slate-200 dark:border-[#183052] bg-slate-100 dark:bg-[#071425] p-1">
-=======
       <div className="mx-4 mb-3 grid grid-cols-3 gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-[#183052] dark:bg-[#071425]">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
         {requestTabs.map(({ label, value, icon: Icon }) => (
           <button
             key={value}
@@ -237,11 +225,7 @@ const FacultyRequestsPanel = () => {
             onClick={() => setSelectedRequestType(value)}
             className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
               ? "bg-[#2563EB] text-white"
-<<<<<<< HEAD
-              : "text-slate-600 dark:text-[#8ca1bd] hover:bg-slate-200 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
-=======
               : "text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-[#8ca1bd] dark:hover:bg-[#132b49] dark:hover:text-white"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
               }`}
             title={label}
           >
@@ -271,11 +255,7 @@ const FacultyRequestsPanel = () => {
             {currentList.map((request, index) => (
               <div
                 key={`${selectedRequestType}-${request.name}-${request.meta}-${index}`}
-<<<<<<< HEAD
-                className="flex items-center justify-between gap-3 rounded-lg bg-slate-50 dark:bg-[#071425] px-3 py-2 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 transition"
-=======
                 className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-[#071425]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-semibold text-white">
@@ -317,11 +297,7 @@ const FacultyDashboardBody = () => {
   // console.log("decoded", decodedToken);
 
   return (
-<<<<<<< HEAD
-    <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white transition-colors duration-200">
-=======
     <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f7fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
       <div className="mx-auto">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
@@ -336,22 +312,14 @@ const FacultyDashboardBody = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setIsLeaveApplyModal(true)}
-<<<<<<< HEAD
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563eb] text-[15px] font-semibold text-white shadow-sm transition hover:bg-blue-700"
-=======
               className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
             >
               <Plus size={14} />
               Apply Leave
             </button>
             <button
               onClick={() => setIsPermissionApplyModal(true)}
-<<<<<<< HEAD
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2563eb] text-[15px] font-semibold text-white shadow-sm transition hover:bg-blue-700"
-=======
               className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
             >
               <Plus size={14} />
               Apply Permission

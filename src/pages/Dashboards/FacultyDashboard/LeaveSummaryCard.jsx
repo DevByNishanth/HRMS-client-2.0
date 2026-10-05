@@ -20,11 +20,7 @@ const LeaveSummaryCard = ({ icon: Icon, title, code, used, total, color }) => {
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-<<<<<<< HEAD
-      className="rounded-lg border border-slate-200 dark:border-gray-800 bg-white dark:bg-[#0A1929] p-4 shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.14)] transition-colors duration-200"
-=======
       className="rounded-lg border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] dark:border-gray-800 dark:bg-[#0A1929] dark:shadow-[0_10px_30px_rgba(0,0,0,0.14)]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
     >
       <div
         className="mb-5 flex h-8 w-8  items-center justify-center rounded-md"
@@ -33,11 +29,7 @@ const LeaveSummaryCard = ({ icon: Icon, title, code, used, total, color }) => {
         <Icon size={15} />
       </div>
 
-<<<<<<< HEAD
-      <h3 className="text-[12px] -mt-2.5 font-semibold uppercase tracking-wide text-slate-600 dark:text-white">
-=======
       <h3 className="-mt-2.5 text-[12px] font-semibold uppercase tracking-wide text-slate-600 dark:text-white">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
         {title} ({code})
       </h3>
 
@@ -47,11 +39,7 @@ const LeaveSummaryCard = ({ icon: Icon, title, code, used, total, color }) => {
         </span>
       </div>
 
-<<<<<<< HEAD
-      <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-slate-100 dark:bg-[#1c2d45]">
-=======
       <div className="mt-2 h-[4px] overflow-hidden rounded-full bg-slate-200 dark:bg-[#1c2d45]">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
         <div
           className="h-full rounded-full"
           style={{ width: `${percentage}%`, backgroundColor: color }}

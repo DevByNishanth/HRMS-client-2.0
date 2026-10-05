@@ -85,7 +85,12 @@ const CommonHeader = () => {
 
         {/* Profile */}
         <div className="ml-2">
-          <ThemeToggle />
+          {/* get from localStorage token in that role dean or hod need to hide the themetoggle button */}
+          {decoded.role == "dean" || decoded.role == "hod" ? (
+            <></>
+          ) : (
+            <ThemeToggle />
+          )}
 
         </div>
 

@@ -16,11 +16,7 @@ const statusColors = {
   H: "bg-[#1d74d8] text-white",
   L: "bg-[#e0474f] text-white",
   MP: "bg-[#8b5cf6] text-white",
-<<<<<<< HEAD
-  "-": "bg-slate-100 dark:bg-[#173252] text-slate-500 dark:text-[#8ca1bd]",
-=======
   "-": "bg-slate-100 text-slate-500 dark:bg-[#173252] dark:text-[#8ca1bd]",
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
 };
 
 const LegendItem = ({ color, label }) => (
@@ -126,34 +122,20 @@ const ActiveDayCalendar = () => {
   }
 
   return (
-<<<<<<< HEAD
-    <section className="flex h-full flex-col rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-5 transition-colors duration-200">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-slate-800 dark:text-white">Your Active Day</h2>
-=======
     <section className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition-colors duration-200 dark:border-[#183052] dark:bg-[#0a1a2d]">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">Your Active Day</h2>
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setMonthDropdownOpen(!monthDropdownOpen)}
-<<<<<<< HEAD
-            className="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-[#102640] px-3 py-1 text-[14px] text-slate-600 dark:text-[#a9bddb] transition hover:bg-slate-200 dark:hover:bg-[#1a3556]"
-=======
             className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-[14px] text-slate-700 transition hover:bg-slate-200 dark:bg-[#102640] dark:text-[#a9bddb] dark:hover:bg-[#1a3556]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
           >
             {MONTHS[selectedMonth]} {now.getFullYear()}
             <ChevronDown size={12} className={`transition-transform ${monthDropdownOpen ? "rotate-180" : ""}`} />
           </button>
           {monthDropdownOpen && (
-<<<<<<< HEAD
-            <div className="absolute right-0  top-full z-50 mt-1 w-40  h-[260px] overflow-auto table-custom-scrollbar rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-lg">
-=======
             <div className="table-custom-scrollbar absolute right-0 top-full z-50 mt-1 h-[260px] w-40 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg dark:border-[#244061] dark:bg-[#0A1A2D]">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
               {MONTHS.map((month, idx) => (
                 <button
                   key={month}
@@ -164,11 +146,7 @@ const ActiveDayCalendar = () => {
                   }}
                   className={`w-full px-4 py-2 text-left text-[13px] transition ${idx === selectedMonth
                     ? "bg-[#2563EB] text-white"
-<<<<<<< HEAD
-                    : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
-=======
                     : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
                     }`}
                 >
                   {month} {now.getFullYear()}
@@ -181,11 +159,7 @@ const ActiveDayCalendar = () => {
 
       <div className="grid flex-1 grid-cols-7 content-center gap-2 p-2 text-center">
         {weekDays.map((day) => (
-<<<<<<< HEAD
-          <span key={day} className="text-[9px] font-semibold text-slate-400 dark:text-[#7186a5]">
-=======
           <span key={day} className="text-[9px] font-semibold text-slate-500 dark:text-[#7186a5]">
->>>>>>> 4ba9e5f6e1ed55af1f67f550c7e9b3025d777984
             {day}
           </span>
         ))}
