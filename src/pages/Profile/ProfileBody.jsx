@@ -104,10 +104,10 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
   if (loading) {
     return (
-      <main className="flex min-h-0 flex-1 items-center justify-center bg-[#071425] text-white">
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="animate-spin text-[#3984ff]" />
-          <p className="text-[13px] text-[#8ca1bd]">Loading profile...</p>
+          <p className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">Loading profile...</p>
         </div>
       </main>
     );
@@ -115,7 +115,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
   if (error) {
     return (
-      <main className="flex min-h-0 flex-1 items-center justify-center bg-[#071425] text-white">
+      <main className="flex min-h-0 flex-1 items-center justify-center bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
         <div className="flex flex-col items-center gap-3">
           <p className="text-[14px] text-[#f16868]">{error}</p>
         </div>
@@ -128,11 +128,11 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
 
 
   return (
-    <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-[#071425] text-white">
+    <main className="min-h-0 flex-1 overflow-y-auto  max-h-[calc(100vh-70px)] table-custom-scrollbar bg-slate-50 dark:bg-[#071425] text-slate-900 dark:text-white">
       <div className="">
         <ProfileHero canEdit={canEditOwnProfile} onEdit={openFullEdit} faculty={faculty} />
 
-        <div className="tab-container flex items-center gap-4 border border-gray-800 bg-[#111a2d] rounded-lg py-3 px-3 mx-6 mb-4">
+        <div className="tab-container flex items-center gap-4 border border-slate-200 dark:border-gray-800 bg-white dark:bg-[#111a2d] rounded-lg py-3 px-3 mx-6 mb-4">
 
           {tabData.map((tab) => {
             const Icon = tab.icon;
@@ -142,7 +142,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
                 onClick={() => setSelectedTab(tab.label)}
                 className={`inline-flex items-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTab === tab.label
                   ? "bg-[#2163cc] text-white shadow-sm"
-                  : "text-[#8ca1bd] hover:text-white hover:bg-[#1a2942]"
+                  : "text-slate-500 dark:text-[#8ca1bd] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1a2942]"
                   }`}
               >
                 <Icon size={16} />

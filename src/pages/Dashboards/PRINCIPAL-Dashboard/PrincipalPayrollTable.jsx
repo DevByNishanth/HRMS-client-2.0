@@ -2,14 +2,14 @@ import { Download } from "lucide-react";
 import React from "react";
 
 const headers = [
-  "NAME",
-  "DEPT",
-  "MONTH",
-  "GROSS EARNINGS",
+  "Name",
+  "Dept",
+  "Month",
+  "Gross Earnings",
   "LOP",
-  "TOTAL DEDUCTION",
-  "NET PAYABLE",
-  "ACTION",
+  "Total Deduction",
+  "Net Payable",
+  "Action",
 ];
 
 const PrincipalPayrollTable = ({ tableData }) => {
@@ -41,13 +41,13 @@ const PrincipalPayrollTable = ({ tableData }) => {
 
   return (
     <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-[#193252]">
-            {headers.map((header) => (
+      <table className="w-full table-fixed border-collapse text-left">
+        <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-sm font-medium text-slate-500 dark:text-[#9aacc7]">
+          <tr>
+            {headers.map((header, index) => (
               <th
                 key={header}
-                className="px-5 py-2.5 text-left text-xs font-medium tracking-wide text-[#9db9dc]"
+                className={`px-4 py-3 font-semibold ${index === 0 ? "w-[20%]" : index === 7 ? "w-[10%] text-right" : "w-[12%]"}`}
               >
                 {header}
               </th>
@@ -55,44 +55,42 @@ const PrincipalPayrollTable = ({ tableData }) => {
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
           {tableData.map((item, index) => (
             <tr
               key={item._id || index}
-              className="border-b border-[#183052]/50 transition hover:bg-[#183052]/30"
+              className="border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors"
             >
-              <td className="px-6 py-3 text-[13px] font-medium text-white">
+              <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                 {item.employeeDetails?.name || item.name || "N/A"}
               </td>
-              <td className="px-6 py-3 text-[13px] font-medium text-white">
+              <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
                 {item.employeeDetails?.department || "--"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-4 py-3">
                 {getMonth(item.payrollMonth)}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-4 py-3">
                 {item.earnings?.grossSalary ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-4 py-3 text-[#f16868]">
                 {item?.attendance?.lopDays ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-4 py-3">
                 {item?.totalDeduction ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] font-semibold text-white">
+              <td className="px-4 py-3 font-semibold text-[#18d3bf]">
                 {item?.netSalary ?? "—"}
               </td>
-              <td className="px-6 py-3">
+              <td className="px-4 py-3 text-right">
                 <button
                   onClick={() => {
                     window.open(`/payslip/${item.facultyId?._id}`, "_blank");
                   }}
-                  className=""
+                  className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white text-[#3984ff]"
+                  title="Download Payslip"
                 >
-                  <Download
-                    size={16}
-                    className=" text-gray-500 cursor-pointer hover:text-white"
-                  />
+                  <Download size={16} />
                 </button>
               </td>
             </tr>

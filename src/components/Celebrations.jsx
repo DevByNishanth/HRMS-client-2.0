@@ -116,10 +116,10 @@ const Celebrations = () => {
       : celebrations.filter((celebration) => celebration.type === filter);
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0A1A2D]">
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between px-5 py-4">
-        <h1 className="text-[18px] font-semibold text-white">Celebrations</h1>
+        <h1 className="text-[18px] font-semibold text-slate-900 dark:text-white">Celebrations</h1>
 
         <div className="relative" ref={dropdownRef}>
           <button
@@ -127,9 +127,9 @@ const Celebrations = () => {
             onClick={() => setIsOpen((prev) => !prev)}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
-            className="flex items-center gap-3 rounded-lg border border-[#183052] px-4 py-1.5 text-sm transition hover:border-[#244061]"
+            className="flex items-center gap-3 rounded-lg border border-slate-200 px-4 py-1.5 text-sm transition hover:border-slate-300 dark:border-[#244061]"
           >
-            <span className="text-gray-100">{filter}</span>
+            <span className="text-slate-700 dark:text-gray-100">{filter}</span>
             <ChevronDown
               size={17}
               className={`text-gray-500 transition-transform ${
@@ -139,7 +139,7 @@ const Celebrations = () => {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+            <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-44 overflow-hidden rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
               {filterOptions.map((option) => (
                 <button
                   key={option}
@@ -151,7 +151,7 @@ const Celebrations = () => {
                   className={`w-full px-4 py-2.5 text-left text-[13px] transition ${
                     filter === option
                       ? "bg-[#2563EB] text-white"
-                      : "text-[#cad7eb] hover:bg-[#132b49]"
+                      : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#132b49]"
                   }`}
                 >
                   {option}
@@ -171,7 +171,7 @@ const Celebrations = () => {
         ) : error ? (
           <p className="mt-8 text-center text-[12px] text-[#f16868]">{error}</p>
         ) : filteredCelebrations.length === 0 ? (
-          <p className="mt-8 text-center text-[12px] text-[#8ca1bd]">
+          <p className="mt-8 text-center text-[12px] text-slate-500 dark:text-[#8ca1bd]">
             No celebrations found.
           </p>
         ) : (
@@ -198,7 +198,7 @@ const Celebrations = () => {
                 <motion.div
                   variants={cardVariants}
                   key={`${celebration.date}-${celebration.firstName}-${celebration.lastName}-${index}`}
-                  className="flex items-center bg-[#12263d]  justify-between rounded-2xl  px-3 py-2"
+                  className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 dark:bg-[#12263d]"
                 >
                   {/* Left Content */}
                   <div className="flex min-w-0 items-center gap-2">
@@ -215,16 +215,16 @@ const Celebrations = () => {
                     )}
 
                     <div className="flex min-w-0 flex-col gap-1">
-                      <div className="truncate text-[14px] font-medium  text-gray-200">
+                      <div className="truncate text-[14px] font-medium text-slate-900 dark:text-gray-200">
                         {name}
                       </div>
 
                       <div className="flex items-center gap-2 text-[15px] text-gray-700">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#043770]  text-white">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-[#043770] dark:text-white">
                           <Icon size={16} />
                         </div>
 
-                        <span className="truncate text-white/60 text-[12px]">
+                        <span className="truncate text-[12px] text-slate-600 dark:text-white/60">
                           {celebration.type}
                           {departmentLabel}
                         </span>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import CustomDatePicker from "../../../../components/CustomDatePicker";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-import { X, Search } from "lucide-react";
+import { X, Search, Download } from "lucide-react";
 import { getfacultiesName } from "../../../../services/LeaveBalance/getEmployeNameService";
 import { getEmployeeAttendanceOverride  } from "../../../../services/attendanceOverride/GetAttendanceByEmployee";
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
@@ -592,7 +592,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-slate-400 dark:text-[#6f839f]
                             "
                         />
                         <input
@@ -604,7 +604,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 )
                             }
                             placeholder="Search Employee"
-                            className="h-10 pl-11 w-[300px] rounded-lg border border-[#244061] bg-[#0d2138] text-white px-4"
+                            className="h-10 pl-11 w-[300px] rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] text-slate-900 dark:text-white px-4"
                         />
 
                         {showDropdown &&
@@ -615,11 +615,11 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     w-[300px]
                                     max-h-[300px]
                                     overflow-y-auto
-                                    custom-scrollbar
+                                    dark:custom-scrollbar
                                     rounded-lg
                                     border
-                                    border-[#244061]
-                                    bg-[#172c46]
+                                    border-slate-300 dark:border-[#244061]
+                                    bg-gray-100 dark:bg-[#172c46]
                                     shadow-xl"
                                 >
                                     {employeeSuggestions.map(
@@ -633,7 +633,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                         employee
                                                     )
                                                 }
-                                                className="cursor-pointer border-b border-[#244061] p-3 hover:bg-[#1f3a5c]"
+                                                className="cursor-pointer border-b border-slate-300 dark:border-[#244061] p-3 hover:bg-slate-50 dark:bg-[#1f3a5c]"
                                             >
                                                 <div className="flex items-center gap-3">
 
@@ -644,7 +644,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                                     </div>
 
                                                     <div>
-                                                        <div className="text-white font-medium">
+                                                        <div className="text-slate-900 dark:text-white font-medium">
                                                             {
                                                                 employee.name
                                                             }
@@ -683,7 +683,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                         />
                     </div>
 
-                    <span className="text-[#8ca1bd]">
+                    <span className="text-slate-600 dark:text-[#8ca1bd]">
                         to
                     </span>
 
@@ -703,19 +703,19 @@ export default function EmployeeWiseAttendanceUpdate() {
                         <button
                             onClick={handleExportClick}
                             className="
-                                h-11
-                                px-5
-                                rounded-lg
-                                border
-                                border-[#3984ff]
-                                text-[#3984ff]
-                                font-medium
-                                transition
-                                hover:bg-[#3984ff]
-                                hover:text-white
-                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
+                                flex items-center justify-center gap-2
+                            h-12
+                            px-5
+                            rounded-lg
+                            border border-[#155DFC] dark:border-[#3b82f6] bg-[#155DFC] dark:bg-transparent
+                            text-white dark:text-[#3b82f6]
+                            text-[14px]
+                            font-semibold
+                            transition
+                            cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                             "
                         >
+                            <Download size={16} />
                             Export Excel
                         </button>
                     )}
@@ -732,10 +732,10 @@ export default function EmployeeWiseAttendanceUpdate() {
                                     px-4
                                     rounded-lg
                                     border
-                                    border-[#244061]
-                                    bg-[#0d2138]
-                                    text-[#8ca1bd]
-                                    hover:bg-[#13263d]
+                                    border-slate-300 dark:border-[#244061]
+                                    bg-white dark:bg-[#0d2138]
+                                    text-slate-600 dark:text-[#8ca1bd]
+                                    hover:bg-white dark:bg-[#13263d]
                                     cursor-pointer
                                 "
                             >
@@ -748,9 +748,9 @@ export default function EmployeeWiseAttendanceUpdate() {
             </div>
 
             {/* {selectedEmployee && (
-                <div className="mx-7 mb-5 rounded-xl border border-[#244061] bg-[#172c46] p-5">
+                <div className="mx-7 mb-5 rounded-xl border border-slate-300 dark:border-[#244061] bg-gray-100 dark:bg-[#172c46] p-5">
 
-                    <div className="text-xl text-white font-semibold">
+                    <div className="text-xl text-slate-900 dark:text-white font-semibold">
                         {selectedEmployee.name}
                     </div>
 
@@ -769,11 +769,11 @@ export default function EmployeeWiseAttendanceUpdate() {
 
             <div className="overflow-hidden px-7 pb-24">
 
-                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-[#1d3657] scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto rounded-lg border border-slate-200 dark:border-[#1d3657] dark:scrollbar-thin dark:scrollbar-track-[#0a1a2d] dark:scrollbar-thumb-[#244061]">
 
                     <table className="w-full table-fixed border-collapse">
 
-                        <thead className="sticky top-0 bg-[#172c46] text-[14px] text-[#9aacc7] z-10">
+                        <thead className="sticky top-0 bg-gray-100 dark:bg-[#172c46] text-[14px] text-slate-600 dark:text-[#9aacc7] z-10">
 
                             <tr>
 
@@ -824,7 +824,7 @@ export default function EmployeeWiseAttendanceUpdate() {
 
                         </thead>
 
-                        <tbody className="text-[#cad7eb] text-[14px]">
+                        <tbody className="text-slate-700 dark:text-[#cad7eb] text-[14px]">
                         {
                             loading ? (
                                 <tr>
@@ -849,7 +849,7 @@ export default function EmployeeWiseAttendanceUpdate() {
                                 filteredAttendance.map((row) => (
                                     <tr
                                         key={row._id}
-                                        className="border-b border-[#1d3657]"
+                                        className="border-b border-slate-100 dark:border-[#1d3657]"
                                     >
                                         <td className="px-3 py-3 text-center">
                                             <input
@@ -1176,7 +1176,7 @@ export default function EmployeeWiseAttendanceUpdate() {
             />
             {/* Fixed Footer */}
 
-            {/* <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#244061] bg-[#0d2138] p-4">
+            {/* <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] p-4">
 
                 <div className="flex justify-end">
 

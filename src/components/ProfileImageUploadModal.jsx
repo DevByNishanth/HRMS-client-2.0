@@ -56,7 +56,7 @@ const ProfileImageUploadModal = ({ facultyId, currentImageUrl, onClose }) => {
         className="flex w-full max-w-[440px] flex-col overflow-hidden rounded-xl border border-gray-600/60 bg-gray-700/15 backdrop-blur-xl shadow-[0_26px_80px_rgba(0,0,0,0.48)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d]/10 px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D]/10 px-5 py-4">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#74aaff]">Profile Photo</p>
             <h2 className="mt-1 text-[18px] font-semibold text-[#d8e3f7]">Update Profile Picture</h2>
@@ -64,7 +64,7 @@ const ProfileImageUploadModal = ({ facultyId, currentImageUrl, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
           >
             <X size={17} />
           </button>
@@ -88,7 +88,7 @@ const ProfileImageUploadModal = ({ facultyId, currentImageUrl, onClose }) => {
             </div>
 
             {/* File input */}
-            <label className="group flex cursor-pointer items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-2.5 text-[13px] text-[#cad7eb] transition hover:border-[#3984ff] hover:text-white">
+            <label className="group flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-2.5 text-[13px] text-[#cad7eb] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white">
               <UploadCloud size={16} />
               <span>{selectedFile ? selectedFile.name : "Choose a file"}</span>
               <input
@@ -103,7 +103,7 @@ const ProfileImageUploadModal = ({ facultyId, currentImageUrl, onClose }) => {
               <button
                 type="button"
                 onClick={handleRemove}
-                className="flex items-center gap-1.5 text-[12px] text-[#f16868] transition hover:text-white"
+                className="flex items-center gap-1.5 text-[12px] text-[#f16868] transition hover:text-slate-900 dark:text-white"
               >
                 <Trash2 size={13} />
                 Remove selection
@@ -116,7 +116,7 @@ const ProfileImageUploadModal = ({ facultyId, currentImageUrl, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-slate-900 dark:text-white"
           >
             Cancel
           </button>

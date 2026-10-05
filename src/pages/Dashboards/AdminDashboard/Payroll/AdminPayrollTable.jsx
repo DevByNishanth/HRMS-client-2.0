@@ -34,7 +34,7 @@ const AdminPayrollTable = ({ tableData }) => {
   if (!tableData || tableData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <p className="text-[14px] text-[#6f839f]">No payroll records found.</p>
+        <p className="text-[14px] text-slate-400 dark:text-[#6f839f]">No payroll records found.</p>
       </div>
     );
   }
@@ -43,7 +43,7 @@ const AdminPayrollTable = ({ tableData }) => {
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-[#193252]">
+          <tr className="bg-slate-100 dark:bg-[#193252]">
             {headers.map((header) => (
               <th
                 key={header}
@@ -59,27 +59,27 @@ const AdminPayrollTable = ({ tableData }) => {
           {tableData.map((item, index) => (
             <tr
               key={item._id || index}
-              className="border-b border-[#183052]/50 transition hover:bg-[#183052]/30"
+              className="border-b border-slate-200 dark:border-[#183052]/50 transition hover:bg-slate-100 dark:hover:bg-slate-100 dark:bg-[#183052]/30"
             >
-              <td className="px-6 py-3 text-[13px] font-medium text-white">
+              <td className="px-6 py-3 text-[13px] font-medium text-slate-900 dark:text-white">
                 {item.employeeDetails?.name || item.name || "N/A"}
               </td>
-              <td className="px-6 py-3 text-[13px] font-medium text-white">
+              <td className="px-6 py-3 text-[13px] font-medium text-slate-900 dark:text-white">
                 {item.employeeDetails?.department || "--"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-6 py-3 text-[13px] text-slate-700 dark:text-[#cad7eb]">
                 {getMonth(item.payrollMonth)}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-6 py-3 text-[13px] text-slate-700 dark:text-[#cad7eb]">
                 {item.earnings?.grossSalary ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-6 py-3 text-[13px] text-slate-700 dark:text-[#cad7eb]">
                 {item?.attendance?.lopDays ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] text-[#cad7eb]">
+              <td className="px-6 py-3 text-[13px] text-slate-700 dark:text-[#cad7eb]">
                 {item?.totalDeduction ?? "—"}
               </td>
-              <td className="px-6 py-3 text-[13px] font-semibold text-white">
+              <td className="px-6 py-3 text-[13px] font-semibold text-slate-900 dark:text-white">
                 {item?.netSalary ?? "—"}
               </td>
               <td className="px-6 py-3">
@@ -91,7 +91,7 @@ const AdminPayrollTable = ({ tableData }) => {
                 >
                   <Download
                     size={16}
-                    className=" text-gray-500 cursor-pointer hover:text-white"
+                    className=" text-gray-500 cursor-pointer hover:text-slate-900 dark:text-white"
                   />
                 </button>
               </td>

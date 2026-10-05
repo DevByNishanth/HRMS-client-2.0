@@ -10,8 +10,8 @@ const EducationQualifications = ({ canEdit, onEdit, faculty }) => {
     return (
       <ProfileCard title="Educational Qualifications" icon={GraduationCap} className="lg:col-span-2" canEdit={canEdit} onEdit={onEdit}>
         <div className="flex flex-col items-center justify-center py-6 text-center">
-          <GraduationCap size={32} className="text-[#354158] mb-2" />
-          <p className="text-[13px] text-[#8ca1bd]">No qualifications added yet</p>
+          <GraduationCap size={32} className="text-slate-400 dark:text-[#354158] mb-2" />
+          <p className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">No qualifications added yet</p>
         </div>
       </ProfileCard>
     );
@@ -20,25 +20,25 @@ const EducationQualifications = ({ canEdit, onEdit, faculty }) => {
   return (
     <ProfileCard title="Educational Qualifications" icon={GraduationCap} className="lg:col-span-2" canEdit={canEdit} onEdit={onEdit}>
       <div className="relative space-y-8 pl-7">
-        <div className="absolute left-[5px] top-2 h-[calc(100%-18px)] w-px bg-[#31415d]" />
+        <div className="absolute left-[5px] top-2 h-[calc(100%-18px)] w-px bg-slate-300 dark:bg-[#31415d]" />
         {qualifications.map((item, index) => (
           <div key={index} className="relative">
-            <span className="absolute -left-[27px] top-1 h-2 w-2 rounded-full bg-[#91b6ff] ring-4 ring-[#111a2d]" />
+            <span className="absolute -left-[27px] top-1 h-2 w-2 rounded-full bg-[#91b6ff] ring-4 ring-white dark:ring-[#111a2d]" />
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h3 className="text-[13px] font-bold text-white">
+                <h3 className="text-[13px] font-bold text-gray-900 dark:text-white">
                   {item.degree || "Qualification"}
                 </h3>
-                <p className="mt-1 text-[11px] text-[#9babca]">
+                <p className="mt-1 text-[11px] text-slate-600 dark:text-[#9babca]">
                   {[item.institutionName, item.institutionLocation].filter(Boolean).join(", ") || item.college || ""}
                 </p>
                 {item.specialization && (
-                  <p className="mt-0.5 text-[11px] text-[#7a8aaa]">{item.specialization}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-[#7a8aaa]">{item.specialization}</p>
                 )}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {item.yearOfPassing && (
-                  <span className="w-fit rounded-full bg-[#263654] px-3 py-1 text-[10px] font-bold text-[#c8d7f4]">
+                  <span className="w-fit rounded-full bg-slate-100 dark:bg-[#263654] px-3 py-1 text-[10px] font-bold text-slate-700 dark:text-[#c8d7f4]">
                     {item.yearOfPassing}
                   </span>
                 )}

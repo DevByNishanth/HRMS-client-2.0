@@ -16,7 +16,7 @@ const TimeTracker = () => {
   return (
     <section className="flex h-full flex-col rounded-[32px] border border-white/20 bg-white/10 p-5 shadow-[0_25px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl">
       <div className="mb-8 flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold text-white">Time Tracker</h2>
+        <h2 className="text-[16px] font-semibold text-slate-900 dark:text-white">Time Tracker</h2>
 
         <div className="relative">
           <button
@@ -59,7 +59,7 @@ const TimeTracker = () => {
             style={{ transform: "rotate(20deg)" }}
           />
           <div className="relative text-center">
-            <p className="text-[27px] font-bold leading-none text-white">08:30</p>
+            <p className="text-[27px] font-bold leading-none text-slate-900 dark:text-white">08:30</p>
             <p className="mt-1 text-[9px] font-bold uppercase tracking-wide text-[#8ca1bd]">
               Working Time
             </p>

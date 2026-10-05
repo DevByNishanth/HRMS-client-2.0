@@ -5,7 +5,7 @@ import { getAttendanceByDate } from "../../../../services/attendanceOverride/get
 import { updateAttendanceOverrideSingle } from "../../../../services/attendanceOverride/updateAttendanceOverrideSingle";
 import { updateAttendanceOverrideBulk } from "../../../../services/attendanceOverride/updateAttendanceOverrideBulk";
 import AttendanceOverrideModal from "./AttendanceOverrideModal";
-import { X,Search } from "lucide-react";
+import { X,Search, Download } from "lucide-react";
 import CustomDropdown from "../../../../components/CustomDropdown";
 import AttendanceDropdown from "../../../../components/AttendanceDropdown";
 import * as XLSX from "xlsx";
@@ -618,7 +618,7 @@ export default function DateWiseAttendanceUpdate() {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-slate-400 dark:text-[#6f839f]
                             "
                         />
                         <input
@@ -627,15 +627,7 @@ export default function DateWiseAttendanceUpdate() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search Employee"
                             className="
-                                h-11
-                                pl-11
-                                w-[250px]
-                                rounded-lg
-                                bg-[#13263d]
-                                border
-                                border-[#23476f]
-                                px-4
-                                text-white
+                                h-11 w-full rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]
                             "
                         />
                     </div>
@@ -663,19 +655,19 @@ export default function DateWiseAttendanceUpdate() {
                         onClick={handleExportClick}
                         disabled={filteredData.length === 0}
                         className="
-                            h-11
+                           flex items-center justify-center gap-2
+                            h-12
                             px-5
                             rounded-lg
-                            border
-                            border-[#3984ff]
-                            text-[#3984ff]
-                            font-medium
+                            border border-[#155DFC] dark:border-[#3b82f6] bg-[#155DFC] dark:bg-transparent
+                            text-white dark:text-[#3b82f6]
+                            text-[14px]
+                            font-semibold
                             transition
-                            hover:bg-[#3984ff]
-                            hover:text-white
                             cursor-pointer disabled:cursor-not-allowed disabled:opacity-50
                         "
                     >
+                        <Download size={16}/>
                         Export Excel
                     </button>
                     {hasFilters && (
@@ -689,10 +681,10 @@ export default function DateWiseAttendanceUpdate() {
                                 px-4
                                 rounded-lg
                                 border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                text-[#8ca1bd]
-                                hover:bg-[#13263d]
+                                border-slate-300 dark:border-[#244061]
+                                bg-white dark:bg-[#0d2138]
+                                text-slate-600 dark:text-[#8ca1bd]
+                                hover:bg-white dark:bg-[#13263d]
                                 cursor-pointer
                             "
                         >
@@ -704,9 +696,9 @@ export default function DateWiseAttendanceUpdate() {
             </div>
             {/* Table */}
             <div className="overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-[#0a1a2d] scrollbar-thumb-[#244061]">
+                <div className="max-h-[60vh] overflow-y-auto dark:scrollbar-thin dark:scrollbar-track-[#0a1a2d] dark:scrollbar-thumb-[#244061]">
                     <table className="w-full table-auto border-collapse text-left">
-                        <thead className="sticky top-0 z-10 bg-[#172c46] text-[14px] text-[#9aacc7]">
+                        <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-[14px] text-slate-600 dark:text-[#9aacc7]">
                             <tr>
                                 <th className="px-5 py-4">
                                     <input
@@ -729,7 +721,7 @@ export default function DateWiseAttendanceUpdate() {
                                 <th className="px-5 py-4">Session 2</th>
                             </tr>
                         </thead>
-                        <tbody className="text-[#cad7eb] text-[14px]">
+                        <tbody className="text-slate-700 dark:text-[#cad7eb] text-[14px]">
                             {filteredData.length === 0 ? (
                                 <tr>
                                     <td
@@ -743,7 +735,7 @@ export default function DateWiseAttendanceUpdate() {
                                 filteredData.map((row, index) => (
                                     <tr
                                         key={`${row.facultyId}-${index}`}
-                                        className="border-b border-[#1d395d]"
+                                        className="border-b border-slate-100 dark:border-[#1d395d]"
                                     >
                                         <td className="px-5 py-3">
                                             <input
@@ -786,7 +778,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                <div className="rounded border border-[#23476f] bg-white dark:bg-[#13263d] px-3 py-2 text-slate-900 dark:text-white">
                                                     P
                                                 </div>
                                             ) : (
@@ -817,7 +809,7 @@ export default function DateWiseAttendanceUpdate() {
                                         </td>
                                         <td className="px-5 py-3">
                                             {isBulkSelectionMode ? (
-                                                <div className="rounded border border-[#23476f] bg-[#13263d] px-3 py-2 text-white">
+                                                <div className="rounded border border-[#23476f] bg-white dark:bg-[#13263d] px-3 py-2 text-slate-900 dark:text-white">
                                                     P
                                                 </div>
                                             ) : (
@@ -857,9 +849,10 @@ export default function DateWiseAttendanceUpdate() {
                 className="
                     sticky
                     bottom-0
-                    bg-[#102038]
+                    bg-slate-50 dark:bg-[#102038]
                     border-t
-                    border-[#23476f]
+                    border-slate-100
+                    dark:border-[#23476f]
                     p-5
                     flex
                     justify-end

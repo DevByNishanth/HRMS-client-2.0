@@ -26,7 +26,7 @@ const FacultyDashboard = () => {
           onClose={() => setOpenDocumentUploadModal(false)}
         />
       )}
-      <div className='flex h-screen overflow-hidden bg-[#051424]'>
+      <div className='flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200'>
         <Sidebar />
         {/* right container  */}
 

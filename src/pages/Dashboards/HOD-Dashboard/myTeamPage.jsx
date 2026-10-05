@@ -12,7 +12,7 @@ import { getMyTeamData } from "../../../services/myTeam/getMyTeamService";
 
 const TeamStatCard = ({ icon: Icon, title, count, color }) => {
     return (
-        <div className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)]">
+        <div className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.14)] transition-colors duration-200">
             <div
                 className="mb-2 flex h-8 w-8 items-center justify-center rounded-md"
                 style={{ backgroundColor: `${color}22`, color }}
@@ -20,11 +20,11 @@ const TeamStatCard = ({ icon: Icon, title, count, color }) => {
                 <Icon size={15} />
             </div>
 
-            <h3 className="text-[12px] uppercase tracking-wide text-white">
+            <h3 className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-[#9eb0cc] font-medium">
                 {title}
             </h3>
 
-            <p className="mt-1 text-[16px] font-semibold text-white">
+            <p className="mt-1 text-[16px] font-semibold text-slate-900 dark:text-white">
                 {count} Members
             </p>
         </div>
@@ -85,20 +85,20 @@ const MyTeamPage = () => {
     ];
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#051424]">
+        <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
             <Sidebar />
 
             <div className="flex min-w-0 flex-1 flex-col">
                 <CommonHeader />
 
-                <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+                <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
                     <div className="mx-auto">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-xl font-medium leading-tight text-white">
+                                <h1 className="text-xl font-semibold leading-tight text-slate-900 dark:text-white">
                                     My Team
                                 </h1>
-                                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                                <p className="mt-1 text-[14px] text-slate-500 dark:text-[#9eb0cc]">
                                     Review department members, roles, and daily presence.
                                 </p>
                             </div>
@@ -109,16 +109,16 @@ const MyTeamPage = () => {
                                 {[1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
-                                        className="rounded-lg border border-[#183052] bg-[#0a1a2d] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.14)] animate-pulse"
+                                        className="rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.14)] animate-pulse"
                                     >
-                                        <div className="mb-2 h-8 w-8 rounded-md bg-[#183052]" />
-                                        <div className="mt-2 h-3 w-24 rounded bg-[#183052]" />
-                                        <div className="mt-2 h-4 w-16 rounded bg-[#183052]" />
+                                        <div className="mb-2 h-8 w-8 rounded-md bg-slate-200 dark:bg-[#183052]" />
+                                        <div className="mt-2 h-3 w-24 rounded bg-slate-200 dark:bg-[#183052]" />
+                                        <div className="mt-2 h-4 w-16 rounded bg-slate-200 dark:bg-[#183052]" />
                                     </div>
                                 ))}
                             </div>
                         ) : error ? (
-                            <div className="mt-5 rounded-lg border border-[#183052] bg-[#0a1a2d] p-6 text-center text-[#f16868]">
+                            <div className="mt-5 rounded-lg border border-red-200 dark:border-[#183052] bg-red-50 dark:bg-[#0a1a2d] p-6 text-center text-red-600 dark:text-[#f16868]">
                                 {error}
                             </div>
                         ) : (

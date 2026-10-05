@@ -91,21 +91,21 @@ const PrincipalDashboardBody = () => {
     pendingCounts.leave + pendingCounts.permission + pendingCounts.regularize;
 
   const pendingRequests = [
-    { name: "Leave", value: pendingCounts.leave, color: "#1666ba" },
+    { name: "Leave", value: pendingCounts.leave, color: "#10b981" },
     { name: "Permission", value: pendingCounts.permission, color: "#368ce7" },
-    { name: "Regularize", value: pendingCounts.regularize, color: "#7ab3ef" },
+    { name: "Regularize", value: pendingCounts.regularize, color: "#f5930b" },
   ];
 
   return (
-    <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
+    <main className="max-h-[calc(100vh-56px)] overflow-y-auto table-custom-scrollbar bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white transition-colors duration-200">
       <div className="mx-auto max-w-[1440px] space-y-5">
         {/* // ? ===============================  this is the header ================================  */}
         <PrincipalDashboardHeader totalPending={totalPending} />
 
         {/*// ?   ============================== first container / section ============================= */}
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
           <RecentFacultyListTable className="min-h-[300px] xl:col-span-3" />
-          <StaffDistributionChart className="min-h-[300px] xl:col-span-2" />
+          {/* <StaffDistributionChart className="min-h-[300px] xl:col-span-2" /> */}
         </div>
 
         {/*// ?   ============================== second container / section ============================= */}

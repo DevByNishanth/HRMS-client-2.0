@@ -44,9 +44,9 @@ const PersonalDetails = ({ canEdit, onEdit, faculty }) => {
     <ProfileCard title="Personal Details" icon={UserRound} canEdit={canEdit} onEdit={onEdit}>
       <div className="space-y-4">
         {details.map((item) => (
-          <div key={item.label} className="border-b border-[#26344f] pb-3 last:border-0 last:pb-0">
-            <p className="text-[12px] font-medium text-[#8a9ab7]">{item.label}</p>
-            <p className="mt-1 text-[14px] font-medium leading-relaxed text-white">{item.value}</p>
+          <div key={item.label} className="border-b border-slate-200 dark:border-[#26344f] pb-3 last:border-0 last:pb-0">
+            <p className="text-[12px] font-medium text-slate-600 dark:text-[#8a9ab7]">{item.label}</p>
+            <p className="mt-1 text-[14px] font-medium leading-relaxed text-gray-900 dark:text-white">{item.value}</p>
           </div>
         ))}
       </div>

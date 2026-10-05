@@ -604,26 +604,26 @@ export default function AttendanceTable() {
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "present":
-        return "bg-[#0B303E] text-[#14B299]";
+        return "bg-green-50 dark:bg-[#0B303E] text-green-700 dark:text-[#14B299]";
 
       case "absent":
-        return "bg-[#1A1F30] text-[#713C46]";
+        return "bg-red-50 dark:bg-[#1A1F30] text-red-600 dark:text-[#713C46]";
 
       case "late":
       case "late checked in":
-        return "bg-[#3A2D12] text-[#F5B041]";
+        return "bg-amber-50 dark:bg-[#3A2D12] text-amber-600 dark:text-[#F5B041]";
 
       case "half day":
-        return "bg-[#2B2140] text-[#B084F5]";
+        return "bg-purple-50 dark:bg-[#2B2140] text-purple-700 dark:text-[#B084F5]";
 
       default:
-        return "bg-[#24364D] text-[#9EB0CC]";
+        return "bg-slate-100 dark:bg-[#24364D] text-slate-500 dark:text-[#9eb0cc]";
     }
   };
 
   const getWorkingHoursStyle = (workingMinutes, startTime, endTime) => {
     if (workingMinutes == null || !startTime || !endTime) {
-      return "text-[#9eb0cc]";
+      return "text-slate-500 dark:text-[#9eb0cc]";
     }
 
     const [startHour, startMinute] = startTime.split(":").map(Number);
@@ -639,8 +639,8 @@ export default function AttendanceTable() {
   };
 
   return (
-    <section className="mt-4 mb-4 rounded-xl border border-[#183052] bg-[#0a1a2d] flex flex-col h-[400px] overflow-visible">
-      <div className="p-4 border-b border-[#183052] flex flex-col gap-4 ">
+    <section className="mt-4 mb-4 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] flex flex-col h-[400px] overflow-visible">
+      <div className="p-4 border-b border-slate-200 dark:border-[#183052] flex flex-col gap-4 ">
         <div>
           <h1>Employee ({filteredData.length})</h1>
         </div>
@@ -654,7 +654,7 @@ export default function AttendanceTable() {
                                 left-4
                                 top-1/2
                                 -translate-y-1/2
-                                text-[#6f839f]
+                                text-slate-400 dark:text-[#6f839f]
                             "
             />
 
@@ -669,9 +669,8 @@ export default function AttendanceTable() {
                                 w-[300px]
                                 rounded-lg
                                 border
-                                border-[#244061]
-                                bg-[#0d2138]
-                                text-white
+                                 border-[#E2E8F0] dark:border-[#244061] bg-[#F8FAFC] dark:bg-[#0d2138]
+                                text-slate-900 dark:text-white
                                 px-4
                             "
             />
@@ -688,8 +687,8 @@ export default function AttendanceTable() {
                                         custom-scrollbar
                                         rounded-lg
                                         border
-                                        border-[#244061]
-                                        bg-[#172c46]
+                                        border-slate-300 dark:border-[#244061]
+                                        bg-gray-100 dark:bg-[#172c46]
                                         shadow-xl
                                     "
               >
@@ -700,9 +699,9 @@ export default function AttendanceTable() {
                     className="
                                                     cursor-pointer
                                                     border-b
-                                                    border-[#244061]
+                                                    border-slate-300 dark:border-[#244061]
                                                     p-3
-                                                    hover:bg-[#1f3a5c]
+                                                    hover:bg-slate-50 dark:bg-[#1f3a5c]
                                                 "
                   >
                     <div className="flex items-center gap-3">
@@ -723,15 +722,15 @@ export default function AttendanceTable() {
                       </div>
 
                       <div>
-                        <div className="text-white font-medium">
+                        <div className="text-slate-900 dark:text-white font-medium">
                           {employee.name}
                         </div>
 
-                        <div className="text-xs text-[#9eb3cf]">
+                        <div className="text-xs text-slate-500 dark:text-[#9eb3cf]">
                           {employee.empId}
                         </div>
 
-                        <div className="text-xs text-[#9eb3cf]">
+                        <div className="text-xs text-slate-500 dark:text-[#9eb3cf]">
                           {employee.department}
                         </div>
                       </div>
@@ -822,7 +821,7 @@ export default function AttendanceTable() {
               onChange={setFromDate}
               placeholder="From Date"
             />
-            <span className="text-[#8ca1bd]">to</span>
+            <span className="text-slate-600 dark:text-[#8ca1bd]">to</span>
             <CustomDatePicker
               value={toDate}
               onChange={setToDate}
@@ -837,20 +836,17 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={attendanceData.length === 0}
-            className="h-12
-                                px-5
-                                rounded-lg
-                                border
-                                border-[#3984ff]
-                                text-[#3984ff]
-                                text-[14px]
-                                font-semibold
-                                transition
-                                hover:bg-[#3984ff]
-                                hover:text-white
-                                cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-12 w-40 flex items-center justify-center gap-2
+              px-5
+              rounded-lg
+              border border-slate-300 dark:border-[#244061] bg-[#155DFC] dark:bg-[#0d2138]
+              text-white
+              text-[14px]
+              font-semibold
+              transition
+              cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {/* <Download size={16} /> */}
+            <Download size={16} />
             Export Excel
           </button>
 
@@ -860,7 +856,7 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={loading || exportLoading}
-            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold bg-[#F5B041] text-white dark:bg-transparent dark:text-[#F5B041] transition dark:hover:bg-[#F5B041] dark:hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export Not Checked In
@@ -872,7 +868,7 @@ export default function AttendanceTable() {
               handleExportClick();
             }}
             disabled={loading || exportLoading}
-            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold text-[#F5B041] transition hover:bg-[#F5B041] hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 items-center gap-2 rounded-lg border border-[#F5B041] px-5 text-[14px] font-semibold bg-[#F5B041] text-white dark:bg-transparent dark:text-[#F5B041] transition dark:hover:bg-[#F5B041] dark:hover:text-[#0a1a2d] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export Late Checked In
@@ -881,7 +877,7 @@ export default function AttendanceTable() {
           {hasFilters && (
             <button
               onClick={resetFilters}
-              className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[14px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff] cursor-pointer"
+              className="flex flex-row items-center gap-2  h-12 px-4 rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] text-[14px] font-semibold text-slate-600 dark:text-[#8ca1bd] transition hover:bg-slate-50 dark:bg-[#132b49] hover:text-slate-900 dark:text-white hover:border-[#3984ff] cursor-pointer"
             >
               Reset Filter <X className="w-5 h-5" />
             </button>
@@ -891,7 +887,7 @@ export default function AttendanceTable() {
 
       <div className="flex-1 overflow-y-auto overflow-x-auto table-custom-scrollbar">
         <table className="w-full min-w-[1200px]">
-          <thead className="sticky top-0 z-10 bg-[#172c46] text-[#9eb0cc]">
+          <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-[#172c46] text-slate-500 dark:text-[#9eb0cc]">
             <tr>
               <th className="px-4 py-3 text-left">Employee Details</th>
 
@@ -918,8 +914,8 @@ export default function AttendanceTable() {
               <tr>
                 <td colSpan={9} className="px-4 py-12">
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#244061] border-t-[#3984ff]" />
-                    <p className="text-sm text-[#9eb0cc] font-medium">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 dark:border-[#244061] border-t-[#3984ff]" />
+                    <p className="text-sm text-slate-500 dark:text-[#9eb0cc] font-medium">
                       Loading attendance...
                     </p>
                   </div>
@@ -929,21 +925,21 @@ export default function AttendanceTable() {
               <tr>
                 <td
                   colSpan={9}
-                  className="px-4 py-12 text-center text-[#9eb0cc]"
+                  className="px-4 py-12 text-center text-slate-500 dark:text-[#9eb0cc]"
                 >
                   No attendance records found.
                 </td>
               </tr>
             ) : (
               visibleData.map((row, index) => (
-                <tr key={index} className="border-b border-[#183052]">
+                <tr key={index} className="border-b border-slate-200 dark:border-[#183052]">
                   <td className="px-4 py-3">
                     <div>
-                      <div className="text-white font-medium">
+                      <div className="text-slate-900 dark:text-white font-medium">
                         {row.employeeName}
                       </div>
 
-                      <div className="text-[#9eb0cc] text-xs">
+                      <div className="text-slate-500 dark:text-[#9eb0cc] text-xs">
                         {row.empId}
                       </div>
                     </div>

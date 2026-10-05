@@ -196,13 +196,13 @@ const FacultyRequestsPanel = () => {
   const currentList = requestLists[selectedRequestType];
 
   return (
-    <section className="flex h-[410px] flex-col overflow-hidden rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="flex h-[410px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#183052] dark:bg-[#0a1a2d]">
       <div className="flex items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
           <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#2563eb24] text-[#3984ff]">
             <ActiveIcon size={16} />
           </span>
-          <h2 className="truncate text-[18px] font-semibold text-white">
+          <h2 className="truncate text-[18px] font-semibold text-slate-900 dark:text-white">
             {activeTab.label}
           </h2>
         </div>
@@ -210,14 +210,14 @@ const FacultyRequestsPanel = () => {
         <button
           type="button"
           onClick={handleViewAll}
-          className="flex shrink-0 items-center gap-1 text-[14px] font-medium text-[#3984ff] transition hover:text-white"
+          className="flex shrink-0 items-center gap-1 text-[14px] font-medium text-blue-600 transition hover:text-blue-800 dark:text-[#3984ff] dark:hover:text-white"
         >
           View All
           <ArrowRight size={15} />
         </button>
       </div>
 
-      <div className="mx-4 mb-3 grid grid-cols-3 gap-1 rounded-lg border border-[#183052] bg-[#071425] p-1">
+      <div className="mx-4 mb-3 grid grid-cols-3 gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-[#183052] dark:bg-[#071425]">
         {requestTabs.map(({ label, value, icon: Icon }) => (
           <button
             key={value}
@@ -225,7 +225,7 @@ const FacultyRequestsPanel = () => {
             onClick={() => setSelectedRequestType(value)}
             className={`flex h-9 items-center justify-center gap-1 rounded-md text-[11px] font-semibold transition ${selectedRequestType === value
               ? "bg-[#2563EB] text-white"
-              : "text-[#8ca1bd] hover:bg-[#132b49] hover:text-white"
+              : "text-slate-600 hover:bg-slate-200 hover:text-slate-900 dark:text-[#8ca1bd] dark:hover:bg-[#132b49] dark:hover:text-white"
               }`}
             title={label}
           >
@@ -247,7 +247,7 @@ const FacultyRequestsPanel = () => {
             {hasError}
           </p>
         ) : currentList.length === 0 ? (
-          <p className="mt-8 text-center text-[12px] text-[#8ca1bd]">
+          <p className="mt-8 text-center text-[12px] text-slate-500 dark:text-[#8ca1bd]">
             No {selectedRequestType} requests found.
           </p>
         ) : (
@@ -255,24 +255,24 @@ const FacultyRequestsPanel = () => {
             {currentList.map((request, index) => (
               <div
                 key={`${selectedRequestType}-${request.name}-${request.meta}-${index}`}
-                className="flex items-center justify-between gap-3 rounded-lg bg-[#071425] px-3 py-2 border border-slate-800"
+                className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-[#071425]"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[13px] font-semibold text-white">
                     {request.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium text-white">
+                    <p className="truncate text-[13px] font-medium text-slate-900 dark:text-white">
                       {request.name}
                     </p>
-                    <p className="mt-1 truncate text-[11px] font-medium text-[#3984ff]">
+                    <p className="mt-1 truncate text-[11px] font-medium text-blue-600 dark:text-[#3984ff]">
                       {request.meta}
                     </p>
                   </div>
                 </div>
 
                 {request.count && (
-                  <span className="shrink-0 rounded-md bg-[#18d3bf1f] px-2 py-1 text-[12px] font-bold text-[#18d3bf]">
+                  <span className="shrink-0 rounded-md bg-[#18d3bf1f] px-2 py-1 text-[12px] font-bold text-[#10b981] dark:text-[#18d3bf]">
                     {request.count}
                   </span>
                 )}
@@ -297,14 +297,14 @@ const FacultyDashboardBody = () => {
   // console.log("decoded", decodedToken);
 
   return (
-    <main className="max-h-[calc(100vh-56px)]  overflow-y-auto table-custom-scrollbar bg-[#071425] px-4 py-4 text-white">
+    <main className="table-custom-scrollbar max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f7fafc] px-4 py-4 text-slate-900 transition-colors duration-200 dark:bg-[#071425] dark:text-white">
       <div className="mx-auto">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-xl font-semibold leading-tight text-white">
+            <h1 className="text-xl font-semibold leading-tight text-slate-900 dark:text-white">
               Hello, {decodedToken?.firstName} {decodedToken?.lastName} !
             </h1>
-            <p className="mt-1 text-[13px] text-[#9eb0cc]">
+            <p className="mt-1 text-[13px] text-slate-500 dark:text-[#9eb0cc]">
               Here's your weekly leave and attendance overview
             </p>
           </div>
@@ -312,14 +312,14 @@ const FacultyDashboardBody = () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setIsLeaveApplyModal(true)}
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
             >
               <Plus size={14} />
               Apply Leave
             </button>
             <button
               onClick={() => setIsPermissionApplyModal(true)}
-              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#2564eba3] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#0d2b55]"
+              className="inline-flex h-10 w-fit px-4 items-center justify-center gap-2 rounded-md bg-[#1e3a8a] text-[16px] font-semibold text-white shadow-[0_2px_10px_rgba(25,118,255,0.2)] transition hover:bg-[#172554]"
             >
               <Plus size={14} />
               Apply Permission

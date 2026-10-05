@@ -34,13 +34,13 @@ function SelectDropdown({ label, value, options, onChange, placeholder }) {
 
   return (
     <div className="relative">
-      <label className="mb-1.5 block text-[13px] font-semibold text-white">
+      <label className="mb-1.5 block text-[13px] font-semibold text-slate-900 dark:text-white">
         {label}
       </label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-2.5 text-[13px] font-medium text-white shadow-sm transition hover:border-[#3984ff]/50 focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex w-full items-center justify-between rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-4 py-2.5 text-[13px] font-medium text-slate-900 dark:text-white shadow-sm transition hover:border-[#3984ff]/50 focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
         <span className={value ? "text-white" : "text-[#6f839f]"}>
           {value || placeholder}
@@ -52,7 +52,7 @@ function SelectDropdown({ label, value, options, onChange, placeholder }) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[#183052] bg-[#0d2138] p-1 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0d2138] p-1 shadow-lg">
           {options.map((option) => {
             const optValue = typeof option === "object" ? option.value : option;
             const optLabel = typeof option === "object" ? option.label : option;
@@ -65,10 +65,10 @@ function SelectDropdown({ label, value, options, onChange, placeholder }) {
                   onChange(optLabel);
                   setOpen(false);
                 }}
-                className={`w-full rounded-md px-3 py-2 text-left text-[13px] transition hover:bg-[#183052]/40 ${
+                className={`w-full rounded-md px-3 py-2 text-left text-[13px] transition hover:bg-slate-100 dark:bg-[#183052]/40 ${
                   isSelected
                     ? "bg-[#0b50b1] font-medium text-white"
-                    : "text-[#cad7eb]"
+                    : "dark:text-[#cad7eb]"
                 }`}
               >
                 {optLabel}
@@ -213,7 +213,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[480px] rounded-xl border border-[#1d395e] bg-[#0a1a2d]/20 backdrop-blur-2xl shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[480px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0A1A2D]/20 backdrop-blur-2xl shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -222,7 +222,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Upload Payroll
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
+            <h2 className="mt-1 text-[18px] font-semibold text-slate-900 dark:text-white">
               Upload Excel File
             </h2>
           </div>
@@ -230,7 +230,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close upload modal"
           >
             <X size={17} />
@@ -239,7 +239,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
 
         {/* Body */}
         <div className="px-5 py-5">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">
+          <p className="text-[13px] leading-5  dark:text-[#cad7eb]">
             Upload an Excel or CSV file containing payroll data. The file should
             include employee IDs and salary details.
           </p>
@@ -273,7 +273,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
                 ? "border-[#3984ff] bg-[#3984ff10]"
                 : file
                   ? "border-[#26d39a]/40 bg-[#26d39a08]"
-                  : "border-[#125baf] bg-[#0d2138]/70 hover:border-[#3984ff]/50 hover:bg-[#0d2138]/80"
+                  : "border-[#125baf] bg-white dark:bg-[#0d2138]/70 hover:border-[#3984ff]/50 hover:bg-white dark:bg-[#0d2138]/80"
             }`}
           >
             <input
@@ -290,7 +290,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
                   <CheckCircle size={24} className="text-[#26d39a]" />
                 </div>
                 <div className="text-center">
-                  <p className="text-[14px] font-medium text-white">
+                  <p className="text-[14px] font-medium text-slate-900 dark:text-white">
                     {file.name}
                   </p>
                   <p className="mt-1 text-[12px] text-[#8ca1bd]">
@@ -314,7 +314,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
                   <FileUp size={24} className="text-[#3984ff]" />
                 </div>
                 <div className="text-center">
-                  <p className="text-[14px] font-medium text-white">
+                  <p className="text-[14px] font-medium text-slate-900 dark:text-white">
                     Drag & drop your file here
                   </p>
                   <p className="mt-1 text-[12px] text-[#8ca1bd]">
@@ -370,7 +370,7 @@ const PayrollExcelUploadModal = ({ onClose, onSuccess }) => {
             type="button"
             onClick={onClose}
             disabled={isUploading}
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-10 rounded-md border border-slate-300 dark:border-[#244061] px-4 text-[13px] font-semibold text-black dark:text-[#cad7eb]  dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>

@@ -17,9 +17,9 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] px-3 py-2 text-left text-[14px] text-slate-800 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-800 dark:text-white" : "text-slate-400 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -29,7 +29,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-lg dark:shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
             {options.map((option) => (
               <button
@@ -40,7 +40,7 @@ const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) =>
                 }}
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${value === option
                   ? "bg-[#2563EB] text-white"
-                  : "text-[#cad7eb] hover:bg-[#132b49]"
+                  : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
                 }`}
               >
                 {option}
@@ -111,13 +111,13 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
   // Loading state
   if (loading) {
     return (
-      <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+      <section className="mt-4 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm dark:shadow-[0_12px_36px_rgba(0,0,0,0.18)] transition-colors duration-200">
         <div className="flex items-center justify-between px-4 py-3">
-          <h2 className="text-[18px] font-semibold text-white">
+          <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
             My Team <span>({teamMembers.length})</span>
           </h2>
         </div>
-        <div className="px-4 py-8 text-center text-[#8ca1bd]">
+        <div className="px-4 py-8 text-center text-slate-500 dark:text-[#8ca1bd]">
           <div className="flex flex-col items-center gap-3">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#3984ff] border-t-transparent" />
             <span>Loading team data...</span>
@@ -128,9 +128,9 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
   }
 
   return (
-    <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="mt-4 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] shadow-sm dark:shadow-[0_12px_36px_rgba(0,0,0,0.18)] transition-colors duration-200">
       <div className="flex items-center justify-between px-4 py-3">
-        <h2 className="text-[18px] font-semibold text-white">
+        <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
           My Team <span>({teamMembers.length})</span>
         </h2>
       </div>
@@ -141,20 +141,20 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
         <div className="relative min-w-[220px] flex-1">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f] pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f] pointer-events-none"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name or ID..."
-            className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-9 pr-3 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+            className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-9 pr-3 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f839f] hover:text-white transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f] hover:text-slate-700 dark:hover:text-white transition"
               aria-label="Clear search"
             >
               <X size={14} />
@@ -196,7 +196,7 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
         {hasActiveFilters && (
           <button
             onClick={resetFilters}
-            className="flex-shrink-0 h-11 px-4 rounded-lg border border-[#244061] bg-[#0d2138] text-[12px] font-semibold text-[#8ca1bd] transition hover:bg-[#132b49] hover:text-white hover:border-[#3984ff]"
+            className="flex-shrink-0 h-11 px-4 rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] text-[12px] font-semibold text-slate-600 dark:text-[#8ca1bd] transition hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white hover:border-[#3984ff]"
           >
             Reset Filters
           </button>
@@ -205,14 +205,14 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
 
       <div className="relative z-0 max-h-[calc(100vh-400px)] overflow-auto table-custom-scrollbar">
         {teamMembers.length === 0 ? (
-          <div className="px-4 py-12 text-center text-[#8ca1bd]">
+          <div className="px-4 py-12 text-center text-slate-500 dark:text-[#8ca1bd]">
             <div className="mb-3 text-[40px]">👥</div>
-            <p className="text-[16px] font-medium text-white">No team data available</p>
+            <p className="text-[16px] font-medium text-slate-800 dark:text-white">No team data available</p>
             <p className="mt-1 text-[13px]">Team members will appear here once they are added to your department.</p>
           </div>
         ) : (
           <table className="w-full min-w-[820px] border-collapse text-left">
-            <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-[12px] uppercase tracking-wide text-slate-600 dark:text-[#9aacc7]">
               <tr>
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Role</th>
@@ -221,14 +221,14 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
                 <th className="px-4 py-3 text-right font-semibold">Action</th>
               </tr>
             </thead>
-            <tbody className="text-[13px] text-[#cad7eb]">
+            <tbody className="text-[13px] text-slate-700 dark:text-[#cad7eb]">
               {filteredMembers.length > 0 ? (
                 filteredMembers.map((member) => (
                   <tr
                     key={member.id || member.empId}
-                    className="border-b border-[#132944] last:border-0"
+                    className="border-b border-slate-200 dark:border-[#132944] hover:bg-slate-50/60 dark:hover:bg-transparent last:border-0"
                   >
-                    <td className="px-4 py-3 font-semibold text-white">
+                    <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-3">
                         {member.profileImage ? (
                           <img
@@ -243,7 +243,7 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
                         )}
                         <div className="min-w-0">
                           <p className="truncate">{member.name}</p>
-                          <p className="mt-0.5 text-[12px] font-normal text-[#8ca1bd]">
+                          <p className="mt-0.5 text-[12px] font-normal text-slate-500 dark:text-[#8ca1bd]">
                             {member.empId}
                           </p>
                         </div>
@@ -264,7 +264,7 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
                         <button
                           type="button"
                           onClick={() => handleViewProfile(member)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] text-[#8ca1bd] transition hover:bg-[#183052] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#c4c6d010] text-slate-500 dark:text-[#8ca1bd] transition hover:bg-slate-200 dark:hover:bg-[#183052] hover:text-slate-900 dark:hover:text-white"
                           aria-label={`View profile for ${member.name}`}
                           title="View Profile"
                         >
@@ -276,7 +276,7 @@ const MyTeamTable = ({ teamMembers = [], loading = false }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-4 py-8 text-center text-[#8ca1bd]">
+                  <td colSpan="5" className="px-4 py-8 text-center text-slate-500 dark:text-[#8ca1bd]">
                     No team members found matching your filters.
                   </td>
                 </tr>

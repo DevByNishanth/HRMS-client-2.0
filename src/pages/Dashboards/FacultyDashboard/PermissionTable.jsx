@@ -30,9 +30,9 @@ const formatSlotTo12Hour = (slotKey) => {
 };
 
 const statusStyles = {
-  Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
-  Rejected: "text-[#f16868] bg-[#f168681f]",
-  Pending: "text-[#f0a15f] bg-[#f0a15f1f]",
+  Approved: "text-emerald-700 bg-emerald-100 dark:text-[#18d3bf] dark:bg-[#18d3bf1f]",
+  Rejected: "text-red-700 bg-red-100 dark:text-[#f16868] dark:bg-[#f168681f]",
+  Pending: "text-amber-700 bg-amber-100 dark:text-[#f0a15f] dark:bg-[#f0a15f1f]",
 };
 
 // permissions will be fetched from the API and stored in component state
@@ -45,9 +45,9 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
       <button
         type="button"
         onClick={() => setIsOpen((currentState) => !currentState)}
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 text-left text-[16px] text-slate-900 outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] dark:border-[#244061] dark:bg-[#0d2138] dark:text-white"
       >
-        <span className={value !== "All" ? "text-white" : "text-[#6f839f]"}>
+        <span className={value !== "All" ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -57,7 +57,7 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] dark:border-[#244061] dark:bg-[#0a1a2d] dark:shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           {options.map((option) => (
             <button
               key={option}
@@ -68,8 +68,8 @@ const DropdownFilter = ({ value, onChange, options, placeholder }) => {
               }}
               className={`block w-full px-4 py-3 text-left text-[13px] transition ${
                 value === option
-                  ? "bg-[#132b49] text-white"
-                  : "text-[#cad7eb] hover:bg-[#102640] hover:text-white"
+                  ? "bg-blue-50 text-blue-700 dark:bg-[#132b49] dark:text-white"
+                  : "text-slate-700 hover:bg-slate-100 dark:text-[#cad7eb] dark:hover:bg-[#102640] dark:hover:text-white"
               }`}
             >
               {option}
@@ -261,9 +261,9 @@ const PermissionTable = () => {
   }, []);
 
   const myPermissionsTable = (
-    <section className="mt-4 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+    <section className="mt-4 rounded-xl border border-slate-200 bg-white dark:border-[#183052] dark:bg-[#0a1a2d]">
       <div className="relative z-20 flex flex-col gap-3 px-4 py-3 xl:flex-row xl:items-center xl:justify-between">
-        <h2 className="text-[18px] font-semibold text-white">
+        <h2 className="text-[18px] font-semibold text-slate-900 dark:text-white">
           Permission requests <span>({filteredPermissions.length})</span>
         </h2>
 
@@ -301,7 +301,7 @@ const PermissionTable = () => {
             <button
               type="button"
               onClick={resetFilters}
-              className="h-11 rounded-lg border border-[#244061] bg-[#0d2138] px-4 text-[12px] font-semibold text-[#8ca1bd] transition hover:border-[#3984ff] hover:bg-[#132b49] hover:text-white"
+              className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[12px] font-semibold text-slate-600 transition hover:border-[#3984ff] hover:bg-slate-100 hover:text-slate-900 dark:border-[#244061] dark:bg-[#0d2138] dark:text-[#8ca1bd] dark:hover:bg-[#132b49] dark:hover:text-white"
             >
               Reset Filters
             </button>
@@ -310,7 +310,7 @@ const PermissionTable = () => {
             type="button"
             onClick={handleExportClick}
             disabled={filteredPermissions.length === 0}
-            className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 text-[14px] font-medium text-blue-700 transition hover:border-blue-400 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download size={16} />
             Export
@@ -330,7 +330,7 @@ const PermissionTable = () => {
 
       <div className="relative z-0 h-[calc(100vh-380px)]  overflow-auto table-custom-scrollbar">
         <table className="w-full min-w-[820px] border-collapse text-left">
-          <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+          <thead className="sticky top-0 z-10 bg-slate-100 text-[12px] uppercase tracking-wide text-slate-600 dark:bg-[#172c46] dark:text-[#9aacc7]">
             <tr>
               <th className="px-4 py-3 font-semibold">Date</th>
               <th className="px-4 py-3 font-semibold">Session</th>
@@ -341,7 +341,7 @@ const PermissionTable = () => {
               <th className="px-4 py-3 text-right font-semibold">Action</th>
             </tr>
           </thead>
-          <tbody className="text-[16px] text-[#cad7eb]">
+          <tbody className="text-[16px] text-slate-700 dark:text-[#cad7eb]">
             {filteredPermissions.length > 0 ? (
               filteredPermissions.map((permission) => {
                 {/* console.log("permission : ", permission); */}
@@ -353,16 +353,16 @@ const PermissionTable = () => {
                 return (
                   <tr
                     key={permission.id}
-                    className="border-b border-[#132944] last:border-0"
+                    className="border-b border-slate-200 last:border-0 dark:border-[#132944]"
                   >
-                    <td className="px-4 py-3 font-semibold text-white">
+                    <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                       {permission.date}
                     </td>
                     <td className="px-4 py-3">{permission.session}</td>
-                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                    <td className="px-4 py-3 font-semibold text-teal-700 dark:text-[#18d3bf]">
                       {permission.duration}
                     </td>
-                    <td className="px-4 py-3 font-semibold text-[#18d3bf]">
+                    <td className="px-4 py-3 font-semibold text-teal-700 dark:text-[#18d3bf]">
                       {formatSlotTo12Hour(permission.slot)}
                     </td>
                     <td className="max-w-[260px] truncate px-4 py-3">
@@ -377,13 +377,13 @@ const PermissionTable = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
+                      <div className="flex items-center justify-end gap-2 text-slate-500 dark:text-[#8ca1bd]">
                         <button
                           type="button"
                           onClick={() =>
                             setSelectedPermission(permissionWithColor)
                           }
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-[#c4c6d010] dark:hover:bg-[#183052] dark:hover:text-white"
                           aria-label={`View permission for ${permission.date}`}
                         >
                           <Eye className="h-4 w-4" />
@@ -409,7 +409,7 @@ const PermissionTable = () => {
               <tr>
                 <td
                   colSpan="6"
-                  className="px-4 py-8 text-center text-[#8ca1bd]"
+                  className="px-4 py-8 text-center text-slate-500 dark:text-[#8ca1bd]"
                 >
                   No permission requests found matching your filters.
                 </td>
@@ -442,7 +442,7 @@ const PermissionTable = () => {
 
   return (
     <>
-      <div className="tab-container mt-4 w-full rounded-lg border border-[#213857] bg-[#0d2138] px-4 py-2">
+      <div className="tab-container mt-4 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 dark:border-[#213857] dark:bg-[#0d2138]">
         <div className="flex items-center gap-2">
           {hodTabs.map((tab) => (
             <button
@@ -452,7 +452,7 @@ const PermissionTable = () => {
               className={`px-6 py-2 text-sm font-medium transition ${
                 tab === hodSelectedTab
                   ? "rounded-md bg-[#2563EB] text-white"
-                  : "rounded-md hover:bg-slate-600/20"
+                  : "rounded-md text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600/20"
               }`}
             >
               {tab}
@@ -461,7 +461,7 @@ const PermissionTable = () => {
                   className={`ml-1 rounded px-2 py-[2px] text-xs ${
                     tab === hodSelectedTab
                       ? "bg-white font-semibold text-blue-700"
-                      : "bg-slate-700 text-white"
+                      : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-white"
                   }`}
                 >
                   {teamPermissionCount}

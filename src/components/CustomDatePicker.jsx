@@ -114,7 +114,7 @@ const CustomDatePicker = ({
     return (
         <div className="relative" ref={pickerRef}>
             {label && (
-                <label htmlFor={id} className="mb-2 block text-[16px] font-semibold text-white">
+                <label htmlFor={id} className="mb-2 block text-[16px] font-semibold text-slate-900 dark:text-white">
                     {label}
                 </label>
             )}
@@ -122,35 +122,35 @@ const CustomDatePicker = ({
                 id={id}
                 type="button"
                 onClick={() => setIsOpen((currentState) => !currentState)}
-                className="flex h-12 w-full items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
+                className="flex h-12 w-full items-center justify-between rounded-lg border border-[#E2E8F0] dark:border-[#244061] bg-[#F9FAFB] dark:bg-[#0d2138] px-3 text-left text-[16px] text-black dark:text-white outline-none transition  focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33] cursor-pointer"
             >
-                <span className={value ? "text-white" : "text-[#6f839f]"}>
+                <span className={value ? "text-black dark:text-white" : "text-black dark:text-[#6f839f]"}>
                     {value ? formatDate(value) : placeholder}
                 </span>
-                <CalendarDays size={16} className="text-[#3984ff]" />
+                <CalendarDays size={16} className="text-[#9ca3af] dark:text-[#3984ff]" />
             </button>
 
             {isOpen && (
                 <div
-                    className={`absolute top-full z-[9999] w-[280px] rounded-lg border border-[#244061] bg-[#0a1a2d] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "left-0"
+                    className={`absolute top-full z-[9999] w-[280px] rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0A1A2D] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.35)] ${popupAlign === "right" ? "right-0" : "left-0"
                         }`}
                 >
                     <div className="mb-3 flex items-center justify-between">
                         <button
                             type="button"
                             onClick={() => moveMonth(-1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#9eb0cc] dark:hover:bg-[#183052] dark:hover:text-white cursor-pointer"
                             aria-label="Previous month"
                         >
                             <ChevronLeft size={16} />
                         </button>
-                        <p className="text-[13px] font-semibold text-white">
+                        <p className="text-[13px] font-semibold text-slate-900 dark:text-white">
                             {months[viewDate.getMonth()]} {viewDate.getFullYear()}
                         </p>
                         <button
                             type="button"
                             onClick={() => moveMonth(1)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#9eb0cc] transition hover:bg-[#183052] hover:text-white cursor-pointer"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-[#9eb0cc] dark:hover:bg-[#183052] dark:hover:text-white cursor-pointer"
                             aria-label="Next month"
                         >
                             <ChevronRight size={16} />
@@ -159,7 +159,7 @@ const CustomDatePicker = ({
 
                     <div className="grid grid-cols-7 gap-1 text-center">
                         {days.map((day) => (
-                            <span key={day} className="py-1 text-[10px] font-semibold text-[#8ca1bd]">
+                            <span key={day} className="py-1 text-[10px] font-semibold text-slate-500 dark:text-[#8ca1bd]">
                                 {day}
                             </span>
                         ))}
@@ -175,8 +175,8 @@ const CustomDatePicker = ({
                                     onClick={() => handleSelectDate(date)}
                                     className={`h-8 rounded-md text-[12px] font-semibold transition cursor-pointer ${isSelectedDate(date)
                                             ? "bg-[#2563EB] text-white shadow-[0_5px_18px_rgba(37,99,235,0.35)]"
-                                            : "text-[#cad7eb] hover:bg-[#132b49] hover:text-white"
-                                        } ${date && isDisabled ? "cursor-not-allowed text-[#4f5f7f] opacity-40" : ""} disabled:pointer-events-none ${!date ? "disabled:opacity-0" : ""}`}
+                                            : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49] hover:text-slate-900 dark:hover:text-white"
+                                        } ${date && isDisabled ? "cursor-not-allowed text-slate-400 dark:text-[#4f5f7f] opacity-40" : ""} disabled:pointer-events-none ${!date ? "disabled:opacity-0" : ""}`}
                                 >
                                     {date?.getDate()}
                                 </button>

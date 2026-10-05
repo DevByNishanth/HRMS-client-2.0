@@ -55,9 +55,8 @@ export default function CustomTimePicker({
             justify-between
             items-center
             p-3
-            rounded-lg
-            bg-[#0D2138]
-            text-white
+            bg-white dark:bg-[#0d2138]
+            text-slate-900 dark:text-white
             cursor-pointer
             border
             ${

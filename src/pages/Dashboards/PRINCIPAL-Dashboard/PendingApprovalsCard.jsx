@@ -16,8 +16,8 @@ const PendingApprovalsCard = ({ pendingRequests = [], className = "" }) => {
       <div className="grid h-[245px] grid-cols-1 items-center gap-3 md:grid-cols-[1fr_170px] relative">
         {/* Center label showing total */}
         <div className="absolute left-[43%] top-[38%] z-10 flex flex-col items-center pointer-events-none">
-          <span className="text-[28px] font-bold text-white leading-none">{totalPending}</span>
-          <span className="text-[11px] text-[#8ca1bd] mt-1">Total</span>
+          <span className="text-[28px] font-bold text-slate-900 dark:text-white leading-none">{totalPending}</span>
+          <span className="text-[11px] text-slate-500 dark:text-[#8ca1bd] mt-1">Total</span>
         </div>
 
         <ResponsiveContainer width="120%" height="100%" className="absolute top-2 left-[50%] translate-x-[-50%]">
@@ -40,7 +40,7 @@ const PendingApprovalsCard = ({ pendingRequests = [], className = "" }) => {
             <Legend
               verticalAlign="bottom"
               iconType="circle"
-              formatter={(value) => <span className="text-[12px] text-[#ffffff]">{value}</span>}
+              formatter={(value) => <span className="text-[12px] text-slate-800 dark:text-[#ffffff]">{value}</span>}
               className=""
             />
           </PieChart>

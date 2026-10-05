@@ -3,9 +3,9 @@ import { Pencil } from "lucide-react";
 
 const ProfileCard = ({ title, icon: Icon, children, className = "", canEdit, onEdit }) => {
   return (
-    <section className={`rounded-xl border border-gray-800 bg-[#111a2d] p-5 ${className}`}>
+    <section className={`rounded-xl border border-slate-200 dark:border-gray-800 bg-white dark:bg-[#111a2d] p-5 ${className}`}>
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-[15px] font-medium text-white">{title}</h2>
+        <h2 className="text-[15px] font-medium text-gray-900 dark:text-white">{title}</h2>
         <div className="flex items-center gap-2">
           {canEdit && (
             <button
@@ -18,7 +18,7 @@ const ProfileCard = ({ title, icon: Icon, children, className = "", canEdit, onE
               <Pencil size={16} />
             </button>
           )}
-          {Icon && <Icon size={16} className="text-[#8496b5]" />}
+          {Icon && <Icon size={16} className="text-slate-500 dark:text-[#8496b5]" />}
         </div>
       </div>
       {children}

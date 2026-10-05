@@ -25,7 +25,7 @@ const FacultySearchPopup = ({ onClose, onSelect }) => {
 
   return (
     <section
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#020817]/70 backdrop-blur-[4px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-[#020817]/70 backdrop-blur-[4px]"
       onClick={onClose}
     >
       <div
@@ -33,19 +33,19 @@ const FacultySearchPopup = ({ onClose, onSelect }) => {
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-white dark:bg-[#0A1A2D] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Apply for Others
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
               Select Faculty
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-slate-100 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-slate-900 dark:text-white"
             aria-label="Close faculty search"
           >
             <X size={17} />
@@ -64,7 +64,7 @@ const FacultySearchPopup = ({ onClose, onSelect }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, emp ID, or role..."
-              className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-9 pr-4 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+              className="h-11 w-full rounded-lg border border-slate-300 dark:border-[#244061] bg-white dark:bg-[#0d2138] pl-9 pr-4 text-[13px] text-slate-900 dark:text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               autoFocus
             />
           </div>
@@ -79,13 +79,13 @@ const FacultySearchPopup = ({ onClose, onSelect }) => {
                   key={faculty.empid}
                   type="button"
                   onClick={() => onSelect(faculty)}
-                  className="flex w-full items-center gap-3 rounded-lg border border-[#1e3450] bg-[#0a1a2d] px-3 py-3 text-left transition hover:border-[#3984ff] hover:bg-[#102640]"
+                  className="flex w-full items-center gap-3 rounded-lg border border-[#1e3450] bg-white dark:bg-[#0A1A2D] px-3 py-3 text-left transition hover:border-[#3984ff] hover:bg-slate-100 dark:bg-[#102640]"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                     {faculty.name?.charAt(0)?.toUpperCase() || "U"}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold text-white">
+                    <p className="truncate text-[14px] font-semibold text-slate-900 dark:text-white">
                       {faculty.name}
                     </p>
                     <p className="mt-0.5 truncate text-[12px] text-[#8ca1bd]">

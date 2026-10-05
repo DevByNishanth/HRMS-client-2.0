@@ -58,9 +58,9 @@ const CustomDropdown = ({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-[#244061] bg-[#0d2138] px-3 py-2 text-left text-[16px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+        className="flex h-11 w-full min-w-[140px] items-center justify-between rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 py-2 text-left text-[16px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
       >
-        <span className={value ? "text-white" : "text-[#6f839f]"}>
+        <span className={value ? "text-slate-900 dark:text-white" : "text-slate-500 dark:text-[#6f839f]"}>
           {value || placeholder}
         </span>
         <ChevronDown
@@ -70,7 +70,7 @@ const CustomDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-[#244061] bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-white dark:bg-[#0a1a2d] shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
           <div className="max-h-[200px] overflow-y-auto table-custom-scrollbar">
             {options.map((option) => (
               <button
@@ -82,7 +82,7 @@ const CustomDropdown = ({
                 className={`w-full px-3 py-2 text-left text-[12px] transition ${
                   value === option
                     ? "bg-[#2563EB] text-white"
-                    : "text-[#cad7eb] hover:bg-[#132b49]"
+                    : "text-slate-700 dark:text-[#cad7eb] hover:bg-slate-100 dark:hover:bg-[#132b49]"
                 }`}
               >
                 {option}
@@ -101,7 +101,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full appearance-none rounded-lg border border-[#244061] bg-[#0d2138] px-3 pr-9 text-[14px] text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+      className="h-11 w-full appearance-none rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f9fafb] dark:bg-[#0d2138] px-3 pr-9 text-[14px] text-slate-900 dark:text-white outline-none transition hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
     >
       {options.map((option) => (
         <option key={option} value={option}>
@@ -117,7 +117,7 @@ const SelectFilter = ({ label, value, onChange, options }) => (
 );
 
 const StatCard = ({ label, value, icon: Icon, color }) => (
-  <div className="rounded-xl border border-[#183052] bg-[#0a1a2d] px-4 py-3">
+  <div className="rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d] px-4 py-3 shadow-sm dark:shadow-none transition-colors">
     <div className="flex items-start gap-3">
       <div
         className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -127,7 +127,7 @@ const StatCard = ({ label, value, icon: Icon, color }) => (
       </div>
       <div>
         <span className="text-[14px] font-medium text-[#8ca1bd]">{label}</span>
-        <p className=" text-[16px] font-semibold leading-none text-white">
+        <p className=" text-[16px] font-semibold leading-none text-slate-900 dark:text-white">
           {value}
         </p>
       </div>
@@ -161,15 +161,15 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
       onClick={onClose}
     >
       <div
-        className="flex h-full w-[26%] min-w-[380px] flex-col bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
+        className="flex h-full w-[26%] min-w-[380px] flex-col bg-white dark:bg-[#071425] shadow-[-18px_0_50px_rgba(0,0,0,0.15)] dark:shadow-[-18px_0_50px_rgba(0,0,0,0.35)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-[#173150] bg-[#0a1a2d] px-5 py-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 dark:border-[#173150] bg-slate-50 dark:bg-[#0a1a2d] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Leave Request
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-white">
+            <h2 className="mt-1 text-[18px] font-semibold leading-tight text-gray-900 dark:text-white">
               Review Leave Request
             </h2>
           </div>
@@ -177,7 +177,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#223b5f] bg-[#102640] text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-white"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 dark:border-[#223b5f] bg-gray-50 dark:bg-[#102640] text-slate-500 dark:text-[#9eb0cc] transition hover:border-[#3984ff] hover:text-[#3984ff] dark:hover:text-white"
             aria-label="Close leave details"
           >
             <X size={17} />
@@ -185,7 +185,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 table-custom-scrollbar">
-          <div className="mt-2 rounded-lg border border-[#1d395e] bg-[#0a1a2d] p-3 shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
+          <div className="mt-2 rounded-lg border border-slate-200 dark:border-[#1d395e] bg-slate-50 dark:bg-[#0a1a2d] p-3 shadow-sm dark:shadow-[0_12px_26px_rgba(0,0,0,0.16)]">
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <img
@@ -211,14 +211,14 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
               </span>
             </div>
 
-            <div className="my-3 h-px bg-[#1a3556]" />
+            <div className="my-3 h-px bg-slate-200 dark:bg-[#1a3556]" />
 
             <div>
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-[#8ca1bd]">
                 <Layers size={13} className="text-[#3984ff]" />
                 Leave Type
               </div>
-              <p className="mt-1 text-[16px] font-semibold text-white">
+              <p className="mt-1 text-[16px] font-semibold text-gray-900 dark:text-white">
                 {request.leaveTypeId?.leaveName || "N/A"}
               </p>
             </div>
@@ -229,7 +229,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                   <CalendarDays size={14} className="text-[#b8c7dd]" />
                   From
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">
                   {formatDate(request.fromDate)}
                 </p>
               </div>
@@ -239,54 +239,54 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                   <CalendarDays size={14} className="text-[#b8c7dd]" />
                   To
                 </div>
-                <p className="mt-1 text-[15px] font-medium text-white">
+                <p className="mt-1 text-[15px] font-medium text-gray-900 dark:text-white">
                   {formatDate(request.toDate)}
                 </p>
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+            <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 dark:bg-[#132b49] px-3 py-2.5">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                   <TimerReset size={18} />
                 </div>
-                <p className="text-[13px] font-medium text-[#cad7eb]">
+                <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">
                   Leave Duration
                 </p>
               </div>
-              <p className="text-[15px] font-semibold text-white">
+              <p className="text-[15px] font-semibold text-gray-900 dark:text-white">
                 {request.totalDays || 0}{" "}
                 {request.totalDays === 1 ? "Day" : "Days"}
               </p>
             </div>
 
             {request.leaveSession && (
-              <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+              <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 dark:bg-[#132b49] px-3 py-2.5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <Clock3 size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                  <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">
                     Leave Session
                   </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white">
+                <p className="text-[15px] font-semibold text-gray-900 dark:text-white">
                   {request.leaveSession}
                 </p>
               </div>
             )}
 
             {request.currentApprovalLevel && (
-              <div className="mt-3 flex items-center justify-between rounded-md bg-[#132b49] px-3 py-2.5">
+              <div className="mt-3 flex items-center justify-between rounded-md bg-slate-100 dark:bg-[#132b49] px-3 py-2.5">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1f4070] text-[#6ea1ff]">
                     <ShieldCheck size={18} />
                   </div>
-                  <p className="text-[13px] font-medium text-[#cad7eb]">
+                  <p className="text-[13px] font-medium text-slate-600 dark:text-[#cad7eb]">
                     Approval Level
                   </p>
                 </div>
-                <p className="text-[15px] font-semibold text-white capitalize">
+                <p className="text-[15px] font-semibold text-gray-900 dark:text-white capitalize">
                   {request.currentApprovalLevel}
                 </p>
               </div>
@@ -294,22 +294,22 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
           </div>
 
           <div className="mt-3">
-            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+            <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
               <FileText size={15} className="text-[#3984ff]" />
               Reason
             </p>
-            <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+            <div className="rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
               {request.reason || "No reason provided"}
             </div>
           </div>
 
           {requiresFile && (
             <div className="mt-3">
-              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
                 <FileText size={15} className="text-[#3984ff]" />
                 Supporting Document
               </p>
-              <div className="rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-[#cad7eb]">
+              <div className="rounded-lg border border-slate-200 dark:border-[#244061] bg-slate-50 dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">
                 {doc ? (
                   <a
                     href={doc.url}
@@ -329,7 +329,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
 
           {request.rejectionReason && (
             <div className="mt-3">
-              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-white">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-gray-900 dark:text-white">
                 <AlertCircle size={15} className="text-[#f16868]" />
                 Rejection Reason
               </p>
@@ -341,7 +341,7 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
 
           {request.approvalHistory && request.approvalHistory.length > 0 && (
             <div className="mt-3 border-t border-gray-400/20 pt-4">
-              <p className="mb-3 flex items-center gap-2 text-[16px] font-semibold text-white">
+              <p className="mb-3 flex items-center gap-2 text-[16px] font-semibold text-gray-900 dark:text-white">
                 <ShieldCheck size={15} className="text-[#3984ff]" />
                 Approval Workflow
               </p>
@@ -358,17 +358,17 @@ const LeaveDetailsPanel = ({ request, onClose, onRevoke }) => {
                     <div key={index} className="relative">
                       {!isLast && (
                         <div
-                          className={`absolute left-[19px] top-[50px] w-[2px] h-[60px] ${
+                          className={`absolute left-[19px] top-10 bottom-0 w-[2px] ${
                             isApproved
                               ? "bg-[#10b981]"
                               : isRejected
                                 ? "bg-[#ef4444]"
-                                : "bg-[#444c63]"
+                                : "bg-slate-200 dark:bg-[#444c63]"
                           }`}
                         />
                       )}
 
-                      <div className="relative flex gap-3 pb-4">
+                      <div className="relative flex gap-3 pb-6">
                         <div className="flex-shrink-0">
                           <div
                             className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
@@ -489,15 +489,15 @@ const ConfirmationPopup = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[440px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-[#173150] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Confirmation
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
+            <h2 className="mt-1 text-[18px] font-semibold text-gray-900 dark:text-white">
               {title}
             </h2>
           </div>
@@ -512,13 +512,13 @@ const ConfirmationPopup = ({
         </div>
 
         <div className="px-5 py-4">
-          <p className="text-[13px] leading-5 text-[#cad7eb]">{message}</p>
+          <p className="text-[13px] leading-5 text-slate-700 dark:text-[#cad7eb]">{message}</p>
 
           {isReject && (
             <div className="mt-4">
               <label
                 htmlFor="reject-reason"
-                className="mb-2 block text-[13px] font-semibold text-white"
+                className="mb-2 block text-[13px] font-semibold text-gray-900 dark:text-white"
               >
                 Reason for rejection
               </label>
@@ -528,17 +528,17 @@ const ConfirmationPopup = ({
                 onChange={(event) => onReasonChange(event.target.value)}
                 rows={4}
                 placeholder="Type the reason..."
-                className="w-full resize-none rounded-lg border border-[#244061] bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                className="w-full resize-none rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] px-4 py-3 text-[13px] leading-5 text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
               />
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-[#173150] px-5 py-4">
+        <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-[#173150] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="h-10 rounded-md border border-[#244061] px-4 text-[13px] font-semibold text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
+            className="h-10 rounded-md border border-slate-200 dark:border-[#244061] px-4 text-[13px] font-semibold text-gray-900 dark:text-[#cad7eb] transition hover:bg-[#132b49] hover:text-white"
           >
             Cancel
           </button>
@@ -586,15 +586,15 @@ const BulkActionModal = ({
       onClick={loading ? undefined : onClose}
     >
       <div
-        className="w-full max-w-[460px] rounded-xl border border-[#1d395e] bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
+        className="w-full max-w-[460px] rounded-xl border border-[#1d395e] bg-white dark:bg-[#0a1a2d] shadow-[0_22px_70px_rgba(0,0,0,0.4)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#173150] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-[#173150] px-5 py-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#3984ff]">
               Bulk Action
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-white">
+            <h2 className="mt-1 text-[18px] font-semibold text-gray-900 dark:text-white">
               Bulk Approve Leave Requests
             </h2>
           </div>
@@ -1081,20 +1081,20 @@ const PrincipalLeaveRequestPage = () => {
   //   selectableIds.every((id) => selectedIds.includes(id));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#051424]">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#051424] transition-colors duration-200">
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <CommonHeader />
 
-        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#071425] px-4 py-4 text-white table-custom-scrollbar">
+        <main className="max-h-[calc(100vh-56px)] overflow-y-auto bg-[#f8fafc] dark:bg-[#071425] px-4 py-4 text-slate-900 dark:text-white table-custom-scrollbar transition-colors duration-200">
           <div className="mx-auto">
             <header className="flex items-center justify-between ">
               <div>
-                <h1 className="text-xl font-medium leading-tight text-white">
+                <h1 className="text-xl font-medium leading-tight text-slate-900 dark:text-white">
                   Leave Requests
                 </h1>
-                <p className="mt-1 text-[16px] text-[#9eb0cc]">
+                <p className="mt-1 text-[16px] text-slate-500 dark:text-[#9eb0cc]">
                   Review and manage leave requests across all departments.
                 </p>
               </div>
@@ -1130,9 +1130,9 @@ const PrincipalLeaveRequestPage = () => {
             </div>
 
             {/* Leave Requests Table */}
-            <section className="mt-5 rounded-xl border border-[#183052] bg-[#0a1a2d]">
+            <section className="mt-5 rounded-xl border border-slate-200 dark:border-[#183052] bg-white dark:bg-[#0a1a2d]">
               <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-3 ">
-                <h2 className="shrink-0 text-[18px] font-semibold text-white">
+                <h2 className="shrink-0 text-[18px] font-semibold text-slate-900 dark:text-white">
                   Leave Requests <span>({filteredRequests.length})</span>
                 </h2>
 
@@ -1140,14 +1140,14 @@ const PrincipalLeaveRequestPage = () => {
                   <div className="relative min-w-0 w-[240px]">
                     <Search
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6f839f]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6f839f]"
                     />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search leave requests..."
-                      className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] px-3 pl-10 text-[14px] text-white outline-none transition placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                      className="h-11 w-full rounded-lg border border-slate-200 dark:border-[#244061] bg-[#f8fafc] dark:bg-[#0d2138] px-3 pl-10 text-[14px] text-slate-900 dark:text-white outline-none transition placeholder:text-slate-400 dark:placeholder:text-[#6f839f] hover:border-[#3984ff] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
                     />
                   </div>
 
@@ -1162,7 +1162,7 @@ const PrincipalLeaveRequestPage = () => {
                     <button
                       type="button"
                       onClick={openBulkApprove}
-                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#18d3bf] px-3 text-[14px] font-medium text-[#071425] transition hover:bg-[#2ce8d4]"
+                      className="inline-flex h-11 items-center gap-2 rounded-lg bg-blue-500 px-3 text-[14px] font-medium text-white transition hover:bg-blue-600"
                     >
                       <CheckCheck size={16} />
                       Bulk Approve ({selectedIds.length})
@@ -1178,7 +1178,7 @@ const PrincipalLeaveRequestPage = () => {
                     type="button"
                     onClick={handleExportClick}
                     disabled={filteredRequests.length === 0}
-                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-[#244061] bg-[#0d2138] px-3 text-[14px] font-medium text-white transition hover:border-[#3984ff] hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 dark:border-[#244061] bg-blue-600 text-white dark:bg-[#0d2138] px-3 text-[14px] font-medium transition hover:border-[#3984ff] hover:bg-blue-700 dark:hover:bg-[#132b49] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Download size={16} />
                     Export
@@ -1194,33 +1194,33 @@ const PrincipalLeaveRequestPage = () => {
                 error={exportError}
               />
 
-              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-auto table-custom-scrollbar">
-                <table className="w-full min-w-[900px] border-collapse text-left">
-                  <thead className="sticky top-0 z-10 bg-[#172c46] text-[12px] uppercase tracking-wide text-[#9aacc7]">
+              <div className="relative z-0 max-h-[calc(100vh-320px)] overflow-y-auto overflow-x-hidden table-custom-scrollbar">
+                <table className="w-full table-fixed border-collapse text-left">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-[#172c46] text-sm font-medium text-slate-500 dark:text-[#9aacc7]">
                     <tr>
-                      <th className="px-4 py-3">
+                      <th className="px-4 py-3 w-[5%]">
                         <input
                           type="checkbox"
                           checked={allSelected}
                           onChange={handleSelectAll}
                           disabled={selectableIds.length === 0 || bulkLoading}
                           title="Select first 10 pending requests"
-                          className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                          className="h-4 w-4 cursor-pointer accent-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
                         />
                       </th>
-                      <th className="px-4 py-3 font-semibold">Faculty Name</th>
-                      <th className="px-4 py-3 font-semibold">Leave Type</th>
-                      <th className="px-4 py-3 font-semibold">Doc</th>
-                      <th className="px-4 py-3 font-semibold">From</th>
-                      <th className="px-4 py-3 font-semibold">To</th>
-                      <th className="px-4 py-3 font-semibold">Duration</th>
-                      <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 text-right font-semibold">
+                      <th className="px-4 py-3 font-semibold w-[20%]">Faculty Name</th>
+                      <th className="px-4 py-3 font-semibold w-[15%]">Leave Type</th>
+                      <th className="px-4 py-3 font-semibold w-[5%]">Doc</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">From</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">To</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">Duration</th>
+                      <th className="px-4 py-3 font-semibold w-[10%]">Status</th>
+                      <th className="px-4 py-3 text-right font-semibold w-[15%]">
                         Action
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="text-[12px] text-[#cad7eb]">
+                  <tbody className="text-[12px] text-slate-700 dark:text-[#cad7eb]">
                     {filteredRequests.length > 0 ? (
                       filteredRequests.map((request, index) => {
                         const requiresFile = isFileUploadRequired(request?.leaveTypeId?.leaveName);
@@ -1228,9 +1228,9 @@ const PrincipalLeaveRequestPage = () => {
                         return (
                         <tr
                           key={`${request._id}-${index}`}
-                          className={`border-b border-[#132944] last:border-0 ${
+                          className={`border-b border-slate-200 dark:border-[#132944] last:border-0 hover:bg-slate-50 dark:hover:bg-transparent transition-colors ${
                             selectedIds.includes(request._id)
-                              ? "bg-[#18d3bf0d]"
+                              ? "bg-blue-50 dark:bg-[#18d3bf0d]"
                               : ""
                           }`}
                         >
@@ -1245,11 +1245,11 @@ const PrincipalLeaveRequestPage = () => {
                                   !selectedIds.includes(request._id)
                                 }
                                 aria-label={`Select leave request of ${request.facultyId?.firstName || "faculty"}`}
-                                className="h-4 w-4 cursor-pointer accent-[#18d3bf] disabled:cursor-not-allowed disabled:opacity-40"
+                                className="h-4 w-4 cursor-pointer accent-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
                               />
                             ) : null}
                           </td>
-                          <td className="px-4 py-3 font-semibold text-white">
+                          <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                             <div className="flex items-center gap-2">
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563EB] text-[16px] font-semibold text-white">
                                 {request.facultyId?.firstName?.charAt(0)?.toUpperCase() || "U"}
@@ -1346,7 +1346,7 @@ const PrincipalLeaveRequestPage = () => {
                               <button
                                 type="button"
                                 onClick={() => handleView(request)}
-                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
+                                className="inline-flex h-8 w-8 items-center bg-gray-100 justify-center rounded-lg dark:bg-[#c4c6d010] transition hover:bg-[#183052] hover:text-white"
                                 aria-label="View request details"
                                 title="View"
                               >
