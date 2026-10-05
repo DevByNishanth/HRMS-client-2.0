@@ -14,6 +14,8 @@ import {
   isFacultyExcluded,
   loadExcludedFacultyIds,
 } from "../../../../utils/excludedFaculty";
+import { getMonthlyLateMinutes } from "../../../../services/Attendance/getMonthlyLateMinutesService";
+import { getAllLeaveBalances } from "../../../../services/LeaveBalance/getAllLeaveBalancesService";
 
 export default function AttendanceTable() {
   const [department, setDepartment] = useState("");
@@ -176,7 +178,7 @@ export default function AttendanceTable() {
       setLoading(true);
       const currentDate = formatApiDate(new Date());
       const payload = {
-        search: selectedEmployee?.firstName || selectedEmployee?.empId || "",
+        search:  selectedEmployee?.empId || "",
         department,
         employeeCategory: category,
         fromDate: fromDate ? formatApiDate(fromDate) : currentDate,
@@ -325,6 +327,51 @@ export default function AttendanceTable() {
   const exportAttendanceByStatus = async (status) => {
   try {
     const currentDate = formatIstApiDate();
+    const [year, month] = currentDate.split("-");
+
+    let monthlyLateMinutesMap = {};
+    let leaveBalanceMap = {};
+    if (status === "Late Checked In") {
+      try {
+        const lateRes = await getMonthlyLateMinutes(month, year);
+        const lateDataArray = Array.isArray(lateRes) ? lateRes : lateRes?.data || [];
+        lateDataArray.forEach(item => {
+          const eId = item.empId || item.employeeId || item._id;
+          if (eId) {
+            monthlyLateMinutesMap[eId] = item.consolidateLateMinutes ?? item.totalLateMinutes ?? item.lateMinutes ?? item.totalLate ?? 0;
+          }
+        });
+      } catch (err) {
+        console.error("Failed to fetch monthly late minutes", err);
+      }
+    } else if (status === "Not Checked In") {
+      try {
+        const leaveRes = await getAllLeaveBalances();
+        const leaveDataArray = leaveRes?.report || leaveRes?.balances || leaveRes?.data || (Array.isArray(leaveRes) ? leaveRes : []);
+        
+        leaveDataArray.forEach(item => {
+          const eId = item.empId || item.facultyId?.empId || item.employeeId || item._id;
+          if (eId) {
+            if (!leaveBalanceMap[eId]) {
+              leaveBalanceMap[eId] = { cl: "0/0", lop: "0" };
+            }
+
+            const details = item.leaveDetails || [];
+            
+            details.forEach(detail => {
+              const type = (detail.leaveTypeName || detail.leaveType || "").toUpperCase();
+              if (type.includes("CASUAL LEAVE") || type === "CL") {
+                leaveBalanceMap[eId].cl = `${detail.usedDays ?? detail.used ?? 0}/${detail.allocatedDays ?? detail.balance ?? 0}`;
+              } else if (type.includes("LOSS OF PAY") || type === "LOP") {
+                leaveBalanceMap[eId].lop = `${detail.usedDays ?? detail.used ?? 0}`;
+              }
+            });
+          }
+        });
+      } catch (err) {
+        console.error("Failed to fetch leave balances", err);
+      }
+    }
 
     // Get attendance data from API
     const response = await getAttendanceTableData({
@@ -455,6 +502,8 @@ export default function AttendanceTable() {
             //   "Shift End Time",
             //   (row) => formatIstShiftTime(row.endTime),
             // ],
+            ["CL", (row) => leaveBalanceMap[getEmployeeId(row)]?.cl || "0/0"],
+            ["LOP", (row) => leaveBalanceMap[getEmployeeId(row)]?.lop || "0"],
             ["Status", (row) => row.status],
           ]
         : [
@@ -479,23 +528,57 @@ export default function AttendanceTable() {
               (row) => formatIstDateTime(row.inTime),
             ],
             ["Late Minutes", (row) => row.lateMinutes],
+            ...(status === "Late Checked In" ? [
+              ["Consolidate Late Minutes", (row) => monthlyLateMinutesMap[getEmployeeId(row)] || 0],
+              ["Consolidate Late Hours", (row) => {
+                const totalMinutes = monthlyLateMinutesMap[getEmployeeId(row)] || 0;
+                if (!totalMinutes || isNaN(totalMinutes)) return "0h 0min";
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                return `${hours}h ${minutes}min`;
+              }]
+            ] : []),
             ["Status", (row) => row.status],
           ];
 
 
     /**
-     * Group rows by department
+     * Group rows by category/department
      */
     const groupedRows = reportRows.reduce(
       (groups, row) => {
-        const departmentName =
-          row.department || "Unknown Department";
+        let groupName = row.department || "Unknown Department";
+        let order = 6;
 
-        if (!groups[departmentName]) {
-          groups[departmentName] = [];
+        const cat = (row.employeeCategory || "").toLowerCase();
+        const dept = (row.department || "").toLowerCase();
+        const desig = (row.designation || "").toLowerCase();
+        const originalDept = (row.originalDepartment || "").toLowerCase();
+
+        if (cat === "teaching") {
+          groupName = "Teaching Faculty";
+          order = 1;
+        } else if (dept.includes("house keeping") || desig.includes("house keeping") || originalDept.includes("house keeping")) {
+          groupName = "House Keeping";
+          order = 3;
+        } else if (dept.includes("transport") || desig.includes("driver") || originalDept.includes("transport") || dept.includes("driver")) {
+          groupName = "Driver";
+          order = 4;
+        } else if (dept.includes("security") || desig.includes("security") || originalDept.includes("security")) {
+          groupName = "Security";
+          order = 5;
+        } else if (cat === "non-teaching" || cat === "non teaching") {
+          groupName = "Non-Teaching Faculty";
+          order = 2;
+        } else {
+          order = 6;
         }
 
-        groups[departmentName].push(row);
+        if (!groups[groupName]) {
+          groups[groupName] = { order, rows: [] };
+        }
+
+        groups[groupName].rows.push(row);
 
         return groups;
       },
@@ -504,37 +587,35 @@ export default function AttendanceTable() {
 
     /**
      * Sort:
-     * 1. Department alphabetically
-     * 2. Employee name alphabetically
+     * 1. Custom order (Teaching -> Non-Teaching -> House Keeping -> Driver -> Security -> Others)
+     * 2. Department name alphabetically (for others)
+     * 3. Employee name alphabetically
      */
+    let globalIndex = 0;
     const sheetRows = Object.entries(groupedRows)
-      .sort(
-        ([firstDepartment], [secondDepartment]) =>
-          firstDepartment.localeCompare(secondDepartment)
-      )
-      .flatMap(([, departmentRows]) =>
-        departmentRows
+      .sort(([nameA, dataA], [nameB, dataB]) => {
+        if (dataA.order !== dataB.order) {
+          return dataA.order - dataB.order;
+        }
+        return nameA.localeCompare(nameB);
+      })
+      .flatMap(([, data]) =>
+        data.rows
           .sort((firstRow, secondRow) =>
-            String(
-              firstRow.employeeName || ""
-            ).localeCompare(
-              String(
-                secondRow.employeeName || ""
-              )
+            String(firstRow.employeeName || "").localeCompare(
+              String(secondRow.employeeName || "")
             )
           )
-          .map((row) => row)
       )
-      .map((row, index) =>
-        Object.fromEntries(
-          columns.map(
-            ([columnName, getValue]) => [
-              columnName,
-              getValue(row, index),
-            ]
-          )
-        )
-      );
+      .map((row) => {
+        globalIndex++;
+        return Object.fromEntries(
+          columns.map(([columnName, getValue]) => [
+            columnName,
+            getValue(row, globalIndex - 1),
+          ])
+        );
+      });
 
     /**
      * Create Excel workbook
