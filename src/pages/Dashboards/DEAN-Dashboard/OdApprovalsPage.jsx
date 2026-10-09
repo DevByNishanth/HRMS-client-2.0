@@ -487,6 +487,13 @@ const OdApprovalsPage = () => {
           let finalData = mapped.filter((item) => {
             if (item.leaveTypeCategory != "On Duty") return false;
 
+            if (
+              normalizedRole === "coe" &&
+              item.currentApprovalLevel?.toLowerCase()?.trim() !== "coe"
+            ) {
+              return false;
+            }
+
             // Dean sub-roles (e.g. dean-iqac) only see requests waiting at their own approval level
             if (
               normalizedRole?.startsWith("dean-") &&
