@@ -543,71 +543,60 @@ export default function AttendanceTable() {
 
 
     /**
-     * Group rows by category/department
+     * Group rows by sheets requested
      */
-    const groupedRows = reportRows.reduce(
-      (groups, row) => {
-        let groupName = row.department || "Unknown Department";
-        let order = 6;
+    const teachingRows = [];
+    const nonTeachingRows = [];
+    const subStaffRows = [];
 
-        const cat = (row.employeeCategory || "").toLowerCase();
-        const dept = (row.department || "").toLowerCase();
-        const desig = (row.designation || "").toLowerCase();
-        const originalDept = (row.originalDepartment || "").toLowerCase();
+    reportRows.forEach((row) => {
+      const cat = (row.employeeCategory || "").toLowerCase();
+      const dept = (row.department || "").toLowerCase();
+      const desig = (row.designation || "").toLowerCase();
+      const originalDept = (row.originalDepartment || "").toLowerCase();
 
-        if (cat === "teaching") {
-          groupName = "Teaching Faculty";
-          order = 1;
-        } else if (dept.includes("house keeping") || desig.includes("house keeping") || originalDept.includes("house keeping")) {
-          groupName = "House Keeping";
-          order = 3;
-        } else if (dept.includes("transport") || desig.includes("driver") || originalDept.includes("transport") || dept.includes("driver")) {
-          groupName = "Driver";
-          order = 4;
-        } else if (dept.includes("security") || desig.includes("security") || originalDept.includes("security")) {
-          groupName = "Security";
-          order = 5;
-        } else if (cat === "non-teaching" || cat === "non teaching") {
-          groupName = "Non-Teaching Faculty";
-          order = 2;
-        } else {
-          order = 6;
-        }
+      const isHouseKeeping = dept.includes("house keeping") || desig.includes("house keeping") || originalDept.includes("house keeping");
+      const isDriver = dept.includes("transport") || desig.includes("driver") || originalDept.includes("transport") || dept.includes("driver");
+      const isElectrical = dept.includes("electrical") || desig.includes("electrical") || originalDept.includes("electrical");
+      const isSecurity = dept.includes("security") || desig.includes("security") || originalDept.includes("security");
+      
+      if (isHouseKeeping || isDriver || isElectrical || isSecurity) {
+        subStaffRows.push(row);
+      } else if (cat === "teaching") {
+        teachingRows.push(row);
+      } else if (cat === "non-teaching" || cat === "non teaching") {
+        nonTeachingRows.push(row);
+      }
+    });
 
-        if (!groups[groupName]) {
-          groups[groupName] = { order, rows: [] };
-        }
+    const sortRows = (rowsArray) => {
+      return rowsArray.sort((a, b) => {
+        const deptA = (a.department || "").toLowerCase();
+        const deptB = (b.department || "").toLowerCase();
+        if (deptA !== deptB) return deptA.localeCompare(deptB);
+        
+        const nameA = (a.employeeName || "").toLowerCase();
+        const nameB = (b.employeeName || "").toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+    };
 
-        groups[groupName].rows.push(row);
-
-        return groups;
-      },
-      {}
-    );
+    const sheets = [
+      { name: "Teaching", data: sortRows(teachingRows) },
+      { name: "Non Teaching", data: sortRows(nonTeachingRows) },
+      { name: "Sub Staff", data: sortRows(subStaffRows) }
+    ];
 
     /**
-     * Sort:
-     * 1. Custom order (Teaching -> Non-Teaching -> House Keeping -> Driver -> Security -> Others)
-     * 2. Department name alphabetically (for others)
-     * 3. Employee name alphabetically
+     * Create Excel workbook
      */
-    let globalIndex = 0;
-    const sheetRows = Object.entries(groupedRows)
-      .sort(([nameA, dataA], [nameB, dataB]) => {
-        if (dataA.order !== dataB.order) {
-          return dataA.order - dataB.order;
-        }
-        return nameA.localeCompare(nameB);
-      })
-      .flatMap(([, data]) =>
-        data.rows
-          .sort((firstRow, secondRow) =>
-            String(firstRow.employeeName || "").localeCompare(
-              String(secondRow.employeeName || "")
-            )
-          )
-      )
-      .map((row) => {
+    const workbook = XLSX.utils.book_new();
+
+    sheets.forEach((sheet) => {
+      if (sheet.data.length === 0) return; // Skip empty sheets
+
+      let globalIndex = 0;
+      const sheetRows = sheet.data.map((row) => {
         globalIndex++;
         return Object.fromEntries(
           columns.map(([columnName, getValue]) => [
@@ -617,31 +606,27 @@ export default function AttendanceTable() {
         );
       });
 
-    /**
-     * Create Excel workbook
-     */
-    const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(sheetRows);
 
-    const worksheet =
-      XLSX.utils.json_to_sheet(sheetRows);
+      /**
+       * Set Excel column widths
+       */
+      worksheet["!cols"] = columns.map(([columnName]) => ({
+        wch: Math.max(columnName.length + 2, 16),
+      }));
 
-    /**
-     * Set Excel column widths
-     */
-    worksheet["!cols"] = columns.map(
-      ([columnName]) => ({
-        wch: Math.max(
-          columnName.length + 2,
-          16
-        ),
-      })
-    );
+      // Add Auto-Filter for department-wise filtering
+      if (worksheet['!ref']) {
+        worksheet['!autofilter'] = { ref: worksheet['!ref'] };
+      }
 
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      "Attendance"
-    );
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+    });
+
+    if (!workbook.SheetNames.length) {
+      alert(`No ${status.toLowerCase()} faculty found for any category`);
+      return;
+    }
 
     /**
      * Generate Excel file
