@@ -332,7 +332,7 @@ const OdApprovalsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("Pending");
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -486,6 +486,13 @@ const OdApprovalsPage = () => {
 
           let finalData = mapped.filter((item) => {
             if (item.leaveTypeCategory != "On Duty") return false;
+
+            if (
+              normalizedRole === "coe" &&
+              item.currentApprovalLevel?.toLowerCase()?.trim() !== "coe"
+            ) {
+              return false;
+            }
 
             // Dean sub-roles (e.g. dean-iqac) only see requests waiting at their own approval level
             if (
@@ -859,3 +866,4 @@ const OdApprovalsPage = () => {
 };
 
 export default OdApprovalsPage;
+
