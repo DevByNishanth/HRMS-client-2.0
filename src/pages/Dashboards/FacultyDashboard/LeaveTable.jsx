@@ -294,7 +294,7 @@ const FilterDatePicker = ({
   );
 };
 
-const LeaveTable = () => {
+const LeaveTable = ({ employeeId } = {}) => {
   // params and url 
   const location = useLocation();
 
@@ -428,7 +428,10 @@ const LeaveTable = () => {
   // api calling functions 
   async function fetchLeaves() {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/leave-application/me`, {
+      const endpoint = employeeId
+        ? `/api/leave-application/faculty/${encodeURIComponent(employeeId)}`
+        : "/api/leave-application/me";
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("hrms_token")}`,
         }
@@ -476,7 +479,7 @@ const LeaveTable = () => {
     if (role === "hod") {
       fetchTeamLeavesCount();
     }
-  }, [])
+  }, [employeeId])
   return (
     <>
 
