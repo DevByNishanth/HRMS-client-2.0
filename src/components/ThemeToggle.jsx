@@ -3,6 +3,7 @@ import { useTheme } from "../context/ThemeContext";
 
 export default function ThemeToggle() {
   const { isDarkMode, toggleTheme } = useTheme();
+  console.log("Hello Everyone");
   
   return (
     <button
