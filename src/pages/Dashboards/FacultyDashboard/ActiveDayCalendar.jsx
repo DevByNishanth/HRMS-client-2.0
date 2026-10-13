@@ -30,7 +30,6 @@ const ActiveDayCalendar = () => {
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [attendanceData, setAttendanceData] = useState(null);
-  const [daysInMonth, setDaysInMonth] = useState(0);
   const [monthDropdownOpen, setMonthDropdownOpen] = useState(false);
   const [presentCount, setPresentCount] = useState(0);
   const [absentCount, setAbsentCount] = useState(0);
@@ -62,26 +61,32 @@ const ActiveDayCalendar = () => {
 
         const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
         const res = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster?month=${selectedMonth + 1}&year=${currentYear}&facultyId=${facultyId}`,
+          `${API_BASE_URL.replace(/\/$/, "")}/api/attendance/muster/v1?month=${selectedMonth + 1}&year=${currentYear}&facultyId=${facultyId}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();
         if (res.ok && data?.success && data?.employees?.length > 0) {
-          const attendance = data.employees[0].attendance;
-          setAttendanceData(attendance);
-          setDaysInMonth(data.daysInMonth);
+          const attendance = data.employees[0].attendance || [];
+          const attendanceByDay = attendance.reduce((byDay, entry) => {
+            const rawStatus = entry?.status;
+            byDay[entry.day] = typeof rawStatus === "string"
+              ? rawStatus
+              : rawStatus?.status || "-";
+            return byDay;
+          }, {});
+          setAttendanceData(attendanceByDay);
 
           // Count legend stats
           let pCount = 0;
           let aCount = 0;
           let hCount = 0;
           let mpCount = 0;
-          Object.values(attendance || {}).forEach((code) => {
+          Object.values(attendanceByDay).forEach((code) => {
             if (code === "P") pCount++;
             else if (code === "A" || code === "L") aCount++;
             else if (code === "OFF" || code === "H") hCount++;
             else if (code === "MP") mpCount++;
-            else if (code === "P:A") {
+            else if (code === "P:A" || code === "A:P") {
               pCount++;
               aCount++;
             }
@@ -90,6 +95,12 @@ const ActiveDayCalendar = () => {
           setAbsentCount(aCount);
           setHolidayCount(hCount);
           setMPCount(mpCount);
+        } else {
+          setAttendanceData({});
+          setPresentCount(0);
+          setAbsentCount(0);
+          setHolidayCount(0);
+          setMPCount(0);
         }
       } catch (err) {
         console.error("Error fetching muster:", err);
@@ -100,19 +111,23 @@ const ActiveDayCalendar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 
-  // Build calendar grid
-  const firstDayOfMonth = new Date(now.getFullYear(), selectedMonth, 1).getDay();
+  // Build the muster cycle grid: 26th of the previous month through the 25th
+  // of the selected month, aligned to the weekday headings.
+  const cycleStart = new Date(now.getFullYear(), selectedMonth - 1, 26);
+  const cycleEnd = new Date(now.getFullYear(), selectedMonth, 25);
   const calendarDays = [];
 
-  // Leading muted cells (days from previous month)
-  for (let i = 0; i < firstDayOfMonth; i++) {
+  for (let i = 0; i < cycleStart.getDay(); i++) {
     calendarDays.push({ day: null, type: "muted" });
   }
 
-  // Actual month days
-  for (let day = 1; day <= daysInMonth; day++) {
-    const code = attendanceData?.[String(day)] || "-";
-    calendarDays.push({ day, code });
+  for (let date = new Date(cycleStart); date <= cycleEnd; date.setDate(date.getDate() + 1)) {
+    const day = date.getDate();
+    calendarDays.push({
+      day,
+      code: attendanceData?.[String(day)] || "-",
+      isCurrentMonth: date.getMonth() === selectedMonth,
+    });
   }
 
   // Trailing muted cells to fill the last row
@@ -173,7 +188,7 @@ const ActiveDayCalendar = () => {
             return (
               <div
                 key={`${item.day}-${index}`}
-                className="relative flex aspect-square items-center justify-center rounded-full overflow-hidden"
+                className={`relative flex aspect-square items-center justify-center rounded-full overflow-hidden ${!item.isCurrentMonth ? "opacity-55" : ""}`}
                 style={{
                   background: "linear-gradient(to left, #14b8a6 50%, #f87171 50%)"
                 }}
@@ -189,7 +204,7 @@ const ActiveDayCalendar = () => {
             return (
               <div
                 key={`${item.day}-${index}`}
-                className="relative flex aspect-square items-center justify-center rounded-full overflow-hidden bg-linear-to-r from-red-400 to-teal-500 "
+                className={`relative flex aspect-square items-center justify-center rounded-full overflow-hidden bg-linear-to-r from-red-400 to-teal-500 ${!item.isCurrentMonth ? "opacity-55" : ""}`}
                 style={{
                   background: "linear-gradient(to left, #14b8a6 50%, #f87171 50%)"
                 }}
@@ -204,7 +219,7 @@ const ActiveDayCalendar = () => {
           return (
             <span
               key={`${item.day}-${index}`}
-              className={`flex aspect-square items-center justify-center rounded-full text-[12px] font-bold ${statusColors[item.code] || statusColors["-"]}`}
+              className={`flex aspect-square items-center justify-center rounded-full text-[12px] font-bold ${statusColors[item.code] || statusColors["-"]} ${!item.isCurrentMonth ? "opacity-55" : ""}`}
             >
               {item.day}
             </span>
