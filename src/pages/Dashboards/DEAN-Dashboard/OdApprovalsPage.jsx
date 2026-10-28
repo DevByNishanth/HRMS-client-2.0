@@ -103,8 +103,16 @@ const OdDetailsPopup = ({ request, onClose }) => {
                   <Clock size={14} className="text-[#b8c7dd]" />
                   Status
                 </div>
-                <p className={`mt-1 text-[15px] font-medium ${request.status === "Approved" ? "text-[#18d3bf]" : request.status === "Rejected" ? "text-[#f16868]" : "text-[#f0a15f]"}`}>
-                  {request.status}
+                <p
+                  className={`mt-1 text-[15px] font-medium ${
+                    (request.approvalStatus || request.status) === "Approved"
+                      ? "text-[#18d3bf]"
+                      : (request.approvalStatus || request.status) === "Rejected"
+                        ? "text-[#f16868]"
+                        : "text-[#f0a15f]"
+                  }`}
+                >
+                  {request.approvalStatus || request.status}
                 </p>
               </div>
             </div>
@@ -409,6 +417,20 @@ const OdApprovalsPage = () => {
   const decodedData = decodeToken(token);
   const rawRole = decodedData?.role || null;
   const normalizedRole = rawRole?.toLowerCase()?.trim() || null;
+  const isIqac = normalizedRole === "dean-iqac" || normalizedRole === "iqac";
+
+  const isWaitingAtMyLevel = (req) => {
+    const currentLevel = req?.currentApprovalLevel?.toLowerCase()?.trim();
+    if (currentLevel === normalizedRole) return true;
+    if (isIqac && (currentLevel === "dean-iqac" || currentLevel === "iqac")) return true;
+    if (normalizedRole === "dean" && (currentLevel === "dean" || currentLevel?.startsWith("dean-"))) return true;
+    return false;
+  };
+
+  const canTakeAction = (req) => {
+    const reqStatus = req?.approvalStatus || req?.status;
+    return reqStatus === "Pending" && isWaitingAtMyLevel(req);
+  };
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sece_hrms_server.onrender.com";
 
@@ -420,16 +442,12 @@ const OdApprovalsPage = () => {
         const token = getTokenFromLocalStorage();
         if (!token) return;
 
-        const decodedData = decodeToken(token);
-        const dept = decodedData?.department || decodedData?.departmentName;
-
         const res = await fetch(
           `${API_BASE_URL.replace(/\/$/, "")}/api/leave-application/`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         const data = await res.json();
 
-        // console.log(data.leaveApplications);
         if (res.ok && data?.leaveApplications) {
           const mapped = data.leaveApplications.map((app) => {
             const name = app.facultyId
@@ -439,6 +457,32 @@ const OdApprovalsPage = () => {
             const department = app.facultyId?.department || "";
             const leaveType = app.leaveTypeId?.leaveName || app.leaveType || "Leave";
             const leaveTypeCategory = app.leaveTypeId?.leaveCategory;
+
+            // Dean-specific sub-status — uses normalizedRole to handle role casing/whitespace
+            let approvalStatus = "Pending";
+            if (normalizedRole === "dean-research") {
+              approvalStatus = app?.approvalStatus?.researchStatus || "Pending";
+            } else if (normalizedRole === "dean-iqac" || normalizedRole === "iqac") {
+              approvalStatus = app?.approvalStatus?.iqacStatus || "Pending";
+            } else if (normalizedRole === "coe") {
+              approvalStatus = app?.approvalStatus?.coeStatus || "Pending";
+            } else {
+              approvalStatus = app?.status || "Pending";
+            }
+
+            // Fallback: if sub-status is still Pending, check approvalHistory for role action
+            if (approvalStatus === "Pending" && Array.isArray(app?.approvalHistory)) {
+              const matchedAction = app.approvalHistory.find((h) => {
+                const r = h?.role?.toLowerCase()?.trim();
+                if (r === normalizedRole) return true;
+                if ((normalizedRole === "dean-iqac" || normalizedRole === "iqac") && (r === "dean-iqac" || r === "iqac")) return true;
+                return false;
+              });
+              if (matchedAction?.action === "Approved" || matchedAction?.action === "Rejected") {
+                approvalStatus = matchedAction.action;
+              }
+            }
+
             return {
               _id: app._id,
               name,
@@ -473,33 +517,47 @@ const OdApprovalsPage = () => {
               status: app.status || "Pending",
               currentApprovalLevel: app.currentApprovalLevel || "",
               approvalHistory: app.approvalHistory || [],
-
-              // Dean-specific sub-status — uses normalizedRole to handle role casing/whitespace
-              approvalStatus:
-                normalizedRole === "dean-research"
-                  ? app?.approvalStatus?.researchStatus
-                  : normalizedRole === "dean-iqac"
-                    ? app?.approvalStatus?.iqacStatus
-                    : app?.status
+              approvalStatus,
             };
           });
 
           let finalData = mapped.filter((item) => {
             if (item.leaveTypeCategory != "On Duty") return false;
 
-            if (
-              normalizedRole === "coe" &&
-              item.currentApprovalLevel?.toLowerCase()?.trim() !== "coe"
-            ) {
-              return false;
+            const leaveName = item.leaveType?.trim()?.toLowerCase();
+
+            // 1. Role-specific leave type restriction:
+            // dean-research: only "On Duty - Research"
+            if (normalizedRole === "dean-research") {
+              if (leaveName !== "on duty - research") return false;
+              const isCurrentLevel = item.currentApprovalLevel?.toLowerCase()?.trim() === "dean-research";
+              const hasActed = item.approvalStatus === "Approved" || item.approvalStatus === "Rejected";
+              const isHistory = hasActed || (item.currentApprovalLevel?.toLowerCase()?.trim() !== "hod" && item.approvalStatus?.hodStatus === "Approved");
+              return isCurrentLevel || isHistory;
             }
 
-            // Dean sub-roles (e.g. dean-iqac) only see requests waiting at their own approval level
-            if (
-              normalizedRole?.startsWith("dean-") &&
-              item.currentApprovalLevel?.toLowerCase() !== normalizedRole
-            ) {
-              return false;
+            // dean-iqac (or iqac): only "On Duty - Official"
+            if (isIqac) {
+              if (leaveName !== "on duty - official") return false;
+              const isCurrentLevel = item.currentApprovalLevel?.toLowerCase()?.trim() === "dean-iqac" || item.currentApprovalLevel?.toLowerCase()?.trim() === "iqac";
+              const hasActed = item.approvalStatus === "Approved" || item.approvalStatus === "Rejected";
+              const isHistory = hasActed || (item.currentApprovalLevel?.toLowerCase()?.trim() !== "hod" && item.approvalStatus?.hodStatus === "Approved");
+              return isCurrentLevel || isHistory;
+            }
+
+            // coe: only "On Duty - Exam" or "On Duty - Examination"
+            if (normalizedRole === "coe") {
+              if (leaveName !== "on duty - exam" && leaveName !== "on duty - examination") return false;
+              const isCurrentLevel = item.currentApprovalLevel?.toLowerCase()?.trim() === "coe";
+              const hasActed = item.approvalStatus === "Approved" || item.approvalStatus === "Rejected";
+              const isHistory = hasActed || (item.currentApprovalLevel?.toLowerCase()?.trim() !== "hod" && item.approvalStatus?.hodStatus === "Approved");
+              return isCurrentLevel || isHistory;
+            }
+
+            if (normalizedRole?.startsWith("dean-")) {
+              const isCurrentLevel = item.currentApprovalLevel?.toLowerCase()?.trim() === normalizedRole;
+              const hasActed = item.approvalStatus === "Approved" || item.approvalStatus === "Rejected";
+              return isCurrentLevel || hasActed;
             }
 
             return true;
@@ -508,17 +566,13 @@ const OdApprovalsPage = () => {
         }
       } catch (err) {
         console.error("Error fetching OD requests:", err);
-        // toast.error("Failed to load requests");
       } finally {
         setLoading(false);
       }
     };
 
     fetchRequests();
-  }, []);
-
-  // console.log("req : ", requests)
-
+  }, [normalizedRole]);
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
@@ -554,7 +608,20 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === request._id ? { ...r, status: "Approved", approvalStatus: "Approved" } : r)),
+        prev.map((r) =>
+          r._id === request._id
+            ? {
+                ...r,
+                status: data?.leaveApplication?.status || r.status || "Pending",
+                approvalStatus: "Approved",
+                currentApprovalLevel: data?.leaveApplication?.currentApprovalLevel || "principal",
+                approvalHistory: data?.leaveApplication?.approvalHistory || [
+                  ...(r.approvalHistory || []),
+                  { role: normalizedRole, action: "Approved", actionDate: new Date().toISOString() },
+                ],
+              }
+            : r,
+        ),
       );
       toast.success("Request approved successfully");
     } catch (err) {
@@ -599,7 +666,25 @@ const OdApprovalsPage = () => {
       }
 
       setRequests((prev) =>
-        prev.map((r) => (r._id === rejectTarget._id ? { ...r, status: "Rejected", approvalStatus: "Rejected" } : r)),
+        prev.map((r) =>
+          r._id === rejectTarget._id
+            ? {
+                ...r,
+                status: "Rejected",
+                approvalStatus: "Rejected",
+                currentApprovalLevel: data?.leaveApplication?.currentApprovalLevel || "completed",
+                approvalHistory: data?.leaveApplication?.approvalHistory || [
+                  ...(r.approvalHistory || []),
+                  {
+                    role: normalizedRole,
+                    action: "Rejected",
+                    remarks: rejectReason.trim(),
+                    actionDate: new Date().toISOString(),
+                  },
+                ],
+              }
+            : r,
+        ),
       );
       toast.success("Request rejected");
       closeRejectPopup();
@@ -724,7 +809,7 @@ const OdApprovalsPage = () => {
                     <tr>
                       <th className="px-4 py-3 font-semibold">Name</th>
                       <th className="px-4 py-3 font-semibold">Department</th>
-                      {normalizedRole === "dean-iqac" ? (
+                      {isIqac ? (
                         <>
                           <th className="px-4 py-3 font-semibold">From</th>
                           <th className="px-4 py-3 font-semibold">To</th>
@@ -736,7 +821,7 @@ const OdApprovalsPage = () => {
                           <th className="px-4 py-3 font-semibold">Date</th>
                         </>
                       )}
-                      <th className={`px-4 py-3 font-semibold ${normalizedRole === "dean-iqac" ? "w-[150px]" : ""}`}>Purpose</th>
+                      <th className={`px-4 py-3 font-semibold ${isIqac ? "w-[150px]" : ""}`}>Purpose</th>
                       <th className="px-4 py-3 font-semibold">Status</th>
                       <th className="px-4 py-3 text-right font-semibold">Action</th>
                     </tr>
@@ -744,7 +829,7 @@ const OdApprovalsPage = () => {
                   <tbody className="text-[13px] text-[#cad7eb]">
                     {loading ? (
                       <tr>
-                        <td colSpan={normalizedRole === "dean-iqac" ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td colSpan={isIqac ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
                           Loading requests...
                         </td>
                       </tr>
@@ -769,7 +854,7 @@ const OdApprovalsPage = () => {
                             </div>
                           </td>
                           <td className="px-4 py-3">{request.department}</td>
-                          {normalizedRole === "dean-iqac" ? (
+                          {isIqac ? (
                             <>
                               <td className="px-4 py-3 font-semibold text-white">{request.fromDate}</td>
                               <td className="px-4 py-3 font-semibold text-white">{request.toDate}</td>
@@ -781,7 +866,7 @@ const OdApprovalsPage = () => {
                               <td className="px-4 py-3 font-semibold text-white">{request.date}</td>
                             </>
                           )}
-                          <td className={`truncate px-4 py-3 ${normalizedRole === "dean-iqac" ? "w-[150px] max-w-[150px]" : "max-w-[260px]"}`} title={request.purpose}>
+                          <td className={`truncate px-4 py-3 ${isIqac ? "w-[150px] max-w-[150px]" : "max-w-[260px]"}`} title={request.purpose}>
                             {request.purpose}
                           </td>
                           <td className="px-4 py-3">
@@ -794,7 +879,7 @@ const OdApprovalsPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-end gap-2 text-[#8ca1bd]">
-                              {(request.approvalStatus || request.status) === "Pending" && (
+                              {canTakeAction(request) && (
                                 <>
                                   <button
                                     type="button"
@@ -833,7 +918,7 @@ const OdApprovalsPage = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={normalizedRole === "dean-iqac" ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
+                        <td colSpan={isIqac ? 9 : 7} className="px-4 py-8 text-center text-[#8ca1bd]">
                           {requests.length === 0
                             ? "No requests found."
                             : "No requests found matching your filters."}
