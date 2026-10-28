@@ -79,6 +79,42 @@ const getFacultyName = (faculty) =>
 
 const getFacultyId = (faculty) => faculty?._id;
 
+const formatDOB = (dob) => {
+  if (!dob) return "-";
+
+  if (typeof dob === "string") {
+    const trimmed = dob.trim();
+    if (!trimmed) return "-";
+
+    // Extract date part before "T" or space (e.g. "2004-08-28T18:30:00.000Z" -> "2004-08-28")
+    const datePart = trimmed.split("T")[0].split(" ")[0].trim();
+
+    // Match YYYY-MM-DD or YYYY/MM/DD
+    const ymdMatch = datePart.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+    if (ymdMatch) {
+      const [, year, month, day] = ymdMatch;
+      return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
+    }
+
+    // Match DD-MM-YYYY or DD/MM/YYYY
+    const dmyMatch = datePart.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    if (dmyMatch) {
+      const [, day, month, year] = dmyMatch;
+      return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
+    }
+  }
+
+  const date = new Date(dob);
+  if (!isNaN(date.getTime())) {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  return "-";
+};
+
 const getFacultyInitial = (faculty, name) =>
   (faculty?.firstName?.trim()?.charAt(0) || name?.trim()?.charAt(0) || "?")
     .toUpperCase();
@@ -176,6 +212,7 @@ const FacultyManagementPage = () => {
 
       "Emp ID": faculty.empId || "-",
       "Name": getFacultyName(faculty),
+      "DOB": formatDOB(faculty.dob),
       "Organization Email": faculty.organizationEmail || "-",
       "Phone": faculty.phone || faculty.mobileNumber || "-",
       "Designation": faculty.designation || "-",
