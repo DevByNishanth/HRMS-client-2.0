@@ -398,7 +398,7 @@ const FacultyManagementPage = () => {
       return;
     }
 
-    navigate(`/profile/${faculty._id}`);
+    navigate(`/profile/${faculty._id}/admin-view`);
   };
 
   const handleDeleteFaculty = async () => {

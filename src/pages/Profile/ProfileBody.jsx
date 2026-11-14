@@ -7,6 +7,7 @@ import ProfessionalInfo from "./ProfessionalInfo";
 import ProfileHero from "./ProfileHero";
 import ProfileEditDrawer from "./ProfileEditDrawer";
 import ReportingManagerCard from "./ReportingManagerCard";
+import SecureDataAuthModal from "../../components/SecureDataAuthModal";
 import AttendanceTable from "../Dashboards/FacultyDashboard/AttendanceTable";
 import LeaveTable from "../Dashboards/FacultyDashboard/LeaveTable";
 
@@ -19,21 +20,19 @@ const tabData = [
 ]
 
 
-const ProfileBody = ({ userId, canEditOwnProfile }) => {
-
-
+const ProfileBody = ({ userId, canEditOwnProfile, isAdminView = false }) => {
   // ? tab states ===================
   const [selectedTab, setSelectedTab] = useState("Personal details");
 
-
   // ! states ===================
-
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [initialEditStep, setInitialEditStep] = useState(0);
   const [editMode, setEditMode] = useState("full");
   const [faculty, setFaculty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isSecuredUnlocked, setIsSecuredUnlocked] = useState(isAdminView);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const closeEditDrawer = useCallback(() => {
     setIsEditOpen(false);
@@ -55,6 +54,59 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
     setFaculty(updatedFaculty);
   }, []);
 
+  const handleSecureDataUnlocked = useCallback((securedData) => {
+    setFaculty((prev) => {
+      if (!prev) return securedData;
+      return {
+        ...prev,
+        ...securedData,
+        identityDetails: {
+          ...(prev.identityDetails || {}),
+          ...(securedData.identityDetails || {}),
+          aadharNumber:
+            securedData.identityDetails?.aadharNumber ||
+            securedData.aadharNumber ||
+            prev.identityDetails?.aadharNumber,
+          panNumber:
+            securedData.identityDetails?.panNumber ||
+            securedData.panNumber ||
+            prev.identityDetails?.panNumber,
+          pfNumber:
+            securedData.identityDetails?.pfNumber ||
+            securedData.pfNumber ||
+            prev.identityDetails?.pfNumber,
+        },
+        bankDetails: {
+          ...(prev.bankDetails || {}),
+          ...(securedData.bankDetails || {}),
+          bankName:
+            securedData.bankDetails?.bankName ||
+            securedData.bankName ||
+            prev.bankDetails?.bankName,
+          accountNumber:
+            securedData.bankDetails?.accountNumber ||
+            securedData.accountNumber ||
+            prev.bankDetails?.accountNumber,
+          ifscCode:
+            securedData.bankDetails?.ifscCode ||
+            securedData.ifscCode ||
+            prev.bankDetails?.ifscCode,
+          branchLocation:
+            securedData.bankDetails?.branchLocation ||
+            securedData.branch ||
+            prev.bankDetails?.branchLocation,
+        },
+        documents: {
+          ...(prev.documents || {}),
+          ...(securedData.documents || {}),
+          aadharCard: securedData.documents?.aadharCard || prev.documents?.aadharCard,
+          panCard: securedData.documents?.panCard || prev.documents?.panCard,
+        },
+      };
+    });
+    setIsSecuredUnlocked(true);
+  }, []);
+
   // Fetch faculty data from the API
   useEffect(() => {
     if (!userId) {
@@ -73,15 +125,36 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
           throw new Error("Authentication token not found");
         }
 
-        const response = await fetch(
-          `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${userId}`,
-          {
+        const endpoint = isAdminView
+          ? `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${userId}/admin-view`
+          : `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/${userId}`;
+
+        let response;
+        try {
+          response = await fetch(endpoint, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+          });
+          if (response.status === 404 && isAdminView) {
+            throw new Error("404");
           }
-        );
+        } catch (err) {
+          if (err.message === "404" && isAdminView) {
+            response = await fetch(
+              `${API_BASE_URL.replace(/\/$/, "")}/api/faculty/${userId}/admin-view`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+          } else {
+            throw err;
+          }
+        }
 
         if (!response.ok) {
           throw new Error(`Failed to fetch profile: ${response.status}`);
@@ -100,7 +173,7 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
     };
 
     fetchFaculty();
-  }, [userId]);
+  }, [userId, isAdminView]);
 
   if (loading) {
     return (
@@ -166,7 +239,14 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
             <PersonalDetails canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(0)} faculty={faculty} />
             <ProfessionalInfo canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(1)} faculty={faculty} />
             <ReportingManagerCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(4)} faculty={faculty} />
-            <DocumentsCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(3)} faculty={faculty} />
+            <DocumentsCard
+              canEdit={canEditOwnProfile}
+              onEdit={() => openSectionEdit(3)}
+              faculty={faculty}
+              isUnlocked={isSecuredUnlocked || isAdminView}
+              onUnlockClick={() => setIsAuthModalOpen(true)}
+              isAdminView={isAdminView}
+            />
             <EducationQualifications canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(2)} faculty={faculty} />
           </div>
         )}
@@ -179,6 +259,15 @@ const ProfileBody = ({ userId, canEditOwnProfile }) => {
           mode={editMode}
           faculty={faculty}
           onSaved={handleSaved}
+        />
+      )}
+
+      {isAuthModalOpen && (
+        <SecureDataAuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          facultyId={userId || faculty?._id}
+          onSuccess={handleSecureDataUnlocked}
         />
       )}
     </main>

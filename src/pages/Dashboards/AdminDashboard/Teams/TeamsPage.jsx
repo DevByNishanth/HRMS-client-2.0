@@ -187,7 +187,7 @@ const TeamsPage = () => {
   };
 
   const handleViewProfile = (faculty) => {
-    navigate(`/profile/${faculty._id}`);
+    navigate(`/profile/${faculty._id}/admin-view`);
   };
 
   return (

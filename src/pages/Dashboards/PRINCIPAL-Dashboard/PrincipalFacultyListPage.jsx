@@ -276,7 +276,7 @@ const PrincipalFacultyListPage = () => {
   const handleViewFaculty = (faculty) => {
     const facultyId = faculty?._id;
     if (!facultyId) return;
-    navigate(`/profile/${facultyId}`);
+    navigate(`/profile/${facultyId}/admin-view`);
   };
 
   return (

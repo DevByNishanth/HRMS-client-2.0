@@ -8,11 +8,6 @@ const ProfilePage = () => {
     const { empid } = useParams();
     const [searchParams] = useSearchParams();
     const location = useLocation();
-    const userId = location.state?.userId || empid;
-
-    // Determine if the logged-in user is viewing their own profile
-    const urlId = searchParams.get("id") || empid;
-
     let loggedInFacultyId = "";
     try {
         const token = localStorage.getItem("hrms_token");
@@ -24,6 +19,10 @@ const ProfilePage = () => {
         loggedInFacultyId = "";
     }
 
+    const userId = location.state?.userId || empid || loggedInFacultyId;
+
+    // Determine if the logged-in user is viewing their own profile
+    const urlId = searchParams.get("id") || empid || loggedInFacultyId;
     const canEditOwnProfile = String(urlId) === String(loggedInFacultyId);
 
     return (

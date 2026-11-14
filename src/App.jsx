@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./pages/LoginPage";
 import FacultyDashboard from "./pages/Dashboards/FacultyDashboard/FacultyDashboard";
 import ProfilePage from "./pages/ProfilePage";
+import AdminProfilePage from "./pages/AdminProfilePage";
 import LeavePage from "./pages/Dashboards/FacultyDashboard/LeavePage";
 import AttendancePage from "./pages/Dashboards/FacultyDashboard/AttendancePage";
 import PermissionPage from "./pages/Dashboards/FacultyDashboard/PermissionPage";
@@ -395,6 +396,27 @@ function App() {
               ]}
             >
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/:empid/admin-view"
+          element={
+            <ProtectedRoute
+              requiredRoles={[
+                "faculty",
+                "hod",
+                "principal",
+                "admin",
+                "non-teaching",
+                "dean",
+                "dean-academics",
+                "dean-iqac",
+                "dean-research",
+                "hr",
+              ]}
+            >
+              <AdminProfilePage />
             </ProtectedRoute>
           }
         />
