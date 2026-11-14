@@ -27,6 +27,8 @@ const PersonalDetails = ({ canEdit, onEdit, faculty }) => {
   const fullName = [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "N/A";
   const dob = formatDate(faculty?.dob);
   const gender = faculty?.gender || "N/A";
+  const community = faculty?.community || "N/A";
+  const caste = faculty?.caste || faculty?.cast || "N/A";
   const email = faculty?.email || "N/A";
   const phone = faculty?.phone || "N/A";
   const address = getAddressText(faculty?.address);
@@ -35,6 +37,8 @@ const PersonalDetails = ({ canEdit, onEdit, faculty }) => {
     { label: "Full Name", value: fullName },
     { label: "Date of Birth", value: dob },
     { label: "Gender", value: gender },
+    { label: "Community", value: community },
+    { label: "Caste", value: caste },
     { label: "Email", value: email },
     { label: "Phone", value: phone },
     { label: "Permanent Address", value: address },

@@ -44,6 +44,17 @@ const steps = [
 ];
 
 const genders = ["Male", "Female", "Other"];
+const communities = [
+  "OC",
+  "BC",
+  "BCM",
+  "MBC",
+  "DNC",
+  "SC",
+  "SCA",
+  "ST",
+  "Others",
+];
 
 const emptyQualification = {
   degree: "",
@@ -181,6 +192,8 @@ const buildInitialPersonal = (f) => ({
   fullName: getFullName(f),
   dateOfBirth: formatDateForInput(f?.dob),
   gender: f?.gender || "",
+  community: f?.community || "",
+  caste: f?.caste || f?.cast || "",
   phone: f?.phone || "",
   email: f?.email || "",
   doorNo: f?.address?.doorNo || "",
@@ -317,6 +330,8 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
         firstName,
         lastName,
         gender: personal.gender,
+        community: personal.community ? personal.community.trim() : "",
+        caste: (personal.caste || personal.cast || "").trim(),
         phone: personal.phone,
         email: personal.email,
         dob: personal.dateOfBirth || faculty?.dob,
@@ -477,6 +492,20 @@ const ProfileEditDrawer = ({ onClose, initialStep = 0, mode = "full", faculty, o
                   onChange={(value) => updatePersonal("gender", value)}
                   options={genders}
                   placeholder="Select gender"
+                />
+                <DropdownField
+                  label="Community"
+                  value={personal.community}
+                  onChange={(value) => updatePersonal("community", value)}
+                  options={communities}
+                  placeholder="Select community"
+                />
+                <Field
+                  label="Caste"
+                  name="caste"
+                  value={personal.caste}
+                  onChange={updatePersonal}
+                  placeholder="Enter caste"
                 />
                 <Field
                   label="Phone Number"

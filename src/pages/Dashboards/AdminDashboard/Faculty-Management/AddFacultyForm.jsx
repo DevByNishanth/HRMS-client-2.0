@@ -56,6 +56,17 @@ const steps = [
 
 const salutations = ["Mr", "Mrs", "Ms", "Dr", "Prof"];
 const genders = ["Male", "Female", "Other"];
+const communities = [
+  "OC",
+  "BC",
+  "BCM",
+  "MBC",
+  "DNC",
+  "SC",
+  "SCA",
+  "ST",
+  "Others",
+];
 const workTypes = ["Permanent", "Temporary"];
 const timeTypes = ["Full-Time", "Part-Time", "Contract"];
 const employeeCategories = [
@@ -95,6 +106,8 @@ const initialForm = {
   lastName: "",
   gender: "",
   dob: null,
+  community: "",
+  caste: "",
   email: "",
   organizationEmail: "",
   phone: "",
@@ -140,6 +153,8 @@ const mapFacultyToForm = (faculty = {}) => ({
   lastName: faculty.lastName || "",
   gender: faculty.gender || "",
   dob: toDateValue(faculty.dob),
+  community: faculty.community || "",
+  caste: faculty.cast || faculty.caste || "",
   email: faculty.email || "",
   organizationEmail: faculty.organizationEmail || "",
   phone: faculty.phone || "",
@@ -966,6 +981,8 @@ const AddFacultyForm = ({
     lastName: form.lastName.trim(),
     gender: form.gender,
     dob: toIsoDate(form.dob),
+    community: form.community ? form.community.trim() : "",
+    caste: (form.caste || form.cast || "").trim(),
     email: form.email.trim().toLowerCase(),
     organizationEmail: form.organizationEmail.trim().toLowerCase(),
     phone: form.phone.trim(),
@@ -1231,6 +1248,22 @@ const AddFacultyForm = ({
                   error={errors.dob}
                   placeholder="Select date of birth"
                   popupAlign="right"
+                />
+                <DropdownField
+                  label="Community"
+                  value={form.community}
+                  onChange={(value) => updateForm("community", value)}
+                  options={communities}
+                  placeholder="Select community"
+                  error={errors.community}
+                />
+                <Field
+                  label="Caste"
+                  name="caste"
+                  value={form.caste}
+                  onChange={updateForm}
+                  error={errors.caste}
+                  placeholder="Enter caste"
                 />
                 <Field
                   label="Personal Email"
