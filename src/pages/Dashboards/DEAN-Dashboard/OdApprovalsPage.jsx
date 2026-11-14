@@ -8,6 +8,7 @@ import userImg from "../../../assets/userImg.svg";
 import ExportPasswordModal from "../../../components/ExportPasswordModal";
 import { exportToExcel } from "../../../utils/exportToExcel";
 import { usePasswordProtectedExport } from "../../../hooks/usePasswordProtectedExport";
+import { getDepartments } from "../../../services/department/getDepartmentsService";
 
 const statusStyles = {
   Approved: "text-[#18d3bf] bg-[#18d3bf1f]",
@@ -337,9 +338,11 @@ const RejectReasonPopup = ({ request, reason, onReasonChange, onClose, onConfirm
 
 const OdApprovalsPage = () => {
   const [requests, setRequests] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("All Departments");
   const [statusFilter, setStatusFilter] = useState("Pending");
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
@@ -367,6 +370,29 @@ const OdApprovalsPage = () => {
   };
 
   const statuses = ["All", "Pending", "Approved", "Rejected"];
+
+  useEffect(() => {
+    let isActive = true;
+
+    const fetchDepartments = async () => {
+      try {
+        const response = await getDepartments();
+        const departmentNames = (Array.isArray(response?.data) ? response.data : [])
+          .map((department) => department?.departmentName?.trim())
+          .filter(Boolean);
+        if (isActive) {
+          setDepartments([...new Set(departmentNames)].sort((a, b) => a.localeCompare(b)));
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDepartments();
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   // Custom Dropdown Component
   const CustomDropdown = ({ placeholder = "Select", value, onChange, options }) => {
@@ -583,9 +609,12 @@ const OdApprovalsPage = () => {
         request.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.leaveType?.toLowerCase().includes(searchTerm.toLowerCase());
       const statusMatch = statusFilter === "All" || (request.approvalStatus || request.status) === statusFilter;
-      return searchMatch && statusMatch;
+      const departmentMatch =
+        departmentFilter === "All Departments" ||
+        request.department?.trim().toLocaleLowerCase() === departmentFilter.toLocaleLowerCase();
+      return searchMatch && statusMatch && departmentMatch;
     });
-  }, [requests, searchTerm, statusFilter]);
+  }, [requests, searchTerm, statusFilter, departmentFilter]);
 
   const handleApprove = async (request) => {
     try {
@@ -771,6 +800,16 @@ const OdApprovalsPage = () => {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="h-11 w-full rounded-lg border border-[#244061] bg-[#0d2138] pl-10 pr-3 text-[13px] text-white outline-none transition placeholder:text-[#6f839f] focus:border-[#3984ff] focus:ring-2 focus:ring-[#3984ff33]"
+                    />
+                  </div>
+
+                  {/* Department Filter */}
+                  <div className="flex-shrink-0">
+                    <CustomDropdown
+                      placeholder="Department"
+                      value={departmentFilter}
+                      onChange={setDepartmentFilter}
+                      options={["All Departments", ...departments]}
                     />
                   </div>
 
