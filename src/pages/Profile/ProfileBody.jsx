@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Loader2, User, CalendarCheck, CalendarDays } from "lucide-react";
 import DocumentsCard from "./DocumentsCard";
 import EducationQualifications from "./EducationQualifications";
+import ExperienceCard from "./ExperienceCard";
 import PersonalDetails from "./PersonalDetails";
 import ProfessionalInfo from "./ProfessionalInfo";
 import ProfileHero from "./ProfileHero";
@@ -248,6 +249,7 @@ const ProfileBody = ({ userId, canEditOwnProfile, isAdminView = false }) => {
               isAdminView={isAdminView}
             />
             <EducationQualifications canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(2)} faculty={faculty} />
+            <ExperienceCard canEdit={canEditOwnProfile} onEdit={() => openSectionEdit(1)} faculty={faculty} />
           </div>
         )}
       </div>

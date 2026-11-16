@@ -212,7 +212,7 @@ const DocumentsCard = ({
       canEdit={canEdit && !shouldBlur}
       onEdit={onEdit}
     >
-      <div className="relative min-h-[260px]">
+      <div className="relative min-h-[260px] isolate overflow-hidden rounded-lg">
         {/* Sub-tabs for quick filtering */}
         <div className="mb-3.5 flex items-center gap-1.5 border-b border-slate-100 dark:border-[#1d2d46] pb-2 text-[12px]">
           {["All", "Identity", "Bank", "Documents"].map((tab) => (
@@ -389,7 +389,7 @@ const DocumentsCard = ({
 
         {/* Lock Overlay for User Side when locked */}
         {shouldBlur && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg bg-white/60 dark:bg-[#071425]/75 backdrop-blur-[3px] p-5 text-center">
+          <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center rounded-lg bg-white/70 dark:bg-[#071425]/85 backdrop-blur-[3px] p-5 text-center">
             <div className="mb-2.5 flex h-11 w-11 items-center justify-center rounded-full bg-[#2563EB]/10 dark:bg-[#3984ff]/20 text-[#2563EB] dark:text-[#3984ff] shadow-sm">
               <Lock size={20} />
             </div>

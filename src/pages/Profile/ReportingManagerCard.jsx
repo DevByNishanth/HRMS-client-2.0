@@ -23,13 +23,28 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
     );
   }
 
-  const name =
-    [reportingTo.name, reportingTo.firstName, reportingTo.lastName]
-      .filter(Boolean)
-      .join(" ") || "Not assigned";
+  // Handle both flat reportingTo and populated reportingTo.facultyId object
+  const mgr =
+    typeof reportingTo.facultyId === "object" && reportingTo.facultyId !== null
+      ? reportingTo.facultyId
+      : reportingTo;
 
-  const email = faculty?.organizationEmail || "N/A";
-  const phone = faculty?.phone || "N/A";
+  const name =
+    mgr.name ||
+    [mgr.salutation, mgr.firstName, mgr.lastName].filter(Boolean).join(" ") ||
+    reportingTo.name ||
+    "Not assigned";
+
+  const empId = reportingTo.empId || mgr.empId || "";
+  const designation = mgr.designation || reportingTo.designation || "";
+  const department = mgr.department || reportingTo.department || "";
+  const email =
+    mgr.organizationEmail ||
+    mgr.email ||
+    reportingTo.organizationEmail ||
+    reportingTo.email ||
+    "";
+  const phone = mgr.phone || reportingTo.phone || "";
 
   return (
     <ProfileCard
@@ -39,6 +54,7 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
       onEdit={onEdit}
     >
       <div className="space-y-3">
+        {/* Name */}
         <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
             <UserRound size={17} />
@@ -51,18 +67,25 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
           </div>
         </div>
 
-        {/* <div className="flex items-center gap-3 rounded-lg bg-[#1a263c] px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#65718d]/30 text-[#d2def6]">
-            <Mail size={17} />
+        {/* Emp ID */}
+        {empId && (
+          <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
+              <Tag size={17} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[12px] font-semibold text-slate-600 dark:text-[#8a9ab7]">
+                Emp ID
+              </p>
+              <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                {empId}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] font-semibold text-[#8a9ab7]">Organization Email</p>
-            <p className="truncate text-[14px] font-medium text-slate-900 dark:text-white">{email}</p>
-            <p className="truncate text-[14px] font-medium text-slate-900 dark:text-white">{email}</p>
-          </div>
-        </div> */}
+        )}
 
-        {reportingTo.designation && (
+        {/* Designation */}
+        {designation && (
           <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
               <Building2 size={17} />
@@ -72,13 +95,14 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
                 Designation
               </p>
               <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
-                {reportingTo.designation}
+                {designation}
               </p>
             </div>
           </div>
         )}
 
-        {reportingTo.department && (
+        {/* Department */}
+        {department && (
           <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
               <Building2 size={17} />
@@ -88,26 +112,42 @@ const ReportingManagerCard = ({ faculty, canEdit, onEdit }) => {
                 Department
               </p>
               <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
-                {reportingTo.department}
+                {department}
               </p>
             </div>
           </div>
         )}
 
-        {reportingTo.empId && (
-          <div className="border-t border-slate-200 dark:border-[#26344f] pt-3">
-            <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
-                <Tag size={17} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-semibold text-slate-600 dark:text-[#8a9ab7]">
-                  Emp Id
-                </p>
-                <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
-                  {reportingTo?.empId}
-                </p>
-              </div>
+        {/* Organization Email */}
+        {email && (
+          <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
+              <Mail size={17} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[12px] font-semibold text-slate-600 dark:text-[#8a9ab7]">
+                Organization Email
+              </p>
+              <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                {email}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Phone */}
+        {phone && (
+          <div className="flex items-center gap-3 rounded-lg bg-slate-50 dark:bg-[#1a263c] px-4 py-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-[#65718d]/30 text-slate-600 dark:text-[#d2def6]">
+              <Phone size={17} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[12px] font-semibold text-slate-600 dark:text-[#8a9ab7]">
+                Phone
+              </p>
+              <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                {phone}
+              </p>
             </div>
           </div>
         )}

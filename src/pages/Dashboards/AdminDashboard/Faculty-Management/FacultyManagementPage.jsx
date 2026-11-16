@@ -115,6 +115,105 @@ const formatDOB = (dob) => {
   return "-";
 };
 
+const formatAddress = (addr) => {
+  if (!addr || typeof addr !== "object") return "-";
+  const parts = [
+    addr.doorNo,
+    addr.street,
+    addr.city,
+    addr.district,
+    addr.state,
+    addr.pincode,
+    addr.country,
+  ].filter(Boolean);
+  return parts.length ? parts.join(", ") : "-";
+};
+
+const getReportingManagerInfo = (reportingTo) => {
+  if (!reportingTo) return {};
+  const mgr =
+    typeof reportingTo.facultyId === "object" && reportingTo.facultyId !== null
+      ? reportingTo.facultyId
+      : reportingTo;
+
+  const name =
+    mgr.name ||
+    [mgr.salutation, mgr.firstName, mgr.lastName].filter(Boolean).join(" ") ||
+    reportingTo.name ||
+    "-";
+
+  const empId = reportingTo.empId || mgr.empId || "-";
+  const designation = mgr.designation || reportingTo.designation || "-";
+  const department = mgr.department || reportingTo.department || "-";
+  const email =
+    mgr.organizationEmail ||
+    mgr.email ||
+    reportingTo.organizationEmail ||
+    reportingTo.email ||
+    "-";
+  const phone = mgr.phone || reportingTo.phone || "-";
+
+  return { name, empId, designation, department, email, phone };
+};
+
+const formatQualifications = (quals) => {
+  if (!Array.isArray(quals) || quals.length === 0) return "-";
+  return quals
+    .map((q) => {
+      const parts = [
+        q.degree,
+        q.specialization ? `in ${q.specialization}` : "",
+        q.institutionName ? `at ${q.institutionName}` : "",
+        q.yearOfPassing ? `(${q.yearOfPassing})` : "",
+        q.percentage ? `${q.percentage}%` : q.cgpa ? `CGPA ${q.cgpa}` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      return parts;
+    })
+    .join(" | ");
+};
+
+const getTotalExperience = (experiences) => {
+  if (!Array.isArray(experiences) || experiences.length === 0) return "-";
+  const total = experiences.reduce(
+    (sum, exp) => sum + (Number(exp.yearsOfExperience) || 0),
+    0
+  );
+  return total > 0 ? `${total} Years` : "-";
+};
+
+const formatExperiences = (experiences) => {
+  if (!Array.isArray(experiences) || experiences.length === 0) return "-";
+  return experiences
+    .map((e) => {
+      const from = formatDOB(e.fromDate);
+      const to = formatDOB(e.toDate) || "Present";
+      const duration = e.yearsOfExperience ? `${e.yearsOfExperience} yrs` : "";
+      return `${e.designation || "Role"} at ${e.organization || "Company"} (${from} - ${to}${
+        duration ? `, ${duration}` : ""
+      })`;
+    })
+    .join(" | ");
+};
+
+const getDocUrl = (doc) => {
+  if (!doc) return "-";
+  if (typeof doc === "string") return doc;
+  if (typeof doc === "object" && doc.url) return doc.url;
+  return "-";
+};
+
+const formatDocList = (docs) => {
+  if (!Array.isArray(docs) || docs.length === 0) return "-";
+  return (
+    docs
+      .map((d) => (typeof d === "string" ? d : d?.url || ""))
+      .filter(Boolean)
+      .join(" | ") || "-"
+  );
+};
+
 const getFacultyInitial = (faculty, name) =>
   (faculty?.firstName?.trim()?.charAt(0) || name?.trim()?.charAt(0) || "?")
     .toUpperCase();
@@ -208,24 +307,136 @@ const FacultyManagementPage = () => {
   } = usePasswordProtectedExport();
 
   const exportCurrentFilteredRows = () => {
-    const rows = filteredFaculty.map((faculty) => ({
+    const rows = filteredFaculty.map((faculty) => {
+      const mgr = getReportingManagerInfo(faculty.reportingTo);
+      const addr = faculty.address || {};
+      const ident = faculty.identityDetails || {};
+      const bank = faculty.bankDetails || {};
+      const docs = faculty.documents || {};
+      const shift =
+        typeof faculty.shiftId === "object" && faculty.shiftId !== null
+          ? faculty.shiftId
+          : {};
 
-      "Emp ID": faculty.empId || "-",
-      "Name": getFacultyName(faculty),
-      "DOB": formatDOB(faculty.dob),
-      "Organization Email": faculty.organizationEmail || "-",
-      "Phone": faculty.phone || faculty.mobileNumber || "-",
-      "Designation": faculty.designation || "-",
-      "Original Department": faculty.originalDepartment || "-",
-      "Department": faculty.department || "-",
-      "Reporting To": faculty.reportingTo?.facultyId
-        ? `${faculty.reportingTo.facultyId.salutation ?? ""} ${faculty.reportingTo.facultyId.firstName ?? ""
-          } ${faculty.reportingTo.facultyId.lastName ?? ""}`.trim()
-        : "-",
-      "Punch ID": faculty.punchId || "-",
-      "Employment Type": faculty.employeeCategory || faculty.employmentType || "-",
-      "Shift": faculty.shiftId?.shiftName || faculty.shiftName || "-",
-    }));
+      const isActive =
+        faculty.isActive === true
+          ? "Active"
+          : faculty.isActive === false
+          ? "Inactive"
+          : faculty.employmentStatus === false
+          ? "Inactive"
+          : "Active";
+
+      return {
+        // --- 1. Basic & Personal Details ---
+        "Emp ID": faculty.empId || "-",
+        "Salutation": faculty.salutation || "-",
+        "First Name": faculty.firstName || "-",
+        "Last Name": faculty.lastName || "-",
+        "Full Name": getFacultyName(faculty),
+        "Gender": faculty.gender || "-",
+        "DOB": formatDOB(faculty.dob),
+        "Community": faculty.community || "-",
+        "Caste": faculty.caste || faculty.cast || "-",
+        "Personal Email": faculty.email || "-",
+        "Organization Email": faculty.organizationEmail || "-",
+        "Phone": faculty.phone || faculty.mobileNumber || "-",
+
+        // --- 2. Address Details ---
+        "Door No": addr.doorNo || "-",
+        "Street": addr.street || "-",
+        "City": addr.city || "-",
+        "District": addr.district || "-",
+        "State": addr.state || "-",
+        "Pincode": addr.pincode ? String(addr.pincode) : "-",
+        "Country": addr.country || "-",
+        "Permanent Address": formatAddress(addr),
+
+        // --- 3. Professional & Employment Details ---
+        "Designation": faculty.designation || "-",
+        "Job Title": faculty.jobTitle || "-",
+        "Department": faculty.department || "-",
+        "Original Department": faculty.originalDepartment || "-",
+        "Employee Category": faculty.employeeCategory || "-",
+        "Work Type": faculty.workType || "-",
+        "Time Type": faculty.timeType || "-",
+        "Employment Status": isActive,
+        "Date of Joining": formatDOB(faculty.doj),
+        "Resignation Date": formatDOB(faculty.resignationDate),
+        "Punch ID": faculty.punchId || "-",
+
+        // --- 4. Shift Schedule ---
+        "Shift Name":
+          shift.shiftName ||
+          faculty.shiftName ||
+          (typeof faculty.shiftId === "string" ? faculty.shiftId : "-"),
+        "Shift Start Time": shift.startTime || "-",
+        "Shift End Time": shift.endTime || "-",
+        "Shift Timing":
+          shift.startTime && shift.endTime
+            ? `${shift.startTime} - ${shift.endTime}`
+            : "-",
+        "Shift Grace Time (Mins)":
+          shift.graceTime != null ? shift.graceTime : "-",
+        "Shift Working Minutes":
+          shift.workingMinutes != null ? shift.workingMinutes : "-",
+
+        // --- 5. Reporting Manager ---
+        "Reporting Manager Emp ID": mgr.empId || "-",
+        "Reporting Manager Name": mgr.name || "-",
+        "Reporting Manager Designation": mgr.designation || "-",
+        "Reporting Manager Department": mgr.department || "-",
+        "Reporting Manager Email": mgr.email || "-",
+        "Reporting Manager Phone": mgr.phone || "-",
+
+        // --- 6. Identity Details ---
+        "Aadhaar Number": ident.aadharNumber || faculty.aadharNumber || "-",
+        "PAN Number": ident.panNumber || faculty.panNumber || "-",
+        "PF Number": ident.pfNumber || faculty.pfNumber || "-",
+
+        // --- 7. Bank Details ---
+        "Bank Name": bank.bankName || faculty.bankName || "-",
+        "Account Number": bank.accountNumber
+          ? String(bank.accountNumber)
+          : faculty.accountNumber
+          ? String(faculty.accountNumber)
+          : "-",
+        "IFSC Code": bank.ifscCode || faculty.ifscCode || "-",
+        "Branch Location":
+          bank.branchLocation || bank.branch || faculty.branch || "-",
+
+        // --- 8. Educational Qualifications ---
+        "Highest Degree":
+          Array.isArray(faculty.qualifications) &&
+          faculty.qualifications.length > 0
+            ? faculty.qualifications[faculty.qualifications.length - 1]?.degree ||
+              faculty.qualifications[0]?.degree ||
+              "-"
+            : "-",
+        "Qualifications Summary": formatQualifications(faculty.qualifications),
+
+        // --- 9. Work Experience ---
+        "Total Experience": getTotalExperience(faculty.experiences),
+        "Work Experience Summary": formatExperiences(faculty.experiences),
+
+        // --- 10. Documents ---
+        "SSLC Mark Sheet URL": getDocUrl(docs.sslcMarkSheet),
+        "HSC Mark Sheet URL": getDocUrl(docs.hscMarkSheet),
+        "UG Degree Certificate URL": getDocUrl(docs.ugDegreeCertificate),
+        "PG Degree Certificate URL": getDocUrl(docs.pgDegreeCertificate),
+        "PhD Degree Certificate URL": getDocUrl(docs.phdDegreeCertificate),
+        "Aadhaar Card Document URL": getDocUrl(docs.aadharCard),
+        "PAN Card Document URL": getDocUrl(docs.panCard),
+        "Resume URL": getDocUrl(docs.resume),
+        "Relieving Letters": formatDocList(docs.relievingLetters),
+        "Experience Certificates": formatDocList(docs.experienceCertificates),
+        "Other Documents": formatDocList(docs.otherDocuments),
+
+        // --- 11. Timestamps ---
+        "Created At": formatDOB(faculty.createdAt),
+        "Updated At": formatDOB(faculty.updatedAt),
+      };
+    });
 
     exportToExcel(rows, "Faculty-List.xlsx");
   };
@@ -244,12 +455,22 @@ const FacultyManagementPage = () => {
     setFacultyError("");
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL.replace(/\/$/, "")}/api/faculties`,
+      let response = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/api/faculties/admin-view/all`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+
+      if (!response.ok && response.status === 404) {
+        response = await fetch(
+          `${API_BASE_URL.replace(/\/$/, "")}/api/faculties`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+      }
+
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {

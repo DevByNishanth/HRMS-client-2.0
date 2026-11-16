@@ -24,7 +24,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const fullName =
-    [faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
+    [faculty?.salutation, faculty?.firstName, faculty?.lastName].filter(Boolean).join(" ") || "User";
 
   const API_BASE_URL =
     import.meta.env.VITE_API_BASE_URL ||
@@ -145,7 +145,7 @@ const ProfileHero = ({ canEdit, onEdit, faculty }) => {
 
   return (
     <>
-      <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between sticky top-0 z-10 bg-slate-50 dark:bg-[#071425] px-4 py-4">
+      <section className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between sticky top-0 z-20 bg-slate-50 dark:bg-[#071425] px-4 py-4">
         <div className="flex items-center gap-4">
           <div className="relative flex h-[120px] w-[120px] shrink-0 items-center justify-center overflow-hidden rounded-lg border-3 border-[#31415d] bg-[#18243a] shadow-[0_18px_35px_rgba(0,0,0,0.25)]">
             {faculty?.profileImage?.url ? (

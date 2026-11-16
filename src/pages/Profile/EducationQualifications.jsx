@@ -2,13 +2,19 @@ import React from "react";
 import { GraduationCap } from "lucide-react";
 import ProfileCard from "./ProfileCard";
 
-const EducationQualifications = ({ canEdit, onEdit, faculty }) => {
+const EducationQualifications = ({ canEdit, onEdit, faculty, className = "" }) => {
   const qualifications = faculty?.qualifications || [];
 
   // If no qualifications, show an empty state
   if (qualifications.length === 0) {
     return (
-      <ProfileCard title="Educational Qualifications" icon={GraduationCap} className="lg:col-span-2" canEdit={canEdit} onEdit={onEdit}>
+      <ProfileCard
+        title="Educational Qualifications"
+        icon={GraduationCap}
+        className={className}
+        canEdit={canEdit}
+        onEdit={onEdit}
+      >
         <div className="flex flex-col items-center justify-center py-6 text-center">
           <GraduationCap size={32} className="text-slate-400 dark:text-[#354158] mb-2" />
           <p className="text-[13px] text-slate-500 dark:text-[#8ca1bd]">No qualifications added yet</p>
@@ -18,8 +24,14 @@ const EducationQualifications = ({ canEdit, onEdit, faculty }) => {
   }
 
   return (
-    <ProfileCard title="Educational Qualifications" icon={GraduationCap} className="lg:col-span-2" canEdit={canEdit} onEdit={onEdit}>
-      <div className="relative space-y-8 pl-7">
+    <ProfileCard
+      title="Educational Qualifications"
+      icon={GraduationCap}
+      className={className}
+      canEdit={canEdit}
+      onEdit={onEdit}
+    >
+      <div className="relative space-y-6 pl-7">
         <div className="absolute left-[5px] top-2 h-[calc(100%-18px)] w-px bg-slate-300 dark:bg-[#31415d]" />
         {qualifications.map((item, index) => (
           <div key={index} className="relative">
