@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Loader2, User, CalendarCheck, CalendarDays } from "lucide-react";
 import DocumentsCard from "./DocumentsCard";
 import EducationQualifications from "./EducationQualifications";
@@ -54,6 +55,13 @@ const ProfileBody = ({ userId, canEditOwnProfile, isAdminView = false }) => {
   const handleSaved = useCallback((updatedFaculty) => {
     setFaculty(updatedFaculty);
   }, []);
+
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.openEdit && faculty && canEditOwnProfile) {
+      openFullEdit();
+    }
+  }, [location.state, faculty, canEditOwnProfile, openFullEdit]);
 
   const handleSecureDataUnlocked = useCallback((securedData) => {
     setFaculty((prev) => {

@@ -216,6 +216,7 @@ const LoginPage = () => {
 
       // Show success message
       setSuccessMessage("Login successful! Redirecting...");
+      sessionStorage.removeItem("has_seen_profile_update_prompt");
 
       // set open document modal 
 
@@ -282,6 +283,7 @@ const LoginPage = () => {
 
       // Show success message
       setSuccessMessage("Login successful! Redirecting...");
+      sessionStorage.removeItem("has_seen_profile_update_prompt");
 
       // Redirect to role-based dashboard after a short delay
       setTimeout(() => {
